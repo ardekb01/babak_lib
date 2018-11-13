@@ -166,7 +166,7 @@ void hist1D_plot(const char *name, int n, int *bin, float *data1, float *data2, 
 
    // added by back to remove these files afterwards
    sprintf(filename,"%s.dat",name);
-   remove(filename);
+   //remove(filename);
    sprintf(filename,"%s.plt",name);
-   remove(filename);
+   //remove(filename);
 }

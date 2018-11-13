@@ -1722,7 +1722,7 @@ int main(int argc, char **argv)
    /////////////////////////////////////////////////////////////////////////////////////
    
    sprintf(filename,"%s.csv",opprefix);
-   fp = fopen(filename,"w");
+   fp = fopen(filename,"a");
    if(fp==NULL) file_open_error(filename);
    fprintf(fp,"Volume,Hemisphere,HPF\n");
 
@@ -1834,11 +1834,13 @@ int main(int argc, char **argv)
    fclose(fp);
 
 #if 0
+#endif
   for(int i=0; i<nim; i++)
   {
-    int2 *roi1, *roi2, *roi, *roiPIL;
+    short *roi1, *roi2, *roi, *roiPIL;
     nifti_1_header hdr;
     DIM roidim;
+    DIM opdim;
     float cm[3];
     double C[6];  
     double L[3];
@@ -1846,61 +1848,146 @@ int main(int argc, char **argv)
     float T[16];
     float tmpT[16];
     float alpha;
+    short *im, *imHC;
 
+    // set dimensions of the output hippocampus image
+    set_dim(opdim, 59, 29, 45, 1.0, 1.0, 1.0);
+
+    // read roi1 
     sprintf(roifile,"%s/%s_LHROI1.nii",imagedir[i],imagefileprefix[i]);
     roi1 = (int2 *)read_nifti_image(roifile, &hdr);
 
+    // read roi2 
     sprintf(roifile,"%s/%s_LHROI2.nii",imagedir[i],imagefileprefix[i]);
     roi2 = (int2 *)read_nifti_image(roifile, &hdr);
    
     set_dim(roidim, hdr);
 
+    // combine roi1 and roi2
     roi = roi1;
     for(int v=0; v<roidim.nv; v++) { roi[v] = roi1[v] + roi2[v]; }
  
+    // transform compined roi to PIL space
     invT = inv4(TPIL[i]);
     roiPIL = resliceImage(roi, roidim, PILbraincloud_dim, invT, LIN);
     free(invT);
 
+    // find the center of mass (cm) and covrariance matrix (C) of 
+    // the roi in PIL space, then find it's first principal axis
     compute_cov(roiPIL, PILbraincloud_dim, cm, C);
     s3eigenval(C, L);
     s3eigenvec(C, L, UT);
+    // ensure that the first principal axis points posteriorly
     if(UT[0]<0.0) { UT[0]*=-1.0; UT[1]*=-1; UT[2]*=-1; }
 
+    // modify TPIL and store in T so that the hippocampus center
+    // of mass will be the center of the FOV
     tmpT[0]=1.0;  tmpT[1]=0.0;  tmpT[2]=0.0;  tmpT[3]=-cm[0];
     tmpT[4]=0.0;  tmpT[5]=1.0;  tmpT[6]=0.0;  tmpT[7]=-cm[1];
     tmpT[8]=0.0;  tmpT[9]=0.0;  tmpT[10]=1.0; tmpT[11]=-cm[2];
     tmpT[12]=0.0; tmpT[13]=0.0; tmpT[14]=0.0; tmpT[15]=1.0;
-
     multi(tmpT, 4, 4, TPIL[i], 4, 4, T);
 
+    // furture modify T so that the hippocampus first principal
+    // axis would be aligned with the x-axis
     if(UT[0]>1.0) UT[0]=1.0; // just in case to prevent acos from getting into trouble
     alpha = (float)acos((double)UT[0]);
     rotate(tmpT, alpha, 0, UT[2], -UT[1]);
     multi(tmpT, 4, 4, T, 4, 4, T);
 
-    printf("%lf %lf %lf\n",L[0],L[1],L[2]);
-    printf("%lf %lf %lf\n",UT[0],UT[1],UT[2]);
+    set_dim(PILbraincloud_hdr,opdim);
 
     free(roiPIL);
     invT = inv4(T);
-    roiPIL = resliceImage(roi, roidim, PILbraincloud_dim, invT, LIN);
+    roiPIL = resliceImage(roi, roidim, opdim, invT, LIN);
     free(invT);
 
-    sprintf(roifile,"%s/%s_ROI_HC.nii",imagedir[i],imagefileprefix[i]);
+    sprintf(roifile,"%s/%s_LHC_ROI.nii",imagedir[i],imagefileprefix[i]);
     save_nifti_image(roifile, roiPIL, &PILbraincloud_hdr);
 
-    short *im, *imHC;
     im = (int2 *)read_nifti_image(imagefile[i], &hdr);
     invT = inv4(T);
-    imHC = resliceImage(im, roidim, PILbraincloud_dim, invT, LIN);
+    imHC = resliceImage(im, roidim, opdim, invT, LIN);
     free(invT);
 
-    sprintf(roifile,"%s/%s_HC.nii",imagedir[i],imagefileprefix[i]);
+    sprintf(roifile,"%s/%s_LHC.nii",imagedir[i],imagefileprefix[i]);
     save_nifti_image(roifile, imHC, &PILbraincloud_hdr);
 
     free(im); free(imHC);
     free(roi1); free(roi2); free(roiPIL);
+    /////////////////////////////////////////////////////////////////////////
+    // Processing the right side
+    
+    // read roi1 
+    sprintf(roifile,"%s/%s_RHROI1.nii",imagedir[i],imagefileprefix[i]);
+    roi1 = (int2 *)read_nifti_image(roifile, &hdr);
+
+    // read roi2 
+    sprintf(roifile,"%s/%s_RHROI2.nii",imagedir[i],imagefileprefix[i]);
+    roi2 = (int2 *)read_nifti_image(roifile, &hdr);
+   
+    set_dim(roidim, hdr);
+
+    // combine roi1 and roi2
+    roi = roi1;
+    for(int v=0; v<roidim.nv; v++) { roi[v] = roi1[v] + roi2[v]; }
+ 
+    // transform compined roi to PIL space
+    invT = inv4(TPIL[i]);
+    roiPIL = resliceImage(roi, roidim, PILbraincloud_dim, invT, LIN);
+    free(invT);
+
+    // find the center of mass (cm) and covrariance matrix (C) of 
+    // the roi in PIL space, then find it's first principal axis
+    compute_cov(roiPIL, PILbraincloud_dim, cm, C);
+    s3eigenval(C, L);
+    s3eigenvec(C, L, UT);
+    // ensure that the first principal axis points posteriorly
+    if(UT[0]<0.0) { UT[0]*=-1.0; UT[1]*=-1; UT[2]*=-1; }
+
+    // modify TPIL and store in T so that the hippocampus center
+    // of mass will be the center of the FOV
+    tmpT[0]=1.0;  tmpT[1]=0.0;  tmpT[2]=0.0;  tmpT[3]=-cm[0];
+    tmpT[4]=0.0;  tmpT[5]=1.0;  tmpT[6]=0.0;  tmpT[7]=-cm[1];
+    tmpT[8]=0.0;  tmpT[9]=0.0;  tmpT[10]=1.0; tmpT[11]=-cm[2];
+    tmpT[12]=0.0; tmpT[13]=0.0; tmpT[14]=0.0; tmpT[15]=1.0;
+    multi(tmpT, 4, 4, TPIL[i], 4, 4, T);
+
+    // furture modify T so that the hippocampus first principal
+    // axis would be aligned with the x-axis
+    if(UT[0]>1.0) UT[0]=1.0; // just in case to prevent acos from getting into trouble
+    alpha = (float)acos((double)UT[0]);
+    rotate(tmpT, alpha, 0, UT[2], -UT[1]);
+    multi(tmpT, 4, 4, T, 4, 4, T);
+
+    set_dim(PILbraincloud_hdr,opdim);
+
+    // coverts T to PIR
+    T[8]*=-1.0; T[9]*=-1.0; T[10]*=-1.0; T[11]*=-1.0; 
+
+    // converts the header from PIL to PIR
+    PILbraincloud_hdr.pixdim[0] *= -1.0;
+
+    free(roiPIL);
+    invT = inv4(T);
+    roiPIL = resliceImage(roi, roidim, opdim, invT, LIN);
+    free(invT);
+
+    sprintf(roifile,"%s/%s_RHC_ROI.nii",imagedir[i],imagefileprefix[i]);
+    save_nifti_image(roifile, roiPIL, &PILbraincloud_hdr);
+
+    im = (int2 *)read_nifti_image(imagefile[i], &hdr);
+    invT = inv4(T);
+    imHC = resliceImage(im, roidim, opdim, invT, LIN);
+    free(invT);
+
+    sprintf(roifile,"%s/%s_RHC.nii",imagedir[i],imagefileprefix[i]);
+    save_nifti_image(roifile, imHC, &PILbraincloud_hdr);
+
+    // reverts the header to PIL 
+    PILbraincloud_hdr.pixdim[0] *= -1.0;
+
+    free(im); free(imHC);
+    free(roi1); free(roi2); free(roiPIL);
   }
-#endif
 }
