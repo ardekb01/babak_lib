@@ -840,11 +840,49 @@ void output_ppm(short *trg, short *cc_est, const char *prefix)
       }
    }
 
-//
-// The following two lines if enables saves the MSP image with a red CC border
-//
    if(opt_border)
    {
+      //////////////////////////////////////////////////////////////////////////////
+      // draws the boudning box in *cc.ppm image
+      //////////////////////////////////////////////////////////////////////////////
+      if(opt_box)
+      {
+         for(int i=UPPER_LEFT_i; i<=LOWER_RIGHT_i; i++)
+         {
+            for(int j=UPPER_LEFT_j; j<=UPPER_LEFT_j+1; j++)
+            {
+               R[j*NX+i] = 255;
+               G[j*NX+i] = 255;
+               B[j*NX+i] = 255;
+            }
+
+            for(int j=LOWER_RIGHT_j-1; j<=LOWER_RIGHT_j; j++)
+            {
+               R[j*NX+i] = 255;
+               G[j*NX+i] = 255;
+               B[j*NX+i] = 255;
+            }
+         }
+
+         for(int j=UPPER_LEFT_j; j<=LOWER_RIGHT_j; j++)
+         {
+            for(int i=UPPER_LEFT_i; i<=UPPER_LEFT_i+1; i++)
+            {
+               R[j*NX+i] = 255;
+               G[j*NX+i] = 255;
+               B[j*NX+i] = 255;
+            }
+
+            for(int i=LOWER_RIGHT_i-1; i<=LOWER_RIGHT_i; i++)
+            {
+               R[j*NX+i] = 255;
+               G[j*NX+i] = 255;
+               B[j*NX+i] = 255;
+            }
+         }
+      }
+      /////////////////////////////////////////////////////////////////////
+      
       sprintf(outputfile,"%s_cc_border.ppm",prefix);
       save_as_ppm((const char *)outputfile, NX, NY, R, G, B);
    }

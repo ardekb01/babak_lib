@@ -71,7 +71,6 @@ void findMSP(const char *filename, char *orient, const char *lmfile, float *Tmsp
    // At this point, Tmsp only makes the orientation PIL without MSP alignment
    PILtransform(orient, Tmsp);
 
-   // determine A,B,C
    if( lmfile[0]=='\0')
    {
       float cc; // a variable to store correlation coefficient values
@@ -204,6 +203,13 @@ void findMSP(const char *filename, char *orient, const char *lmfile, float *Tmsp
    {
       printf("Estimated mid-sagittal plane: (%7.3fx) + (%7.3fy) + (%7.3fz) = 1\n", A,B,C);
    }
+
+//{
+//FILE *fp;
+//fp = fopen("tt.mrx","w");
+//printMatrix(Tmsp, 4, 4, "ART acpcdetect tilt correction matrix:", fp);
+//fclose(fp);
+//}
 
    ///////////////////////////////////////////////////////////////////////////////////////////////
    delete im;
