@@ -383,9 +383,10 @@ int main(int argc, char **argv)
 {
    int n=0; // number of images from the top to be averaged if the input image is 4D
    int opt_s=NO;
+   int opt_threshold=NO;
 
    float scale=1.0;
-   float threshold=0.0;
+   float threshold;
 
    nifti_1_header hdr;
    int nx, ny, nz, nv;
@@ -400,6 +401,7 @@ int main(int argc, char **argv)
       {
          case 't':
             threshold = atof(optarg);
+            opt_threshold=YES;
             break;
          case 'S':
             scale = atof(optarg);
@@ -470,7 +472,7 @@ int main(int argc, char **argv)
       for(int v=0; v<nv; v++) avg_image[v] *= scale;
    }
 
-   if(threshold != 0.0)
+   if(opt_threshold)
    {
       printf("\nThreshold = %f\n", threshold);
       for(int v=0; v<nv; v++) 
