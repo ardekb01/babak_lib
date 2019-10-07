@@ -1601,6 +1601,8 @@ int main(int argc, char **argv)
       if( niftiFilename(imagefileprefix[0], imagefile[0])==0 ) { exit(0); }
       scalefactor[0]=1.0;
       getDirectoryName(imagefile[0], imagedir[0]);
+
+      if(opt_v) printf("Input image: %s\n", imagefile[0]);
    }
    else
    {
@@ -1619,15 +1621,15 @@ int main(int argc, char **argv)
          getDirectoryName(imagefile[i], imagedir[i]);
       }
       fclose(fp);
-   }
 
-   if(opt_v)
-   {
-      for(int i=0; i<nim; i++)
+      if(opt_v)
       {
-         printf("Input image %d: %s\n",i+1, imagefile[i]);
-         if(nim>1) printf("Transformation matrix: %s\n",mrxfile[i]);
-         if(nim>1) printf("Scale factor: %f\n\n",scalefactor[i]);
+         for(int i=0; i<nim; i++)
+         {
+            printf("Input image %d: %s\n",i+1, imagefile[i]);
+            printf("Transformation matrix: %s\n",mrxfile[i]);
+            printf("Scale factor: %f\n\n",scalefactor[i]);
+         }
       }
    }
    /////////////////////////////////////////////////////////////////////////////////////
@@ -1680,7 +1682,8 @@ int main(int argc, char **argv)
    /////////////////////////////////////////////////////////////////////////////////////
    // average input images after PIL transformation and store in aimpil
    /////////////////////////////////////////////////////////////////////////////////////
-   if(nim>1)
+   //if(nim>1)
+   if( not_magical_nifti(bfile,0)==1 )  // uses the output from ATRA
    {
       float *sum;
       short *tmp;

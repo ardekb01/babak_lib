@@ -8,7 +8,7 @@ INC= -I../include
 LIBS =  -L../lib -lbabak -lniftiio -lznz -lm -lz -lc -llapack -lblas
 LESSLIBS =  -L../lib -lbabak -lniftiio -lznz -lm -lz -lc
 
-all: libbabak.a brainwash 3dwarper acpcdetect applywarp3d scaleImage avgImage one_sample_t ivf unwarp2d cphdr reslice kaiba oi PILtransform atra art2fsl fsl2art yuki analyze2nii multiplyTransformation niftiinfo break4D gambling_vancova_setup medianImage threshold ccstats
+all: libbabak.a brainwash 3dwarper acpcdetect applywarp3d scaleImage avgImage one_sample_t ivf unwarp2d cphdr reslice kaiba oi PILtransform atra art2fsl fsl2art yuki analyze2nii multiplyTransformation niftiinfo break4D gambling_vancova_setup medianImage threshold ccstats applymask
 
 # because of functions in matrixops, linking the libbabak will possibly require lapack libs.
 
@@ -229,6 +229,10 @@ reslice: reslice.cxx
 	$(CC) $(CFLAGS) -o reslice reslice.cxx $(INC) $(LIBS)
 	mv reslice ${ARTHOME}/bin
 
+applymask: applymask.cxx
+	$(CC) $(CFLAGS) -o applymask applymask.cxx $(INC) $(LIBS)
+	mv applymask ${ARTHOME}/bin
+
 kaiba: kaiba.cxx
 	$(CC) $(CFLAGS) -o kaiba kaiba.cxx $(INC) $(LIBS)
 	mv kaiba ${ARTHOME}/bin
@@ -254,7 +258,8 @@ fsl2art: fsl2art.cxx
 	mv fsl2art ${ARTHOME}/bin
 
 yuki: yuki.cxx
-	$(MPICC) $(CFLAGS) -o yuki yuki.cxx $(INC) $(LIBS)
+#	$(MPICC) $(CFLAGS) -o yuki yuki.cxx $(INC) $(LIBS)
+	$(MPICC) $(CFLAGS) -o yuki yuki.cxx $(INC) -L${ARTHOME}/lib -lbabak -lniftiio -lznz -lm -lz -lc -llapack -lblas
 	mv yuki ${ARTHOME}/bin
 
 analyze2nii: analyze2nii.cxx
