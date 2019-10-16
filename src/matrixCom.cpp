@@ -216,6 +216,9 @@ int avgRow(float *X, int N, int P, float *avg)
 }
 
 // returns an N-vector in "avg" containing the average of the P columns of X
+// X: N*P matrix
+// avg: N vector
+// Averages X across the P dimension
 int avgCol(float *X, int N, int P, float *avg)
 {
    float *rowptr; // points to the begining of a row

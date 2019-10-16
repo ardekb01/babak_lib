@@ -8,7 +8,7 @@ INC= -I../include
 LIBS =  -L../lib -lbabak -lniftiio -lznz -lm -lz -lc -llapack -lblas
 LESSLIBS =  -L../lib -lbabak -lniftiio -lznz -lm -lz -lc
 
-all: libbabak.a brainwash 3dwarper acpcdetect applywarp3d scaleImage avgImage one_sample_t ivf unwarp2d cphdr reslice kaiba oi PILtransform atra art2fsl fsl2art yuki analyze2nii multiplyTransformation niftiinfo break4D gambling_vancova_setup medianImage threshold ccstats applymask
+all: libbabak.a brainwash 3dwarper acpcdetect applywarp3d scaleImage avgImage one_sample_t ivf unwarp2d cphdr reslice kaiba oi PILtransform atra aa art2fsl fsl2art yuki analyze2nii multiplyTransformation niftiinfo break4D gambling_vancova_setup medianImage threshold ccstats applymask inverseMatrix4 LMdetect
 
 # because of functions in matrixops, linking the libbabak will possibly require lapack libs.
 
@@ -233,6 +233,14 @@ applymask: applymask.cxx
 	$(CC) $(CFLAGS) -o applymask applymask.cxx $(INC) $(LIBS)
 	mv applymask ${ARTHOME}/bin
 
+inverseMatrix4: inverseMatrix4.cxx
+	$(CC) $(CFLAGS) -o inverseMatrix4 inverseMatrix4.cxx $(INC) $(LIBS)
+	mv inverseMatrix4 ${ARTHOME}/bin
+
+LMdetect: LMdetect.cxx
+	$(CC) $(CFLAGS) -o LMdetect LMdetect.cxx $(INC) $(LIBS)
+	mv LMdetect ${ARTHOME}/bin
+
 kaiba: kaiba.cxx
 	$(CC) $(CFLAGS) -o kaiba kaiba.cxx $(INC) $(LIBS)
 	mv kaiba ${ARTHOME}/bin
@@ -248,6 +256,10 @@ oi: oi.cxx
 atra: atra.cxx
 	$(CC) $(CFLAGS) -o atra atra.cxx $(INC) $(LIBS)
 	mv atra ${ARTHOME}/bin
+
+aa: aa.cxx
+	$(CC) $(CFLAGS) -o aa aa.cxx $(INC) $(LIBS)
+	mv aa ${ARTHOME}/bin
 
 art2fsl: art2fsl.cxx
 	$(CC) $(CFLAGS) -o art2fsl art2fsl.cxx $(INC) $(LIBS)
