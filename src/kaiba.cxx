@@ -1234,8 +1234,8 @@ void compute_hi(char *imfile, char *roifile, float4 &parenchymasize, int &voisiz
    float4 dx, dy, dz;
    int I_alpha;
    int nbin;
-   char roifileprefix[1024]=""; //baseline image prefix
-   char roifiledir[1024]=""; //baseline image prefix
+   char roifileprefix[256]=""; //baseline image prefix
+   char roifiledir[256]=""; //baseline image prefix
    char filename[1024]=""; //baseline image prefix
 
    if( niftiFilename(roifileprefix, roifile)==0 ) exit(1);
