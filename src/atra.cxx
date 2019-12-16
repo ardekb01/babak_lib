@@ -403,19 +403,19 @@ void atra(const char *imagelistfile, DIM output_dim, const char *outputOrientati
    {
       // freed before atra() returns
       imagefile[i] = (char *)calloc(DEFAULT_STRING_LENGTH, sizeof(char));
-      imagefile[i]='\0';
+      imagefile[i][0]='\0';
 
       // freed before atra() returns
       landmarksfile[i] = (char *)calloc(DEFAULT_STRING_LENGTH, sizeof(char));
-      landmarksfile[i]='\0';
+      landmarksfile[i][0]='\0';
 
       // freed before atra() returns
       imagefileprefix[i] = (char *)calloc(DEFAULT_STRING_LENGTH, sizeof(char));
-      imagefileprefix[i]='\0';
+      imagefileprefix[i][0]='\0';
 
       // freed before atra() returns
       imagedir[i] = (char *)calloc(DEFAULT_STRING_LENGTH, sizeof(char));
-      imagedir[i]='\0';
+      imagedir[i][0]='\0';
 
       // both variables freed before atra() returns
       TPIL[i] = (float *)calloc(16, sizeof(float));
