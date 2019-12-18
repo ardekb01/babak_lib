@@ -108,22 +108,20 @@ void mspPPM(SHORTIM im, int *ii, int *jj, int nl, const char *ppmfile)
   if(opt_png)
   {
     char *pngfilename;
-    char *cmnd;
+    char cmnd[DEFAULT_STRING_LENGTH];
     int L;
 
     L = strlen(ppmfile);
     pngfilename = (char *)calloc(L,sizeof(char));
-    cmnd = (char *)calloc(2*L+128,sizeof(char));  // 128 is plenty :)
     stpcpy(pngfilename, ppmfile);
     pngfilename[L-1]='g';
     pngfilename[L-2]='n';
     pngfilename[L-3]='p';
 
-    sprintf(cmnd,"pnmtopng %s > %s",ppmfile,pngfilename); 
+    snprintf(cmnd,sizeof(cmnd),"pnmtopng %s > %s",ppmfile,pngfilename); 
     if(opt_png) system(cmnd);
 
     free(pngfilename);
-    free(cmnd);
   }
 
   if(opt_ppm==NO) remove(ppmfile);
@@ -388,13 +386,13 @@ void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float
    int n; // number of landmarks
    float *LM;  // (3 x n) matrix of detected landmarks
    float *invT;
-   char filename[1024];
+   char filename[DEFAULT_STRING_LENGTH];
    SHORTIM subimPIL; 
    nifti_1_header PILbraincloud_hdr;
    // subfile without the directory structure and extension
-   char subfile_prefix[1024]; 
-   char imagedir[1024]; 
-   char modelfile[1024]="";
+   char subfile_prefix[DEFAULT_STRING_LENGTH]; 
+   char imagedir[DEFAULT_STRING_LENGTH]; 
+   char modelfile[DEFAULT_STRING_LENGTH]="";
 
    if( niftiFilename(subfile_prefix, subfile)==0 ) exit(0);
    getDirectoryName(subfile, imagedir);
@@ -426,7 +424,7 @@ void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float
 
    /////////////////////////////////////////////////////////
    // Reslice subim to PIL space 
-   sprintf(filename,"%s/PILbrain.nii",ARTHOME);
+   snprintf(filename,sizeof(filename),"%s/PILbrain.nii",ARTHOME);
    PILbraincloud_hdr=read_NIFTI_hdr(filename);
 
    set_dim(subimPIL, PILbraincloud_hdr);
@@ -435,7 +433,7 @@ void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float
    free(invT);
 
    // Detect 8 landmarks on the MSP on the subimPIL volume
-   sprintf(modelfile,"%s/orion.mdl",ARTHOME);
+   snprintf(modelfile,sizeof(modelfile),"%s/orion.mdl",ARTHOME);
 
    LM=detect_landmarks(subimPIL, modelfile, n);
 
@@ -448,7 +446,7 @@ void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float
       FILE *fp;
       float landmark[4];
       invT = inv4(TPIL0);
-      sprintf(filename,"%s/%s_orion.txt",imagedir,subfile_prefix);
+      snprintf(filename,sizeof(filename),"%s/%s_orion.txt",imagedir,subfile_prefix);
       fp=fopen(filename,"w");
       if(fp==NULL) file_open_error(filename);
       for(int i=0; i<n; i++)
@@ -536,7 +534,7 @@ void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float
          lmy[i]=(int)( lm[1] + 0.5 );
       }
 
-      sprintf(filename,"%s/%s_orion.ppm",imagedir, subfile_prefix);
+      snprintf(filename,sizeof(filename),"%s/%s_orion.ppm",imagedir, subfile_prefix);
       mspPPM(subimPIL, lmx, lmy, n, filename);
 
       delete lmx;
@@ -568,7 +566,7 @@ void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float
   if(SAVE_MRX_FLAG == 1)
   {
     FILE *fp;
-    sprintf(filename,"%s/%s_PIL.mrx",imagedir, subfile_prefix);
+    snprintf(filename,sizeof(filename),"%s/%s_PIL.mrx",imagedir, subfile_prefix);
     fp=fopen(filename,"w");
     if(fp==NULL) file_open_error(filename);
     printMatrix(TPIL,4,4,"",fp);

@@ -313,7 +313,7 @@ void save_nifti_image(const char *filename, char *im, nifti_1_header *hdr)
 
    hdr->dim[0]=3;
    hdr->sizeof_hdr=348;
-   sprintf(hdr->magic,"n+1");
+   strcpy(hdr->magic,"n+1");
    hdr->vox_offset=352.0;
    extender.extension[0]=0;
 
@@ -350,7 +350,7 @@ void save_nifti_image(const char *filename, unsigned char *im, nifti_1_header *h
 
    hdr->dim[0]=3;
    hdr->sizeof_hdr=348;
-   sprintf(hdr->magic,"n+1");
+   strcpy(hdr->magic,"n+1");
    hdr->datatype=DT_UNSIGNED_CHAR;
    hdr->bitpix=8;
    hdr->vox_offset=352.0;
@@ -376,7 +376,7 @@ void save_nifti_image(const char *filename, short *im, nifti_1_header *hdr)
    }
    
    hdr->sizeof_hdr=348;
-   sprintf(hdr->magic,"n+1");
+   strcpy(hdr->magic,"n+1");
    hdr->datatype=DT_SIGNED_SHORT;
    hdr->bitpix=16;
    hdr->vox_offset=352.0;
@@ -403,7 +403,7 @@ void save_nifti_image(const char *filename, float *im, nifti_1_header *hdr)
    
    hdr->dim[0]=3;
    hdr->sizeof_hdr=348;
-   sprintf(hdr->magic,"n+1");
+   strcpy(hdr->magic,"n+1");
    hdr->datatype=DT_FLOAT;
    hdr->bitpix=32;
    hdr->vox_offset=352.0;

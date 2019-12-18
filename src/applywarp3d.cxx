@@ -30,9 +30,6 @@ float *Xwarp, float *Ywarp, float *Zwarp, float *T, float *Xw2d, float *Yw2d, fl
 short *computeReslicedImage(short *im1, nifti_1_header hdr1, nifti_1_header hdr2, nifti_1_header hdr3,
 float *Xwarp, float *Ywarp, float *Zwarp, float *T, float *Xw2d, float *Yw2d, float *Zw2d);
 
-static float v1,v2,v3,v4;
-static float w1,w2;
-
 extern float *resizeXYZ(float *image1,
 int nx1, int ny1, int nz1, float dx1, float dy1, float dz1,
 int nx2, int ny2, int nz2, float dx2, float dy2, float dz2);
@@ -84,22 +81,14 @@ int main(int argc, char **argv)
    nifti_1_header trg_hdr;
    int N;
 
-   char compressionCode;
-
-   int mx,my,mz;
-
 	FILE *fp;
 
 	// original target and object files stored by the 3dwarper program
-	char orig_objfile[1024];
-	char orig_trgfile[1024];
    char prefix[1024]; // output file prefix
 
-	int Onx,Ony,Onz;
-	int Tnx,Tny,Tnz,Tnv;
+	int Tnx=0,Tny=0,Tnz=0,Tnv=0;
 
-	float Odx,Ody,Odz;
-	float Tdx,Tdy,Tdz;
+	float Tdx=0.0,Tdy=0.0,Tdz=0.0;
 
 	float *Xwarp=NULL;
 	float *Ywarp=NULL;
@@ -116,7 +105,7 @@ int main(int argc, char **argv)
 
 	char w2dfile[1024];
 
-	char *op_im;
+	char *op_im=NULL;
 
 	dum = (char *)malloc(1024);
 
@@ -521,8 +510,8 @@ unsigned char *computeReslicedImage(unsigned char *im1, nifti_1_header hdr1, nif
    unsigned char *im2;
    float xc1, yc1, zc1;
    float xc2, yc2, zc2;
-   float *beta, del;
-   float *c;
+   float *beta=NULL, del;
+   float *c=NULL;
 
    nx1 = hdr1.dim[1]; ny1 = hdr1.dim[2]; nz1 = hdr1.dim[3];
    nx2 = hdr2.dim[1]; ny2 = hdr2.dim[2]; nz2 = hdr2.dim[3];
@@ -596,8 +585,8 @@ short *computeReslicedImage(short *im1, nifti_1_header hdr1, nifti_1_header hdr2
    short *im2;
    float xc1, yc1, zc1;
    float xc2, yc2, zc2;
-   float *beta, del;
-   float *c;
+   float *beta=NULL, del;
+   float *c=NULL;
 
    nx1 = hdr1.dim[1]; ny1 = hdr1.dim[2]; nz1 = hdr1.dim[3];
    nx2 = hdr2.dim[1]; ny2 = hdr2.dim[2]; nz2 = hdr2.dim[3];
@@ -683,8 +672,8 @@ float *computeReslicedImage(float *im1, nifti_1_header hdr1, nifti_1_header hdr2
    float *im2;
    float xc1, yc1, zc1;
    float xc2, yc2, zc2;
-   float *beta, del;
-   float *c;
+   float *beta=NULL, del;
+   float *c=NULL;
 
    nx1 = hdr1.dim[1]; ny1 = hdr1.dim[2]; nz1 = hdr1.dim[3];
    nx2 = hdr2.dim[1]; ny2 = hdr2.dim[2]; nz2 = hdr2.dim[3];
@@ -764,8 +753,8 @@ float *Xwarp, float *Ywarp, float *Zwarp, float *T, float *Xw2d, float *Yw2d, fl
    float xc3, yc3, zc3;
    float wx,wy,wz;
 
-	float *beta, del;
-	float *c1,*c2,*c3, *c4;
+	float *beta=NULL, del;
+	float *c1=NULL,*c2=NULL,*c3=NULL, *c4=NULL;
 
    nx1 = hdr1.dim[1]; ny1 = hdr1.dim[2]; nz1 = hdr1.dim[3];
    nx2 = hdr2.dim[1]; ny2 = hdr2.dim[2]; nz2 = hdr2.dim[3];

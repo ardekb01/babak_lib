@@ -402,12 +402,11 @@ float *AC, float *PC, float *RP, DIM HR, DIM Orig, short *volOrig, float *Tmsp)
 		}
 	}
    
-   char dirname[512]; // name of the directory only
-   char fullpath[512]; // directory + filename
+   char dirname[DEFAULT_STRING_LENGTH]; // name of the directory only
+   char fullpath[DEFAULT_STRING_LENGTH]; // directory + filename
    getDirectoryName(imagefilename, dirname);
    niftiFilename(filename,imagefilename);
-   sprintf(fullpath,"%s/%s_ACPC_sagittal.ppm",dirname,filename);
-   //sprintf(fullpath,"%s_ACPC_sagittal.ppm",filename);
+   snprintf(fullpath,sizeof(fullpath),"%s/%s_ACPC_sagittal.ppm",dirname,filename);
 
    if(opt_ppm || opt_png)
    {
@@ -468,8 +467,7 @@ float *AC, float *PC, float *RP, DIM HR, DIM Orig, short *volOrig, float *Tmsp)
 
 
    niftiFilename(filename,imagefilename);
-   sprintf(fullpath,"%s/%s_ACPC_axial.ppm",dirname,filename);
-   //sprintf(fullpath,"%s_ACPC_axial.ppm",filename);
+   snprintf(fullpath,sizeof(fullpath),"%s/%s_ACPC_axial.ppm",dirname,filename);
 
    if(opt_ppm || opt_png)
    {
@@ -514,11 +512,11 @@ void saveACPClocation(const char *imagefilename, float *Tmsp, DIM Orig, float *A
       printf("\tAC-PC distance = %6.3f mm\n",acpc_distance);
    }
 
-   char dirname[512]; // name of the directory only
-   char fullpath[512]; // directory + filename
+   char dirname[DEFAULT_STRING_LENGTH]; // name of the directory only
+   char fullpath[DEFAULT_STRING_LENGTH]; // directory + filename
    getDirectoryName(imagefilename, dirname);
    niftiFilename(filename,imagefilename);
-   sprintf(fullpath,"%s/%s_ACPC.txt",dirname, filename);
+   snprintf(fullpath,sizeof(fullpath),"%s/%s_ACPC.txt",dirname, filename);
 
    if(opt_txt)
    {
@@ -679,16 +677,16 @@ void updateTmsp(const char *imagefilename, float *Tmsp, float *RP, float *AC, fl
    {
       float n[3]; // unit normal to the MSP in the original image xyz coordinate system
       float d;
-      char filename[512];
+      char filename[DEFAULT_STRING_LENGTH];
       FILE *fp;
 
       compute_MSP_parameters_from_Tmsp(Tmsp, n, &d);
 
-      char dirname[512]; // name of the directory only
-      char fullpath[512]; // directory + filename
+      char dirname[DEFAULT_STRING_LENGTH]; // name of the directory only
+      char fullpath[DEFAULT_STRING_LENGTH]; // directory + filename
       getDirectoryName(imagefilename, dirname);
       niftiFilename(filename,imagefilename);
-      sprintf(fullpath,"%s/%s_ACPC.txt",dirname, filename);
+      snprintf(fullpath,sizeof(fullpath),"%s/%s_ACPC.txt",dirname, filename);
 
       if(opt_txt)
       {
@@ -1316,7 +1314,7 @@ short *thresholdImageOtsu(short *im, int nv, int *nbv)
 int detect_AC_PC_MSP(const char *imagefilename, char *orientation, char *modelfile,
 float *AC, float *PC, float *RP, float *Tmsp, int opt_v, int opt_T2)
 {
-   char modelfilepath[1024];
+   char modelfilepath[DEFAULT_STRING_LENGTH];
 
    // (x, y, z) image orientation vectors (row, column, and slice orientation)
    float xvec[3], yvec[3], zvec[3];
@@ -1378,11 +1376,11 @@ float *AC, float *PC, float *RP, float *Tmsp, int opt_v, int opt_T2)
 
    if(modelfile[0]=='\0')
    {
-      sprintf(modelfilepath,"%s/T1acpc.mdl",ARTHOME);
+      snprintf(modelfilepath,sizeof(modelfilepath),"%s/T1acpc.mdl",ARTHOME);
    }
    else
    {
-      sprintf(modelfilepath,"%s/%s",ARTHOME,modelfile);
+      snprintf(modelfilepath,sizeof(modelfilepath),"%s/%s",ARTHOME,modelfile);
    }
 
    {
@@ -2272,7 +2270,7 @@ int save_as_ppm(const char *filename, int nx, int ny, unsigned char *R, unsigned
   if(opt_png)
   {
     char *pngfilename;
-    char *cmnd;
+    char cmnd[DEFAULT_STRING_LENGTH];
     int L;
 
     L = strlen(filename);
@@ -2281,17 +2279,15 @@ int save_as_ppm(const char *filename, int nx, int ny, unsigned char *R, unsigned
     // as a result free(pngfilename) was failing
     pngfilename = (char *)calloc(L+1,sizeof(char)); 
 
-    cmnd = (char *)calloc(2*L+128,sizeof(char));  // 128 is plenty :)
     stpcpy(pngfilename, filename);
     pngfilename[L-1]='g';
     pngfilename[L-2]='n';
     pngfilename[L-3]='p';
 
-    sprintf(cmnd,"pnmtopng %s > %s",filename,pngfilename); 
+    snprintf(cmnd,sizeof(cmnd),"pnmtopng %s > %s",filename,pngfilename); 
     if(opt_png) system(cmnd);
 
     free(pngfilename);
-    free(cmnd);
   }
 
   if(opt_ppm == NO ) remove(filename);

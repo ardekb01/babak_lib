@@ -180,7 +180,6 @@ int main(int argc, char **argv)
    if(hdr.qform_code > 0 )
    {
       mat44 R;
-      float dum;
 
       R = nifti_quatern_to_mat44(hdr.quatern_b, hdr.quatern_c, hdr.quatern_d, hdr.qoffset_x, hdr.qoffset_y, 
       hdr.qoffset_z, hdr.pixdim[1], hdr.pixdim[2], hdr.pixdim[3], hdr.pixdim[0]);

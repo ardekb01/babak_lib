@@ -132,13 +132,12 @@ short *computeReslicedImage2(short *im1, DIM dim1, DIM dim2, float *Xwarp, float
 {
  	float  x,y,z;   
 	int q;
-	int np1;
 	short *im2;
 	float xc1, yc1, zc1;
 	float xc2, yc2, zc2;
 
-	float *beta, del;
-	float *c;
+	float *beta=NULL, del;
+	float *c=NULL;
 
 	if(opt_cubicspline)
 	{
@@ -962,7 +961,7 @@ int main(int argc, char **argv)
    ////////////////////////////////////////////////////////////////////////////////////////////
    // save (Xout, Yout, Zout)
    {
-      float min, max, s=0.0;
+      float min=0.0, max=0.0, s=0.0;
       short *sdum;
       nifti1_extender extender;
       FILE *fp;

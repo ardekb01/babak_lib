@@ -2,13 +2,14 @@
 # for makhmal
 MPICC = /usr/local/bin/mpic++ -Wall
 
-CFLAGS = -O3
+CFLAGS = -O3  -Wall -Wextra -fstrict-overflow -fstack-protector-all
+
 CC = g++
 INC= -I../include
 LIBS =  -L../lib -lbabak -lniftiio -lznz -lm -lz -lc -llapack -lblas
 LESSLIBS =  -L../lib -lbabak -lniftiio -lznz -lm -lz -lc
 
-all: libbabak.a brainwash 3dwarper acpcdetect applywarp3d scaleImage avgImage one_sample_t ivf unwarp2d cphdr reslice kaiba oi PILtransform atra aa art2fsl fsl2art yuki analyze2nii multiplyTransformation niftiinfo break4D gambling_vancova_setup medianImage threshold ccstats applymask inverseMatrix4 LMdetect
+all: libbabak.a brainwash 3dwarper acpcdetect applywarp3d scaleImage avgImage one_sample_t ivf unwarp2d cphdr reslice kaiba oi PILtransform atra art2fsl fsl2art yuki analyze2nii multiplyTransformation niftiinfo break4D gambling_vancova_setup medianImage threshold ccstats applymask inverseMatrix4 LMdetect
 
 # because of functions in matrixops, linking the libbabak will possibly require lapack libs.
 
@@ -256,10 +257,6 @@ oi: oi.cxx
 atra: atra.cxx
 	$(CC) $(CFLAGS) -o atra atra.cxx $(INC) $(LIBS)
 	mv atra ${ARTHOME}/bin
-
-aa: aa.cxx
-	$(CC) $(CFLAGS) -o aa aa.cxx $(INC) $(LIBS)
-	mv aa ${ARTHOME}/bin
 
 art2fsl: art2fsl.cxx
 	$(CC) $(CFLAGS) -o art2fsl art2fsl.cxx $(INC) $(LIBS)

@@ -24,13 +24,13 @@
 void hist1D_plot(const char *name, int n, int *bin, float *data1, float *data2)
 {
    FILE *fp;
-   char filename[1024]="";  // a generic filename for reading/writing stuff
-   char command[1024]="";   // a generic command for running in the bash
+   char filename[DEFAULT_STRING_LENGTH]="";  // a generic filename for reading/writing stuff
+   char command[DEFAULT_STRING_LENGTH]="";   // a generic command for running in the bash
 
    //////////////////////////////////////////////////////////////////////
    //Writing the data file
    {
-      sprintf(filename,"%s.dat",name);
+      snprintf(filename,sizeof(filename),"%s.dat",name);
       fp = fopen(filename,"w");
       if(fp==NULL) file_open_error(filename);
 
@@ -43,7 +43,7 @@ void hist1D_plot(const char *name, int n, int *bin, float *data1, float *data2)
    //////////////////////////////////////////////////////////////////////
    //Writing the plot file
    {
-      sprintf(filename,"%s.plt",name);
+      snprintf(filename,sizeof(filename),"%s.plt",name);
       fp = fopen(filename,"w");
       if(fp==NULL) file_open_error(filename);
 
@@ -60,7 +60,7 @@ void hist1D_plot(const char *name, int n, int *bin, float *data1, float *data2)
    }    
 
    //Running the gnuplot to generate the .png file.
-   sprintf(command,"gnuplot %s.plt",name);
+   snprintf(command,sizeof(command),"gnuplot %s.plt",name);
    system(command);
 }
 
@@ -71,13 +71,13 @@ void hist1D_plot(const char *name, int n, int *bin, float *data1, float *data2)
 void hist1D_plot(const char *name, int n, int *bin, float *data1, float *data2, int max_x)
 {
    FILE *fp;
-   char filename[1024]="";  // a generic filename for reading/writing stuff
-   char command[1024]="";   // a generic command for running in the bash
+   char filename[DEFAULT_STRING_LENGTH]="";  // a generic filename for reading/writing stuff
+   char command[DEFAULT_STRING_LENGTH]="";   // a generic command for running in the bash
 
    //////////////////////////////////////////////////////////////////////
    //Writing the data file
    {
-      sprintf(filename,"%s.dat",name);
+      snprintf(filename,sizeof(filename),"%s.dat",name);
       fp = fopen(filename,"w");
       if(fp==NULL) file_open_error(filename);
 
@@ -90,7 +90,7 @@ void hist1D_plot(const char *name, int n, int *bin, float *data1, float *data2, 
    //////////////////////////////////////////////////////////////////////
    //Writing the plot file
    {
-      sprintf(filename,"%s.plt",name);
+      snprintf(filename,sizeof(filename),"%s.plt",name);
       fp = fopen(filename,"w");
       if(fp==NULL) file_open_error(filename);
 
@@ -110,7 +110,7 @@ void hist1D_plot(const char *name, int n, int *bin, float *data1, float *data2, 
    }    
 
    //Running the gnuplot to generate the .png file.
-   sprintf(command,"gnuplot %s.plt",name);
+   snprintf(command,sizeof(command),"gnuplot %s.plt",name);
    system(command);
 }
 
@@ -119,13 +119,13 @@ void hist1D_plot(const char *name, int n, int *bin, float *data1, float *data2, 
 void hist1D_plot(const char *name, int n, int *bin, float *data1, float *data2, int max_x, int thld)
 {
    FILE *fp;
-   char filename[1024]="";  // a generic filename for reading/writing stuff
-   char command[1024]="";   // a generic command for running in the bash
+   char filename[DEFAULT_STRING_LENGTH]="";  // a generic filename for reading/writing stuff
+   char command[DEFAULT_STRING_LENGTH]="";   // a generic command for running in the bash
 
    //////////////////////////////////////////////////////////////////////
    //Writing the data file
    {
-      sprintf(filename,"%s.dat",name);
+      snprintf(filename,sizeof(filename),"%s.dat",name);
       fp = fopen(filename,"w");
       if(fp==NULL) file_open_error(filename);
 
@@ -138,7 +138,7 @@ void hist1D_plot(const char *name, int n, int *bin, float *data1, float *data2, 
    //////////////////////////////////////////////////////////////////////
    //Writing the plot file
    {
-      sprintf(filename,"%s.plt",name);
+      snprintf(filename,sizeof(filename),"%s.plt",name);
       fp = fopen(filename,"w");
       if(fp==NULL) file_open_error(filename);
 
@@ -161,12 +161,12 @@ void hist1D_plot(const char *name, int n, int *bin, float *data1, float *data2, 
    }    
 
    //Running the gnuplot to generate the .png file.
-   sprintf(command,"gnuplot %s.plt",name);
+   snprintf(command,sizeof(command),"gnuplot %s.plt",name);
    system(command);
 
-   // added by back to remove these files afterwards
-   sprintf(filename,"%s.dat",name);
+   // added back to remove these files afterwards
+   snprintf(filename,sizeof(filename),"%s.dat",name);
    //remove(filename);
-   sprintf(filename,"%s.plt",name);
+   snprintf(filename,sizeof(filename),"%s.plt",name);
    //remove(filename);
 }

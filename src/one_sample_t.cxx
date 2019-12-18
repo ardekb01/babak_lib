@@ -42,7 +42,7 @@ float *avg(int N, char **imagefile)
 {
    nifti_1_header hdr;
 
-   int nx, ny, nz, nt;
+   int nx, ny, nz;
    float dx, dy, dz;
    int nv;
    int type;

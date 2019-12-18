@@ -295,7 +295,7 @@ void VOLUME::readsiemensvision(char *pathname)
 	char patientname[26];     // constant - patient name in the input file
 	char patientname2[26];    // variable - patient names
 	char dirname[128];        // directory where files are looked for
-	char filename[512];       // variable - full path of files
+	char filename[DEFAULT_STRING_LENGTH];       // variable - full path of files
 	char filenames[1024][512]; // names of the files that pass the test
 
 	double slicethickness;
@@ -454,7 +454,7 @@ np=nx*ny;
 	while( (dir=readdir(dp)) != NULL )
 	{
 		// create the full path of the file to be examined
-		sprintf(filename,"%s/%s",dirname,dir->d_name);
+		snprintf(filename,sizeof(filename),"%s/%s",dirname,dir->d_name);
 
 		// ensure that the file is readable
 		if( access(filename,R_OK) == -1 ) continue;
@@ -503,7 +503,7 @@ np=nx*ny;
 		if(imagenumber>imagenumbermax) imagenumbermax=imagenumber;
 
 		imagenumbers[numberoffiles]=imagenumber;
-		sprintf(filenames[numberoffiles++],"%s",filename);
+		snprintf(filenames[numberoffiles++],512,"%s",filename);
 
 	};
 
@@ -1067,7 +1067,7 @@ void VOLUME::read_ge(char *pathname)
 	char patientname[26];     // constant - patient name in the input file
 	char patientname2[26];    // variable - patient names
 	char dirname[128];        // directory where files are looked for
-	char filename[512];       // variable - full path of files
+	char filename[DEFAULT_STRING_LENGTH];       // variable - full path of files
 	char filenames[1024][512]; // names of the files that pass the test
 
 	double ddum;
@@ -1239,7 +1239,7 @@ void VOLUME::read_ge(char *pathname)
 	while( (dir=readdir(dp)) != NULL )
 	{
 		// create the full path of the file to be examined
-		sprintf(filename,"%s/%s",dirname,dir->d_name);
+		snprintf(filename,sizeof(filename),"%s/%s",dirname,dir->d_name);
 
 		// ensure that the file is readable
 		if( access(filename,R_OK) == -1 ) continue;
@@ -1284,7 +1284,7 @@ void VOLUME::read_ge(char *pathname)
 
 		fclose(fp);
 
-		sprintf(filenames[numberoffiles++],"%s",filename);
+		snprintf(filenames[numberoffiles++],512,"%s",filename);
 	};
 
 	// close the directory stream and free the structure associated with dp
@@ -1429,7 +1429,7 @@ void VOLUME::read_gelx(char *pathname)
 	char patientname[26];     // constant - patient name in the input file
 	char patientname2[26];    // variable - patient names
 	char dirname[128];        // directory where files are looked for
-	char filename[512];       // variable - full path of files
+	char filename[DEFAULT_STRING_LENGTH];       // variable - full path of files
 	char filenames[1024][512]; // names of the files that pass the test
 
 	double ddum;
@@ -1500,10 +1500,10 @@ void VOLUME::read_gelx(char *pathname)
 
 	np = nx*ny;
 
-	sprintf(patientID,"%s",exam_hdr.patid);
+	snprintf(patientID,sizeof(patientID),"%s",exam_hdr.patid);
 	printf("Patient ID: %s\n",patientID);
 
-	sprintf(patientname,"%s",exam_hdr.patname);
+	snprintf(patientname,sizeof(patientname),"%s",exam_hdr.patname);
 	printf("Patient Name: %s\n",patientname);
 
 	echotime = image_hdr.te;
@@ -1579,7 +1579,7 @@ void VOLUME::read_gelx(char *pathname)
 	while( (dir=readdir(dp)) != NULL )
 	{
 		// create the full path of the file to be examined
-		sprintf(filename,"%s/%s",dirname,dir->d_name);
+		snprintf(filename,sizeof(filename),"%s/%s",dirname,dir->d_name);
 
 		// ensure that the file is readable
 		if( access(filename,R_OK) == -1 ) continue;
@@ -1606,10 +1606,10 @@ void VOLUME::read_gelx(char *pathname)
 		fseek(fp,116+1040+1028,SEEK_SET);
 		if( fread(&image_hdr, sizeof(MRIMAGEDATATYPE), 1, fp)!= 1)   { fclose(fp); continue; }
 
-		sprintf(patientID2,"%s",exam_hdr.patid);
+		snprintf(patientID2,sizeof(patientID2),"%s",exam_hdr.patid);
 		if( strcmp(patientID, patientID2) != 0 ) { fclose(fp); continue; }
 		        
-		sprintf(patientname2,"%s",exam_hdr.patname);
+		snprintf(patientname2,sizeof(patientname2),"%s",exam_hdr.patname);
 		if( strcmp(patientname, patientname2) != 0 ) { fclose(fp); continue; }
 
 		seriesnumber2=series_hdr.se_no;
@@ -1622,7 +1622,7 @@ void VOLUME::read_gelx(char *pathname)
 
 		fclose(fp);
 
-		sprintf(filenames[numberoffiles++],"%s",filename);
+		snprintf(filenames[numberoffiles++],512,"%s",filename);
 	};
 
 	// close the directory stream and free the structure associated with dp

@@ -69,6 +69,12 @@ int main(int argc, char **argv)
    DIM sub_dim, trg_dim;
    FILE *fp;
 
+   //initialization to avoid complaining from the compiler
+   sub_dim.dx=sub_dim.dy=sub_dim.dz=0.0;
+   trg_dim.dx=trg_dim.dy=trg_dim.dz=0.0;
+   sub_dim.nx=sub_dim.ny=sub_dim.nz=0;
+   trg_dim.nx=trg_dim.ny=trg_dim.nz=0;
+
    if(argc==1) print_help_and_exit();
 
    while( (opt=getoption(argc, argv, options)) != -1)

@@ -50,24 +50,10 @@ int main(int argc, char **argv)
 
   nifti_1_header hdr;
 
-	int ncc, ntcc;
-
 	char inputfile[512];
 
-	char dfFile[512];
-	short *dfmap;
-	double df;
-
-	int nx, ny, nz, np, nv;
+	int nx, ny, nz, nv;
 	float dx, dy, dz;
-
-	FILE *logFilePtr;
-
-	int count=0;
-	char logFile[1024];
-
-	char prefix[1024];
-	double alpha, alpha2;
 
   while( (opt=getoption(argc, argv, options)) != -1)
   {

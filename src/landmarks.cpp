@@ -89,27 +89,27 @@ void makePPM(SHORTIM im, int *lm, const char *ppmfile)
    delete imgTemp;
 }
 
-float detect_lm(SPH &searchsph, SPH &testsph, SHORTIM testim, int lmcm[], SPH &refsph, int lm[])
+float detect_lm(SPH &searchsph, SPH &testsph, SHORTIM testim, int cntr[], SPH &refsph, int lm[])
 {
    //float ccmax=-1.0;
    float ccmax=0.0;
 
-   lm[0]=lmcm[0];
-   lm[1]=lmcm[1];
-   lm[2]=lmcm[2];
+   lm[0]=cntr[0];
+   lm[1]=cntr[1];
+   lm[2]=cntr[2];
 
    for(int n=0; n<searchsph.n; n++)
    {
-      testsph.set(testim, lmcm[0]+searchsph.i[n], lmcm[1]+searchsph.j[n], lmcm[2]+searchsph.k[n]);
-      //standardize(testsph.v, testsph.n);
-      standardize(testsph.v, refsph.v, testsph.n);  //refsph is used as a mask
+      testsph.set(testim, cntr[0]+searchsph.i[n], cntr[1]+searchsph.j[n], cntr[2]+searchsph.k[n]);
+      standardize(testsph.v, testsph.n);
+      //standardize(testsph.v, refsph.v, testsph.n);  //refsph is used as a mask
       searchsph.v[n] = dot(testsph.v, refsph.v, testsph.n);
       if( searchsph.v[n] > ccmax )
       {
          ccmax = searchsph.v[n];
-         lm[0] = lmcm[0]+searchsph.i[n];
-         lm[1] = lmcm[1]+searchsph.j[n];
-         lm[2] = lmcm[2]+searchsph.k[n];
+         lm[0] = cntr[0]+searchsph.i[n];
+         lm[1] = cntr[1]+searchsph.j[n];
+         lm[2] = cntr[2]+searchsph.k[n];
       }
    }
 
@@ -119,8 +119,8 @@ float detect_lm(SPH &searchsph, SPH &testsph, SHORTIM testim, int lmcm[], SPH &r
 //nl: number of landmarks (returned)
 float *detect_landmarks(const char *subfile, const char *mdlfile, int &nl, char ppmflg)
 {
-   char prefix[1024];
-   char filename[1024];
+   char prefix[DEFAULT_STRING_LENGTH];
+   char filename[DEFAULT_STRING_LENGTH];
    SHORTIM subim; 
    nifti_1_header hdr;
    FILE *fpi;
@@ -170,7 +170,7 @@ float *detect_landmarks(const char *subfile, const char *mdlfile, int &nl, char 
 
       if(ppmflg)
       {
-         sprintf(filename,"%s_lm_%03d.ppm",prefix,l);
+         snprintf(filename,sizeof(filename),"%s_lm_%03d.ppm",prefix,l);
          makePPM(subim, lm, filename);
       }
    }

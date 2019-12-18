@@ -301,8 +301,8 @@ int main(int argc, char **argv)
    nifti1_extender extender;
 
    char filename2[1024];
-   int nx2, ny2, nz2, np2, nv2;
-   float dx2, dy2, dz2;
+   int nx2=0, ny2=0, nz2=0, np2=0, nv2=0;
+   float dx2=0.0, dy2=0.0, dz2=0.0;
    float *Xwarp2, *Ywarp2, *Zwarp2;
    float x2, y2, z2;
    float xc2, yc2, zc2;
@@ -559,7 +559,7 @@ int main(int argc, char **argv)
 
    ////////////////////////////////////////////////////////////////////////////////
    {
-      float min, max, s=0.0;
+      float min=0.0, max=0.0, s=0.0;
 
       minmax(Xwarp2, nv2, min, max);
       if(max>s) s=max;

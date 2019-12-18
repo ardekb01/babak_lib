@@ -121,13 +121,12 @@ short *computeReslicedImage2(short *im1, DIM dim1, DIM dim2, float *Xwarp, float
 {
  	float  x,y,z;   
 	int q;
-	int np1;
 	short *im2;
 	float xc1, yc1, zc1;
 	float xc2, yc2, zc2;
 
-	float *beta, del;
-	float *c;
+	float *beta=NULL, del;
+	float *c=NULL;
 
 	if(opt_cubicspline)
 	{
@@ -950,7 +949,7 @@ int main(int argc, char **argv)
    char atlprefix[1024]="";
 
    // original atlas and subject images loaded 
-   short *sub, *atl, *atl_msk;
+   short *sub, *atl;
 
    // NIFTI headers for subject and atlas images
    nifti_1_header subHdr, atlHdr;
@@ -1284,7 +1283,6 @@ int main(int argc, char **argv)
       short *atlmsk;
       float A[16];
       short *tmp;
-      float *Xout=NULL, *Yout=NULL, *Zout=NULL; 
 
       a = atlas_indx[natlas-2-i];
 

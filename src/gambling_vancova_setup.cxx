@@ -200,7 +200,7 @@ void checkDataMaskCode(char *dataMaskCode, int nc)
 	if(opt_v) printf("dataMaskCode = \"%s\"\n",dataMaskCode);
 	fprintf(logFilePtr,"dataMaskCode = \"%s\"\n",dataMaskCode);
 
-	if( nc != strlen(dataMaskCode) )
+	if( (unsigned int)nc != strlen(dataMaskCode) )
 	{
 		printf("\n\ncheckDataMaskCode(): dataTypeCode and dataMaskCode have different dimensions, aborting ...\n\n");
 		exit(0);
@@ -479,7 +479,7 @@ char **maskTransposeSave(char **idata, short *mask, int nr, int pi, int nbv, flo
 			exit(0);
 		}
 
-		if( fileinfo.st_size != sizeof(short)*nr*nbv )
+		if( fileinfo.st_size != (unsigned int)(sizeof(short)*nr*nbv) )
 		{
 			printf("\n\nmaskTransposeSave(): File %s does not have the expected size, aborting ...\n\n",tempFilename);
 			remove(tempFilename);
@@ -497,7 +497,7 @@ char **maskTransposeSave(char **idata, short *mask, int nr, int pi, int nbv, flo
 			exit(0);
 		}
 
-		if( fileinfo.st_size != sizeof(short)*nr*nbv )
+		if( fileinfo.st_size != (unsigned int)(sizeof(short)*nr*nbv) )
 		{
 			printf("\n\nmaskTransposeSave(): File %s does not have the expected size, aborting ...\n\n",maskedImageFile[j]);
 			remove(maskedImageFile[j]);
@@ -693,15 +693,15 @@ double compute_t_value(double *y, double *X, double *c, int n, int p, double *df
 double compute_F_value(double *y, double *X, double *c, int n, int p, double *dfn, double *dfd, float *r2)
 {
 	int rank, rank1, rank2;
-	float *G, *G1, *G2;
-	double *X1, *X2;
-	double *beta, *beta1, *beta2;
+	float *G=NULL, *G1=NULL, *G2=NULL;
+	double *X1=NULL, *X2=NULL;
+	double *beta=NULL, *beta1=NULL, *beta2=NULL;
 	double *Xty;
 	double evar, var1, F;
 	double yty, ytPy;
 	double mu;
-	double *P2X1, *X2tX1, *G2X2tX1;
-	double *X1ty, *X2ty;
+	double *P2X1=NULL, *X2tX1=NULL, *G2X2tX1=NULL;
+	double *X1ty=NULL, *X2ty=NULL;
 	
 
 	int p1; 	// number of columns of matrix X1
@@ -851,7 +851,7 @@ double compute_F_value(double *y, double *X, double *c, int n, int p, double *df
 int main(int argc, char **argv)
 {
    int npc=0;
-   float *eigenvecs;
+   float *eigenvecs=NULL;
    float dum;
    float *motion_params;
    float *rw;
@@ -860,53 +860,22 @@ int main(int argc, char **argv)
    char rwfile[1024]=""; 
    char eigenvecfile[1024]=""; 
    char prefix[512];
-   nifti_1_header hdr;
-   int nx,ny,nz,nv;
-   int type;
-   float dx,dy,dz;
-   SHORTIM im4D;
    char dataFile[512]="";
    FILE *fp;
 
-   int nbv;
    NIFTIIMAGE im0;
-   int partial_corr_flag=0;
-   int F_flag=0;
-   int nt;
-
-   FILE **maskedImageFilePtr;
+   int nt=0;
 
    float FWHM=0.0; // FWHM of the smoothing filter specified using the -FWHM <FWHM>. Default is set to 0 here.
 
-   unsigned char *dfmap, *df1map, *df2map;
-	char s[512];
-	char **maskedImageFile=NULL;
-   char **idata=NULL;
 	char contrastFile[512];
 	char maskFile[512];
-	char logFile[512];
 	char dataMaskCode[128];
 	char dataTypeCode[128];		// a string composed of characters 'i' and 'n' only, where 'i' denotes
 								// image type variables and 'n' denotes numerical type variables
-   double *ndata=NULL;
-	double *X, *y;
-	double *c;
-	double t, df, dfn, dfd, F;
-   float *spm_t, *spm_r2, *spm_F;
 
-	int nc=0;	// number of columns of the data file
-	int nr=0; 	// number of rows of the data file
-	int pi=0; 	// number of unmasked image-type independent variables + 1. 
-				// The additinoal 1 is for the dependent variable, which is always image-type
-	int pn=0; 	// number of unmasked number-type independent variables 
-	int p=0; 	// number of unmasked independent variables
-
-	int X_j=0, ndata_j=0, idata_j=0;
-	int xi=0, yi=0, zi=0, vi=0;
+	int xi=0, yi=0, zi=0;
 	
-	short *mask=NULL;
-	short *sdum=NULL;
-
    while( (opt=getoption(argc, argv, options)) != -1)
    {
       switch (opt) {

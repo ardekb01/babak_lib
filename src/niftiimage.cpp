@@ -1,6 +1,7 @@
 #include <niftiimage.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 // destructor
 NIFTIIMAGE::~NIFTIIMAGE()
@@ -67,8 +68,8 @@ NIFTIIMAGE::NIFTIIMAGE(int nx, int ny, int nz, float dx, float dy, float dz, sho
    hdr.toffset= 0.0;
    hdr.glmax = 0;
    hdr.glmin = 0;
-   sprintf(hdr.descrip, "Created by ART software.");
-   sprintf(hdr.aux_file, "");
+   strcpy(hdr.descrip, "Created by ART software.");
+   strcpy(hdr.aux_file, "");
    hdr.qform_code = 0;
    hdr.sform_code = 0;
 
@@ -84,9 +85,9 @@ NIFTIIMAGE::NIFTIIMAGE(int nx, int ny, int nz, float dx, float dy, float dz, sho
       hdr.srow_x[i] = hdr.srow_y[i] = hdr.srow_z[i] = 0.0;
    }
 
-   sprintf(hdr.intent_name, "");
+   strcpy(hdr.intent_name, "");
 
-   sprintf(hdr.magic, "n+1");
+   strcpy(hdr.magic, "n+1");
 
    ext.extension[0]=0;
    ext.extension[1]=0;
@@ -153,8 +154,8 @@ NIFTIIMAGE::NIFTIIMAGE(int nx, int ny, int nz, int nt, float dx, float dy, float
    hdr.toffset= 0.0;
    hdr.glmax = 0;
    hdr.glmin = 0;
-   sprintf(hdr.descrip, "Created by ART software.");
-   sprintf(hdr.aux_file, "");
+   strcpy(hdr.descrip, "Created by ART software.");
+   strcpy(hdr.aux_file, "");
    hdr.qform_code = 0;
    hdr.sform_code = 0;
 
@@ -170,9 +171,9 @@ NIFTIIMAGE::NIFTIIMAGE(int nx, int ny, int nz, int nt, float dx, float dy, float
       hdr.srow_x[i] = hdr.srow_y[i] = hdr.srow_z[i] = 0.0;
    }
 
-   sprintf(hdr.intent_name, "");
+   strcpy(hdr.intent_name, "");
 
-   sprintf(hdr.magic, "n+1");
+   strcpy(hdr.magic, "n+1");
 
    ext.extension[0]=0;
    ext.extension[1]=0;
@@ -226,8 +227,8 @@ NIFTIIMAGE::NIFTIIMAGE()
    hdr.toffset= 0.0;
    hdr.glmax = 0;
    hdr.glmin = 0;
-   sprintf(hdr.descrip, "Created by ART software.");
-   sprintf(hdr.aux_file, "");
+   strcpy(hdr.descrip, "Created by ART software.");
+   strcpy(hdr.aux_file, "");
    hdr.qform_code = 0;
    hdr.sform_code = 0;
 
@@ -243,9 +244,9 @@ NIFTIIMAGE::NIFTIIMAGE()
       hdr.srow_x[i] = hdr.srow_y[i] = hdr.srow_z[i] = 0.0;
    }
 
-   sprintf(hdr.intent_name, "");
+   strcpy(hdr.intent_name, "");
 
-   sprintf(hdr.magic, "n+1");
+   strcpy(hdr.magic, "n+1");
 
    ext.extension[0]=0;
    ext.extension[1]=0;

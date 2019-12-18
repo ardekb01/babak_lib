@@ -13,8 +13,8 @@
 #define LIN 1
 #define NEARN 2
 
-static float v1,v2,v3,v4;
-static float w1,w2,w3,w4;
+//static float v1,v2,v3,v4;
+//static float w1,w2,w3,w4;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 int opt;
@@ -63,15 +63,12 @@ int main(int argc, char **argv)
 	char inputImageFile[1024];
 	char transFile[1024];
 	char outputfile[1024];
-	int nx,ny,nz,nv;
-	int nx2,ny2,nz2;
+	int nx,ny,nz;
+	int nx2=0,ny2=0,nz2=0;
 	float dx,dy,dz;
-	float dx2,dy2,dz2;
+	float dx2=0.0,dy2=0.0,dz2=0.0;
 	float T[16],*invT;
 	short *im_in,*im_out;
-
-	struct stat fileinfo;   // file information structure
-	char filename[1024];
 
 	while ((opt = getoption(argc, argv, options)) != -1 )
 	{

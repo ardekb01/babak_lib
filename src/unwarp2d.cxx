@@ -61,10 +61,10 @@ void swapByteOrder(char *in, int N);
 
 int main(int argc, char **argv)
 {
-   nifti_1_header trg_hdr;
-   nifti_1_header sub_hdr;
+  nifti_1_header trg_hdr;
+  nifti_1_header sub_hdr;
 
-   float T[16];
+  float T[16];
 
 	FILE *fp;
 
@@ -72,13 +72,13 @@ int main(int argc, char **argv)
 	float Sx, Sx2, Sy, Sy2, Sxy;
 	float num,den;
 
-	float sd;
+	float sd=1;
 	int xopt, yopt;
 	int Wx,Wy;
 	int Lx,Ly;
-	int N;	// N=2*L+1
-	int N2;	// N*N
-	int niter;
+	int N=0;	// N=2*L+1
+	int N2=0;	// N*N
+	int niter=0;
 
 	int Onx,Ony,Onz,Onp;
 	int Tnx,Tny,Tnz,Tnp,Tnv;
@@ -87,9 +87,8 @@ int main(int argc, char **argv)
 	float Odx,Ody,Odz;
 	float Tdx,Tdy,Tdz;
 	float HRdx, HRdy;
-	int type;
 
-	float *Xw, *Yw, *Zw;
+	float *Xw, *Yw;
 	float *Xwarp, *Ywarp, *Zwarp, *Xwarp_ptr, *Ywarp_ptr;
 	float *Xtmp, *Ytmp;
 	float CC, CCMAX;
@@ -112,7 +111,7 @@ int main(int argc, char **argv)
 	float *ARobj;	// array extracted from object and target images
 	float *ARtrg;
 
-	int window_width;
+	int window_width=1;
 
    dum = (char *)malloc(1024);
    warpfile[0]='\0';
@@ -417,7 +416,7 @@ int main(int argc, char **argv)
    ///////////////////////////////////////////////////////////////////////////////////////////////////////
    {
       short *o;
-      float min, max, s=0.0;
+      float min=0.0, max=0.0, s=0.0;
       short *sdum;
       nifti1_extender extender;
 

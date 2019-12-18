@@ -49,7 +49,7 @@ float *avg(int N, char **imagefile)
 {
    nifti_1_header hdr;
 
-   int nx, ny, nz, nt;
+   int nx, ny, nz;
    float dx, dy, dz;
    int nv;
    int type;
@@ -386,7 +386,7 @@ int main(int argc, char **argv)
    int opt_threshold=NO;
 
    float scale=1.0;
-   float threshold;
+   float threshold=0.0;
 
    nifti_1_header hdr;
    int nx, ny, nz, nv;

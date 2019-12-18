@@ -46,7 +46,7 @@ int main(int argc, char **argv)
    char inputfile[1024]="";
    nifti_1_header input_hdr;
    nifti_1_header output_hdr;
-   float pixdim4, pixdim5, pixdim6, pixdim7;
+   float pixdim4=0.0, pixdim5=0.0, pixdim6=0.0, pixdim7=0.0;
 
    while( (opt=getoption(argc, argv, options)) != -1)
    {

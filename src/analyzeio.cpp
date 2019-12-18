@@ -367,8 +367,8 @@ void create_analyze_hdr(struct dsr *hdr, int nx, int ny, int nz, int datatype, f
   	hdr->dime.dim[6]=0;
   	hdr->dime.dim[7]=0;
 
-	sprintf(hdr->dime.vox_units,"mm");
-	sprintf(hdr->dime.cal_units,""); 
+	strcpy(hdr->dime.vox_units,"mm");
+	strcpy(hdr->dime.cal_units,""); 
 	hdr->dime.unused1=0; 
 
   	hdr->dime.datatype=datatype;
@@ -418,18 +418,18 @@ void create_analyze_hdr(struct dsr *hdr, int nx, int ny, int nz, int datatype, f
 	hdr->dime.compressed = 0;
 	hdr->dime.verified = 0;
 
-	sprintf(hdr->hist.aux_file,"none");
+	strcpy(hdr->hist.aux_file,"none");
 	hdr->hist.orient='\0';
 
 	for(int i=0; i<10; i++)
 		hdr->hist.originator[i]='\0';
 	
-	sprintf(hdr->hist.generated,"");
-	sprintf(hdr->hist.scannum,"");
-	sprintf(hdr->hist.patient_id,"");
-	sprintf(hdr->hist.exp_date,"");
-	sprintf(hdr->hist.exp_time,"");
-	sprintf(hdr->hist.hist_un0,"");
+	strcpy(hdr->hist.generated,"");
+	strcpy(hdr->hist.scannum,"");
+	strcpy(hdr->hist.patient_id,"");
+	strcpy(hdr->hist.exp_date,"");
+	strcpy(hdr->hist.exp_time,"");
+	strcpy(hdr->hist.hist_un0,"");
 	hdr->hist.views=0;
 	hdr->hist.vols_added=0;
 	hdr->hist.start_field=0;
@@ -457,8 +457,8 @@ void create_analyze_hdr(struct dsr *hdr, int nx, int ny, int nz, int nt, int dat
   	hdr->dime.dim[6]=0;
   	hdr->dime.dim[7]=0;
 
-	sprintf(hdr->dime.vox_units,"mm");
-	sprintf(hdr->dime.cal_units,""); 
+	strcpy(hdr->dime.vox_units,"mm");
+	strcpy(hdr->dime.cal_units,""); 
 	hdr->dime.unused1=0; 
 
   	hdr->dime.datatype=datatype;
@@ -508,18 +508,18 @@ void create_analyze_hdr(struct dsr *hdr, int nx, int ny, int nz, int nt, int dat
 	hdr->dime.compressed = 0;
 	hdr->dime.verified = 0;
 
-	sprintf(hdr->hist.aux_file,"none");
+	strcpy(hdr->hist.aux_file,"none");
 	hdr->hist.orient='\0';
 
 	for(int i=0; i<10; i++)
 		hdr->hist.originator[i]='\0';
 	
-	sprintf(hdr->hist.generated,"");
-	sprintf(hdr->hist.scannum,"");
-	sprintf(hdr->hist.patient_id,"");
-	sprintf(hdr->hist.exp_date,"");
-	sprintf(hdr->hist.exp_time,"");
-	sprintf(hdr->hist.hist_un0,"");
+	strcpy(hdr->hist.generated,"");
+	strcpy(hdr->hist.scannum,"");
+	strcpy(hdr->hist.patient_id,"");
+	strcpy(hdr->hist.exp_date,"");
+	strcpy(hdr->hist.exp_time,"");
+	strcpy(hdr->hist.hist_un0,"");
 	hdr->hist.views=0;
 	hdr->hist.vols_added=0;
 	hdr->hist.start_field=0;

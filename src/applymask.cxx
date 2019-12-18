@@ -99,7 +99,6 @@ int main(int argc, char **argv)
   int nx, ny, nz;
   int nv;
   float dx, dy, dz;
-  int N;	// number of images to be averaged
   char outputfile[1024]="";
   char inputfile[1024]="";
   char maskfile[1024]="";

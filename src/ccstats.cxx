@@ -178,8 +178,8 @@ void save_cluster_avg(float *spm,int nx,int ny,int nz, int N, char **imlist)
 
    float min,max,avg;
    float iavg, javg, kavg;
-   int imax,jmax,kmax;
-   int imin,jmin,kmin;
+   int imax=0,jmax=0,kmax=0;
+   int imin=0,jmin=0,kmin=0;
 
    nv=nx*ny*nz;
    np=nx*ny;

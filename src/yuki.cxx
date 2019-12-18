@@ -896,7 +896,7 @@ void output_ppm(short *trg, short *cc_est, const char *prefix)
 
 //////////////////////////////////////////////////////////////////////////////////
 
-void output_bounding_box_ppm(short *trg, short *cc, const char *prefix) 
+void output_bounding_box_ppm(short *trg, const char *prefix) 
 {
    char outputfile[1024]="";
 //   short min, max;
@@ -3397,7 +3397,7 @@ int main(int argc, char **argv)
       find_thickness_profile(cc_est, prefix);
 
       if(!opt_cc)
-         output_bounding_box_ppm(trg, cc_est, (const char *)prefix);
+         output_bounding_box_ppm(trg, (const char *)prefix);
 
       if(opt_W)
       {

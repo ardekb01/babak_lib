@@ -206,12 +206,11 @@ void print_help_and_exit()
 void computeSiemensVisionOffsets(float *Tmsp, float *AC, float *PC)
 {
 	double pi;
-   	double beta;
-   	double alpha;
+  double beta;
+  double alpha;
 	float *invT;
 	float ac[4], pc[4];
 	float pcac[4];
-	float dum;
 	float n[4];
 	float N[4];
 	float TLAI[16];
@@ -285,15 +284,18 @@ int main(int argc, char **argv)
   float OPORIENT2PIL[16];
   float PIL2OPORIENT[16];
   float Tijk2xyz[16];
-  float *invT;
+  float *invT=NULL;
   short *opimage;
   short *ipimage;
   char opt_tiltcorrect=YES;
-  int nPA, nLR, nIS;
-  float dPA, dLR, dIS;
+  int nPA=0, nLR=0, nIS=0;
+  float dPA=0.0, dLR=0.0, dIS=0.0;
   char opt_standard=NO;
   FILE *fp;
   DIM ipdim, opdim;  // input (ip) and output (op) dimension structures (dim)
+  opdim.dx = opdim.dy = opdim.dz = 0.0;
+  opdim.nx = opdim.ny = opdim.nz = 0;
+
   nifti_1_header iphdr, ophdr; // 348 bytes
 //  int opt_T2=NO;
   char optransformationpath[1024]="";

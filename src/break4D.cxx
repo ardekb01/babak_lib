@@ -202,7 +202,7 @@ void checkDataMaskCode(char *dataMaskCode, int nc)
 	if(opt_v) printf("dataMaskCode = \"%s\"\n",dataMaskCode);
 	fprintf(logFilePtr,"dataMaskCode = \"%s\"\n",dataMaskCode);
 
-	if( nc != strlen(dataMaskCode) )
+	if( (unsigned int)nc != strlen(dataMaskCode) )
 	{
 		printf("\n\ncheckDataMaskCode(): dataTypeCode and dataMaskCode have different dimensions, aborting ...\n\n");
 		exit(0);
@@ -532,7 +532,7 @@ char **maskTransposeSave(char **idata, short *mask, int nr, int pi, int nbv, flo
 			exit(0);
 		}
 
-		if( fileinfo.st_size != sizeof(short)*nr*nbv )
+		if( fileinfo.st_size != (unsigned int)(sizeof(short)*nr*nbv) )
 		{
 			printf("\n\nmaskTransposeSave(): File %s does not have the expected size, aborting ...\n\n",tempFilename);
 			remove(tempFilename);
@@ -550,7 +550,7 @@ char **maskTransposeSave(char **idata, short *mask, int nr, int pi, int nbv, flo
 			exit(0);
 		}
 
-		if( fileinfo.st_size != sizeof(short)*nr*nbv )
+		if( fileinfo.st_size != (unsigned int)(sizeof(short)*nr*nbv) )
 		{
 			printf("\n\nmaskTransposeSave(): File %s does not have the expected size, aborting ...\n\n",maskedImageFile[j]);
 			remove(maskedImageFile[j]);
@@ -746,15 +746,15 @@ double compute_t_value(double *y, double *X, double *c, int n, int p, double *df
 double compute_F_value(double *y, double *X, double *c, int n, int p, double *dfn, double *dfd, float *r2)
 {
 	int rank, rank1, rank2;
-	float *G, *G1, *G2;
-	double *X1, *X2;
-	double *beta, *beta1, *beta2;
+	float *G=NULL, *G1=NULL, *G2=NULL;
+	double *X1=NULL, *X2=NULL;
+	double *beta=NULL, *beta1=NULL, *beta2=NULL;
 	double *Xty;
 	double evar, var1, F;
 	double yty, ytPy;
 	double mu;
-	double *P2X1, *X2tX1, *G2X2tX1;
-	double *X1ty, *X2ty;
+	double *P2X1=NULL, *X2tX1=NULL, *G2X2tX1=NULL;
+	double *X1ty=NULL, *X2ty=NULL;
 	
 
 	int p1; 	// number of columns of matrix X1
@@ -913,7 +913,6 @@ int main(int argc, char **argv)
    char prefix[512];
    nifti_1_header hdr;
    int nx,ny,nz,nv;
-   int type;
    float dx,dy,dz;
    SHORTIM im4D;
    char dataFile[512]="";
@@ -951,7 +950,7 @@ int main(int argc, char **argv)
 	int pn=0; 	// number of unmasked number-type independent variables 
 	int p=0; 	// number of unmasked independent variables
 
-	int X_j=0, ndata_j=0, idata_j=0;
+	int X_j=0, idata_j=0;
 	int xi=0, yi=0, zi=0, vi=0;
 	
 	short *mask=NULL;
@@ -1422,7 +1421,7 @@ exit(0);
 		FILE *fp;
 		int nbv=0, N;
 		float mint, maxt;
-		float pval, tval;
+		float tval;
 		double sum = 0.0;;
 		int count;
 		double df=1;

@@ -49,7 +49,7 @@ float *avg(int N, char **imagefile)
 {
    nifti_1_header hdr;
 
-   int nx, ny, nz, nt;
+   int nx, ny, nz;
    float dx, dy, dz;
    int nv;
    int type;
@@ -359,7 +359,6 @@ int main(int argc, char **argv)
    int nx, ny, nz, nv;
    float dx, dy, dz;
    int number_of_images; // number of images to be averaged
-   float *avg_image;
    char outputfile[1024];
 
    while( (opt=getoption(argc, argv, options)) != -1)

@@ -269,7 +269,7 @@ void lm_copy(int lm1[][3], int lm2[][3], int n)
 int seek_lm(int nim, SPH &refsph, SHORTIM im[], int lm_in[][3], float *A, float *ssd, char loomsk[], int lmcm[],
 SPH &searchsph, SPH &testsph, int lm_out[][3])
 {
-   int d;
+   int d=1;  // compiler wants this initialized
    int search_center[3];
 
    search_center[0]=lm_in[0][0];
@@ -459,7 +459,7 @@ void atra(const char *imagelistfile, DIM output_dim, const char *outputOrientati
    /////////////////////////////////////////////////////////////////////////////////////////////
    // read PILbraincloud.nii from the $ARTHOME directory
    /////////////////////////////////////////////////////////////////////////////////////////////
-   sprintf(temporaryFilename,"%s/PILbrain.nii",ARTHOME);
+   snprintf(temporaryFilename,sizeof(temporaryFilename),"%s/PILbrain.nii",ARTHOME);
 
    // freed before atra() returns
    PILbraincloud = (short  *)read_nifti_image(temporaryFilename, &PILbraincloud_hdr);
@@ -531,8 +531,8 @@ void atra(const char *imagelistfile, DIM output_dim, const char *outputOrientati
 
       set_dim(tmp_hdr, output_dim);
       tmp_hdr.magic[0]='n'; tmp_hdr.magic[1]='+'; tmp_hdr.magic[2]='1';
-      sprintf(tmp_hdr.descrip,"Created by ART ATRA program.");
-      sprintf(temporaryFilename,"%s/%s_%s.nii",imagedir[0],imagefileprefix[0],outputOrientationCode);
+      strcpy(tmp_hdr.descrip,"Created by ART ATRA program.");
+      snprintf(temporaryFilename,sizeof(temporaryFilename),"%s/%s_%s.nii",imagedir[0],imagefileprefix[0],outputOrientationCode);
       save_nifti_image(temporaryFilename, tmp, &tmp_hdr);
 
       PILtransform(outputOrientationCode, OUT2PIL);
@@ -543,35 +543,35 @@ void atra(const char *imagelistfile, DIM output_dim, const char *outputOrientati
       update_qsform(temporaryFilename, OUT2RAS);
 
       // Yes! saving the same image again under a different name! 
-      sprintf(temporaryFilename,"%s_avg_%s.nii",outputPrefix, outputOrientationCode);
+      snprintf(temporaryFilename,sizeof(temporaryFilename),"%s_avg_%s.nii",outputPrefix, outputOrientationCode);
       save_nifti_image(temporaryFilename, tmp, &tmp_hdr);
       update_qsform(temporaryFilename, OUT2RAS);
 
       free(tmp);
 
-      sprintf(temporaryFilename,"%s/%s_PIL.mrx",imagedir[0],imagefileprefix[0]);
+      snprintf(temporaryFilename,sizeof(temporaryFilename),"%s/%s_PIL.mrx",imagedir[0],imagefileprefix[0]);
       remove(temporaryFilename);
 
       multi(PIL2OUT,4,4,TPIL[0],4,4,TOUT);
-      sprintf(temporaryFilename,"%s/%s.mrx",imagedir[0],imagefileprefix[0]);
+      snprintf(temporaryFilename,sizeof(temporaryFilename),"%s/%s.mrx",imagedir[0],imagefileprefix[0]);
       fp=fopen(temporaryFilename,"w");
       if(fp==NULL) file_open_error(temporaryFilename);
       printMatrix(TOUT,4,4,"",fp);
       fclose(fp);
 
       art_to_fsl(TOUT, TOUT_FSL, input_dim, output_dim);
-      sprintf(temporaryFilename,"%s/%s_FSL.mat",imagedir[0],imagefileprefix[0]);
+      snprintf(temporaryFilename,sizeof(temporaryFilename),"%s/%s_FSL.mat",imagedir[0],imagefileprefix[0]);
       fp=fopen(temporaryFilename,"w");
       if(fp==NULL) file_open_error(temporaryFilename);
       printMatrix(TOUT_FSL,4,4,"",fp);
       fclose(fp);
 
-      sprintf(temporaryFilename,"%s.txt",outputPrefix);
+      snprintf(temporaryFilename,sizeof(temporaryFilename),"%s.txt",outputPrefix);
       fp = fopen(temporaryFilename,"w");
       if(fp==NULL) file_open_error(temporaryFilename);
       fprintf(fp,"%d\n",nim);
       fprintf(fp,"%s %f\n",imagefile[0],1.0);
-      sprintf(temporaryFilename,"%s/%s.mrx",imagedir[0],imagefileprefix[0]);
+      snprintf(temporaryFilename,sizeof(temporaryFilename),"%s/%s.mrx",imagedir[0],imagefileprefix[0]);
       fprintf(fp,"%s\n",temporaryFilename);
       fclose(fp);
 
@@ -811,10 +811,10 @@ void atra(const char *imagelistfile, DIM output_dim, const char *outputOrientati
    //////////////////////////////////////////////////////////
 
    float *mean; 
-   float min, max;
-   int ii,jj,kk,np,ny,nv;
+   float min=0.0, max=0.0;
+   int ii,jj,kk,np,ny;
 
-   sprintf(temporaryFilename,"%s.txt",outputPrefix);
+   snprintf(temporaryFilename,sizeof(temporaryFilename),"%s.txt",outputPrefix);
    fp = fopen(temporaryFilename,"w");
    if(fp==NULL) file_open_error(temporaryFilename);
    fprintf(fp,"%d\n",nim);
@@ -847,7 +847,7 @@ void atra(const char *imagelistfile, DIM output_dim, const char *outputOrientati
    {
       scalefactor[i] = min/mean[i];
       fprintf(fp,"%s %f\n",imagefile[i],scalefactor[i]);
-      sprintf(temporaryFilename,"%s/%s.mrx",imagedir[i],imagefileprefix[i]);
+      snprintf(temporaryFilename,sizeof(temporaryFilename),"%s/%s.mrx",imagedir[i],imagefileprefix[i]);
       fprintf(fp,"%s\n",temporaryFilename);
    }
    fclose(fp);
@@ -874,8 +874,8 @@ void atra(const char *imagelistfile, DIM output_dim, const char *outputOrientati
 
       set_dim(tmp_hdr, output_dim);
       tmp_hdr.magic[0]='n'; tmp_hdr.magic[1]='+'; tmp_hdr.magic[2]='1';
-      sprintf(tmp_hdr.descrip,"Created by ART ATRA program.");
-      sprintf(temporaryFilename,"%s/%s_%s.nii",imagedir[i],imagefileprefix[i],outputOrientationCode);
+      strcpy(tmp_hdr.descrip,"Created by ART ATRA program.");
+      snprintf(temporaryFilename,sizeof(temporaryFilename),"%s/%s_%s.nii",imagedir[i],imagefileprefix[i],outputOrientationCode);
       save_nifti_image(temporaryFilename, tmp, &tmp_hdr);
 
       PILtransform(outputOrientationCode, OUT2PIL);
@@ -890,18 +890,18 @@ void atra(const char *imagelistfile, DIM output_dim, const char *outputOrientati
       free(tmp);
 
       // save transformation matrix
-      sprintf(temporaryFilename,"%s/%s_PIL.mrx",imagedir[i], imagefileprefix[i]);
+      snprintf(temporaryFilename,sizeof(temporaryFilename),"%s/%s_PIL.mrx",imagedir[i], imagefileprefix[i]);
       remove(temporaryFilename);
 
       multi(PIL2OUT,4,4,TPIL[i],4,4,TOUT);
-      sprintf(temporaryFilename,"%s/%s.mrx",imagedir[i],imagefileprefix[i]);
+      snprintf(temporaryFilename,sizeof(temporaryFilename),"%s/%s.mrx",imagedir[i],imagefileprefix[i]);
       fp=fopen(temporaryFilename,"w");
       if(fp==NULL) file_open_error(temporaryFilename);
       printMatrix(TOUT,4,4,"",fp);
       fclose(fp);
 
       art_to_fsl(TOUT, TOUT_FSL, input_dim, output_dim);
-      sprintf(temporaryFilename,"%s/%s_FSL.mat",imagedir[i],imagefileprefix[i]);
+      snprintf(temporaryFilename,sizeof(temporaryFilename),"%s/%s_FSL.mat",imagedir[i],imagefileprefix[i]);
       fp=fopen(temporaryFilename,"w");
       if(fp==NULL) file_open_error(temporaryFilename);
       printMatrix(TOUT_FSL,4,4,"",fp);
@@ -911,7 +911,7 @@ void atra(const char *imagelistfile, DIM output_dim, const char *outputOrientati
 
    for(int v=0; v<output_dim.nv; v++) avgOutputImageShort[v] = (short)(avgOutputImage[v]/nim + 0.5);
 
-   sprintf(temporaryFilename,"%s_avg_%s.nii",outputPrefix, outputOrientationCode);
+   snprintf(temporaryFilename,sizeof(temporaryFilename),"%s_avg_%s.nii",outputPrefix, outputOrientationCode);
    save_nifti_image(temporaryFilename, avgOutputImageShort, &tmp_hdr);
    update_qsform(temporaryFilename, OUT2RAS);
 
@@ -999,10 +999,10 @@ int main(int argc, char **argv)
             if(maxiter<10 || maxiter>100) maxiter=MAXITER;
             break;
          case 'o':
-            sprintf(outputPrefix,"%s",optarg);
+            strcpy(outputPrefix,optarg);
             break;
          case 'i':
-            sprintf(imagelistfile,"%s",optarg);
+            strcpy(imagelistfile,optarg);
             break;
          case 'v':
             opt_v=YES;
@@ -1017,7 +1017,7 @@ int main(int argc, char **argv)
             opt_txt = NO;
             break;
          case 'O':
-            sprintf(outputOrientationCode,"%s",optarg);
+            strcpy(outputOrientationCode,optarg);
             break;
          case 'r':
             patch_radius = atoi(optarg);

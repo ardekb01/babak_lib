@@ -19,9 +19,10 @@ void print_matrix(char * title, float *T)
 int main(int argc, char **argv)
 {
 	float Tin[16];
-	float I[16];
 	float *Tout;
 	FILE *fp;
+
+  if(argc==1) exit(0);
 
 	loadTransformation(argv[1],Tin);
 
@@ -34,6 +35,7 @@ int main(int argc, char **argv)
     fprintf(fp,"%f\t%f\t%f\t%f\n",Tout[12],Tout[13],Tout[14],Tout[15]);
 	fclose(fp);
 
+//	float I[16];
 //	multi(Tin, 4,4, Tout, 4,4, I);
 //	print_matrix("Output",I);
 }

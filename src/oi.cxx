@@ -43,7 +43,7 @@ int main(int argc, char **argv)
 //////////////////////////////////////////////////////////////////////////////////////
    int nx, ny, nz, np, nv;
    float dx, dy, dz;
-   float min, max;
+   float min=0.0, max=0.0;
    float avgsize=0.0;
    double oi=0.0;
 
