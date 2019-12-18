@@ -1627,7 +1627,6 @@ int main(int argc, char **argv)
    /////////////////////////////////////////////////////////////////////////////////////
    /////////////////////////////////////////////////////////////////////////////////////
 
-printf("Point1\n");
    // Ensure that an output prefix has been specified at the command line.
    if( opprefix[0]=='\0' )
    {
@@ -1635,7 +1634,6 @@ printf("Point1\n");
       exit(0);
    }
 
-printf("Point2\n");
    /////////////////////////////////////////////////////////////////////////////////////
    // read input images
    /////////////////////////////////////////////////////////////////////////////////////
@@ -1650,7 +1648,6 @@ printf("Point2\n");
       set_dim(im_dim[i], im_hdr[i]);
    }
    /////////////////////////////////////////////////////////////////////////////////////
-printf("Point3\n");
 
    /////////////////////////////////////////////////////////////////////////////////////////////
    // read PILbraincloud.nii from the $ARTHOME directory
@@ -1673,7 +1670,6 @@ printf("Point3\n");
    set_dim(aimpil, PILbraincloud_dim); 
    delete PILbraincloud;
    /////////////////////////////////////////////////////////////////////////////////////////////
-printf("Point4\n");
 
    /////////////////////////////////////////////////////////////////////////////////////
    // average input images after PIL transformation and store in aimpil
@@ -1684,13 +1680,11 @@ printf("Point4\n");
       float *sum;
       short *tmp;
 
-printf("Point4.1\n");
 
       aimpil.v = (short *)calloc(aimpil.nv, sizeof(short));
       sum = (float *)calloc(aimpil.nv, sizeof(float));
       for(int v=0; v<aimpil.nv; v++) sum[v]=0.0;
 
-printf("Point4.2\n");
       for(int i=0; i<nim; i++)
       {
          loadTransformation(mrxfile[i], TPIL[i]);
@@ -1702,12 +1696,10 @@ printf("Point4.2\n");
          free(invT);
          free(tmp);
       }
-printf("Point4.3\n");
 
       for(int v=0; v<aimpil.nv; v++) aimpil.v[v] = (short)(sum[v]/nim + 0.5);
       free(sum);
 
-printf("Point4.4\n");
       strcpy(filename,""); strcat(filename,opprefix); strcat(filename,"_avg_PIL.nii");
       save_nifti_image(filename, aimpil.v, &PILbraincloud_hdr);
    } 
@@ -1722,7 +1714,6 @@ printf("Point4.4\n");
       free(invT);
    } 
    /////////////////////////////////////////////////////////////////////////////////////
-printf("Point5\n");
    
    /////////////////////////////////////////////////////////////////////////////////////
    
