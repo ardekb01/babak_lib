@@ -213,7 +213,7 @@ int loadTransformation( char *filename, float *T)
 {
    FILE *fp;
    char line[1000];
-   char s[10];
+   char s[11];
    int i;
 
    if(T==NULL)
