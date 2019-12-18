@@ -709,12 +709,12 @@ void symmetric_registration(SHORTIM &aimpil, const char *bfile, const char *ffil
    DIM PILbraincloud_dim;
    nifti_1_header PILbraincloud_hdr; 
 
-   char filename[1024]="";  // a generic filename for reading/writing stuff
+   char filename[DEFAULT_STRING_LENGTH]="";  // a generic filename for reading/writing stuff
 
    DIM dimf; // follow-up image dimensions structure
    DIM dimb; // baseline image dimensions structure
-   char bprefix[1024]=""; //baseline image prefix
-   char fprefix[1024]=""; //follow-up image prefix
+   char bprefix[DEFAULT_STRING_LENGTH]=""; //baseline image prefix
+   char fprefix[DEFAULT_STRING_LENGTH]=""; //follow-up image prefix
    float4 T[16]; // The unknown transformation matrix that takes points from the follow-up to baseline space 
    float4 Tf[16]; // The unknown transformation matrix that takes points from the follow-up to mid PIL space 
    float4 Tb[16]; // The unknown transformation matrix that takes points from the baseline to mid PIL space 
@@ -726,7 +726,7 @@ void symmetric_registration(SHORTIM &aimpil, const char *bfile, const char *ffil
    /////////////////////////////////////////////////////////////////////////////////////////////
    // read PILbraincloud.nii from the $ARTHOME directory
    /////////////////////////////////////////////////////////////////////////////////////////////
-   sprintf(filename,"%s/PILbrain.nii",ARTHOME);
+   snprintf(filename,DEFAULT_STRING_LENGTH,"%s/PILbrain.nii",ARTHOME);
 
    PILbraincloud = (int2 *)read_nifti_image(filename, &PILbraincloud_hdr);
 
@@ -980,7 +980,7 @@ void symmetric_registration(SHORTIM &aimpil, const char *bfile, const char *ffil
 
       ////////////////////////////////////////////////////////////////////////////////////////////
       //sprintf(filename,"%s_to_midpoint.mrx",fprefix);
-      sprintf(filename,"%s_PIL.mrx",fprefix);
+      snprintf(filename,DEFAULT_STRING_LENGTH,"%s_PIL.mrx",fprefix);
       fp = fopen(filename,"w");
       if(fp != NULL)
       {
@@ -996,7 +996,7 @@ void symmetric_registration(SHORTIM &aimpil, const char *bfile, const char *ffil
 
       ////////////////////////////////////////////////////////////////////////////////////////////
       //sprintf(filename,"%s_to_midpoint.mrx",bprefix);
-      sprintf(filename,"%s_PIL.mrx",bprefix);
+      snprintf(filename,DEFAULT_STRING_LENGTH,"%s_PIL.mrx",bprefix);
       fp = fopen(filename,"w");
       if(fp != NULL)
       {
@@ -1022,16 +1022,16 @@ void symmetric_registration(SHORTIM &aimpil, const char *bfile, const char *ffil
       invT = inv4(Tf);
       fimpil.v= resliceImage(fim, dimf, PILbraincloud_dim, invT, LIN);
       set_dim(fimpil, PILbraincloud_dim);
-      sprintf(PILbraincloud_hdr.descrip,"Created by ART's KAIBA module");
-      sprintf(filename,"%s_PIL.nii",fprefix);
+      strcpy(PILbraincloud_hdr.descrip,"Created by ART's KAIBA module");
+      snprintf(filename,DEFAULT_STRING_LENGTH,"%s_PIL.nii",fprefix);
       save_nifti_image(filename, fimpil.v, &PILbraincloud_hdr);
       free(invT);
 
       invT = inv4(Tb);
       bimpil.v = resliceImage(bim, dimb, PILbraincloud_dim, invT, LIN);
       set_dim(bimpil, PILbraincloud_dim);
-      sprintf(PILbraincloud_hdr.descrip,"Created by ART's KAIBA module");
-      sprintf(filename,"%s_PIL.nii",bprefix);
+      strcpy(PILbraincloud_hdr.descrip,"Created by ART's KAIBA module");
+      snprintf(filename,DEFAULT_STRING_LENGTH,"%s_PIL.nii",bprefix);
       save_nifti_image(filename, bimpil.v, &PILbraincloud_hdr);
       free(invT);
 
@@ -1124,7 +1124,7 @@ void find_roi(nifti_1_header *subimhdr, SHORTIM pilim, float4 pilT[],const char 
 
    int2 *stndrd_roi;
 
-   char filename[512];
+   char filename[DEFAULT_STRING_LENGTH];
 
    // hcim is a pre-processed (transformed) version of subim (the original input image in native orientation)
    // readied for hippocampus segmentation.
@@ -1150,7 +1150,7 @@ void find_roi(nifti_1_header *subimhdr, SHORTIM pilim, float4 pilT[],const char 
    SHORTIM msk; 
    nifti_1_header mskhdr;
    
-   sprintf(filename,"%s/%s.nii",ARTHOME,side);
+   snprintf(filename,DEFAULT_STRING_LENGTH,"%s/%s.nii",ARTHOME,side);
    msk.v = (int2 *)read_nifti_image(filename, &mskhdr);
 
    if(msk.v==NULL) exit(0);
@@ -1191,7 +1191,7 @@ void find_roi(nifti_1_header *subimhdr, SHORTIM pilim, float4 pilT[],const char 
             sprintf(filename,"%s_RHROI2.nii",prefix);
       }
 */
-      sprintf(filename,"%s",prefix);
+      snprintf(filename,DEFAULT_STRING_LENGTH,"%s",prefix);
 
       for(int n=0; n<hcim.nv; n++) stndrd_roi[n] = 0;
 
@@ -1228,9 +1228,9 @@ void compute_hi(char *imfile, char *roifile, float4 &parenchymasize, int &voisiz
    float4 dx, dy, dz;
    int I_alpha;
    int nbin;
-   char roifileprefix[256]=""; //baseline image prefix
-   char roifiledir[256]=""; //baseline image prefix
-   char filename[1024]=""; //baseline image prefix
+   char roifileprefix[DEFAULT_STRING_LENGTH]=""; //baseline image prefix
+   char roifiledir[DEFAULT_STRING_LENGTH]=""; //baseline image prefix
+   char filename[DEFAULT_STRING_LENGTH]=""; //baseline image prefix
 
    if( niftiFilename(roifileprefix, roifile)==0 ) exit(1);
    getDirectoryName(roifile, roifiledir);
@@ -1427,7 +1427,7 @@ void compute_hi(char *imfile, char *roifile, float4 &parenchymasize, int &voisiz
          bin[i] = i;
       }
 
-      sprintf(filename,"%s/%s_hist",roifiledir,roifileprefix);
+      snprintf(filename,DEFAULT_STRING_LENGTH,"%s/%s_hist",roifiledir,roifileprefix);
       hist1D_plot(filename, n, bin, data1, data2, I_gm, I_csf);
 
       free(data1);
@@ -1522,15 +1522,12 @@ int main(int argc, char **argv)
             opt_png=NO;
             break;
          case 'p':
-            //sprintf(opprefix,"%s",optarg);
             strcpy(opprefix,optarg);
             break;
          case 'l':
-            //sprintf(lmfile,"%s",optarg);
             strcpy(lmfile,optarg);
             break;
          case 'b':
-            //sprintf(bfile,"%s",optarg);
             strcpy(bfile,optarg);
             break;
          case 'a':
@@ -1661,7 +1658,7 @@ int main(int argc, char **argv)
    int2 *PILbraincloud;
    nifti_1_header PILbraincloud_hdr; 
 
-   sprintf(filename,"%s/PILbrain.nii",ARTHOME);
+   strcpy(filename,""); strcat(filename,ARTHOME); strcat(filename,"/PILbrain.nii");
 
    PILbraincloud = (int2 *)read_nifti_image(filename, &PILbraincloud_hdr);
 
@@ -1704,7 +1701,7 @@ int main(int argc, char **argv)
       for(int v=0; v<aimpil.nv; v++) aimpil.v[v] = (short)(sum[v]/nim + 0.5);
       free(sum);
 
-      sprintf(filename,"%s_avg_PIL.nii",opprefix);
+      strcpy(filename,""); strcat(filename,opprefix); strcat(filename,"_avg_PIL.nii");
       save_nifti_image(filename, aimpil.v, &PILbraincloud_hdr);
    } 
    else if (nim==1) 
@@ -1721,15 +1718,16 @@ int main(int argc, char **argv)
    
    /////////////////////////////////////////////////////////////////////////////////////
    
-   sprintf(filename,"%s.csv",opprefix);
+   strcpy(filename,""); strcat(filename,opprefix); strcat(filename,".csv");
+
    fp = fopen(filename,"a");
    if(fp==NULL) file_open_error(filename);
    fprintf(fp,"Volume,Hemisphere,HPF\n");
 
    if(opt_v) printf("\nLandmark detection ...\n");
-   sprintf(filename,"%s/%s.mdl",ARTHOME,"rhc3");
+   strcpy(filename,""); strcat(filename,ARTHOME); strcat(filename,"/rhc3.mdl");
    compute_lm_transformation(filename, aimpil, Tright0);
-   sprintf(filename,"%s/%s.mdl",ARTHOME,"lhc3");
+   strcpy(filename,""); strcat(filename,ARTHOME); strcat(filename,"/lhc3.mdl");
    compute_lm_transformation(filename, aimpil, Tleft0);
 
    flipped=NO;
@@ -1737,13 +1735,13 @@ int main(int argc, char **argv)
    {
       //find_roi(&im_hdr[i], aimpil, TPIL[i], "rhc3", imagefileprefix[i], Tright0);
       //sprintf(roifile,"%s_RHROI1.nii",imagefileprefix[i]);
-      sprintf(roifile,"%s/%s_RHROI1.nii",imagedir[i],imagefileprefix[i]);
+      snprintf(roifile,DEFAULT_STRING_LENGTH,"%s/%s_RHROI1.nii",imagedir[i],imagefileprefix[i]);
       find_roi(&im_hdr[i], aimpil, TPIL[i], "rhc3", roifile, Tright0);
       compute_hi(imagefile[i], roifile, Rparenchymasize0[i], Rvoisize0[i]);
 
       //find_roi(&im_hdr[i], aimpil, TPIL[i], "lhc3", imagefileprefix[i], Tleft0);
       //sprintf(roifile,"%s_LHROI1.nii",imagefileprefix[i]);
-      sprintf(roifile,"%s/%s_LHROI1.nii",imagedir[i],imagefileprefix[i]);
+      snprintf(roifile,DEFAULT_STRING_LENGTH,"%s/%s_LHROI1.nii",imagedir[i],imagefileprefix[i]);
       find_roi(&im_hdr[i], aimpil, TPIL[i], "lhc3", roifile, Tleft0);
       compute_hi(imagefile[i], roifile, Lparenchymasize0[i], Lvoisize0[i]);
    }
@@ -1760,9 +1758,9 @@ int main(int argc, char **argv)
       aimpil.v=tmp;
 
       if(opt_v) printf("\nLandmark detection ...\n");
-      sprintf(filename,"%s/%s.mdl",ARTHOME,"lhc3");
+      snprintf(filename,DEFAULT_STRING_LENGTH,"%s/%s.mdl",ARTHOME,"lhc3");
       compute_lm_transformation(filename, aimpil, Tright1);
-      sprintf(filename,"%s/%s.mdl",ARTHOME,"rhc3");
+      snprintf(filename,DEFAULT_STRING_LENGTH,"%s/%s.mdl",ARTHOME,"rhc3");
       compute_lm_transformation(filename, aimpil, Tleft1);
 
       for(int i=0; i<nim; i++)
@@ -1771,13 +1769,13 @@ int main(int argc, char **argv)
 
          //find_roi(&im_hdr[i], aimpil, TPIL[i], "lhc3", imagefileprefix[i],Tright1);
          //sprintf(roifile,"%s_RHROI2.nii",imagefileprefix[i]);
-         sprintf(roifile,"%s/%s_RHROI2.nii",imagedir[i],imagefileprefix[i]);
+         snprintf(roifile,DEFAULT_STRING_LENGTH,"%s/%s_RHROI2.nii",imagedir[i],imagefileprefix[i]);
          find_roi(&im_hdr[i], aimpil, TPIL[i], "lhc3", roifile,Tright1);
          compute_hi(imagefile[i], roifile, Rparenchymasize1[i], Rvoisize1[i]);
 
          //find_roi(&im_hdr[i], aimpil, TPIL[i], "rhc3", imagefileprefix[i],Tleft1);
          //sprintf(roifile,"%s_LHROI2.nii",imagefileprefix[i]);
-         sprintf(roifile,"%s/%s_LHROI2.nii",imagedir[i],imagefileprefix[i]);
+         snprintf(roifile,DEFAULT_STRING_LENGTH,"%s/%s_LHROI2.nii",imagedir[i],imagefileprefix[i]);
          find_roi(&im_hdr[i], aimpil, TPIL[i], "rhc3", roifile,Tleft1);
          compute_hi(imagefile[i], roifile, Lparenchymasize1[i], Lvoisize1[i]);
 
@@ -1854,11 +1852,11 @@ int main(int argc, char **argv)
     set_dim(opdim, 59, 29, 45, 1.0, 1.0, 1.0);
 
     // read roi1 
-    sprintf(roifile,"%s/%s_LHROI1.nii",imagedir[i],imagefileprefix[i]);
+    snprintf(roifile,DEFAULT_STRING_LENGTH,"%s/%s_LHROI1.nii",imagedir[i],imagefileprefix[i]);
     roi1 = (int2 *)read_nifti_image(roifile, &hdr);
 
     // read roi2 
-    sprintf(roifile,"%s/%s_LHROI2.nii",imagedir[i],imagefileprefix[i]);
+    snprintf(roifile,DEFAULT_STRING_LENGTH,"%s/%s_LHROI2.nii",imagedir[i],imagefileprefix[i]);
     roi2 = (int2 *)read_nifti_image(roifile, &hdr);
    
     set_dim(roidim, hdr);
@@ -1902,7 +1900,7 @@ int main(int argc, char **argv)
     roiPIL = resliceImage(roi, roidim, opdim, invT, LIN);
     free(invT);
 
-    sprintf(roifile,"%s/%s_LHC_ROI.nii",imagedir[i],imagefileprefix[i]);
+    snprintf(roifile,DEFAULT_STRING_LENGTH,"%s/%s_LHC_ROI.nii",imagedir[i],imagefileprefix[i]);
     save_nifti_image(roifile, roiPIL, &PILbraincloud_hdr);
 
     im = (int2 *)read_nifti_image(imagefile[i], &hdr);
@@ -1910,7 +1908,7 @@ int main(int argc, char **argv)
     imHC = resliceImage(im, roidim, opdim, invT, LIN);
     free(invT);
 
-    sprintf(roifile,"%s/%s_LHC.nii",imagedir[i],imagefileprefix[i]);
+    snprintf(roifile,DEFAULT_STRING_LENGTH,"%s/%s_LHC.nii",imagedir[i],imagefileprefix[i]);
     save_nifti_image(roifile, imHC, &PILbraincloud_hdr);
 
     free(im); free(imHC);
@@ -1919,11 +1917,11 @@ int main(int argc, char **argv)
     // Processing the right side
     
     // read roi1 
-    sprintf(roifile,"%s/%s_RHROI1.nii",imagedir[i],imagefileprefix[i]);
+    snprintf(roifile,DEFAULT_STRING_LENGTH,"%s/%s_RHROI1.nii",imagedir[i],imagefileprefix[i]);
     roi1 = (int2 *)read_nifti_image(roifile, &hdr);
 
     // read roi2 
-    sprintf(roifile,"%s/%s_RHROI2.nii",imagedir[i],imagefileprefix[i]);
+    snprintf(roifile,DEFAULT_STRING_LENGTH,"%s/%s_RHROI2.nii",imagedir[i],imagefileprefix[i]);
     roi2 = (int2 *)read_nifti_image(roifile, &hdr);
    
     set_dim(roidim, hdr);
@@ -1973,7 +1971,7 @@ int main(int argc, char **argv)
     roiPIL = resliceImage(roi, roidim, opdim, invT, LIN);
     free(invT);
 
-    sprintf(roifile,"%s/%s_RHC_ROI.nii",imagedir[i],imagefileprefix[i]);
+    snprintf(roifile,DEFAULT_STRING_LENGTH,"%s/%s_RHC_ROI.nii",imagedir[i],imagefileprefix[i]);
     save_nifti_image(roifile, roiPIL, &PILbraincloud_hdr);
 
     im = (int2 *)read_nifti_image(imagefile[i], &hdr);
@@ -1981,7 +1979,7 @@ int main(int argc, char **argv)
     imHC = resliceImage(im, roidim, opdim, invT, LIN);
     free(invT);
 
-    sprintf(roifile,"%s/%s_RHC.nii",imagedir[i],imagefileprefix[i]);
+    snprintf(roifile,DEFAULT_STRING_LENGTH,"%s/%s_RHC.nii",imagedir[i],imagefileprefix[i]);
     save_nifti_image(roifile, imHC, &PILbraincloud_hdr);
 
     // reverts the header to PIL 
