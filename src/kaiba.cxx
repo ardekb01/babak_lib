@@ -1684,10 +1684,13 @@ printf("Point4\n");
       float *sum;
       short *tmp;
 
+printf("Point4.1\n");
+
       aimpil.v = (short *)calloc(aimpil.nv, sizeof(short));
       sum = (float *)calloc(aimpil.nv, sizeof(float));
       for(int v=0; v<aimpil.nv; v++) sum[v]=0.0;
 
+printf("Point4.2\n");
       for(int i=0; i<nim; i++)
       {
          loadTransformation(mrxfile[i], TPIL[i]);
@@ -1699,10 +1702,12 @@ printf("Point4\n");
          free(invT);
          free(tmp);
       }
+printf("Point4.3\n");
 
       for(int v=0; v<aimpil.nv; v++) aimpil.v[v] = (short)(sum[v]/nim + 0.5);
       free(sum);
 
+printf("Point4.4\n");
       strcpy(filename,""); strcat(filename,opprefix); strcat(filename,"_avg_PIL.nii");
       save_nifti_image(filename, aimpil.v, &PILbraincloud_hdr);
    } 
