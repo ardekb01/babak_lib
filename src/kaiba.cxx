@@ -281,7 +281,6 @@ float8 ncc_cost_function(float4 *T, DIM dimb, DIM dimf, float4 *sclbim, float4 *
    float4 subject_image_value, target_image_value;
 
    float4 *invT;
-   float4 dif;
    float8 cost=0.0;
    int v, slice_offset, offset;
    float4 Tmod[16]; //modified T
@@ -447,10 +446,10 @@ float8 ncc_cost_function(float4 *T, DIM dimb, DIM dimf, float4 *sclbim, float4 *
 // ICS is pointing down.  The z-axis is determined by the right-hand-rule.
 void transformation_to_magnet_coordinates(nifti_1_header hdr, float4 *T)
 {
-   float4 rowvec[3];
-   float4 columnvec[3];
-   float4 normalvec[3];
-   float4 centervec[3];
+   float4 rowvec[3]={0.,0.,0.};
+   float4 columnvec[3]={0.,0.,0.};
+   float4 normalvec[3]={0.,0.,0.};
+   float4 centervec[3]={0.,0.,0.};
 
    //printf("sizeof_hdr = %d\n", hdr.sizeof_hdr);
    //printf("number of dimensions = %d\n", hdr.dim[0]);
@@ -1010,8 +1009,6 @@ void symmetric_registration(SHORTIM &aimpil, const char *bfile, const char *ffil
          printf("Warning: cound not write to %s\n", filename);
       }
       ////////////////////////////////////////////////////////////////////////////////////////////
-      
-      free(invT);
    }
    /////////////////////////////////////////////////
 
@@ -1125,12 +1122,9 @@ void find_roi(nifti_1_header *subimhdr, SHORTIM pilim, float4 pilT[],const char 
    int jmin;
    int kmin;
 
-   int mskvox;
-   int vox;
    int2 *stndrd_roi;
 
    char filename[512];
-   FILE *fp;
 
    // hcim is a pre-processed (transformed) version of subim (the original input image in native orientation)
    // readied for hippocampus segmentation.
@@ -1275,7 +1269,7 @@ void compute_hi(char *imfile, char *roifile, float4 &parenchymasize, int &voisiz
 //   if(opt_v) printf("ROI size = %d voxels\n", voisize);
 
    /////////////////////////////////////////////////////////////
-   int im_min, im_max;
+   int im_min=0, im_max=0;
    float8 *hist;
    float8 *fit;
    float8 mean[MAXNCLASS+1];
@@ -1475,31 +1469,30 @@ int main(int argc, char **argv)
    nifti_1_header im_hdr[MAXIM];
    DIM PILbraincloud_dim;
    float TPIL[MAXIM][16];
-   float4 RHI0, RHI1, LHI0, LHI1;
+   //float4 RHI0, RHI1, LHI0, LHI1;
    float RHI, LHI, BHI, HIasymm;
    int Rvoisize0[MAXIM], Rvoisize1[MAXIM], Lvoisize0[MAXIM], Lvoisize1[MAXIM];
    float Rparenchymasize0[MAXIM], Rparenchymasize1[MAXIM], Lparenchymasize0[MAXIM], Lparenchymasize1[MAXIM];
 
-   int nim; // number of input images
+   int nim=0; // number of input images
    char **imagefile; // the nim input image files
    char **mrxfile; // the nim input image files
    char **imagefileprefix; 
    char **imagedir; 
    float *scalefactor;
-   char dummystring[DEFAULT_STRING_LENGTH];
 
    short *tmp;
 
    FILE *fp;
-   char filename[1024]="";  // a generic filename for reading/writing stuff
+   char filename[DEFAULT_STRING_LENGTH]="";  // a generic filename for reading/writing stuff
 
-   char opprefix[512]=""; // prefix used for reading/writing output files
+   char opprefix[DEFAULT_STRING_LENGTH]=""; // prefix used for reading/writing output files
 
-   char roifile[1024]="";
+   char roifile[DEFAULT_STRING_LENGTH]="";
 
-   char lmfile[1024]="";
+   char lmfile[DEFAULT_STRING_LENGTH]="";
 
-   char bfile[1024]=""; // baseline image filename
+   char bfile[DEFAULT_STRING_LENGTH]=""; // baseline image filename
 
    if(argc==1) print_help_and_exit();
 
@@ -1529,13 +1522,16 @@ int main(int argc, char **argv)
             opt_png=NO;
             break;
          case 'p':
-            sprintf(opprefix,"%s",optarg);
+            //sprintf(opprefix,"%s",optarg);
+            strcpy(opprefix,optarg);
             break;
          case 'l':
-            sprintf(lmfile,"%s",optarg);
+            //sprintf(lmfile,"%s",optarg);
+            strcpy(lmfile,optarg);
             break;
          case 'b':
-            sprintf(bfile,"%s",optarg);
+            //sprintf(bfile,"%s",optarg);
+            strcpy(bfile,optarg);
             break;
          case 'a':
             alpha_param = atof(optarg); 
@@ -1546,6 +1542,7 @@ int main(int argc, char **argv)
    }
 
    getARTHOME();
+   if(opt_v) printf("ARTHOME = %s\n", ARTHOME);
 
    /////////////////////////////////////////////////////////////////////////////////////
    // input image file names and transformation file names
@@ -1583,16 +1580,16 @@ int main(int argc, char **argv)
    for(int i=0; i<nim; i++)
    {
       imagefile[i] = (char *)calloc(DEFAULT_STRING_LENGTH, sizeof(char));
-      sprintf(imagefile[i],"");
+      imagefile[i][0]='\0';
 
       mrxfile[i] = (char *)calloc(DEFAULT_STRING_LENGTH, sizeof(char));
-      sprintf(mrxfile[i],"");
+      mrxfile[i][0]='\0';
 
       imagefileprefix[i] = (char *)calloc(DEFAULT_STRING_LENGTH, sizeof(char));
-      sprintf(imagefileprefix[i],"");
+      imagefileprefix[i][0]='\0';
 
       imagedir[i] = (char *)calloc(DEFAULT_STRING_LENGTH, sizeof(char));
-      sprintf(imagedir[i],"");
+      imagedir[i][0]='\0';
    }
 
    if( not_magical_nifti(bfile,0)==0 )  // a single image was specified using -i <image>.nii
