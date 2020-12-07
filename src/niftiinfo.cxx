@@ -73,8 +73,11 @@ int main(int argc, char **argv)
       swapByteOrder( (char *)&(hdr.vox_offset), sizeof(float));
       swapByteOrder( (char *)&(hdr.scl_slope), sizeof(float));
       swapByteOrder( (char *)&(hdr.scl_inter), sizeof(float));
+      swapByteOrder( (char *)&(hdr.slice_start), sizeof(short));
+      swapByteOrder( (char *)&(hdr.slice_end), sizeof(short));
       swapByteOrder( (char *)&(hdr.cal_max), sizeof(float));
       swapByteOrder( (char *)&(hdr.cal_min), sizeof(float));
+      swapByteOrder( (char *)&(hdr.slice_duration), sizeof(float));
       swapByteOrder( (char *)&(hdr.toffset), sizeof(float));
       swapByteOrder( (char *)&(hdr.qform_code), sizeof(short));
       swapByteOrder( (char *)&(hdr.sform_code), sizeof(short));
@@ -115,10 +118,14 @@ int main(int argc, char **argv)
    printf("vox_offset = %d\n",(int)hdr.vox_offset);
    printf("scl_slope = %f\n",hdr.scl_slope);
    printf("scl_inter = %f\n",hdr.scl_inter);
+   printf("slice_start = %d\n",hdr.slice_start);
+   printf("slice_end = %d\n",hdr.slice_end);
+   printf("slice_code = %d\n",hdr.slice_code);
 
    printf("xyzt_units = %d\n",hdr.xyzt_units);
    printf("cal_max = %f\n",hdr.cal_max);
    printf("cal_min = %f\n",hdr.cal_min);
+   printf("slice_duration = %f\n",hdr.slice_duration);
    printf("toffset = %f\n",hdr.toffset);
 
    printf("descrip = %s\n",hdr.descrip);
