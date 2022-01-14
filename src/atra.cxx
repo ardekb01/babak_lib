@@ -97,12 +97,14 @@ int del=20;
 int patch_radius=DEFAULT_PATCh_RADIUS;
 int search_radius=DEFAULT_SEARCH_RADIUS;
 int maxiter=MAXITER;
+int opt_nn=NO;
 /////////////////////////////////////
 
 int opt;
 
 static struct option options[] =
 {
+   {"-nn",0,'e'},
    {"-orient",1,'O'},
    {"-o",1,'o'},
    {"-nx",1,'x'},
@@ -129,14 +131,15 @@ static struct option options[] =
 
 void print_help_and_exit()
 {
-   printf("\nUsage: atra [-v -nx <n> -ny <n> -nz <n> -dx <f> -dy <f> -dz <f> -orient <code> -o <OutputPrefix> -nopng -noppm -notxt] -i <volume list>\n\n"
+   printf("\nUsage: atra [-v -nx <n> -ny <n> -nz <n> -dx <f> -dy <f> -dz <f> -orient <code> -o <OutputPrefix> -nopng -noppm -notxt -nn] -i <volume list>\n\n"
    "Required:\n"
    "\t-i <volume list>: A text file containing the list of 3D T1W volumes to be registered.\n"
    "\tThe input volumes are required to be in NIFTI-1 format of type 'short int'.\n\n"
    "Options:\n"
-   "\t-noppm Prevents outputting *.png images\n\n" 
+   "\t-nopng Prevents outputting *.png images\n\n" 
    "\t-noppm Prevents outputting *.ppm images\n\n" 
    "\t-notxt Prevents outputting *ACPC.txt\n\n" 
+   "\t-nn Uses the Nearest Neighbor inperpolation for output images\n\n"
    "\t-v Enables verbose mode\n\n" 
    "\t-nx <int> -ny <int> -nz <int>: Output matrix size (default: 255x255x189)\n\n"
    "\t-dx <float> -dy <float> -dz <float>: Output voxel size (default: 1.0x1.0x1.0 mm^3)\n\n"
@@ -811,7 +814,6 @@ void atra(const char *imagelistfile, DIM output_dim, const char *outputOrientati
    //////////////////////////////////////////////////////////
 
    float *mean; 
-   float min=0.0, max=0.0;
    int ii,jj,kk,np,ny;
 
    snprintf(temporaryFilename,sizeof(temporaryFilename),"%s.txt",outputPrefix);
@@ -841,11 +843,13 @@ void atra(const char *imagelistfile, DIM output_dim, const char *outputOrientati
       mean[i]/=final_nlm_aligned;
    }
 
-   minmax(mean,nim,min,max);
-
+   float scale=0.0;
+   for(int i=0; i<nim; i++) scale += mean[i];
+   scale /= nim;
+   
    for(int i=0; i<nim; i++) 
    {
-      scalefactor[i] = min/mean[i];
+      scalefactor[i] = scale/mean[i];
       fprintf(fp,"%s %f\n",imagefile[i],scalefactor[i]);
       snprintf(temporaryFilename,sizeof(temporaryFilename),"%s/%s.mrx",imagedir[i],imagefileprefix[i]);
       fprintf(fp,"%s\n",temporaryFilename);
@@ -869,7 +873,10 @@ void atra(const char *imagelistfile, DIM output_dim, const char *outputOrientati
 
       multi(PIL2OUT,4,4,TPIL[i],4,4,TOUT);
       invT = inv4(TOUT);
-      tmp = resliceImage(im[i].v,input_dim,output_dim,invT,LIN);
+      if(opt_nn)
+         tmp = resliceImage(im[i].v,input_dim,output_dim,invT,NEARN);
+      else
+         tmp = resliceImage(im[i].v,input_dim,output_dim,invT,LIN);
       free(invT);
 
       set_dim(tmp_hdr, output_dim);
@@ -973,6 +980,9 @@ int main(int argc, char **argv)
    {
       switch (opt) 
       {
+         case 'e':
+            opt_nn=YES;
+            break;
          case 'X':
             output_dim.dx = atof(optarg);
             break;
