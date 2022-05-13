@@ -10,6 +10,7 @@
 #include <nifti1_io.h>
 #include <niftiimage.h>
 #include <babak_lib.h>
+#include <minmax.h>
 
 #define YES 1
 #define NO 0
@@ -469,6 +470,8 @@ int main(int argc, char **argv)
   {
     printf("Input image matrix size: %d x %d x %d\n",ipdim.nx,ipdim.ny,ipdim.nz);
     printf("Input image voxel size: %6.4f x %6.4f x %6.4f\n",ipdim.dx,ipdim.dy,ipdim.dz);
+    printf("Input image scl_slope = %f\n",iphdr.scl_slope);
+    printf("Input image scl_inter = %f\n",iphdr.scl_inter);
   }
 
   // set nPA, nIS, nLR, dPA, dIS, dLR depending on iporient
@@ -525,6 +528,8 @@ int main(int argc, char **argv)
     printf("Output image: %s\n",opimagepath);
     printf("Output image matrix size: %d x %d x %d\n",opdim.nx,opdim.ny,opdim.nz);
     printf("Output image voxel size: %6.4f x %6.4f x %6.4f\n",opdim.dx,opdim.dy,opdim.dz);
+    printf("Output image scl_slope = %f\n",1.0);
+    printf("Output image scl_inter = %f\n",0.0);
     printf("Output image orientation: %s\n",oporient);
   }
 
@@ -546,6 +551,8 @@ int main(int argc, char **argv)
   ophdr.dim[2]=opdim.ny; 
   ophdr.dim[3]=opdim.nz;
   ophdr.dim[4] = 1;
+  ophdr.scl_slope = 1.0;
+  ophdr.scl_inter = 0.0;
   sprintf(ophdr.descrip,"Created by ART acpcdetect");
   //////////////////////////////////////////////////////////////////////////////
 

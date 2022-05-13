@@ -1079,7 +1079,13 @@ short *readNiftiImage(const char *filename, DIM *dim, int flg)
 
    fclose(fp);
 
-   return(im);
+  if( hdr.datatype == DT_SIGNED_SHORT || hdr.datatype == DT_UINT16) 
+  {
+    for(int i=0; i<nv; i++)
+      im[i] = (short)( im[i]*hdr.scl_slope + hdr.scl_inter + 0.5);
+  }
+
+  return(im);
 }
 
 #if 0
@@ -1350,6 +1356,21 @@ char *read_nifti_image(const char *filename, nifti_1_header *hdr)
       }
    }
 
-   free(imgname);
-   return(im);
+  int nv=1;
+  for(int i=1; i<=hdr->dim[0]; i++)
+  {
+    nv *= hdr->dim[i];
+  }
+
+  if( hdr->datatype == DT_SIGNED_SHORT || hdr->datatype == DT_UINT16) 
+  {
+    short *tmp;
+
+    tmp = (short *)im;
+    for(int i=0; i<nv; i++)
+      tmp[i] = (short)( tmp[i]*hdr->scl_slope + hdr->scl_inter + 0.5);    
+  }
+
+  free(imgname);
+  return(im);
 }

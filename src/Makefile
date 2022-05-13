@@ -194,12 +194,12 @@ brainwash: brainwash.cxx
 	$(CC) $(CFLAGS) -o 3dwarper 3dwarper.cxx $(LIBS) $(INC)
 	mv 3dwarper ${ARTHOME}/bin
 
-acpcdetect: acpcdetect.cxx
+acpcdetect: libbabak.a acpcdetect.cxx
 	$(CC) $(CFLAGS) -o acpcdetect acpcdetect.cxx $(LIBS) $(INC)
 	mv acpcdetect ${ARTHOME}/bin
 
 applywarp3d: applywarp3d.cxx
-	$(CC) $(CFLAGS) -o applywarp3d applywarp3d.cxx $(INC) $(LESSLIBS)
+	$(CC) $(CFLAGS) -o applywarp3d applywarp3d.cxx $(INC) $(LIBS)
 	mv applywarp3d ${ARTHOME}/bin
 
 scaleImage: scaleImage.cxx
@@ -207,7 +207,7 @@ scaleImage: scaleImage.cxx
 	mv scaleImage ${ARTHOME}/bin
 
 avgImage: avgImage.cxx
-	$(CC) $(CFLAGS) -o avgImage avgImage.cxx $(INC) $(LESSLIBS)
+	$(CC) $(CFLAGS) -o avgImage avgImage.cxx $(INC) $(LIBS)
 	mv avgImage ${ARTHOME}/bin
 
 one_sample_t: one_sample_t.cxx
@@ -223,7 +223,7 @@ unwarp2d: unwarp2d.cxx
 	mv unwarp2d ${ARTHOME}/bin
 
 cphdr: cphdr.cxx
-	$(CC) $(CFLAGS) -o cphdr cphdr.cxx $(INC) $(LESSLIBS)
+	$(CC) $(CFLAGS) -o cphdr cphdr.cxx $(INC) $(LIBS)
 	mv cphdr ${ARTHOME}/bin
 
 reslice: reslice.cxx
@@ -276,7 +276,7 @@ analyze2nii: analyze2nii.cxx
 	mv analyze2nii ${ARTHOME}/bin
 
 multiplyTransformation: multiplyTransformation.cxx
-	$(CC) $(CFLAGS) -o multiplyTransformation multiplyTransformation.cxx $(INC) $(LESSLIBS)
+	$(CC) $(CFLAGS) -o multiplyTransformation multiplyTransformation.cxx $(INC) $(LIBS)
 	mv multiplyTransformation ${ARTHOME}/bin
 
 niftiinfo: niftiinfo.cxx
