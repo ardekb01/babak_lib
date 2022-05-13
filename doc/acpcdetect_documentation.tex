@@ -13,7 +13,7 @@
 %\setcitestyle{authoryear}
 \setcitestyle{numbers,square}
 
-\title{Reference sheet for {\it acpcdetect} version 2.0 usage}
+\title{Reference sheet for {\it acpcdetect} version 2.1 usage}
 \author{Babak A. Ardekani, PhD}
 %\date{Spring 2015}
 
@@ -25,7 +25,7 @@ The program takes a 3D T1-weighted structural MRI of the human brain as input.
 It automatically detects the mid-sagittal plane (MSP) using the method described in \citep{pmid9533596}.
 It then detects the AC and PC intersection points on the MSP using the method described in \citep{pmid19264138}. 
 Finally, it detects 8 additional landmarks (the so-called Orion landmarks) on the MSP using the method 
-described in \citep{ardekani2018}.  
+described in \citep{pmid35288224}.  
 This information is used to tilt-correct the input volume into a standard orientation.  
 In this orientation: (1) the MSP is precisely aligned with the central plane of the FOV; 
 (2) the anterior-posterior (AP) axis is on the MSP and aligned with the AC-PC line; 
@@ -245,7 +245,7 @@ orientation of the input and output volumes are different, the voxel
 order will just be rearranged without any interpolation.  However, 
 both the SFORM and QFORM matrices of the output volume are adjusted to store
 the information necessary for tilt-correction.  This option makes it
-possible for other applications, e.g., image registration algorithms \citep{ardekani2018},
+possible for other applications, e.g., image registration algorithms \citep{pmid35288224},
 to use {\it acpcdetect} as a preprocessing method for tilt-correction
 without applying interpolation at this stage. 
 \vspace{3mm}
@@ -396,11 +396,11 @@ Output transformation matrix: /Users/ardekb01/babak\_lib/example1/v1.mrx
 Output transformation matrix (FSL format): /Users/ardekb01/babak\_lib/example1/v1\_FSL.mat 
 
 \noindent Note that is this example the program printout changes to reflect the customized output volume dimensions
-and orientation.  Incidentally, this custom dimensions specified in this example match those of
+and orientation.  Incidentally, the custom dimensions specified in this example match those of
 the volume \$ARTHOME/PILbrain.nii which represents the frequency that, after tilt-correction using
-{\it acpcdetect}, an $(i,j,k)$ voxel coincides with intra-cranial space \citep{ardekani2018}. 
+{\it acpcdetect}, an $(i,j,k)$ voxel coincides with intra-cranial space \citep{pmid35288224}. 
 This can be used to quickly determine a good estimate of the intra-cranial region on the input volume
-which may be useful in different applications \citep{ardekani2018}.
+which may be useful in different applications \citep{pmid35288224}.
 \vspace{3mm}
 
 \noindent {\large \bf Example 3:} Occasionally the automatic detection of MSP, AC, PC and/or VSPS
