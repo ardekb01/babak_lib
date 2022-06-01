@@ -267,8 +267,8 @@ fsl2art: fsl2art.cxx
 	mv fsl2art ${ARTHOME}/bin
 
 yuki: yuki.cxx
-#	$(MPICC) $(CFLAGS) -o yuki yuki.cxx $(INC) $(LIBS)
-	$(MPICC) $(CFLAGS) -o yuki yuki.cxx $(INC) -L${ARTHOME}/lib -lbabak -lniftiio -lznz -lm -lz -lc -llapack -lblas
+#	$(CC) $(CFLAGS) -o yuki yuki.cxx $(INC) $(LIBS)
+	$(CC) $(CFLAGS) -o yuki yuki.cxx $(INC) -L${ARTHOME}/lib -lbabak -lniftiio -lznz -lm -lz -lc -llapack -lblas
 	mv yuki ${ARTHOME}/bin
 
 analyze2nii: analyze2nii.cxx

@@ -1,6 +1,3 @@
-// The mail update in this version of the program is that it utilizes multiple processors using MPI
-// Added the -cc option
-
 #include <stdlib.h>
 #include <math.h>
 #include <strings.h>
@@ -14,10 +11,9 @@
 #include <spm_analyze.h>
 #include <nifti1_io.h>
 #include <babak_lib.h>
-#include <stats.h>
-#include <minmax.h>
 #include <smooth.h>
-#include <mpi.h>
+#include <minmax.h>
+#include <stats.h>
 
 #define YES 1
 #define NO 0
@@ -32,9 +28,9 @@
 #define LOWER_RIGHT_j 280
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
+float VSPS[4]={0.0, 0.0, 0.0, 1.0};
 float AC[4]={0.0, 0.0, 0.0, 1.0};
 float PC[4]={0.0, 0.0, 0.0, 1.0};
-float VSPS[4]={0.0, 0.0, 0.0, 1.0};
 
 //int np;
 float dx, dy, dz;
@@ -50,7 +46,7 @@ int Wx, Wy;
 int Lx, Ly;
 
 nifti_1_header sub_hdr;
-nifti_1_header output_hdr; // root only
+nifti_1_header output_hdr;
 short *subject_volume;
 int Snx, Sny, Snz;
 float Sdx, Sdy, Sdz;
@@ -117,6 +113,7 @@ static struct option options[] =
    {"-T", 1,  'T'},
    {"-csv", 1,  'c'},
    {"-mrx", 0,  'm'},
+   {"-nomrx", 0,  'N'},
    {"-ppm", 0,  'p'},
    {"-acpc", 0,  'p'},
    {"-box", 0,  'b'},
@@ -137,7 +134,7 @@ static struct option options[] =
 
 int opt_a=NO; // if YES, a user-specific atlas has been given at the command line
 int opt_cc=NO;
-int opt_mrx=NO;
+int opt_mrx=YES;
 int opt_box=NO;
 int opt_W=NO;
 int opt_H=NO;
@@ -383,25 +380,20 @@ void update_qsform( const char *imagefilename , float *matrix)
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-// this function should only be run under procID=root
 short *find_subject_msp(char *imagefilename, char *prefix)
 {
    DIM input_dim, output_dim;
    short *msp;
-   char orientation[4]="";
-   char modelfile[1024]="";
-   int opt_T2=NO;
-
-   float Tmsp[16]; // transforms volOrig to MSP aligned PIL orientation
-
-   float ac[4], pc[4];  
 
    float *invT;
 
    char outputfilename[512];
    FILE *fp;
 
-   detect_AC_PC_MSP(imagefilename, orientation, modelfile, AC, PC, VSPS, Tmsp, 0, opt_T2);
+   char landmarksfilepath[512]="";
+   char iporient[4]="";
+
+   new_PIL_transform(imagefilename, landmarksfilepath, iporient, Tacpc, 0);
 
    input_dim.nx = Snx;
    input_dim.ny = Sny;
@@ -418,47 +410,6 @@ short *find_subject_msp(char *imagefilename, char *prefix)
    output_dim.dy = dy;
    output_dim.dz = dz;
    output_dim.dt = 0.0;
-
-   // convert the AC/PC from (i,j,k) in original space to (x,y,z) in PIL space
-   for(int i=0; i<4; i++) ac[i] = AC[i];
-   for(int i=0; i<4; i++) pc[i] = PC[i];
-
-   // convert the AC/PC from (i,j,k) in original space to (x,y,z) in PIL space
-   orig_ijk_to_pil_xyz(Tmsp, input_dim, ac, pc);
-   ACPCtransform(Tacpc, Tmsp, ac, pc, 0);
-
-   // this part of the code located the ac and pc locations on the MSP-AC-PC aligned sagittal slice in (i,j) coordinates.
-   // the actuall ac location is actuall approximately acpoint+0.5.  also pc is approx. pcpoint+0.5 
-   // on the output PPM image, we mark points acpoint, acpoint+1, pcpoint and pcpoint+1 on rows 255 and 256.
-   {
-      float I2X[16];
-      float X2I[16];
-
-      for(int i=0; i<4; i++) ac[i] = AC[i];
-      for(int i=0; i<4; i++) pc[i] = PC[i];
-
-      ijk2xyz(I2X, input_dim.nx, input_dim.ny, input_dim.nz, input_dim.dx, input_dim.dy, input_dim.dz);
-
-      multi(I2X, 4, 4,  ac, 4,  1, ac);
-      multi(I2X, 4, 4,  pc, 4,  1, pc);
-
-      multi(Tacpc, 4, 4,  ac, 4,  1, ac);
-      multi(Tacpc, 4, 4,  pc, 4,  1, pc);
-
-      ACx=ac[0]; 
-      PCx=pc[0];
-
-      xyz2ijk(X2I, output_dim.nx, output_dim.ny, output_dim.nz, output_dim.dx, output_dim.dy, output_dim.dz);
-
-      multi(X2I, 4, 4,  ac, 4,  1, ac);
-      multi(X2I, 4, 4,  pc, 4,  1, pc);
-
-      acpoint = (int)ac[0];
-      pcpoint = (int)pc[0];
-
-      ACi=ac[0];
-      PCi=pc[0];
-   }
 
    invT = inv4(Tacpc);
    msp = resliceImage(subject_volume,input_dim, output_dim,invT,LIN);
@@ -477,7 +428,7 @@ short *find_subject_msp(char *imagefilename, char *prefix)
       }
       else
       {
-         printf("Cound not write to %s.\n", outputfilename);
+         printf("Could not write to %s.\n", outputfilename);
       }
    }
 
@@ -513,7 +464,6 @@ short *find_subject_msp(char *imagefilename, char *prefix)
    return(msp);
 }
 
-// this function should only be run under procID=root
 short *find_subject_msp(char *imagefilename, char *prefix, char *msp_transformation_file)
 {
    DIM input_dim, output_dim;
@@ -600,7 +550,7 @@ short *find_subject_msp(char *imagefilename, char *prefix, char *msp_transformat
       float PIL2RAS[16];
 
       output_hdr = read_NIFTI_hdr(imagefilename);
-      output_hdr.pixdim[1]=output_dim.dx; 
+      output_hdr.pixdim[1]=output_dim.dx;
       output_hdr.pixdim[2]=output_dim.dy; 
       output_hdr.pixdim[3]=output_dim.dz;
       output_hdr.dim[1]=output_dim.nx; 
@@ -656,6 +606,8 @@ void output_ppm(short *trg, short *cc_est, const char *prefix)
    }
 
    minmax(trg, NP, min, max);
+
+   if(max==0) max=1; // to avoid division by zero
 
    //////////////////////////////////////////////////////////////////////////////////
    // outputs visualization of Witelson's subdivisions
@@ -803,14 +755,14 @@ void output_ppm(short *trg, short *cc_est, const char *prefix)
       int O[2];
       O[0] = (int)rintf( hampel_origin[0] );
       O[1] = (int)rintf( hampel_origin[1] );
-      for(int i=O[0]-3; i<=O[0]+3; i++)
+      for(int i=O[0]-5; i<=O[0]+5; i++)
       {
          R[O[1]*NX+i] = 0;
          G[O[1]*NX+i] = 0;
          B[O[1]*NX+i] = 255;
       }
 
-      for(int j=O[1]-3; j<=O[1]+3; j++)
+      for(int j=O[1]-5; j<=O[1]+5; j++)
       {
          R[j*NX+O[0]] = 0;
          G[j*NX+O[0]] = 0;
@@ -840,6 +792,9 @@ void output_ppm(short *trg, short *cc_est, const char *prefix)
       }
    }
 
+//
+// The following two lines if enabled saves the MSP image with a red CC border
+//
    if(opt_border)
    {
       //////////////////////////////////////////////////////////////////////////////
@@ -899,7 +854,6 @@ void output_ppm(short *trg, short *cc_est, const char *prefix)
 void output_bounding_box_ppm(short *trg, const char *prefix) 
 {
    char outputfile[1024]="";
-//   short min, max;
    int min=0, max=0;
 
    ////////////////////////////////////////////////////////////
@@ -923,8 +877,9 @@ void output_bounding_box_ppm(short *trg, const char *prefix)
       memory_allocation_error("B");
    }
 
-   // minmax(trg, NP, &min, &max);
    setLowHigh(trg, NP, &min, &max);
+
+   if(max==0) max=1; // to avoid division by zero
 
    for(int v=0; v<NP; v++)
    {
@@ -941,7 +896,6 @@ void output_bounding_box_ppm(short *trg, const char *prefix)
          B[v] = (unsigned char)(trg[v]*255.0/max);
       }
    }
-
 
    //////////////////////////////////////////////////////////////////////////////
    // draws the boudning box in *cc.ppm image
@@ -986,6 +940,7 @@ void output_bounding_box_ppm(short *trg, const char *prefix)
 
    if( acpoint<5 || acpoint>(NX-5)) acpoint = NX/2;
    if( pcpoint<5 || pcpoint>(NX-5)) pcpoint = NX/2;
+
    // mark the AC and PC locations
    for(int j=(NY/2-1)-5; j<=(NY/2)+5; j++)
    {
@@ -1023,7 +978,6 @@ void output_bounding_box_ppm(short *trg, const char *prefix)
          }
       }
    }
-
  
    /////////////////////////////////////////////////////////////////////////////////////
    // mark the CC border 
@@ -1034,17 +988,32 @@ void output_bounding_box_ppm(short *trg, const char *prefix)
       R[ ubj[b]*NX+ubi[b]] = 255;
       G[ ubj[b]*NX+ubi[b]] = 255;
       B[ ubj[b]*NX+ubi[b]] = 0;
+      
+      if(opt_border)
+      {
+         R[ ubj[b]*NX+ubi[b]] = 255;
+         G[ ubj[b]*NX+ubi[b]] = 0;
+         B[ ubj[b]*NX+ubi[b]] = 0;
+      }
    }
    for(int b=0; b<nlb; b++)
    {
       R[ lbj[b]*NX+lbi[b]] = 0;
       G[ lbj[b]*NX+lbi[b]] = 255;
       B[ lbj[b]*NX+lbi[b]] = 255;
+
+      if(opt_border)
+      {
+         R[ lbj[b]*NX+lbi[b]] = 255;
+         G[ lbj[b]*NX+lbi[b]] = 0;
+         B[ lbj[b]*NX+lbi[b]] = 0;
+      }
    }
 
    /////////////////////////////////////////////////////////////////////////////////////
    // Mark the medial axis as red
 
+   if(!opt_border)
    for(int v=0; v<nm; v++)
    {
       R[ medj[v]*NX + medi[v]] = 255;
@@ -1056,6 +1025,7 @@ void output_bounding_box_ppm(short *trg, const char *prefix)
    // mark rostrum, most anterior and most posterior points etc.
    
    for(int i=rostrum[0]-3; i<=rostrum[0]+3; i++)
+   if(i<NX && i>=0)
    {
       R[rostrum[1]*NX+i] = 0;
       G[rostrum[1]*NX+i] = 0;
@@ -1063,6 +1033,7 @@ void output_bounding_box_ppm(short *trg, const char *prefix)
    }
 
    for(int j=rostrum[1]-3; j<=rostrum[1]+3; j++)
+   if(j<NY && j>=0)
    {
       R[j*NX+rostrum[0]] = 0;
       G[j*NX+rostrum[0]] = 0;
@@ -1070,6 +1041,7 @@ void output_bounding_box_ppm(short *trg, const char *prefix)
    }
    
    for(int i=anterior_point[0]-3; i<=anterior_point[0]+3; i++)
+   if(i<NX && i>=0)
    {
       R[anterior_point[1]*NX+i] = 0;
       G[anterior_point[1]*NX+i] = 0;
@@ -1077,6 +1049,7 @@ void output_bounding_box_ppm(short *trg, const char *prefix)
    }
 
    for(int j=anterior_point[1]-3; j<=anterior_point[1]+3; j++)
+   if(j<NY && j>=0)
    {
       R[j*NX+anterior_point[0]] = 0;
       G[j*NX+anterior_point[0]] = 0;
@@ -1084,6 +1057,7 @@ void output_bounding_box_ppm(short *trg, const char *prefix)
    }
 
    for(int i=posterior_point[0]-3; i<=posterior_point[0]+3; i++)
+   if(i<NX && i>=0)
    {
       R[posterior_point[1]*NX+i] = 0;
       G[posterior_point[1]*NX+i] = 0;
@@ -1091,6 +1065,7 @@ void output_bounding_box_ppm(short *trg, const char *prefix)
    }
 
    for(int j=posterior_point[1]-3; j<=posterior_point[1]+3; j++)
+   if(j<NY && j>=0)
    {
       R[j*NX+posterior_point[0]] = 0;
       G[j*NX+posterior_point[0]] = 0;
@@ -1098,6 +1073,7 @@ void output_bounding_box_ppm(short *trg, const char *prefix)
    }
 
    for(int i=inferior_genu[0]-3; i<=inferior_genu[0]+3; i++)
+   if(i<NX && i>=0)
    {
       R[inferior_genu[1]*NX+i] = 0;
       G[inferior_genu[1]*NX+i] = 0;
@@ -1105,6 +1081,7 @@ void output_bounding_box_ppm(short *trg, const char *prefix)
    }
 
    for(int j=inferior_genu[1]-3; j<=inferior_genu[1]+3; j++)
+   if(j<NY && j>=0)
    {
       R[j*NX+inferior_genu[0]] = 0;
       G[j*NX+inferior_genu[0]] = 0;
@@ -1112,6 +1089,7 @@ void output_bounding_box_ppm(short *trg, const char *prefix)
    }
 
    for(int i=inferior_splenium[0]-3; i<=inferior_splenium[0]+3; i++)
+   if(i<NX && i>=0)
    {
       R[inferior_splenium[1]*NX+i] = 0;
       G[inferior_splenium[1]*NX+i] = 0;
@@ -1119,6 +1097,7 @@ void output_bounding_box_ppm(short *trg, const char *prefix)
    }
 
    for(int j=inferior_splenium[1]-3; j<=inferior_splenium[1]+3; j++)
+   if(j<NY && j>=0)
    {
       R[j*NX+inferior_splenium[0]] = 0;
       G[j*NX+inferior_splenium[0]] = 0;
@@ -1126,6 +1105,7 @@ void output_bounding_box_ppm(short *trg, const char *prefix)
    }
 
    for(int i=posterior_genu[0]-3; i<=posterior_genu[0]+3; i++)
+   if(i<NX && i>=0)
    {
       R[posterior_genu[1]*NX+i] = 0;
       G[posterior_genu[1]*NX+i] = 0;
@@ -1133,6 +1113,7 @@ void output_bounding_box_ppm(short *trg, const char *prefix)
    }
 
    for(int j=posterior_genu[1]-3; j<=posterior_genu[1]+3; j++)
+   if(j<NY && j>=0)
    {
       R[j*NX+posterior_genu[0]] = 0;
       G[j*NX+posterior_genu[0]] = 0;
@@ -1287,136 +1268,110 @@ void cw_eight_neighbor(short *im, int nx, int ny, int del_i, int del_j, int &bi,
 }
 
 //////////////////////////////////////////////////////////////////////////////////
-// NOTE: array t is expected to be a least size (n+1)
-float compute_perimeter(float *x, float *y, float *t, int n)
+
+float estimate_circumference(short *msk, int nx, int ny, float dx, float dy, int *borderi, int *borderj, int &nb)
 {
-   float delx, dely;
+   int si, sj;
+   int b;
+   int indx;
+   int ci, cj;
+   int ni[8];
+   int nj[8];
+   int zero_image_flg=1;
 
-   t[0] = 0.0;
-
-   for(int i=1; i<n; i++)
+   // zeros the first and last rows
+   for(int i=0; i<nx; i++)
    {
-      delx = x[i]-x[i-1];
-      dely = y[i]-y[i-1];
-
-      t[i] = t[i-1] + sqrtf( delx*delx + dely*dely );
+      msk[  0*nx    + i ]=0;
+      msk[(ny-1)*nx + i ]=0;
    }
 
-   // closing loop
-   delx = x[n-1]-x[0];
-   dely = y[n-1]-y[0];
-   t[n] = t[n-1] + sqrtf( delx*delx + dely*dely );
-
-   return(t[n]);
-}
-//////////////////////////////////////////////////////////////////////////////////
-
-//////////////////////////////////////////////////////////////////////////////////
-// IMPORTANT: The posterior_point of the CC must be found correctly before running
-// this function.
-//////////////////////////////////////////////////////////////////////////////////
-// nb: number of border pixels
-float estimate_perimeter(short *msk, int nx, int ny, float dx, float dy, int *&cci, int*&ccj, int &nb)
-{
-   int ncc; // number of pixels comprising the CC
-   int np;
-   float *ccx, *ccy, *cct;
-   int bi=0;
-   int bj=0;
-   int del_i, del_j;
-   float perimeter;
-
-   np = nx*ny;
-
-   ncc=0;
-   for(int i=0; i<np; i++)
+   // zeros the first and last columns
+   for(int j=0; j<ny; j++)
    {
-      if(msk[i]>0)
+      msk[ j*nx +   0    ]=0;
+      msk[ j*nx + (nx-1) ]=0;
+   }
+
+   // find s (Step 1)
+   for(int n=0; n<nx*ny; n++)
+   {
+      if( msk[n]>0 ) 
       {
-         ncc++;
+         si = n%nx;
+         sj = n/nx;
+         zero_image_flg=0;
+         break;
       }
    }
 
-   // more memory than need because nb<ncc
-   cci = (int *)calloc(ncc, sizeof(int));
-   if(cci == NULL)
+   if( zero_image_flg )
    {
-      memory_allocation_error("cci");
+      nb=0;
+      return(0.0);
    }
 
-   ccj = (int *)calloc(ncc, sizeof(int));
-   if(ccj == NULL)
-   {
-      memory_allocation_error("ccj");
-   }
+   // initialize c (Step 2)
+   ci=si;
+   cj=sj;
 
-   ccx = (float *)calloc(ncc, sizeof(float));
-   if(ccx == NULL)
-   {
-      memory_allocation_error("ccx");
-   }
+   // initialize b (Step 2)
+   b = 0;
 
-   ccy = (float *)calloc(ncc, sizeof(float));
-   if(ccy == NULL)
-   {
-      memory_allocation_error("ccy");
-   }
+   nb=0;
+   do {
 
-   cct = (float *)calloc(ncc, sizeof(float));
-   if(cct == NULL)
-   {
-      memory_allocation_error("cct");
-   }
-
-   cci[0] = posterior_point[0];
-   ccj[0] = posterior_point[1];
-
-   // this is a critical choice.  It happens to work for the way the posterior point is found.  
-   // It must be altered for a different starting point.
-   del_i = 1; 
-   del_j = 0;
-
-   nb = 0;
-   do
-   {
+      borderi[nb]=ci;
+      borderj[nb]=cj;
       nb++;
 
-      cw_eight_neighbor(msk, nx, ny, del_i, del_j, bi, bj, posterior_point[0], posterior_point[1]);
+      // set n (Step 3)
+      ni[0]=ci-1; nj[0]=cj;
+      ni[1]=ci-1; nj[1]=cj-1;
+      ni[2]=ci;   nj[2]=cj-1;
+      ni[3]=ci+1; nj[3]=cj-1;
+      ni[4]=ci+1; nj[4]=cj;
+      ni[5]=ci+1; nj[5]=cj+1;
+      ni[6]=ci;   nj[6]=cj+1;
+      ni[7]=ci-1; nj[7]=cj+1;
 
-      del_i = bi - posterior_point[0];
-      del_j = bj - posterior_point[1];
+      // initialize next c (Step 3)
+      for(int k=0; k<8; k++)
+      {
+         indx = (b+k)%8;   
+         if( msk[ nj[indx]*nx + ni[indx] ] > 0)
+         {
+            ci = ni[indx];
+            cj = nj[indx];
 
-      cci[nb]=posterior_point[0];
-      ccj[nb]=posterior_point[1];
+            // very important derivation takes:
+            // index =0 or 1 to b=6
+            // index =2 or 3 to b=0 
+            // index =4 or 5 to b=2 
+            // index =6 or 7 to b=4
+            b = ((indx/2 - 1)*2 + 8)%8;
+            break;
+         }
+      }
 
-   }
-   while( posterior_point[0]!=cci[0] || posterior_point[1]!=ccj[0] );  // see if it has come full circle
+   } while( ci!=si || cj!=sj);
 
-   // convert from (i,j) to (x,y) coordinates
-   for(int b=0; b<nb; b++)
+   float circumference=0.0;
+   float d1, d2;
+
+   for(int k=1; k<nb; k++)
    {
-      ccx[b] = (cci[b]-(nx-1.0)/2.0)*dx;
-      ccy[b] = (ccj[b]-(ny-1.0)/2.0)*dy;
+      d1 = (borderi[k]-borderi[k-1])*dx;
+      d2 = (borderj[k]-borderj[k-1])*dy;
+      circumference += sqrtf( d1*d1 + d2*d2 );
    }
+   d1 = (borderi[0]-borderi[nb-1])*dx;
+   d2 = (borderj[0]-borderj[nb-1])*dy;
+   circumference += sqrtf( d1*d1 + d2*d2 );
 
-/*
-This was not necessary and causing problems
-   for(int b=0; b<nb; b++)
-   {
-      msk[ccj[b]*nx + cci[b]]=2;
-   }
-*/
-
-   perimeter=compute_perimeter(ccx, ccy, cct, nb);
-
-   free(ccx);
-   free(ccy);
-   free(cct);
-
-   return( perimeter );
+   return(circumference);
 }
-
-//////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
 
 void estimate_witelson(short *msk, int nx, int ny, float dx, float dy, float *W)
 {
@@ -1437,30 +1392,37 @@ void estimate_witelson(short *msk, int nx, int ny, float dx, float dy, float *W)
       if(msk[v]>0 && i>=(posterior_point[0]-cc_length_fifth) ) // W7
       {
          W[7] += dx*dy;
+         msk[v]=7;
       }
       else if(msk[v]>0 && i>=(posterior_point[0]-cc_length_third) ) // W6
       {
          W[6] += dx*dy;
+         msk[v]=6;
       }
       else if(msk[v]>0 && i>=(posterior_point[0]-cc_length_half) ) // W5
       {
          W[5] += dx*dy;
+         msk[v]=5;
       }
       else if(msk[v]>0 && i>=(anterior_point[0]+cc_length_third) ) // W4
       {
          W[4] += dx*dy;
+         msk[v]=4;
       }
       else if(msk[v]>0 && i<=posterior_genu[0] ) // W2
       {
          W[2] += dx*dy;
+         msk[v]=2;
       }
       else if(msk[v]>0 && j>=posterior_genu[1] ) // W1
       {
          W[1] += dx*dy;
+         msk[v]=1;
       }
       else if(msk[v]>0) // W3
       {
          W[3] += dx*dy;
+         msk[v]=3;
       }
    }
 }
@@ -1503,26 +1465,32 @@ void estimate_hampel(short *msk, int nx, int ny, float dx, float dy, float *H)
       if(msk[v]>0 && theta <= pi/5.0) // H5
       {
          H[5] += dx*dy;
+         msk[v]=5;
       }
       else if(msk[v]>0 && theta <= 2.0*pi/5.0 ) // H4
       {
          H[4] += dx*dy;
+         msk[v]=4;
       }
       else if(msk[v]>0 && theta <= 3.0*pi/5.0 ) // H3
       {
          H[3] += dx*dy;
+         msk[v]=3;
       }
       else if(msk[v]>0 && theta <= 4.0*pi/5.0 ) // H2
       {
          H[2] += dx*dy;
+         msk[v]=2;
       }
       else if(msk[v]>0 && theta <= pi ) // H1
       {
          H[1] += dx*dy;
+         msk[v]=1;
       }
       else if(msk[v]>0) // H0
       {
          H[0] += dx*dy;
+         msk[v]=0;
       }
    }
 }
@@ -1813,7 +1781,7 @@ void separate_upper_and_lower_boundaries(int *&ubi, int *&ubj, int *&lbi, int *&
    return;
 }
 //////////////////////////////////////////////////////////////////////////////////
-void find_medial_point(int i, int j, short *dist, short *cc)
+void find_medial_point(int i, int j, short *cc)
 {
    short mindist=32767;
    int ii=-1;
@@ -1904,12 +1872,12 @@ void find_medial_point(int i, int j, short *dist, short *cc)
       }
    }
 
-   find_medial_point(ii, jj, dist, cc);
+   find_medial_point(ii, jj, cc);
 
    return;
 }
 
-void find_medial_axis(short *cc, short *dist)
+void find_medial_axis(short *cc)
 {
    double dub, dlb;
    double dubmin, dlbmin;
@@ -1953,7 +1921,34 @@ void find_medial_axis(short *cc, short *dist)
       dist[j*NX + i]= 0;
    }
 
-   find_medial_point(inferior_splenium[0], inferior_splenium[1], dist, cc);
+   //uncomment to save "distance map"
+   //save_nifti_image("distance.nii", dist, &output_hdr);
+
+   //find_medial_point(inferior_splenium[0], inferior_splenium[1], cc);
+   find_medial_point(rostrum[0], rostrum[1], cc);
+
+   //////////////////////////////////////////////////////////////////////////////////
+   // reverse (medi, medj) order.  This is because we now start from rostrum instead
+   // of the inferior splenium.
+   //////////////////////////////////////////////////////////////////////////////////
+   int *dumi;
+   int *dumj;
+   dumi = (int *)calloc(nm, sizeof(int));
+   dumj = (int *)calloc(nm, sizeof(int));
+
+   for(int n=0; n<nm; n++)
+   {
+      dumi[n]=medi[n];
+      dumj[n]=medj[n];
+   }
+
+   for(int n=0; n<nm; n++)
+   {
+      medi[n] = dumi[nm-1-n];
+      medj[n] = dumj[nm-1-n];
+   }
+   free(dumi);
+   free(dumj);
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -2218,8 +2213,8 @@ void find_thickness_profile(short *cc, const char *prefix)
          normj[m] = 0.0;
       }
 
-      // up to this point, normi and normj has been the tanget line
-      // here, it converted to the normal line by a 90-deg rotation (i,j) --> (-j,i)
+      // up to this point, normi and normj has been really the tanget line
+      // here, it converted to the real normal line by a 90-deg rotation (i,j) --> (-j,i)
       dum = normi[m];
       normi[m] = -normj[m];
       normj[m] = dum;
@@ -2440,9 +2435,7 @@ int main(int argc, char **argv)
 {
    FILE *fp;
 
-   double startTime=0.0;
-   double endTime=0.0;
-
+   int kmin=0, kmax=100;
    float max_t=0.0;
 
    short *atlas_cc=NULL;
@@ -2476,7 +2469,7 @@ int main(int argc, char **argv)
 
    int number_of_atlases_available;
 
-   nifti_1_header atlas_hdr; // root only
+   nifti_1_header atlas_hdr;
 
    float sd;
 
@@ -2497,30 +2490,6 @@ int main(int argc, char **argv)
    int window_width=5;
 
    /////////////////////////////////////////////
-   // MPI related
-   int abort_flag=NO;
-   int nproc; // Number of processes
-   int root=0;
-   int procID; // Process ID
-   char procname[MPI_MAX_PROCESSOR_NAME];  // Processor name
-   int procnamelen; // Length of the processor name
-
-   /////////////////////////////////////////////
-
-   // Initialize MPI
-   MPI_Init(&argc, &argv);
-   
-   // Get process rank
-   MPI_Comm_rank(MPI_COMM_WORLD, &procID);
-
-   if(procID==root)
-   {
-      startTime = MPI_Wtime();
-   }
-   // Get total number of processes specificed at start of run
-   MPI_Comm_size(MPI_COMM_WORLD, &nproc);
-
-   MPI_Get_processor_name(procname, &procnamelen);
 
    // by setting this option, the program will not output the *ACPC_axial.ppm and *ACPC_sagittal.ppm files
    // for the AC/PC detection program.
@@ -2528,11 +2497,9 @@ int main(int argc, char **argv)
    opt_txt=0;
 
    ////////////////////////////////////////////////////////////////////////
-   // Only root process write messages
    if( argc==1 ) 
    {
-      if( procID==root ) { print_help(); }
-      MPI_Finalize(); // MPI needs to be always finalized before exit
+      print_help();
       exit(0);
    }
    ////////////////////////////////////////////////////////////////////////
@@ -2541,16 +2508,13 @@ int main(int argc, char **argv)
    {
       switch (opt) {
          case 's':
-            if( procID==root ) { print_secret_help(); }
-            MPI_Finalize();
+            print_secret_help();
             exit(0);
          case 'V':
-            if( procID==root ) { printf("Version 2.1 for Open MPI 1.6\n"); }
-            MPI_Finalize();
+            printf("Version 2.1s\n");
             exit(0);
          case 'h':
-            if( procID==root ) { print_help(); }
-            MPI_Finalize();
+            print_help();
             exit(0);
          case 'n':
             number_of_atlases_used=atoi(optarg);
@@ -2578,8 +2542,8 @@ int main(int argc, char **argv)
          case 'v':
             opt_v=YES;
             break;
-         case 'm':
-            opt_mrx=YES;
+         case 'N':
+            opt_mrx=NO;
             break;
          case 'p':
             opt_ppm=YES;
@@ -2614,17 +2578,16 @@ int main(int argc, char **argv)
             AC[0] = atoi(argv[optind-1]);
             AC[1] = atoi(argv[optind+0]);
             AC[2] = atoi(argv[optind+1]);
-            opt_AC= NO;
+            opt_AC = NO;
             break;
          case 'P':
             PC[0] = atoi(argv[optind-1]);
             PC[1] = atoi(argv[optind+0]);
             PC[2] = atoi(argv[optind+1]);
-            opt_PC= NO;
+            opt_PC = NO;
             break;
          case '?':
-            if( procID==root) { print_help(); }
-            MPI_Finalize();
+            print_help();
             exit(0);
       }
    }
@@ -2657,92 +2620,65 @@ int main(int argc, char **argv)
 
    if(ARTHOME == NULL)
    {
-      if(procID==root) { printf("The ARTHOME environment variable is not defined.\n"); }
-      MPI_Finalize();
+      printf("The ARTHOME environment variable is not defined.\n");
       exit(0);
    }
 
-   if(opt_v && procID==root)
+   if(opt_v)
    {
       printf("ARTHOME = %s\n",ARTHOME);
    }
    /////////////////////////////////////////////////////////////////////////////////////////////
    
-   ///////////////////////////////////////////////////////////////////////////////
-   // read subject volume
+   /////////////////////////////////////////////////////////////////////////////////////////////
+   // read subject volume if opt_cc is not selected
 
    if(!opt_cc)
    {
 
       if( subjectfile[0]=='\0')
       {
-         if(procID==root) { printf("Please specify a subject volume using -i argument.\n"); }
-         MPI_Finalize();
+         printf("Please specify a subject volume using -i argument.\n");
          exit(0);
       }
-      ///////////////////////////////////////////////////////////////////////////////
 
-      ///////////////////////////////////////////////////////////////////////////////
       // check to see if subjectfile appears to be a NIFTI image
-      if( procID==root && not_magical_nifti(subjectfile) )
+      if( not_magical_nifti(subjectfile) )
       {
-         abort_flag = YES;
-      }
-
-      MPI_Bcast(&abort_flag, 1, MPI_INT, root, MPI_COMM_WORLD);
-      if(abort_flag)
-      {
-         MPI_Finalize();
          exit(0);
       }
-      ///////////////////////////////////////////////////////////////////////////////
 
-      if( opt_v && procID==root)
+      if( opt_v )
       {
          printf("Subject volume = %s\n",subjectfile);
       }
 
-      ///////////////////////////////////////////////////////////////////////////////
-      // only the root process reads the subjectfile
-   
-      if( procID == root)
+      subject_volume=(short *)read_nifti_image(subjectfile, &sub_hdr);
+
+      if(subject_volume == NULL)
       {
-         subject_volume=(short *)read_nifti_image(subjectfile, &sub_hdr);
-
-         if(subject_volume == NULL)
-         {
-            printf("Error reading %s, aborting ...\n", subjectfile);
-            abort_flag = YES;
-         }
-
-         if( !abort_flag )
-         {
-            Snx=sub_hdr.dim[1]; Sny=sub_hdr.dim[2]; Snz=sub_hdr.dim[3];
-            Sdx=sub_hdr.pixdim[1]; Sdy=sub_hdr.pixdim[2]; Sdz=sub_hdr.pixdim[3];
-
-            if(sub_hdr.datatype != DT_SIGNED_SHORT && sub_hdr.datatype != 512)
-            {
-               printf("\nSorry, this program currently only handles volume of datatype DT_SIGNED_SHORT (4)\n"
-               "or DT_UINT16 (512). %s has datatype %d.\n.", subjectfile, sub_hdr.datatype);
-               abort_flag = YES;
-            }
-         }
-
-         if( !abort_flag && opt_v)
-         {
-            printf("Subject volume matrix size = %d x %d x %d (voxels)\n", Snx, Sny, Snz);
-            printf("Subject voxel size = %8.6f x %8.6f x %8.6f (mm3)\n", Sdx, Sdy, Sdz);
-         }
-      }
-
-      MPI_Bcast(&abort_flag, 1, MPI_INT, root, MPI_COMM_WORLD);
-      if(abort_flag)
-      {
-         MPI_Finalize();
+         printf("Error reading %s, aborting ...\n", subjectfile);
          exit(0);
       }
+
+      Snx=sub_hdr.dim[1]; Sny=sub_hdr.dim[2]; Snz=sub_hdr.dim[3];
+      Sdx=sub_hdr.pixdim[1]; Sdy=sub_hdr.pixdim[2]; Sdz=sub_hdr.pixdim[3];
+
+      if(sub_hdr.datatype != DT_SIGNED_SHORT && sub_hdr.datatype != 512)
+      {
+         printf("\nSorry, this program currently only handles images of datatype\n"
+         "DT_SIGNED_SHORT=4 or DT_UINT16=512. %s has datatype %d. Aborting ...\n\n", 
+         subjectfile, sub_hdr.datatype);
+         exit(0);
+      }
+
+      if(opt_v)
+      {
+         printf("Subject volume matrix size = %d x %d x %d (voxels)\n", Snx, Sny, Snz);
+         printf("Subject voxel size = %8.6f x %8.6f x %8.6f (mm3)\n", Sdx, Sdy, Sdz);
+      }
    }
-   /////////////////////////////////////////////////////////////////////////////////////////
+   /////////////////////////////////////////////////////////////////////////////////////////////
 
    if( prefix[0]=='\0')
    {
@@ -2759,8 +2695,7 @@ int main(int argc, char **argv)
          }
          else
          {
-            if(procID==root) {printf("Please specify an output prefix using -o option.\n");}
-            MPI_Finalize();
+            printf("Please specify an output prefix using -o option.\n");
             exit(0);
          }
       }
@@ -2775,117 +2710,77 @@ int main(int argc, char **argv)
          }
          else
          {
-            if(procID==root) {printf("Please specify an output prefix using -o option.\n");}
-            MPI_Finalize();
+            printf("Please specify an output prefix using -o option.\n");
             exit(0);
          }
       }
    }
 
-   if(procID==root && opt_v)
+   if(opt_v)
    {
       printf("Output prefix = %s\n",prefix);
    }
 
    /////////////////////////////////////////////////////////////////////////////////////////
    
+   if(!opt_a)
+   {
+      sprintf(inputfile,"%s/%s",ARTHOME, atlasfile);
+   }
+   else
+   {
+      sprintf(inputfile,"%s", atlasfile);
+   }
+
+   if(opt_v)
+   {
+      printf("Atlas file = %s\n", inputfile);
+   }
+
+   // check to see if atlasfile appears to be a NIFTI image
+   if( not_magical_nifti(inputfile) )
+   {
+      exit(0);
+   }
+
+   atlas=(short *)read_nifti_image(inputfile, &atlas_hdr);
+
+   if(atlas==NULL)
+   {
+      printf("Error reading %s, aborting ...\n", inputfile);
+      exit(0);
+   }
+
+   /////////////////////////////////////////////////////////////////////////////////////////
+
+   bbnx=atlas_hdr.dim[1]; 
+   bbny=atlas_hdr.dim[2];
+   number_of_atlases_available = atlas_hdr.dim[3]/2;
+   dx=atlas_hdr.pixdim[1]; 
+   dy=atlas_hdr.pixdim[2]; 
+   dz=atlas_hdr.pixdim[3];
+   vox_offset = (int)atlas_hdr.vox_offset;
+
+   bbnp= bbnx*bbny;
+
    if(!opt_cc)
    {
-      if(!opt_a)
-      {
-         sprintf(inputfile,"%s/%s",ARTHOME, atlasfile);
-      }
-      else
-      {
-         sprintf(inputfile,"%s", atlasfile);
-      }
-
-      if(procID==root && opt_v)
-      {
-         printf("Atlas file = %s\n", inputfile);
-      }
-
       /////////////////////////////////////////////////////////////////////////////////////////
 
-      // check to see if atlasfile appears to be a NIFTI image
-      if( procID==root && not_magical_nifti(inputfile) )
-      {
-         abort_flag = YES;
-      }
-
-      MPI_Bcast(&abort_flag, 1, MPI_INT, root, MPI_COMM_WORLD);
-      if(abort_flag)
-      {
-         MPI_Finalize();
-         exit(0);
-      }
-
-      /////////////////////////////////////////////////////////////////////////////////////////
-      // root process reads the atlas
-
-      if( procID==root )
-      {
-         atlas=(short *)read_nifti_image(inputfile, &atlas_hdr);
-
-         if(atlas==NULL)
-         {
-            printf("Error reading %s, aborting ...\n", inputfile);
-            abort_flag = YES;
-         }
-      }
-      MPI_Bcast(&abort_flag, 1, MPI_INT, root, MPI_COMM_WORLD);
-      if(abort_flag)
-      {
-         MPI_Finalize();
-         exit(0);
-      }
-
-      /////////////////////////////////////////////////////////////////////////////////////////
-
-      if( procID == root )
-      {
-         bbnx=atlas_hdr.dim[1]; 
-         bbny=atlas_hdr.dim[2];
-         number_of_atlases_available = atlas_hdr.dim[3]/2;
-         dx=atlas_hdr.pixdim[1]; 
-         dy=atlas_hdr.pixdim[2]; 
-         dz=atlas_hdr.pixdim[3];
-         vox_offset = (int)atlas_hdr.vox_offset;
-      }
-      MPI_Bcast(&bbnx, 1, MPI_INT, root, MPI_COMM_WORLD);
-      MPI_Bcast(&bbny, 1, MPI_INT, root, MPI_COMM_WORLD);
-      MPI_Bcast(&dx, 1, MPI_FLOAT, root, MPI_COMM_WORLD);
-      MPI_Bcast(&dy, 1, MPI_FLOAT, root, MPI_COMM_WORLD);
-      MPI_Bcast(&dz, 1, MPI_FLOAT, root, MPI_COMM_WORLD);
-      MPI_Bcast(&number_of_atlases_available, 1, MPI_INT, root, MPI_COMM_WORLD);
-      MPI_Bcast(&vox_offset, 1, MPI_INT, root, MPI_COMM_WORLD);
-      bbnp= bbnx*bbny;
-
-      /////////////////////////////////////////////////////////////////////////////////////////
-
-      if(procID==root && atlas_hdr.datatype != DT_SIGNED_SHORT && atlas_hdr.datatype != 512)
+      if(atlas_hdr.datatype != DT_SIGNED_SHORT && atlas_hdr.datatype != 512)
       {
          printf("\nSorry, this program currently only handles atlases of datatype DT_SIGNED_SHORT (4)\n"
          "or DT_UINT16 (512). %s has datatype %d.\n.", atlasfile, atlas_hdr.datatype);
-         abort_flag = YES;
-      }
-      MPI_Bcast(&abort_flag, 1, MPI_INT, root, MPI_COMM_WORLD);
-      if(abort_flag)
-      {
-         MPI_Finalize();
          exit(0);
       }
 
       /////////////////////////////////////////////////////////////////////////////////////////
 
-      if(procID==root)
-      {
-         output_hdr = atlas_hdr;
-         output_hdr.dim[3] = 1;
-         output_hdr.dim[1] = NX;
-         output_hdr.dim[2] = NY;
-         sprintf(output_hdr.descrip,"Created by ART ccdetector");
-      }
+      output_hdr = atlas_hdr;
+      output_hdr.dim[3] = 1;
+      output_hdr.dim[1] = NX;
+      output_hdr.dim[2] = NY;
+      sprintf(output_hdr.descrip,"Created by ART ccdetector");
 
       /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -2911,16 +2806,14 @@ int main(int argc, char **argv)
       /////////////////////////////////////////////////////////////////////////////////////////
       // allocate memory for various arrays
 
-      if(procID==root)
-      {
-         cc_est = (short *)calloc(NP, sizeof(short));
-         dumf = (float *)calloc(bbnp, sizeof(float));
-      }
+      cc_est = (short *)calloc(NP, sizeof(short));
+      dumf = (float *)calloc(bbnp, sizeof(float));
+
+      /////////////////////////////////////////////////////////////////////////////////////////
 
       if(preselected_atlases[0]!='\0') 
       {
-         if(procID==root)
-            printf("Preselected atlases = %s\n", preselected_atlases);
+         printf("Preselected atlases = %s\n", preselected_atlases);
 
          fp = fopen(preselected_atlases,"r");
          if(fp==NULL) file_open_error(preselected_atlases);
@@ -2936,9 +2829,8 @@ int main(int argc, char **argv)
          number_of_atlases_used = number_of_atlases_available;
       }
 
-      if(procID==root && opt_v)
+      if(opt_v)
       {
-         //printf("process %d sees:\n",procID);
          //printf("Atlas matrix size = %d x %d (pixels)\n", bbnx, bbny);
          //printf("Atlas voxel size = %8.6f x %8.6f x %8.6f (mm3)\n", dx, dy, dz);
          printf("Number of atlases available = %d\n", number_of_atlases_available);
@@ -2963,21 +2855,17 @@ int main(int argc, char **argv)
       /////////////////////////////////////////////////////////////////////////////////////////
       // trg image will be NX*NY (i.e., 512*512)
    
-      if(procID==root)
+      if( msp_transformation_file[0]=='\0')
       {
-         if( msp_transformation_file[0]=='\0')
-         {
-            trg = find_subject_msp(subjectfile,prefix);
-         }
-         else
-         {
-            trg = find_subject_msp(subjectfile, prefix, msp_transformation_file);
-         }
+         trg = find_subject_msp(subjectfile,prefix);
+      }
+      else
+      {
+         trg = find_subject_msp(subjectfile, prefix, msp_transformation_file);
       }
 
       /////////////////////////////////////////////////////////////////////////////////////////
    
-      if(procID==root)
       {
          count=0;
          for(int j=UPPER_LEFT_j; j<=LOWER_RIGHT_j; j++)
@@ -3021,7 +2909,6 @@ int main(int argc, char **argv)
          fclose(fp);
       }
 
-      if(procID==root)
       {
          int a;
          for(int i=0; i<number_of_atlases_used; i++)
@@ -3036,14 +2923,7 @@ int main(int argc, char **argv)
                atlas_cc[i*bbnp + v] = atlas_cc_ptr[v];
             }
          }
-         free(atlas);
       }
-
-      MPI_Bcast(bbtrg, bbnp, MPI_SHORT, root, MPI_COMM_WORLD);
-      MPI_Bcast(atlas_indx, number_of_atlases_available, MPI_INT, root, MPI_COMM_WORLD);
-      MPI_Bcast(corr, number_of_atlases_available, MPI_FLOAT, root, MPI_COMM_WORLD);
-      MPI_Bcast(atlas_msp, number_of_atlases_used*bbnp, MPI_SHORT, root, MPI_COMM_WORLD);
-      MPI_Bcast(atlas_cc, number_of_atlases_used*bbnp, MPI_SHORT, root, MPI_COMM_WORLD);
 
       /////////////////////////////////////////////////////////////////////////////////////////
       //
@@ -3057,7 +2937,6 @@ int main(int argc, char **argv)
          int a;
          short *warped_cc;
 
-         if(procID == i%nproc)
          {
             a = atlas_indx[number_of_atlases_available-1-i];
             atlas_msp_ptr = atlas_msp+i*bbnp;
@@ -3108,39 +2987,79 @@ int main(int argc, char **argv)
 
             if(opt_v)
             {
-               printf("%d/%d: atlas #%03d corr=%6.4f processor=%d on %s\n", 
-               i+1, number_of_atlases_used, a, corr[number_of_atlases_available-1-i], procID, procname);
+               printf("%d/%d: atlas #%03d corr=%6.4f\n", 
+               i+1, number_of_atlases_used, a, corr[number_of_atlases_available-1-i]);
             }
          }
       }
 
       ////////////////////////////////////////////////////////////
 
-      if(procID==root)
+      for(int v=0; v<bbnp; v++) 
       {
-         MPI_Reduce(MPI_IN_PLACE, avg_warped_cc, bbnp, MPI_FLOAT, MPI_SUM, root, MPI_COMM_WORLD);
-      }
-      else
-      {
-         MPI_Reduce(avg_warped_cc, avg_warped_cc, bbnp, MPI_FLOAT, MPI_SUM, root, MPI_COMM_WORLD);
+         avg_warped_cc[v] /= number_of_atlases_used;
       }
 
-      if(procID==root)
-      {
-         for(int v=0; v<bbnp; v++) 
-         {
-            avg_warped_cc[v] /= number_of_atlases_used;
-         }
-      }
-
-//atlas_hdr.dim[3]=1;
-//atlas_hdr.datatype=16; 
-//sprintf(outputfile,"p.nii");
-//save_nifti_image(outputfile, avg_warped_cc, &atlas_hdr);
-//atlas_hdr.datatype=4; 
       ////////////////////////////////////////////////////////////
+      // find kmin and kmax
+      {
+         float ccarea[101];
+         int run[100];
+         int vox;
+         for(int k=0; k<=100; k++)
+         {
+            ccarea[k]=0.0;
+            for(int i=1; i<bbnx-1; i++)
+            for(int j=1; j<bbny-1; j++)
+            {
+               vox = j*bbnx + i;
+               if( avg_warped_cc[vox] > (k*1.0) ) 
+               {
+                  ccarea[k] += dx*dy;
+               }
+            }
+         }
 
-      if( procID==root )
+         for(int k=0; k<100; k++)
+         {
+            //if( (ccarea[k]-ccarea[k+1]) < 10.0) run[k]=1; else run[k]=0;
+            if( (ccarea[k]-ccarea[k+1]) < 5.0) run[k]=1; else run[k]=0;
+         }
+
+         int nruns=0;
+         int run_start_index[100];
+         int run_length[100];
+         int max_run=0;
+
+         for(int k=0; k<100; k++)
+         if( run[k]==1 )
+         {
+            run_start_index[nruns]=k;
+            run_length[nruns] = 0;
+            while( run[k]==1 && k<100) 
+            {  
+               run_length[nruns]++;
+               k++;
+            }  
+            nruns++;
+         }
+
+         for(int i=0; i<nruns; i++) 
+         {
+             if( run_length[i] > max_run )
+             {
+                max_run = run_length[i];
+                kmin = run_start_index[i];
+                kmax = run_start_index[i]+max_run-1;
+             }
+         }
+
+         if( opt_v )
+            printf("Threshold selection interval: [%d, %d]\n",kmin, kmax);
+      }
+
+      ////////////////////////////////////////////////////////////
+      
       {
          float mean1, mean2;
          float ssd;
@@ -3151,7 +3070,7 @@ int main(int argc, char **argv)
 
          fdr = (float *)calloc(101, sizeof(float));
 
-         for(int k=0; k<=100; k++)
+         for(int k=kmin; k<=kmax; k++)
          {
             float t;
             t = k*1.0;
@@ -3210,7 +3129,7 @@ int main(int argc, char **argv)
 
          int maxidx=0;
          float maxfdr=0.0;
-         for(int k=0; k<=100; k++)
+         for(int k=kmin; k<=kmax; k++)
          {
             if(fdr[k] > maxfdr) 
             {
@@ -3224,7 +3143,6 @@ int main(int argc, char **argv)
          //{
          //   printf("maxfdr=%f maxidx=%d\n",maxfdr, maxidx);
          //}
-
          if(max_t != 0.0)
          {
             if( opt_v )
@@ -3253,7 +3171,7 @@ int main(int argc, char **argv)
             {
                int voxel = j*bbnx + i;
 
-               if( avg_warped_cc[voxel] > maxidx*1.0) 
+               if( avg_warped_cc[voxel] > max_t)
                { 
                   cc_est[ (j+UPPER_LEFT_j)*NX + (i+UPPER_LEFT_i)]=1;
                }
@@ -3264,7 +3182,6 @@ int main(int argc, char **argv)
             } // j
          } // i
       }
-
    }
 
    if(opt_cc)
@@ -3275,7 +3192,6 @@ int main(int argc, char **argv)
    }
 
    ////////////////////////////////////////////////////////////
-   if(procID==root)
    {
       // locates the most anterior point of the CC
       for(int i=UPPER_LEFT_i; i<=LOWER_RIGHT_i; i++)
@@ -3356,41 +3272,43 @@ int main(int argc, char **argv)
    }
 
    //////////////////////////////////////////////////////////////////////////
-   //////////////////////////////////////////////////////////////////////////
    if(!opt_cc)
    {
-      if(procID==root)
-      {
-         // write program output
-         output_ppm(trg, cc_est, (const char *)prefix);
+      // write program output
+      output_ppm(trg, cc_est, (const char *)prefix);
 
-         output_hdr.pixdim[4]=ACi;
-         output_hdr.pixdim[5]=PCi;
-         output_hdr.pixdim[6]=ACx;
-         output_hdr.pixdim[7]=PCx;
+      output_hdr.pixdim[4]=ACi;
+      output_hdr.pixdim[5]=PCi;
+      output_hdr.pixdim[6]=ACx;
+      output_hdr.pixdim[7]=PCx;
+      output_hdr.pixdim[1]=0.5;
+      output_hdr.pixdim[2]=0.5;
+      output_hdr.pixdim[3]=1.0;
+      output_hdr.dim[1]=NX;
+      output_hdr.dim[2]=NY;
+      output_hdr.dim[3]=1;
+      output_hdr.datatype=16;
 
-         sprintf(outputfile,"%s_cc.nii",prefix);
-         save_nifti_image(outputfile, cc_est, &output_hdr);
+      sprintf(outputfile,"%s_cc.nii",prefix);
+      save_nifti_image(outputfile, cc_est, &output_hdr);
 
-         update_qsform( (const char *)outputfile, Tacpc );
-         //////////////////////////////////////////////////////////////////////////
-      }
+      update_qsform( (const char *)outputfile, Tacpc );
    }
    
-   if(procID==root)
    {
       CCarea = estimate_area(cc_est, NX, NY, dx, dy);
-      CCperimeter = estimate_perimeter(cc_est, NX, NY, dx, dy, cci, ccj, nb);
- 
+
+      cci = (int *)calloc(bbnp,sizeof(int));
+      ccj = (int *)calloc(bbnp,sizeof(int));
+
+      CCperimeter = estimate_circumference(cc_est, NX, NY, dx, dy, cci, ccj, nb);
+
       // separates the CC boundary (cci, ccj) into an upper part (ubi, ubj)
       // and a lower part (lbi, lbj)
       separate_upper_and_lower_boundaries(ubi, ubj, lbi, lbj, cci, ccj, nb);
 
       // finds (medi, medj) representing a CC medial axis
-      find_medial_axis(cc_est, dist);
-      //uncomment to save "distance map"
-      //sprintf(outputfile,"tt.nii");
-      //save_nifti_image(outputfile, dist, &output_hdr);
+      find_medial_axis(cc_est);
       
       CCcircularity = compute_circularity(CCarea, CCperimeter);
 
@@ -3402,11 +3320,51 @@ int main(int argc, char **argv)
       if(opt_W)
       {
          estimate_witelson(cc_est, NX, NY, dx, dy, W);
+
+         if(!opt_cc)
+         {
+            output_hdr.pixdim[4]=ACi;
+            output_hdr.pixdim[5]=PCi;
+            output_hdr.pixdim[6]=ACx;
+            output_hdr.pixdim[7]=PCx;
+            output_hdr.pixdim[1]=0.5;
+            output_hdr.pixdim[2]=0.5; 
+            output_hdr.pixdim[3]=1.0;
+            output_hdr.dim[1]=NX; 
+            output_hdr.dim[2]=NY; 
+            output_hdr.dim[3]=1;
+            output_hdr.datatype=16;
+
+            sprintf(outputfile,"%s_cc_witelson.nii",prefix);
+            save_nifti_image(outputfile, cc_est, &output_hdr);
+
+            update_qsform( (const char *)outputfile, Tacpc );
+         }
       }
 
       if(opt_H)
       {
          estimate_hampel(cc_est, NX, NY, dx, dy, H);
+
+         if(!opt_cc)
+         {
+            output_hdr.pixdim[4]=ACi;
+            output_hdr.pixdim[5]=PCi;
+            output_hdr.pixdim[6]=ACx;
+            output_hdr.pixdim[7]=PCx;
+            output_hdr.pixdim[1]=0.5;
+            output_hdr.pixdim[2]=0.5; 
+            output_hdr.pixdim[3]=1.0;
+            output_hdr.dim[1]=NX; 
+            output_hdr.dim[2]=NY; 
+            output_hdr.dim[3]=1;
+            output_hdr.datatype=16;
+
+            sprintf(outputfile,"%s_cc_hampel.nii",prefix);
+            save_nifti_image(outputfile, cc_est, &output_hdr);
+
+            update_qsform( (const char *)outputfile, Tacpc );
+         }
       }
 
       if(csvfile[0]=='\0')
@@ -3450,7 +3408,7 @@ int main(int argc, char **argv)
          {
             fp = fopen(csvfile,"a");
             if(fp==NULL) file_open_error(csvfile);
-            fprintf(fp,"ID, CC_area, CC_perimeter, CC_circularity, CC_length");
+            fprintf(fp,"\"ID\", CC_area, CC_perimeter, CC_circularity, CC_length");
             if(opt_W) 
             {
                fprintf(fp,", W1, W2, W3, W4, W5, W6, W7");
@@ -3465,7 +3423,7 @@ int main(int argc, char **argv)
 
          fp = fopen(csvfile,"a");
          if(fp==NULL) file_open_error(csvfile);
-         fprintf(fp,"%s, ",prefix);
+         fprintf(fp,"\"%s\", ",prefix);
          fprintf(fp,"%6.2f, ",CCarea);
          fprintf(fp,"%6.2f, ",CCperimeter);
          fprintf(fp,"%8.6f, ",CCcircularity);
@@ -3495,32 +3453,15 @@ int main(int argc, char **argv)
 
    ////////////////////////////////////////////////////////////
 
-   endTime = MPI_Wtime();
-
-   if(!opt_cc)
-   {
-      if(opt_v && procID==root)
-      {
-         printf("Processing time = %6.2lf\n",endTime-startTime);
-      }
-   }
-
-   ////////////////////////////////////////////////////////////
    // free all allocated memory
-   if(procID==root)
-   {
-      free(cc_est);
-      free(cci);
-      free(ccj);
-   }
+   free(cc_est);
+   free(cci);
+   free(ccj);
+   free(atlas);
 
    if(!opt_cc)
    {
-      if(procID==root)
-      {
-         free(dumf);
-      }
-
+      free(dumf);
       free(avg_warped_cc);
       free(Xwarp);
       free(Ywarp);
@@ -3532,8 +3473,4 @@ int main(int argc, char **argv)
       free(atlas_msp);
       free(atlas_cc);
    }
-
-   ////////////////////////////////////////////////////////////
-   // Terminate  MPI execution environment
-   MPI_Finalize();
 }
