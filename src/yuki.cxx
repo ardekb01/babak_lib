@@ -2511,7 +2511,7 @@ int main(int argc, char **argv)
             print_secret_help();
             exit(0);
          case 'V':
-            printf("Version 2.1s\n");
+            printf("Version 2.2\n");
             exit(0);
          case 'h':
             print_help();
