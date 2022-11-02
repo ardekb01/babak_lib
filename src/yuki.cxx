@@ -99,42 +99,36 @@ int opt;
 
 static struct option options[] =
 {
-   {"-A", 1,  'L'},
+   {"-i", 1,  'i'},
+   {"-v", 0,  'v'},
+   {"-verbose", 0,  'v'},
+   {"-V", 0,  'V'},
    {"-version", 0,  'V'},
    {"-h", 0,  'h'},
    {"-help", 0,  'h'},
-   {"-v", 0,  'v'},
-   {"-verbose", 0,  'v'},
-   {"-a", 1, 'a'},
-   {"-atlas", 1, 'a'},
-   {"-o", 1, 'o'},
-   {"-i", 1,  'i'},
    {"-n", 1,  'n'},
-   {"-T", 1,  'T'},
+   {"-o", 1, 'o'},
    {"-csv", 1,  'c'},
+   {"-H", 0,  'H'},
+   {"-Hampel", 0,  'H'},
+   {"-W", 0,  'W'},
+   {"-Witelson", 0,  'W'},
+   {"-png", 0,  'p'},
+   {"-lm",1,'l'},  // landmark  file
+   {"-A", 1,  'L'},
+   {"-T", 1,  'T'},
    {"-mrx", 0,  'm'},
-   {"-nomrx", 0,  'N'},
-   {"-ppm", 0,  'p'},
-   {"-acpc", 0,  'p'},
    {"-box", 0,  'b'},
    {"-secret", 0,  's'},
-   {"-W", 0,  'W'},
-   {"-Hampel", 0,  'H'},
-   {"-H", 0,  'H'},
    {"-border", 0, 'B'},
    {"-cc", 1, 'C'},
-   {"-VSPS",1,'S'},
-   {"-AC",1,'A'},
-   {"-PC",1,'P'},
    {"-t",1,'t'},
    {"-thresh",1,'t'},
    {"-threshold",1,'t'},
    {0, 0,  0}
 };
 
-int opt_a=NO; // if YES, a user-specific atlas has been given at the command line
 int opt_cc=NO;
-int opt_mrx=YES;
 int opt_box=NO;
 int opt_W=NO;
 int opt_H=NO;
@@ -380,7 +374,7 @@ void update_qsform( const char *imagefilename , float *matrix)
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-short *find_subject_msp(char *imagefilename, char *prefix)
+short *find_subject_msp(char *imagefilename, char *prefix, char *lmfile)
 {
    DIM input_dim, output_dim;
    short *msp;
@@ -390,10 +384,9 @@ short *find_subject_msp(char *imagefilename, char *prefix)
    char outputfilename[512];
    FILE *fp;
 
-   char landmarksfilepath[512]="";
    char iporient[4]="";
 
-   new_PIL_transform(imagefilename, landmarksfilepath, iporient, Tacpc, 0);
+   new_PIL_transform(imagefilename, lmfile , iporient, Tacpc, 0);
 
    input_dim.nx = Snx;
    input_dim.ny = Sny;
@@ -415,8 +408,6 @@ short *find_subject_msp(char *imagefilename, char *prefix)
    msp = resliceImage(subject_volume,input_dim, output_dim,invT,LIN);
    free(invT);
    
-   // If -mrx option is selected, save the matrix that makes the input image to MSP/AC-PC aligned
-   if(opt_mrx)
    {
       sprintf(outputfilename,"%s_msp.mrx",prefix);
       fp = fopen(outputfilename,"w");
@@ -464,7 +455,7 @@ short *find_subject_msp(char *imagefilename, char *prefix)
    return(msp);
 }
 
-short *find_subject_msp(char *imagefilename, char *prefix, char *msp_transformation_file)
+short *find_subject_msp_using_transformation(char *imagefilename, char *prefix, char *msp_transformation_file)
 {
    DIM input_dim, output_dim;
    short *msp;
@@ -1136,56 +1127,59 @@ void output_bounding_box_ppm(short *trg, const char *prefix)
 // NOTE: The commented out lines reflect secret options
 void print_help()
 {
-   printf("\nUsage: yuki [-v -version -h -o <output prefix> -csv <csvfile> -Hampel -W -acpc -cc] -i <subject volume>\n\n"
+   printf("\nUsage: yuki [optional arguments] -cc -lm <filename> -i <input-filename>.nii\n\n"
+ 
+   "Required argument:\n\n"
 
-   "-v : enables verbose mode\n\n"
+   "-i <input-filename>.nii : the 3D MRI volume (short int NIFTI format) on which the\n"
+   "corpus callosum is to be located\n\n"
 
-   "-version : reports version\n\n"
+   "Optional arguments:\n\n"
 
-   "-h : prints help message\n\n"
+   "-verbose or -v : enables verbose mode\n\n"
 
-   "-o <output prefix> : prefix for naming output files (default: same as input prefix)\n\n"
+   "-version or -V: reports software version\n\n"
+
+   "-help or -h : prints help message\n\n"
+
+   "-n <integer> : specifies the number of atlases to be used\n\n"
+
+   "-o <output-prefix> : prefix for naming output files (default = <input-filename>)\n\n"
 
    "-csv <csvfile> : CC measurments (area, perimeter, etc.) will be appended to this file in\n"
-   "comma-separated values (CSV) format (default: <output prefix>.csv)\n\n"
+   "comma-separated values (CSV) format (default: <output-prefix>.csv)\n\n"
 
-   "-Hampel: outputs <prefix>_cc_hampel.ppm as well as 5 Hampel sub-areas\n\n"
+   "-Hampel or H: segments the CC according to Hampel's method and outputs the 5 sub-areas\n"
+   "as well as <output-prefix>_cc_hampel.ppm and <output-prefix>_cc_hampel.nii images\n\n"
 
-   "-W: outputs <prefix>_cc_witelson.ppm as well as 7 Witelson sub-areas\n\n"
+   "-Witelson or W: segments the CC according to Witelson's method and outputs the 7 sub-areas\n"
+   "as well as <output-prefix>_cc_witelson.ppm and <output-prefix>_cc_witelson.nii images\n\n"
 
-   "-acpc: outputs files <prefix>_ACPC.txt, <prefix>_ACPC_axial.ppm, and <prefix>_ACPC_sagittal.ppm\n"
-   "that show the results of AC/PC and MSP detection\n\n"
+   "-png : Outputs *.png images in addition to the *.ppm images\n\n"
 
-   "-cc <corrected_cc.nii>: This option is used when the out binary CC image is corrected manually and we\n"
-   "need to recalculate the CC related measurements (area, circularlity, etc.) for the corrected image\n\n"
+   "-lm <filename> : Manually specifies AC/PC/VSPS landmarks for <input-filename>.nii\n\n"
 
-   "-i <mprage>.nii : the 3D MRI volume (short int NIFTI format) on which the corpus callosum\n"
-   "is to be located\n\n");
+   "-A <filename> : Uses preselected set of atlases specified in <filename> instead of\n"
+   "automated atlas selection. <filename> is always the output of a previous yuki run.\n\n"
+
+   "-cc <corrected_cc.nii>: This option is used when the out binary CC image is corrected\n"
+   "manually and we need to recalculate the CC related measurements (area, circularlity, etc.)\n"
+   "for the corrected image.\n\n"
+
+   "-T <filename.mrx>: Applies the transformation matrix in <filename.mrx> to reorient\n"
+   "the <input-filename>.nii volume in preperation for CC detection. Thus, automatic\n"
+   "reorientation is disabled.\n\n");
 
    return;
 }
 
 void print_secret_help()
 {
-   printf("\nUsage: yuki [-version -h -o <output prefix> -csv <csvfile>] -i <subject volume>\n\n"
-   "[-v -mrx -ppm -box -W -border -a <atlas> -n <# atlases>]\n"
-   "-version : reports version\n\n"
-   "-v : enables verbose mode\n\n"
+   printf("\nUsage: yuki [-version -h -o <output-prefix> -csv <csvfile>] -i <subject volume>\n\n"
+   "[-v -mrx -ppm -box -W -border -n <# atlases>]\n"
    "-mrx : saves the transformation matrix that makes the input image MSP/AC-PC aligned\n\n"
-   "-ppm (same as -acpc): saves files related to AC/PC and MSP detection\n\n"
    "-box : draws the CC search window on <prefix>_cc.ppm\n\n"
-   "-W: outputs <prefix>_cc_witelson.ppm as well as 7 Witelson sub-areas\n\n"
-   "-Hampel: outputs <prefix>_cc_hampel.ppm as well as 5 Hampel sub-areas\n\n"
-   "-border : outputs <prefix>_cc_border.ppm\n\n"
-   "-h : prints help message\n\n"
-   "-n <# atlases> : number of atlases used (default: 49)\n\n"
-   "-a <atlas> : atlas used (default: $ARTHOME/default_yuki_atlas.nii)\n\n"
-   "-o <output prefix> : prefix for naming output files (default: same as input prefix)\n\n"
-   "-csv <csvfile> : CC measurments (area, perimeter, etc.) will be appended to this file in\n"
-   "comma-separated values (CSV) format (default: <output prefix>.csv)\n\n"
-   "-i <subject volume> : the volume (short int NIFTI format) on which the corpus callosum\n"
-   "is to be located\n\n");
-
+   "-border : outputs <prefix>_cc_border.ppm\n\n");
    return;
 }
 
@@ -2433,6 +2427,8 @@ void find_thickness_profile(short *cc, const char *prefix)
 
 int main(int argc, char **argv)
 {
+   char lmfile[DEFAULT_STRING_LENGTH]="";
+
    FILE *fp;
 
    int kmin=0, kmax=100;
@@ -2485,7 +2481,7 @@ int main(int argc, char **argv)
    short *bbtrg;
 
    short *atlas=NULL;
-   char atlasfile[1024]="yuki2.aux";
+   char atlasfile[1024]="yuki2.aux";  // this is a nifti file despite its name
 
    int window_width=5;
 
@@ -2493,8 +2489,9 @@ int main(int argc, char **argv)
 
    // by setting this option, the program will not output the *ACPC_axial.ppm and *ACPC_sagittal.ppm files
    // for the AC/PC detection program.
-   opt_ppm=0;
-   opt_txt=0;
+   opt_ppm=YES;
+   opt_png=NO;
+   opt_txt=YES;
 
    ////////////////////////////////////////////////////////////////////////
    if( argc==1 ) 
@@ -2511,7 +2508,8 @@ int main(int argc, char **argv)
             print_secret_help();
             exit(0);
          case 'V':
-            printf("Version 2.2\n");
+            printf("Version 2.2 (November 2022)\n");
+            printf("Author: Babak A. Ardekani, Ph.D.\n");
             exit(0);
          case 'h':
             print_help();
@@ -2522,10 +2520,6 @@ int main(int argc, char **argv)
             break;
          case 'T':
             sprintf(msp_transformation_file,"%s",optarg);
-            break;
-         case 'a':
-            sprintf(atlasfile,"%s",optarg);
-            opt_a=YES;
             break;
          case 'L':
             sprintf(preselected_atlases,"%s",optarg);
@@ -2542,12 +2536,8 @@ int main(int argc, char **argv)
          case 'v':
             opt_v=YES;
             break;
-         case 'N':
-            opt_mrx=NO;
-            break;
          case 'p':
-            opt_ppm=YES;
-            opt_txt=YES;
+            opt_png=YES;
             break;
          case 'b':
             opt_box=YES;
@@ -2568,23 +2558,8 @@ int main(int argc, char **argv)
          case 't':
             max_t  = atof(optarg);
             break;
-         case 'S':
-            VSPS[0] = atoi(argv[optind-1]);
-            VSPS[1] = atoi(argv[optind+0]);
-            VSPS[2] = atoi(argv[optind+1]);
-            opt_RP = NO;
-            break;
-         case 'A':
-            AC[0] = atoi(argv[optind-1]);
-            AC[1] = atoi(argv[optind+0]);
-            AC[2] = atoi(argv[optind+1]);
-            opt_AC = NO;
-            break;
-         case 'P':
-            PC[0] = atoi(argv[optind-1]);
-            PC[1] = atoi(argv[optind+0]);
-            PC[2] = atoi(argv[optind+1]);
-            opt_PC = NO;
+         case 'l':
+            strcpy(lmfile,optarg);
             break;
          case '?':
             print_help();
@@ -2620,7 +2595,7 @@ int main(int argc, char **argv)
 
    if(ARTHOME == NULL)
    {
-      printf("The ARTHOME environment variable is not defined.\n");
+      printf("The ARTHOME environment variable was not defined.\n");
       exit(0);
    }
 
@@ -2723,24 +2698,11 @@ int main(int argc, char **argv)
 
    /////////////////////////////////////////////////////////////////////////////////////////
    
-   if(!opt_a)
-   {
-      sprintf(inputfile,"%s/%s",ARTHOME, atlasfile);
-   }
-   else
-   {
-      sprintf(inputfile,"%s", atlasfile);
-   }
+   sprintf(inputfile,"%s/%s",ARTHOME, atlasfile);
 
    if(opt_v)
    {
       printf("Atlas file = %s\n", inputfile);
-   }
-
-   // check to see if atlasfile appears to be a NIFTI image
-   if( not_magical_nifti(inputfile) )
-   {
-      exit(0);
    }
 
    atlas=(short *)read_nifti_image(inputfile, &atlas_hdr);
@@ -2857,11 +2819,11 @@ int main(int argc, char **argv)
    
       if( msp_transformation_file[0]=='\0')
       {
-         trg = find_subject_msp(subjectfile,prefix);
+         trg = find_subject_msp(subjectfile, prefix, lmfile);
       }
       else
       {
-         trg = find_subject_msp(subjectfile, prefix, msp_transformation_file);
+         trg = find_subject_msp_using_transformation(subjectfile, prefix, msp_transformation_file);
       }
 
       /////////////////////////////////////////////////////////////////////////////////////////
@@ -3423,7 +3385,7 @@ int main(int argc, char **argv)
 
          fp = fopen(csvfile,"a");
          if(fp==NULL) file_open_error(csvfile);
-         fprintf(fp,"\"%s\", ",prefix);
+         if(opt_cc) fprintf(fp,"\"%s\", ",ccfile); else fprintf(fp,"\"%s_cc.nii\", ",prefix);
          fprintf(fp,"%6.2f, ",CCarea);
          fprintf(fp,"%6.2f, ",CCperimeter);
          fprintf(fp,"%8.6f, ",CCcircularity);
