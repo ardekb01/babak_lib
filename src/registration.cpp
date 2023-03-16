@@ -45,7 +45,7 @@ float az, float sx, float sy, float sz, int rX, int rY, int rZ, char *code);
 unsigned char linearInterpolatorUC(float x, float y, float z, unsigned char *array, int nx, int ny, int nz, int np);
 static float costFunction1(short *KMI, float *P, struct im_params *IP);
 static float newCostFunction(short *KMI, float *P, struct im_params *IP);
-static float costFunction2(short *KMI, float *P, struct im_params *IP);
+//static float costFunction2(short *KMI, float *P, struct im_params *IP);
 void scale_short_minmax(short *imagein, unsigned char **imageout, int np, int min,int max);
 void label_3d_cc(short *KMI,unsigned short label,int i,int j, int k,int *size,short CC, struct im_params *IP);
 static void resetCC(short *KMI,int i,int j,int k,unsigned char CC, struct im_params *IP);
@@ -1053,6 +1053,7 @@ static float newCostFunction(short *KMI, float *P, struct im_params *IP)
 	}
 }
 
+/*
 static float costFunction2(short *KMI, float *P, struct im_params *IP)
 {
    char transcode[5]="ZXYT";
@@ -1197,6 +1198,7 @@ static float costFunction2(short *KMI, float *P, struct im_params *IP)
 		return(F/npixels);
 	}
 }
+*/
 
 unsigned char linearInterpolatorUC(float x, float y, float z, unsigned char *array, int nx, int ny, int nz, int np)
 {
@@ -1780,7 +1782,7 @@ short *obj, int Onx, int Ony, int Onz, float Odx, float Ody, float Odz)
 	short *im_out;
 	int size_thresh=100;
 	int OL,OH;
-	float *T;
+	//float *T;
 
 	int Tnp,Tnv,Onv;
 	
