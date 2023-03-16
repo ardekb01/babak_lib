@@ -1729,7 +1729,7 @@ float *AC, float *PC, float *RP, float *Tmsp, int opt_v, int opt_T2)
 
 float reflectVertex(int pmax, float fac)
 {
-	int j;
+	//int j;
 	float fac1,fac2;
 	float newV;
 
@@ -1880,10 +1880,10 @@ float reflection_cross_correlation2(short *image, DIM dim, float A, float B, flo
 
 float optimizeNormalVector(short *image,DIM dim, float *A, float *B, float *C)
 {
-   int i;  /* loop indices */
+   //int i;  /* loop indices */
    int pmin;
 
-   float dum;  /* general purpose dummy variable */
+   //float dum;  /* general purpose dummy variable */
    float cc;
    float x[3];
 
@@ -1948,7 +1948,7 @@ float optimizeNormalVector(short *image,DIM dim, float *A, float *B, float *C)
 
 float reflection_cross_correlation(short *image, DIM dim, float a, float b, float c, float d)
 {
-   static int dumcount=0;
+   //static int dumcount=0;
    int   i,j,k;
    float x,y,z;
    float dp;        
@@ -2318,7 +2318,7 @@ void computeTmsp(char *orientation, short *volOrig, DIM dim, float *Tmsp)
 
    // determine (a,b,c) from (A,B,C)
    dum=(float)sqrt( (double)(A*A + B*B + C*C) );
-   if(dum>0.0) // jus in case
+   //if(dum>0.0) // jus in case
    {
       a= A/dum; b=B/dum; c=C/dum; d=1./dum;
    }
