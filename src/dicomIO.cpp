@@ -2764,7 +2764,7 @@ int readPixelData(const char *file, char *data, int opt_j, int np)
 
 	unsigned short GN; 
 	unsigned short EN;
-	unsigned short VL2;	// Value Length see: PS 3.5-1998 Page 27
+	//unsigned short VL2;	// Value Length see: PS 3.5-1998 Page 27
 	unsigned long VL4; 	// Value Length see: PS 3.5-1998 Page 27
 
 	FILE *fp;
@@ -2790,7 +2790,7 @@ int readPixelData(const char *file, char *data, int opt_j, int np)
 
 		fseek(fp,byteOffset,SEEK_SET);
 
-		if( fread(data, 1, np*2, fp) != np*2) {fclose(fp); return(0);}
+		if( (int)fread(data, 1, np*2, fp) != np*2) {fclose(fp); return(0);}
 		fclose(fp);
 
 		return(1);
@@ -2822,7 +2822,7 @@ int readPixelData(const char *file, char *data, int opt_j, int np)
 				if( bigEndian() ) swapByteOrder( (char *)&VL4, 4);
 
                 // important: in case the wrong (7FE0,0010) is found
-                if(VL4 != 2*np) continue;
+                if( (int)VL4 != 2*np) continue;
 
 		    	if( fread(data, 1, VL4, fp) != VL4) {errorFlag=1; break;}
 				if( bigEndian() ) swapN( data, VL4);
@@ -2840,7 +2840,7 @@ int readPixelData(const char *file, char *data, int opt_j, int np)
 				if( !bigEndian() && transferSyntax==EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&VL4, 4);
 
                 // important: in case the wrong (7FE0,0010) is found
-                if(VL4 != 2*np) continue;
+                if( (int)VL4 != 2*np) continue;
 
 		    	if( fread(data, 1, VL4, fp) != VL4) {errorFlag=1; break;}
 				if( bigEndian() && transferSyntax==EXPLICIT_LITTLE_ENDIAN) swapN( data, VL4);
