@@ -579,7 +579,6 @@ void second_and_fourth_order_moments(float *x, float *y, float *M2, float *M4, i
 {
 
 // these are wrong because of new definitions for x and possibly y.
-/*
    M2[0] = 2*x[0];
    M2[1] = 2*x[3];
    M2[2] = 2*x[5];
@@ -607,6 +606,7 @@ void second_and_fourth_order_moments(float *x, float *y, float *M2, float *M4, i
    M4[14] = 4*x[2]*x[3] + 8*x[4]*x[5] + 24*y[14];
 
 if(verbose) printf("%f %f %f\n",x[1], M4[1], y[1]);
+/*
 */
    return;
 }
