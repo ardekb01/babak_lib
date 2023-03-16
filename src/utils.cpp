@@ -710,7 +710,7 @@ float *affineLSE(char *msk, int nx, int ny, float dx, float dy, float *Xwarp, fl
 	float xc, yc;
 	float rx,ry;
 	float sx,sy;
-  	float  x,y;   
+  	//float  x,y;   
 	float *T;
 
 	double Mrx, Mry;
@@ -820,7 +820,7 @@ void affineLSE(char *msk, int nx, int ny, float dx, float dy, float *Xwarp, floa
 	float xc, yc;
 	float rx,ry;
 	float sx,sy;
-  	float  x,y;   
+  	//float  x,y;   
 
 	double Mrx, Mry;
 	double Msx, Msy;
@@ -924,7 +924,7 @@ void affineLSE(short *msk, int nx, int ny, float dx, float dy, float *Xwarp, flo
 	float xc, yc;
 	float rx,ry;
 	float sx,sy;
-  	float  x,y;   
+  	//float  x,y;   
 
 	double Mrx, Mry;
 	double Msx, Msy;
@@ -1384,10 +1384,10 @@ void getfilename(char *filename, const char *path)
 
 void centerOfMass(short *im, int nx, int ny, int nz, float dx, float dy, float dz, float *CM)
 {
-	double trace;
+	//double trace;
 	double sumx, sumy, sumz;
 	double M;		// total mass
-	float X,Y,Z;
+	//float X,Y,Z;
 	float xc,yc,zc;
 	int np;
 	short v;
@@ -1611,7 +1611,7 @@ void mask_and_save_nii(const char *inputfile, const char *outputfile, short *mas
 
    FILE *fp;
    int nv;
-   int type;
+   //int type;
    int index;
    float sdx,sdy,sdz;
    float dx,dy,dz;
@@ -1808,8 +1808,9 @@ float *readDataMatrix(char **imageList, int n, int p, short *mask)
 float *readDataMatrix_nifti(char **imageList, int n, int p, short *mask)
 {
 	short *im;
-	int nx, ny, nz, nv, type;
-	float dx,dy,dz;
+	//int nx, ny, nz, nv, type;
+	int nx, ny, nz, nv;
+	//float dx,dy,dz;
 	float *X;
 	int j;
    nifti_1_header hdr;
@@ -1878,7 +1879,8 @@ short *readDataMatrixShort_nifti(char **imageList, int n, int p, short *mask)
 {
    short *im;
    nifti_1_header hdr;
-   int nx, ny, nz, nv, type;
+   //int nx, ny, nz, nv, type;
+   int nx, ny, nz, nv;
    short *X;
    int j;
 
