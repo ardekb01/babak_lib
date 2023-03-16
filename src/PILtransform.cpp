@@ -145,6 +145,7 @@ void convert_to_xyz(float *P, int n, SHORTIM im)
       dum[0]=P[0*n + i]; 
       dum[1]=P[1*n + i]; 
       dum[2]=P[2*n + i];
+      dum[3]=1.0;
       multi(T,4,4,dum,4,1,dum);
       P[0*n + i]=dum[0]; 
       P[1*n + i]=dum[1]; 
@@ -169,6 +170,7 @@ void convert_to_ijk(float *P, int n, SHORTIM im)
       dum[0]=P[0*n + i]; 
       dum[1]=P[1*n + i]; 
       dum[2]=P[2*n + i];
+      dum[3]=1.0;
       multi(T,4,4,dum,4,1,dum);
       P[0*n + i]=dum[0]; 
       P[1*n + i]=dum[1]; 
@@ -456,7 +458,7 @@ void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float
          landmark[3]=1;
          multi(invT,4,4,landmark,4,1,landmark);
          convert_to_ijk(landmark, 1, subim);
-         fprintf(fp,"%5.1f %5.1f %5.1f\n",landmark[0], landmark[1], landmark[2]);
+         fprintf(fp,"%7.3f %7.3f %7.3f\n",landmark[0], landmark[1], landmark[2]);
       }
       fclose(fp);
       free(invT);
@@ -505,11 +507,32 @@ void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float
 
    multi(TLM,4,4,TPIL0,4,4,TPIL);
 
-   // create the *LM.ppm image
-   if(opt_ppm || opt_png)
+   if(opt_CENTER_AC)
+   {
+     float ac[4]; 
+     float Ttmp[16];
+
+     ac[0] = P[1] + Pavg[0];  // landmark #1 is AC
+     ac[1] = P[n+1] + Pavg[1];
+     ac[2] = P[2*n+1] + Pavg[2];
+     ac[3] = 1.0;
+
+     multi(TLM,4,4,ac,4,1,ac);
+
+     Ttmp[0]=1.0;  Ttmp[1]=0.0;  Ttmp[2]=0.0;  Ttmp[3]=-ac[0];  // makes ac the center of the FOV
+     Ttmp[4]=0.0;  Ttmp[5]=1.0;  Ttmp[6]=0.0;  Ttmp[7]=-ac[1];  // ac[1] should be equal to pc[1]
+     Ttmp[8]=0.0;  Ttmp[9]=0.0;  Ttmp[10]=1.0; Ttmp[11]=0;
+     Ttmp[12]=0.0; Ttmp[13]=0.0; Ttmp[14]=0.0; Ttmp[15]=1.0;
+
+     multi(Ttmp,4,4,TPIL,4,4,TPIL);
+   }
+
+   // create the *LM.ppm image and save orion landmarks in xyz coordinates in PIL orientation
    {
       int *lmx, *lmy;
       float lm[4]; 
+      FILE *fp;
+      float Ttmp[16];
 
       invT = inv4(TPIL);
       resliceImage(subim, subimPIL, invT, LIN);
@@ -517,6 +540,27 @@ void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float
 
       lmx = (int *)calloc(n,sizeof(int));
       lmy = (int *)calloc(n,sizeof(int));
+
+      if(opt_CENTER_AC)
+      {
+        float ac[4]; 
+
+        ac[0] = P[1] + Pavg[0];  // landmark #1 is AC
+        ac[1] = P[n+1] + Pavg[1];
+        ac[2] = P[2*n+1] + Pavg[2];
+        ac[3] = 1.0;
+
+        multi(TLM,4,4,ac,4,1,ac);
+
+        Ttmp[0]=1.0;  Ttmp[1]=0.0;  Ttmp[2]=0.0;  Ttmp[3]=-ac[0];  // makes ac the center of the FOV
+        Ttmp[4]=0.0;  Ttmp[5]=1.0;  Ttmp[6]=0.0;  Ttmp[7]=-ac[1];  // ac[1] should be equal to pc[1]
+        Ttmp[8]=0.0;  Ttmp[9]=0.0;  Ttmp[10]=1.0; Ttmp[11]=0;
+        Ttmp[12]=0.0; Ttmp[13]=0.0; Ttmp[14]=0.0; Ttmp[15]=1.0;
+      }
+
+      sprintf(filename,"%s/%s_orion_PIL.txt",imagedir,subfile_prefix);
+      fp=fopen(filename,"w");
+      if(fp==NULL) file_open_error(filename);
 
       for(int i=0; i<n; i++)
       {
@@ -527,39 +571,26 @@ void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float
 
          multi(TLM,4,4,lm,4,1,lm);
 
+         if(opt_CENTER_AC) multi(Ttmp,4,4,lm,4,1,lm);
+
+         fprintf(fp,"%7.3f %7.3f %7.3f\n",lm[0], lm[1], lm[2]);
          convert_to_ijk(lm, 1, subimPIL);
 
          lmx[i]=(int)( lm[0] + 0.5 );
          lmy[i]=(int)( lm[1] + 0.5 );
       }
+      fclose(fp);
 
-      sprintf(filename,"%s/%s_orion.ppm",imagedir, subfile_prefix);
-      mspPPM(subimPIL, lmx, lmy, n, filename);
+      if(opt_ppm || opt_png)
+      {
+         sprintf(filename,"%s/%s_orion.ppm",imagedir, subfile_prefix);
+         mspPPM(subimPIL, lmx, lmy, n, filename);
+      }
 
       delete lmx;
       delete lmy;
       delete subimPIL.v;
    }
-
-  if(opt_CENTER_AC)
-  {
-    float ac[4]; 
-    float Ttmp[16];
-
-    ac[0] = P[1] + Pavg[0];  // landmark #1 is AC
-    ac[1] = P[n+1] + Pavg[1];
-    ac[2] = P[2*n+1] + Pavg[2];
-    ac[3] = 1.0;
-
-    multi(TLM,4,4,ac,4,1,ac);
-
-    Ttmp[0]=1.0;  Ttmp[1]=0.0;  Ttmp[2]=0.0;  Ttmp[3]=-ac[0];  // makes ac the center of the FOV
-    Ttmp[4]=0.0;  Ttmp[5]=1.0;  Ttmp[6]=0.0;  Ttmp[7]=-ac[1];  // ac[1] should be equal to pc[1]
-    Ttmp[8]=0.0;  Ttmp[9]=0.0;  Ttmp[10]=1.0; Ttmp[11]=0;
-    Ttmp[12]=0.0; Ttmp[13]=0.0; Ttmp[14]=0.0; Ttmp[15]=1.0;
-
-    multi(Ttmp,4,4,TPIL,4,4,TPIL);
-  }
 
   // save the PIL transformation in <subfile_prefix>_PIL.mrx
   if(SAVE_MRX_FLAG == 1)
