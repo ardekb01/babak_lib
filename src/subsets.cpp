@@ -47,7 +47,7 @@ int *subsets(int n, int m)
 		return(NULL);
 	}
 
-	if( n >= 8*sizeof(int))
+	if( n >= (int)(8*sizeof(int)) )
 	{
 		printf("\n\nError: n must be less than %lu.\n\n",8*sizeof(int));
 		return(NULL);
