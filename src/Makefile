@@ -9,171 +9,171 @@ INC= -I../include
 LIBS =  -L../lib -lbabak -lniftiio -lznz -lm -lz -lc -llapack -lblas
 LESSLIBS =  -L../lib -lbabak -lniftiio -lznz -lm -lz -lc
 
-all: libbabak.a brainwash 3dwarper acpcdetect applywarp3d scaleImage avgImage one_sample_t ivf unwarp2d cphdr reslice kaiba oi PILtransform atra art2fsl fsl2art yuki analyze2nii multiplyTransformation niftiinfo break4D gambling_vancova_setup medianImage threshold ccstats applymask inverseMatrix4 LMdetect
+all: libbabak.a brainwash 3dwarper acpcdetect applywarp3d scaleImage avgImage one_sample_t ivf unwarp2d cphdr reslice kaiba oi PILtransform atra art2fsl fsl2art yuki analyze2nii multiplyTransformation niftiinfo break4D gambling_vancova_setup medianImage threshold ccstats applymask inverseMatrix4 LMdetect ijk2xyz
 
 # because of functions in matrixops, linking the libbabak will possibly require lapack libs.
 
 leastSquaresAffineTrans.o: leastSquaresAffineTrans.cpp
-	$(CC) -O2 -c $(INC) leastSquaresAffineTrans.cpp
+	$(CC) $(CFLAGS) -c $(INC) leastSquaresAffineTrans.cpp
 
 hist1D_plot.o: hist1D_plot.cpp
-	$(CC) -O2 -c $(INC) hist1D_plot.cpp
+	$(CC) $(CFLAGS) -c $(INC) hist1D_plot.cpp
 
 set_dim.o: set_dim.cpp
-	$(CC) -O2 -c $(INC) set_dim.cpp
+	$(CC) $(CFLAGS)  -c $(INC) set_dim.cpp
 
 findMSP.o: findMSP.cpp
-	$(CC) -O2 -c $(INC) findMSP.cpp
+	$(CC) $(CFLAGS)  -c $(INC) findMSP.cpp
 
 singular_value_decomposition.o: singular_value_decomposition.cpp
-	$(CC) -O2 -c $(INC) singular_value_decomposition.cpp
+	$(CC) $(CFLAGS)  -c $(INC) singular_value_decomposition.cpp
 
 DKI.o: DKI.cpp
-	$(CC) -O2 -c $(INC) DKI.cpp
+	$(CC) $(CFLAGS)  -c $(INC) DKI.cpp
 
 artlib.o: artlib.cpp
-	$(CC) -O2 -c $(INC) artlib.cpp
+	$(CC) $(CFLAGS)  -c $(INC) artlib.cpp
 
 volume.o: volume.cpp
-	$(CC) -O2 -c $(INC) volume.cpp
+	$(CC) $(CFLAGS)  -c $(INC) volume.cpp
 
 binomial.o: binomial.cpp
-	$(CC) -O2 -c $(INC) binomial.cpp
+	$(CC) $(CFLAGS)  -c $(INC) binomial.cpp
 
 smooth.o: smooth.cpp
-	$(CC) -O2 -c $(INC) smooth.cpp
+	$(CC) $(CFLAGS)  -c $(INC) smooth.cpp
 
 niftiimage.o: niftiimage.cpp
-	$(CC) -O2 -c $(INC) niftiimage.cpp
+	$(CC) $(CFLAGS)  -c $(INC) niftiimage.cpp
 
 utils.o: utils.cpp
-	$(CC) -O2 -c $(INC) utils.cpp
+	$(CC) $(CFLAGS)  -c $(INC) utils.cpp
 
 nifti.o: nifti.cpp
-	$(CC) -O2 -c $(INC) nifti.cpp
+	$(CC) $(CFLAGS)  -c $(INC) nifti.cpp
 
 errorMessage.o: errorMessage.cpp
-	$(CC) -O2 -c $(INC) errorMessage.cpp
+	$(CC) $(CFLAGS)  -c $(INC) errorMessage.cpp
 
 maskOps.o: maskOps.cpp
-	$(CC) -O2 -c $(INC) maskOps.cpp
+	$(CC) $(CFLAGS)  -c $(INC) maskOps.cpp
 
 EMFIT.o: EMFIT.cpp
-	$(CC) -O2 -c $(INC) EMFIT.cpp
+	$(CC) $(CFLAGS)  -c $(INC) EMFIT.cpp
 
 max_cc.o: max_cc.cpp
-	$(CC) -O2 -c $(INC) max_cc.cpp
+	$(CC) $(CFLAGS)  -c $(INC) max_cc.cpp
 
 statistics.o: statistics.cpp
-	$(CC) -O2 -c $(INC) statistics.cpp
+	$(CC) $(CFLAGS)  -c $(INC) statistics.cpp
 
 ginverse.o: ginverse.cpp
-	$(CC) -O2 -c $(INC) ginverse.cpp
+	$(CC) $(CFLAGS)  -c $(INC) ginverse.cpp
 
 permutation.o: permutation.cpp
-	$(CC) -O2 -c $(INC) permutation.cpp
+	$(CC) $(CFLAGS)  -c $(INC) permutation.cpp
 
 hpsort.o: hpsort.cpp
-	$(CC) -O2 -c $(INC) hpsort.cpp
+	$(CC) $(CFLAGS)  -c $(INC) hpsort.cpp
 
 random.o: random.cpp
-	$(CC) -O2 -c $(INC) random.cpp
+	$(CC) $(CFLAGS)  -c $(INC) random.cpp
 
 dicomIO.o: dicomIO.cpp
-	$(CC) -O2 -c $(INC) dicomIO.cpp
+	$(CC) $(CFLAGS)  -c $(INC) dicomIO.cpp
 
 nkiIO.o: nkiIO.cpp
-	$(CC) -O2 -c $(INC) nkiIO.cpp
+	$(CC) $(CFLAGS)  -c $(INC) nkiIO.cpp
 
 matrixops.o: matrixops.cpp
-	$(CC) -O2 -c $(INC) matrixops.cpp
+	$(CC) $(CFLAGS)  -c $(INC) matrixops.cpp
 
 subsets.o: subsets.cpp 
-	$(CC) -O2 -c $(INC) subsets.cpp 
+	$(CC) $(CFLAGS)  -c $(INC) subsets.cpp 
 
 analyzeio.o: analyzeio.cpp 
-	$(CC) -O2 -c $(INC) analyzeio.cpp 
+	$(CC) $(CFLAGS)  -c $(INC) analyzeio.cpp 
 
 getoption.o: getoption.cpp 
-	$(CC) -O2 -c $(INC) getoption.cpp 
+	$(CC) $(CFLAGS)  -c $(INC) getoption.cpp 
 
 swap.o: swap.cpp 
-	$(CC) -O2 -c $(INC) swap.cpp 
+	$(CC) $(CFLAGS)  -c $(INC) swap.cpp 
 
 fileinfo.o: fileinfo.cpp
-	$(CC) -O2 -c $(INC) fileinfo.cpp
+	$(CC) $(CFLAGS)  -c $(INC) fileinfo.cpp
 
 histogram.o: histogram.cpp
-	$(CC) -O2 -c $(INC) histogram.cpp
+	$(CC) $(CFLAGS)  -c $(INC) histogram.cpp
 
 resize.o: resize.cpp
-	$(CC) -O2 -c $(INC) resize.cpp
+	$(CC) $(CFLAGS)  -c $(INC) resize.cpp
 
 gaussian_kernel.o: gaussian_kernel.cpp
-	$(CC) -O2 -c $(INC) gaussian_kernel.cpp
+	$(CC) $(CFLAGS)  -c $(INC) gaussian_kernel.cpp
 
 convolution.o: convolution.cpp
-	$(CC) -O2 -c $(INC) convolution.cpp
+	$(CC) $(CFLAGS)  -c $(INC) convolution.cpp
 
 resliceImage.o: resliceImage.cpp
-	$(CC) -O2 -c $(INC) resliceImage.cpp
+	$(CC) $(CFLAGS)  -c $(INC) resliceImage.cpp
 
 matrixCom.o: matrixCom.cpp
-	$(CC) -O2 -c $(INC) matrixCom.cpp
+	$(CC) $(CFLAGS)  -c $(INC) matrixCom.cpp
 
 registration.o: registration.cpp
-	$(CC) -O2 -c $(INC) registration.cpp
+	$(CC) $(CFLAGS)  -c $(INC) registration.cpp
 
 legendre.o: legendre.cpp
-	$(CC) -O2 -c $(INC) legendre.cpp
+	$(CC) $(CFLAGS)  -c $(INC) legendre.cpp
 
 cubicspline.o: cubicspline.cpp
-	$(CC) -O2 -c $(INC) cubicspline.cpp
+	$(CC) $(CFLAGS)  -c $(INC) cubicspline.cpp
 
 medianfilter.o: medianfilter.cpp
-	$(CC) -O2 -c $(INC) medianfilter.cpp
+	$(CC) $(CFLAGS)  -c $(INC) medianfilter.cpp
 
 directionCode.o: directionCode.cpp
-	$(CC) -O2 -c $(INC) directionCode.cpp
+	$(CC) $(CFLAGS)  -c $(INC) directionCode.cpp
 
 checkNiftiFileExtension.o: checkNiftiFileExtension.cpp
-	$(CC) -O2 -c $(INC) checkNiftiFileExtension.cpp
+	$(CC) $(CFLAGS)  -c $(INC) checkNiftiFileExtension.cpp
 
 getNiftiImageOrientation.o: getNiftiImageOrientation.cpp
-	$(CC) -O2 -c $(INC) getNiftiImageOrientation.cpp
+	$(CC) $(CFLAGS)  -c $(INC) getNiftiImageOrientation.cpp
 
 isOrientationCodeValid.o: isOrientationCodeValid.cpp
-	$(CC) -O2 -c $(INC) isOrientationCodeValid.cpp
+	$(CC) $(CFLAGS)  -c $(INC) isOrientationCodeValid.cpp
 
 PILtransform.o: PILtransform.cpp
-	$(CC) -O2 -c $(INC) PILtransform.cpp
+	$(CC) $(CFLAGS)  -c $(INC) PILtransform.cpp
 
 reorientVolume.o: reorientVolume.cpp
-	$(CC) -O2 -c $(INC) reorientVolume.cpp
+	$(CC) $(CFLAGS)  -c $(INC) reorientVolume.cpp
 
 rotate.o: rotate.cpp
-	$(CC) -O2 -c $(INC) rotate.cpp
+	$(CC) $(CFLAGS)  -c $(INC) rotate.cpp
 
 setLowHigh.o: setLowHigh.cpp
-	$(CC) -O2 -c $(INC) setLowHigh.cpp
+	$(CC) $(CFLAGS)  -c $(INC) setLowHigh.cpp
 
 compute_cm.o: compute_cm.cpp
-	$(CC) -O2 -c $(INC) compute_cm.cpp
+	$(CC) $(CFLAGS)  -c $(INC) compute_cm.cpp
 
 standardize.o: standardize.cpp
-	$(CC) -O2 -c $(INC) standardize.cpp
+	$(CC) $(CFLAGS)  -c $(INC) standardize.cpp
 
 sph.o: sph.cpp
-	$(CC) -O2 -c $(INC) sph.cpp
+	$(CC) $(CFLAGS)  -c $(INC) sph.cpp
 
 landmarks.o: landmarks.cpp
-	$(CC) -O2 -c $(INC) landmarks.cpp
+	$(CC) $(CFLAGS)  -c $(INC) landmarks.cpp
 
 getARTHOME.o: getARTHOME.cpp
-	$(CC) -O2 -c $(INC) getARTHOME.cpp
+	$(CC) $(CFLAGS)  -c $(INC) getARTHOME.cpp
 
 update_qsform.o: update_qsform.cpp
-	$(CC) -O2 -c $(INC) update_qsform.cpp
+	$(CC) $(CFLAGS)  -c $(INC) update_qsform.cpp
 
 libbabak.a: leastSquaresAffineTrans.o hist1D_plot.o set_dim.o findMSP.o singular_value_decomposition.o DKI.o artlib.o volume.o binomial.o smooth.o niftiimage.o utils.o nifti.o errorMessage.o maskOps.o EMFIT.o max_cc.o statistics.o ginverse.o permutation.o hpsort.o random.o dicomIO.o nkiIO.o subsets.o analyzeio.o getoption.o swap.o fileinfo.o histogram.o resize.o gaussian_kernel.o convolution.o resliceImage.o matrixCom.o registration.o legendre.o cubicspline.o medianfilter.o directionCode.o checkNiftiFileExtension.o getNiftiImageOrientation.o isOrientationCodeValid.o PILtransform.o reorientVolume.o rotate.o setLowHigh.o compute_cm.o standardize.o sph.o matrixops.o landmarks.o getARTHOME.o update_qsform.o
 	ar -ru ../lib/libbabak.a leastSquaresAffineTrans.o hist1D_plot.o set_dim.o findMSP.o singular_value_decomposition.o DKI.o artlib.o volume.o binomial.o smooth.o niftiimage.o utils.o nifti.o errorMessage.o maskOps.o EMFIT.o max_cc.o statistics.o ginverse.o permutation.o hpsort.o random.o dicomIO.o nkiIO.o subsets.o analyzeio.o getoption.o swap.o fileinfo.o histogram.o resize.o gaussian_kernel.o convolution.o resliceImage.o matrixCom.o registration.o legendre.o cubicspline.o medianfilter.o directionCode.o checkNiftiFileExtension.o getNiftiImageOrientation.o isOrientationCodeValid.o PILtransform.o reorientVolume.o rotate.o setLowHigh.o compute_cm.o standardize.o sph.o matrixops.o landmarks.o getARTHOME.o update_qsform.o
@@ -306,3 +306,7 @@ threshold: threshold.cxx
 ccstats: ccstats.cxx
 	$(CC) $(CFLAGS) -o ccstats ccstats.cxx $(INC) $(LIBS)
 	mv ccstats ${ARTHOME}/bin
+
+ijk2xyz: ijk2xyz.cxx
+	$(CC) $(CFLAGS) -o ijk2xyz ijk2xyz.cxx $(INC) $(LIBS)
+	mv ijk2xyz ${ARTHOME}/bin
