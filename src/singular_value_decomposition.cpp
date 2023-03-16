@@ -212,7 +212,7 @@ static void Householders_Reduction_to_Bidiagonal_Form(double* A, int nrows,
 {
    int i,j,k,ip1;
    double s, s2, si, scale;
-   double dum;
+   //double dum;
    double *pu, *pui, *pv, *pvi;
    double half_norm_squared;
 
