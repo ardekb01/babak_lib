@@ -78,7 +78,7 @@ int main(int argc, char **argv)
    char outputmatrixfile[DEFAULT_STRING_LENGTH]="";
    float T[16];
    DIM sub_dim;
-   FILE *fp;
+   //FILE *fp;
 
    //initialization to avoid complaining from the compiler
    sub_dim.dx=sub_dim.dy=sub_dim.dz=0.0;
