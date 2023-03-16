@@ -804,8 +804,8 @@ int nx2, int ny2, int nz2, float dx2, float dy2, float dz2, float *Xwarp, float 
 	short *im2;
 	float xc1, yc1, zc1;
 	float xc2, yc2, zc2;
-	float *beta, del;
-	float *c;
+	//float *beta, del;
+	//float *c;
 
 	np1=nx1*ny1;
 
@@ -983,7 +983,7 @@ int nx2, int ny2, float dx2, float dy2, float *Xwarp, float *Ywarp)
 // you must initialize drand48 before using this function
 unsigned char PNN(float x, float y, float z, unsigned char *array, int nx, int ny, int nz)
 {
-	int   i,j,k,n;
+	int   i,j,k,n=0;
 	float u,uu;
 	float v,vv;
 	float s,ss;
@@ -1065,7 +1065,8 @@ float partial_var(float x, float y, float z, unsigned char *array, int nx, int n
 {
 	float  	var=0.0;
 	float 	val;
-	int     i,j,k,n;
+	//int     i,j,k,n;
+	int     i,j,k;
 	float   u,uu;
 	float   v,vv;
 	float   s,ss;
