@@ -18,7 +18,7 @@ int opt_qform=NO;
 
 void update_qsform(nifti_1_header &hdr, float *matrix)
 {
-   FILE *fp;
+   //FILE *fp;
    mat44 R;
 
    hdr.sform_code = NIFTI_XFORM_ALIGNED_ANAT;
@@ -148,11 +148,11 @@ void update_qsform( const char *imagefile1, const char *imagefile2)
 {
    FILE *fp;
    nifti_1_header hdr; // 348 bytes
-   nifti1_extender ext; // 4 bytes
-   char *extension;
-   int extension_size=0;
-   char *data;
-   int data_size=0;
+   //nifti1_extender ext; // 4 bytes
+   //char *extension;
+   //int extension_size=0;
+   //char *data;
+   //int data_size=0;
 
    mat44 R;
    float q1[16], q2[16], s1[16], s2[16];
