@@ -938,7 +938,7 @@ int main(int argc, char **argv)
    float *label, *evidence0, *evidence1;
 
    char brainwashatlasdir[1024]=""; 
-   int natlas; // number of available atlases
+   int natlas=0; // number of available atlases
    
    // input image full path
    char subImageFile[1024]=""; 
