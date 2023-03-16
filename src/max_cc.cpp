@@ -358,9 +358,9 @@ int *N, int **Clabel, int **Size)
 	
 	int **eqtable; // Label equivalence table
 	int M;	       
-	int flag=0;
+	//int flag=0;
 	
-	float min;
+	//float min;
 	///////////////////////////////////////////////////////////////////////////////
 	// 2-DIMENSIONAL CONNECTED COMPONENTS ON EACH SLICE SEPARATELY 
 	
