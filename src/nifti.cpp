@@ -1041,7 +1041,7 @@ short *readNiftiImage(const char *filename, DIM *dim, int flg)
 
    if( hdr.datatype == DT_SIGNED_SHORT || hdr.datatype == DT_UINT16) 
    {
-      if( fread(im, sizeof(short), nv, fp) != nv )
+      if( (int)fread(im, sizeof(short), nv, fp) != nv )
       {
          errorMessage("Error: I have trouble reading the specified image file.");
       }
@@ -1063,7 +1063,7 @@ short *readNiftiImage(const char *filename, DIM *dim, int flg)
          errorMessage("Error: Memory allocation problem in readNiftiImage() function.");
       }
 
-      if (fread(dum, sizeof(unsigned char), nv, fp) != nv )
+      if ( (int)fread(dum, sizeof(unsigned char), nv, fp) != nv )
       {
          errorMessage("Error: I have trouble reading the specified image file.");
       }
@@ -1322,7 +1322,7 @@ char *read_nifti_image(const char *filename, nifti_1_header *hdr)
       return(NULL);
    }
 
-   if( fread(im, 1, datasize, fp) != datasize )
+   if( (int)fread(im, 1, datasize, fp) != datasize )
    {
       printf("\nread_nifti_image(): Reading %s failed.\n\n",imgname);
       free(im);
