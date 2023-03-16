@@ -170,7 +170,7 @@ void k_subset ( int k, double rank, int a[] )
 //
 {
   int i;
-  int ii;
+  //int ii;
   int ip;
   double iprod;
   double jrank;
