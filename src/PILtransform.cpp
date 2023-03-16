@@ -249,7 +249,8 @@ void point_match(float *x1, float *y1, float *x2, float *y2, int N, float *T)
 void Procrustes(float *Q, float *Qavg, int n, float *P, float *Pavg, float *TLM)
 {
    float Ht[9]; // H=P*Q' Ht=Q*P' (' means transpose in my notation)
-   float Ut[9], V[9], I[9];
+   //float Ut[9], V[9], I[9];
+   float Ut[9], V[9];
    float T[3]; // 3x1 translation vector
    float R[9]; // 3x3 rotation matrix 
    float S[3]; // 3x1 vector of singular values
@@ -311,7 +312,8 @@ void Procrustes(float *Q, int n, float *P, float *TLM)
    float Pavg[3];
    float Qavg[3];
    float Ht[9]; // H=P*Q' Ht=Q*P' (' means transpose in my notation)
-   float Ut[9], V[9], I[9];
+   //float Ut[9], V[9], I[9];
+   float Ut[9], V[9];
    float T[3]; // 3x1 translation vector
    float R[9]; // 3x3 rotation matrix 
    float S[3]; // 3x1 vector of singular values
