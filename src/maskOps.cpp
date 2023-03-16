@@ -15,7 +15,7 @@ char *find_foreground_mask(short *im, int nv, int nb, int nclass, int niter, sho
 	double *p;
 	double *fit;
 	short *label;
-	FILE *fp;
+	//FILE *fp;
 	int low,high,v;
 	int bw;
 	int T;
