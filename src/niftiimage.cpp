@@ -409,7 +409,7 @@ void NIFTIIMAGE::read(const char *filename)
 void NIFTIIMAGE::readheader(const char *filename)
 {
    FILE *fp;
-   int datasize;
+   //int datasize;
 
    fp = fopen(filename,"r");
 
