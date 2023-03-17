@@ -27,7 +27,7 @@ void Connected_Component_location(char *im, int nx, int ny, int nz, int *ncc, in
 void max_Connected_Component( char *im, int nx, int ny, int nz, int *ncc, int *maxsize)
 {
 	int *labeled_im;
-       	int N,L,*CClabel,*CCsize;
+       	int N,L=0,*CClabel,*CCsize;
 	int nv;
 
 	nv=nx*ny*nz;	
@@ -133,10 +133,9 @@ void heightthr_Connected_Component(float *im, float thr, int nx, int ny, int nz,
         char *imtemp;
         int N,*CClabel,*CCsize;
         float *CCheight;
-        int nv,np;
+        int nv;
 
         nv = nx*ny*nz;
-        np = nx*ny;
 
         labeled_im=(int *)calloc(nv,sizeof(int)); // Allocate memory for the labeled connected component image
         imtemp=(char *)calloc(nv,sizeof(char));
@@ -233,13 +232,12 @@ void Connected_Component_location(char *im, int nx, int ny, int nz, int *ncc, in
 {
         int *labeled_im;
         int *CClabel,*CCsize;
-        int nv,np;
+        int nv;
         int N;
         int nbv;                                                // Number of non-zero voxels in input image
         char *imtemp;
 
         nv = nx*ny*nz;
-        np = nx*ny;
 
         labeled_im=(int *)calloc(nv,sizeof(int));           // Allocate memory for the labeled connected component image
 
@@ -290,13 +288,12 @@ void Connected_Component_location(char *im, int nx, int ny, int nz, int *ncc, in
 {
         int *labeled_im;
         int *CClabel;
-        int nv,np;
+        int nv;
         int N;
         int nbv;                                                // Number of non-zero voxels in input image
         char *imtemp;
 
         nv = nx*ny*nz;
-        np = nx*ny;
 
         labeled_im=(int *)calloc(nv,sizeof(int));           // Allocate memory for the labeled connected component image
 
