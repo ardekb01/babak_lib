@@ -403,8 +403,7 @@ float *AC, float *PC, float *RP, DIM HR, DIM Orig, short *volOrig, float *Tmsp)
 	}
    
    char dirname[DEFAULT_STRING_LENGTH]; // name of the directory only
-   // char fullpath[DEFAULT_STRING_LENGTH]; // directory + filename
-   char fullpath[2*DEFAULT_STRING_LENGTH+1]; // directory + filename
+   char fullpath[3*DEFAULT_STRING_LENGTH]; // directory + filename
    getDirectoryName(imagefilename, dirname);
    niftiFilename(filename,imagefilename);
    snprintf(fullpath,sizeof(fullpath),"%s/%s_ACPC_sagittal.ppm",dirname,filename);
@@ -514,7 +513,7 @@ void saveACPClocation(const char *imagefilename, float *Tmsp, DIM Orig, float *A
    }
 
    char dirname[DEFAULT_STRING_LENGTH]; // name of the directory only
-   char fullpath[DEFAULT_STRING_LENGTH]; // directory + filename
+   char fullpath[3*DEFAULT_STRING_LENGTH]; // directory + filename
    getDirectoryName(imagefilename, dirname);
    niftiFilename(filename,imagefilename);
    snprintf(fullpath,sizeof(fullpath),"%s/%s_ACPC.txt",dirname, filename);
@@ -684,8 +683,7 @@ void updateTmsp(const char *imagefilename, float *Tmsp, float *RP, float *AC, fl
       compute_MSP_parameters_from_Tmsp(Tmsp, n, &d);
 
       char dirname[DEFAULT_STRING_LENGTH]; // name of the directory only
-      //char fullpath[DEFAULT_STRING_LENGTH]; // directory + filename
-      char fullpath[2*DEFAULT_STRING_LENGTH+1]; // directory + filename
+      char fullpath[3*DEFAULT_STRING_LENGTH]; // directory + filename
       getDirectoryName(imagefilename, dirname);
       niftiFilename(filename,imagefilename);
       snprintf(fullpath,sizeof(fullpath),"%s/%s_ACPC.txt",dirname, filename);
@@ -2306,6 +2304,7 @@ int save_as_ppm(const char *filename, int nx, int ny, unsigned char *R, unsigned
     char *pngfilename;
     char cmnd[DEFAULT_STRING_LENGTH];
     int L;
+    int system_return_value;
 
     L = strlen(filename);
     // there was bug here: I had length L instead of L+1 for pngfilename
@@ -2319,8 +2318,13 @@ int save_as_ppm(const char *filename, int nx, int ny, unsigned char *R, unsigned
     pngfilename[L-3]='p';
 
     snprintf(cmnd,sizeof(cmnd),"pnmtopng %s > %s",filename,pngfilename); 
-    //if(opt_png) system(cmnd);
-    if(opt_png) (void)system(cmnd);
+    if(opt_png) {
+       system_return_value=system(cmnd);
+       if( system_return_value == -1 || system_return_value == 127 )
+       {
+          printf("Execution of %s command failed\n",cmnd);
+       }
+    }
 
     free(pngfilename);
   }
