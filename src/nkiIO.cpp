@@ -66,14 +66,14 @@ int readNKI(char *filename, nki *image)
 		return(0);
 	}       
                 
-	fread(image->id,sizeof(char),3,fp);
+	(void)fread(image->id,sizeof(char),3,fp);
 
-	fread(&image->flg,sizeof(short),1,fp);
-	fread(&image->hs,sizeof(short),1,fp);
-	fread(&image->nx,sizeof(int),1,fp);
-	fread(&image->ny,sizeof(int),1,fp);
-	fread(&image->nz,sizeof(int),1,fp);
-	fread(&image->nt,sizeof(int),1,fp);
+	(void)fread(&image->flg,sizeof(short),1,fp);
+	(void)fread(&image->hs,sizeof(short),1,fp);
+	(void)fread(&image->nx,sizeof(int),1,fp);
+	(void)fread(&image->ny,sizeof(int),1,fp);
+	(void)fread(&image->nz,sizeof(int),1,fp);
+	(void)fread(&image->nt,sizeof(int),1,fp);
 
 	if(image->flg!=1)
 	{
@@ -84,10 +84,10 @@ int readNKI(char *filename, nki *image)
 		swapByteOrder( (char *)&image->nt, sizeof(int));
 	}
 
-	fread(&image->dx,sizeof(double),1,fp); 
-	fread(&image->dy,sizeof(double),1,fp); 
-	fread(&image->dz,sizeof(double),1,fp); 
-	fread(&image->dt,sizeof(double),1,fp); 
+	(void)fread(&image->dx,sizeof(double),1,fp); 
+	(void)fread(&image->dy,sizeof(double),1,fp); 
+	(void)fread(&image->dz,sizeof(double),1,fp); 
+	(void)fread(&image->dt,sizeof(double),1,fp); 
 
 	if(image->flg!=1) 
 	{
@@ -97,10 +97,10 @@ int readNKI(char *filename, nki *image)
 		swapByteOrder( (char *)&image->dy, sizeof(double));
 	}
 
-	fread(image->cntrv, sizeof(double), 3, fp);
-	fread(image->nrmlv, sizeof(double), 3, fp);
-	fread(image->rowv, sizeof(double), 3, fp);
-	fread(image->colv, sizeof(double), 3, fp);
+	(void)fread(image->cntrv, sizeof(double), 3, fp);
+	(void)fread(image->nrmlv, sizeof(double), 3, fp);
+	(void)fread(image->rowv, sizeof(double), 3, fp);
+	(void)fread(image->colv, sizeof(double), 3, fp);
 
 	if(image->flg!=1)
 	{
@@ -121,9 +121,9 @@ int readNKI(char *filename, nki *image)
 		swapByteOrder( (char *)&image->colv[2], sizeof(double));
 	}
 
-	fread(&image->datatype, sizeof(char), 1, fp);
-	fread(&image->u, sizeof(char), 1, fp);
-	fread(&image->c, sizeof(char), 1, fp);
+	(void)fread(&image->datatype, sizeof(char), 1, fp);
+	(void)fread(&image->u, sizeof(char), 1, fp);
+	(void)fread(&image->c, sizeof(char), 1, fp);
 
 	//printf("Center Vector = (%7.5lf %7.5lf %7.5lf)\n", image->cntrv[0],image->cntrv[1], image->cntrv[2]);
 	//printf("Normal Vector = (%7.5lf %7.5lf %7.5lf)\n", image->nrmlv[0],image->nrmlv[1], image->nrmlv[2]);
