@@ -249,7 +249,7 @@ void read_image(char *file, char *im, int n)
 	
    fp = fopen(file,"r");
    if(fp==NULL) file_open_error(file);
-   fread(im,1,n,fp);
+   if (fread(im,1,n,fp)==(size_t)n ) {};
    fclose(fp);
 }
 
@@ -535,7 +535,7 @@ void write_analyze_image(const char *filename, short *im, int nx, int ny, int nz
 	FILE *fp;
 	char hdrfile[1024];
 	char imgfile[1024];
-	short min, max;
+	short min=0, max=0;
 	int nv;
 
 	struct dsr hdr;
@@ -568,7 +568,7 @@ void write_analyze_image(const char *filename, short *im, int nx, int ny, int nz
 	FILE *fp;
 	char hdrfile[1024];
 	char imgfile[1024];
-	short min, max;
+	short min=0, max=0;
 	int nv;
 
 	struct dsr hdr;
@@ -601,7 +601,7 @@ void write_analyze_image(const char *filename, float *im, int nx, int ny, int nz
 	FILE *fp;
 	char hdrfile[1024];
 	char imgfile[1024];
-	float min, max;
+	float min=0, max=0;
 	int nv;
 
 	struct dsr hdr;
@@ -634,7 +634,7 @@ void write_analyze_image(const char *filename, float *im, int nx, int ny, int nz
 	FILE *fp;
 	char hdrfile[1024];
 	char imgfile[1024];
-	float min, max;
+	float min=0, max=0;
 	int nv;
 
 	struct dsr hdr;
@@ -667,7 +667,7 @@ void write_analyze_image(const char *filename, unsigned char *im, int nx, int ny
 	FILE *fp;
 	char hdrfile[1024];
 	char imgfile[1024];
-	unsigned char min, max;
+	unsigned char min=0, max=0;
 	int nv;
 
 	struct dsr hdr;
@@ -700,7 +700,7 @@ void write_analyze_image(const char *filename, unsigned char *im, int nx, int ny
 	FILE *fp;
 	char hdrfile[1024];
 	char imgfile[1024];
-	unsigned char min, max;
+	unsigned char min=0, max=0;
 	int nv;
 
 	struct dsr hdr;
