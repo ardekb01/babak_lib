@@ -270,12 +270,22 @@ float *readMatrix(int *n, int *m, char *filename)
    fp = fopen(filename, "r");
    if(fp==NULL) file_open_error(filename);
 
-   fread(n, sizeof(int), 1, fp);
-   fread(m, sizeof(int), 1, fp);
+   if( fread(n, sizeof(int), 1, fp) != 1)
+   {
+      printf("Failed to read variable \"n\".\n");
+   }
+
+   if( fread(m, sizeof(int), 1, fp) != 1)
+   {
+      printf("Failed to read variable \"m\".\n");
+   }
 
    A = (float *)calloc( (*n)*(*m), sizeof(float));
 
-   fread(A, sizeof(float), (*n)*(*m), fp);
+   if( fread(A, sizeof(float), (*n)*(*m), fp) != (size_t)((*n)*(*m)) ) 
+   {
+      printf("Failed to read variable \"A\".\n");
+   }
 
    fclose(fp);
 
@@ -815,7 +825,7 @@ float *affineLSE(char *msk, int nx, int ny, float dx, float dy, float *Xwarp, fl
 
 void affineLSE(char *msk, int nx, int ny, float dx, float dy, float *Xwarp, float *Ywarp, float *T)
 {
-	int np;
+	//int np;
 	int q,N;
 	float xc, yc;
 	float rx,ry;
@@ -828,7 +838,7 @@ void affineLSE(char *msk, int nx, int ny, float dx, float dy, float *Xwarp, floa
 	double *invRR;
 	double A[4],B[2];
 
-	np = nx*ny;
+	//np = nx*ny;
 
    	xc=dx*(nx-1)/2.0;     /* +---+---+ */
 	yc=dy*(ny-1)/2.0;
@@ -919,7 +929,7 @@ void affineLSE(char *msk, int nx, int ny, float dx, float dy, float *Xwarp, floa
 
 void affineLSE(short *msk, int nx, int ny, float dx, float dy, float *Xwarp, float *Ywarp, float *T)
 {
-	int np;
+	//int np;
 	int q,N;
 	float xc, yc;
 	float rx,ry;
@@ -932,7 +942,7 @@ void affineLSE(short *msk, int nx, int ny, float dx, float dy, float *Xwarp, flo
 	double *invRR;
 	double A[4],B[2];
 
-	np = nx*ny;
+	//np = nx*ny;
 
    	xc=dx*(nx-1)/2.0;     /* +---+---+ */
 	yc=dy*(ny-1)/2.0;
