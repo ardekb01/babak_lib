@@ -588,7 +588,7 @@ short *KMcluster(short *ccImage, short *im_in, int nclass, int maxiter, int , in
    double *oldmean;
    double *PR;
 
-   int clss;   // the class with minimum distance from a given pixel value 
+   int clss=0;   // the class with minimum distance from a given pixel value 
 
    float d;    // square distance between a given pixel value and a class mean 
 
@@ -1601,7 +1601,7 @@ static float optimize(short *KMI, float ax,float bx,float cx,float tol, float *x
 	float cgold=0.381966;
 	float zeps=1.0e-10;
 	int itmax=100;
-	float a,b,v,w,x,u,fu,fx,fv,fw,e,xm,d,r,q,p,etemp;
+	float a,b,v,w,x,u,fu,fx,fv,fw,e=0.0,xm,d,r,q,p,etemp;
 	int i;
 	float tol1,tol2;
 
