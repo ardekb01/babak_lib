@@ -250,7 +250,10 @@ void read_nifti_image(const char *filename, unsigned char **im, nifti_1_header *
 
    fp = fopen(filename,"r");
    if(fp==NULL) file_open_error(filename);
-   fread(hdr, sizeof(nifti_1_header), 1, fp);
+   if( fread(hdr, sizeof(nifti_1_header), 1, fp) != 1 )
+   {
+      printf("Failed to read variable: \"hdr\"\n");
+   }
    fclose(fp);
 
    if(hdr->dim[0]<1 || hdr->dim[0]>7)
@@ -269,7 +272,10 @@ void read_nifti_image(const char *filename, unsigned char **im, nifti_1_header *
    fp = fopen(filename,"r");
    if(fp==NULL) file_open_error(filename);
    fseek(fp, (long)hdr->vox_offset, SEEK_SET);
-   fread(*im, sizeof(unsigned char), nv, fp);
+   if( fread(*im, sizeof(unsigned char), nv, fp) != (size_t)nv )
+   {
+      printf("Failed to read variable: \"im\"\n");
+   }
    fclose(fp);
 }
 
@@ -280,7 +286,10 @@ void read_nifti_image(const char *filename, short **im, nifti_1_header *hdr)
 
    fp = fopen(filename,"r");
    if(fp==NULL) file_open_error(filename);
-   fread(hdr, sizeof(nifti_1_header), 1, fp);
+   if( fread(hdr, sizeof(nifti_1_header), 1, fp) != 1 )
+   {
+      printf("Failed to read variable: \"hdr\"\n");
+   }
    fclose(fp);
 
    if(hdr->dim[0]<1 || hdr->dim[0]>7)
@@ -299,7 +308,10 @@ void read_nifti_image(const char *filename, short **im, nifti_1_header *hdr)
    fp = fopen(filename,"r");
    if(fp==NULL) file_open_error(filename);
    fseek(fp, (long)hdr->vox_offset, SEEK_SET);
-   fread(*im, sizeof(short), nv, fp);
+   if( fread(*im, sizeof(short), nv, fp) != (size_t)nv )
+   {
+      printf("Failed to read variable: \"im\"\n");
+   }
    fclose(fp);
 }
 
@@ -426,8 +438,14 @@ nifti_1_header read_NIFTI_hdr(const char *filename, nifti1_extender *extender, c
 
    fp = fopen(filename,"r");
    if(fp==NULL) file_open_error(filename);
-   fread(&hdr, sizeof(nifti_1_header), 1, fp);
-   fread(extender, sizeof(nifti1_extender), 1, fp);
+   if( fread(&hdr, sizeof(nifti_1_header), 1, fp) != 1 )
+   {
+      printf("Failed to read variable: \"hdr\"\n");
+   }
+   if( fread(extender, sizeof(nifti1_extender), 1, fp) != 1 )
+   {
+      printf("Failed to read variable: \"extender\"\n");
+   }
 
    if(hdr.dim[0]<1 || hdr.dim[0]>7)
    {
@@ -438,7 +456,10 @@ nifti_1_header read_NIFTI_hdr(const char *filename, nifti1_extender *extender, c
    if(extension_size>0)
    {
       *extension = (char *)calloc(extension_size,1);
-      fread(*extension, extension_size, 1, fp);
+      if( fread(*extension, extension_size, 1, fp) != 1 )
+      {
+         printf("Failed to read variable: \"extension\"\n");
+      }
    }
    else
    {
@@ -457,7 +478,10 @@ void print_NIFTI_hdr(const char *filename)
 
    fp = fopen(filename,"r");
    if(fp==NULL) file_open_error(filename);
-   fread(&hdr, sizeof(nifti_1_header), 1, fp);
+   if( fread(&hdr, sizeof(nifti_1_header), 1, fp) != 1 )
+   {
+       printf("Failed to read variable: \"hdr\"\n");
+   }
    fclose(fp);
 
    if(hdr.dim[0]<1 || hdr.dim[0]>7)
