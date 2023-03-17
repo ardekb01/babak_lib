@@ -142,8 +142,8 @@ void VOLUME::read_smis_header(char *pathname)
 		return;
 	}
 
-        fread(&nx,sizeof(int),1,fp);
-        fread(&ny,sizeof(int),1,fp);
+        (void)fread(&nx,sizeof(int),1,fp);
+        (void)fread(&ny,sizeof(int),1,fp);
         fclose(fp);
 
         if(bigEndian())
@@ -189,19 +189,19 @@ void VOLUME::read_vision_header(char *pathname)
 	}
 
 	fseek(fp, 5000, SEEK_SET);
-	fread(&dx, sizeof(double), 1, fp);
+	(void)fread(&dx, sizeof(double), 1, fp);
 	if( !bigEndian() ) swapByteOrder((char *)&dx, sizeof(double) );
 
 	fseek(fp, 5008, SEEK_SET);
-	fread(&dy, sizeof(double), 1, fp);
+	(void)fread(&dy, sizeof(double), 1, fp);
 	if( !bigEndian() ) swapByteOrder((char *)&dy, sizeof(double) );
 
 	fseek(fp, 3744, SEEK_SET);
-	fread(&FOVrow, sizeof(double), 1, fp);
+	(void)fread(&FOVrow, sizeof(double), 1, fp);
 	if( !bigEndian() ) swapByteOrder((char *)&FOVrow, sizeof(double) );
 
 	fseek(fp, 3752, SEEK_SET);
-	fread(&FOVcol, sizeof(double), 1, fp);
+	(void)fread(&FOVcol, sizeof(double), 1, fp);
 	if( !bigEndian() ) swapByteOrder((char *)&FOVcol, sizeof(double) );
 
 	nx = (int)(FOVrow/dx + 0.5);
@@ -209,11 +209,11 @@ void VOLUME::read_vision_header(char *pathname)
 	np = nx*ny;
 
 	fseek(fp, 1544, SEEK_SET);
-	fread(&slicethickness, sizeof(double), 1, fp);
+	(void)fread(&slicethickness, sizeof(double), 1, fp);
 	if( !bigEndian() ) swapByteOrder((char *)&slicethickness, sizeof(double) );
  
 	fseek(fp, 4136, SEEK_SET);
-	fread(&slicegapfactor, sizeof(double), 1, fp);
+	(void)fread(&slicegapfactor, sizeof(double), 1, fp);
 	if( !bigEndian() ) swapByteOrder((char *)&slicegapfactor, sizeof(double) );
         
 	// Ensure that the slice gap factor is a reasonable number
@@ -223,7 +223,7 @@ void VOLUME::read_vision_header(char *pathname)
 	dz = slicethickness * (1.0 + slicegapfactor);
 
 	fseek(fp, 3212, SEEK_SET);
-	fread(&image_number,sizeof(int),1,fp);
+	(void)fread(&image_number,sizeof(int),1,fp);
 	if( !bigEndian() ) swapByteOrder((char *)&image_number, sizeof(int) );
 
 	fclose(fp);
@@ -245,7 +245,7 @@ void VOLUME::read_smis_image(char *pathname)
 	if(data!=NULL) free(data);
 	data = (short *)calloc(np,sizeof(short));
 	fseek(fp, 512, SEEK_SET);
-	fread(data,sizeof(short),np,fp);
+	(void)fread(data,sizeof(short),np,fp);
         fclose(fp);
 
 	if(bigEndian()) swapN( (char *)data, np*2);
@@ -268,7 +268,7 @@ void VOLUME::read_vision_image(char *pathname)
         data = (short *)calloc(np,sizeof(short));
 
 	fseek(fp, 6144, SEEK_SET);
-	fread(data, sizeof(short), np, fp);
+	(void)fread(data, sizeof(short), np, fp);
 	if( !bigEndian() ) swapN((char *)(data), np*2);
 
 	fclose(fp);
@@ -341,25 +341,25 @@ void VOLUME::readsiemensvision(char *pathname)
 
 /*
 fseek(fp, 2864, SEEK_SET);
-fread(&nx, sizeof(int), 1, fp);
+(void)fread(&nx, sizeof(int), 1, fp);
 ny=nx;
 np=nx*ny;
 */
 
 	fseek(fp, 5000, SEEK_SET);
-	fread(&dx, sizeof(double), 1, fp);
+	(void)fread(&dx, sizeof(double), 1, fp);
 	if( !bigEndian() ) swapByteOrder((char *)&dx, sizeof(double) );
 
 	fseek(fp, 5008, SEEK_SET);
-	fread(&dy, sizeof(double), 1, fp);
+	(void)fread(&dy, sizeof(double), 1, fp);
 	if( !bigEndian() ) swapByteOrder((char *)&dy, sizeof(double) );
 
 	fseek(fp, 3744, SEEK_SET);
-	fread(&FOVrow, sizeof(double), 1, fp);
+	(void)fread(&FOVrow, sizeof(double), 1, fp);
 	if( !bigEndian() ) swapByteOrder((char *)&FOVrow, sizeof(double) );
 
 	fseek(fp, 3752, SEEK_SET);
-	fread(&FOVcol, sizeof(double), 1, fp);
+	(void)fread(&FOVcol, sizeof(double), 1, fp);
 	if( !bigEndian() ) swapByteOrder((char *)&FOVcol, sizeof(double) );
 
 	nx = (int)(FOVrow/dx + 0.5);
@@ -367,11 +367,11 @@ np=nx*ny;
 	np = nx*ny;
 
 	fseek(fp, 1544, SEEK_SET);
-	fread(&slicethickness, sizeof(double), 1, fp);
+	(void)fread(&slicethickness, sizeof(double), 1, fp);
 	if( !bigEndian() ) swapByteOrder((char *)&slicethickness, sizeof(double) );
         
 	fseek(fp, 4136, SEEK_SET);
-	fread(&slicegapfactor, sizeof(double), 1, fp);
+	(void)fread(&slicegapfactor, sizeof(double), 1, fp);
 	if( !bigEndian() ) swapByteOrder((char *)&slicegapfactor, sizeof(double) );
 
 	// Ensure that the slice gap factor is a reasonable number
@@ -381,32 +381,32 @@ np=nx*ny;
 	dz = slicethickness * (1.0 + slicegapfactor);
 
 	fseek(fp, 795, SEEK_SET);
-	fread(patientID,sizeof(char),12,fp);
+	(void)fread(patientID,sizeof(char),12,fp);
 	patientID[12]='\0';
 	printf("Patient ID: %s\n",patientID);
 
 	fseek(fp, 768, SEEK_SET);
-	fread(patientname,sizeof(char),25,fp);
+	(void)fread(patientname,sizeof(char),25,fp);
 	patientname[25]='\0';
 	printf("Patient Name: %s\n",patientname);
 
 	fseek(fp, 3200, SEEK_SET);
-	fread(&studynumber,sizeof(int),1,fp);
+	(void)fread(&studynumber,sizeof(int),1,fp);
 	if( !bigEndian() ) swapByteOrder((char *)&studynumber, sizeof(int) );
 	printf("Study Number: %d\n",studynumber);
 
 	fseek(fp, 3212, SEEK_SET);
-	fread(&imagenumber,sizeof(int),1,fp);
+	(void)fread(&imagenumber,sizeof(int),1,fp);
 	if( !bigEndian() ) swapByteOrder((char *)&imagenumber, sizeof(int) );
 	imagenumbermin=imagenumber;
 	imagenumbermax=imagenumber;
 
 	fseek(fp, 1568, SEEK_SET);
-	fread(&echotime, sizeof(double), 1, fp);
+	(void)fread(&echotime, sizeof(double), 1, fp);
 	if( !bigEndian() ) swapByteOrder((char *)&echotime, sizeof(double) );
 
 	fseek(fp, 3792, SEEK_SET);
-	fread(normalvec, sizeof(double), 3, fp);
+	(void)fread(normalvec, sizeof(double), 3, fp);
 	if( !bigEndian() ) 
 	{
 		swapByteOrder((char *)&normalvec[0], sizeof(double) );
@@ -415,7 +415,7 @@ np=nx*ny;
 	}
 
 	fseek(fp, 3832, SEEK_SET);
-	fread(rowvec, sizeof(double), 3, fp);
+	(void)fread(rowvec, sizeof(double), 3, fp);
 	if( !bigEndian() ) 
 	{
 		swapByteOrder((char *)&rowvec[0], sizeof(double) );
@@ -424,7 +424,7 @@ np=nx*ny;
 	}
 
 	fseek(fp, 3856, SEEK_SET);
-	fread(columnvec, sizeof(double), 3, fp);
+	(void)fread(columnvec, sizeof(double), 3, fp);
 	if( !bigEndian() ) 
 	{
 		swapByteOrder((char *)&columnvec[0], sizeof(double) );
@@ -473,23 +473,23 @@ np=nx*ny;
 		fp=fopen(filename,"r");
         if(fp==NULL) file_open_error(filename);
 		fseek(fp, 795, SEEK_SET);
-		fread(patientID2,sizeof(char),12,fp);
+		(void)fread(patientID2,sizeof(char),12,fp);
 		patientID2[12]='\0';
 		        
 		fseek(fp, 768, SEEK_SET);
-		fread(patientname2,sizeof(char),25,fp);
+		(void)fread(patientname2,sizeof(char),25,fp);
 		patientname2[25]='\0';
 		        
 		fseek(fp, 3200, SEEK_SET);
-		fread(&studynumber2,sizeof(int),1,fp);
+		(void)fread(&studynumber2,sizeof(int),1,fp);
 		if( !bigEndian() ) swapByteOrder((char *)&studynumber2, sizeof(int) );
 
 		fseek(fp, 3212, SEEK_SET);
-		fread(&imagenumber,sizeof(int),1,fp);
+		(void)fread(&imagenumber,sizeof(int),1,fp);
 		if( !bigEndian() ) swapByteOrder((char *)&imagenumber, sizeof(int) );
 
 		fseek(fp, 1568, SEEK_SET);
-		fread(&echotime2, sizeof(double), 1, fp);
+		(void)fread(&echotime2, sizeof(double), 1, fp);
 		if( !bigEndian() ) swapByteOrder((char *)&echotime2, sizeof(double) );
 
 		fclose(fp);
@@ -526,7 +526,7 @@ np=nx*ny;
 		if(imagenumber==0)
 		{
 			fseek(fp, 3768, SEEK_SET);
-			fread(centervec, sizeof(double), 3, fp);
+			(void)fread(centervec, sizeof(double), 3, fp);
 			if( !bigEndian() ) 
 			{
 				swapByteOrder((char *)&centervec[0], sizeof(double) );
@@ -536,7 +536,7 @@ np=nx*ny;
 		}
 
 		fseek(fp, 6144, SEEK_SET);
-		fread(data+imagenumber*np, sizeof(short), np, fp);
+		(void)fread(data+imagenumber*np, sizeof(short), np, fp);
 		if( !bigEndian() ) swapN((char *)(data+imagenumber*np), np*2);
 
 		fclose(fp);
@@ -617,19 +617,19 @@ int VOLUME::readsiemensvision(int N, char **filename)
     if(fp==NULL) file_open_error(filename[0]);
 
 	fseek(fp, 5000, SEEK_SET);
-	fread(&dx, sizeof(double), 1, fp);
+	(void)fread(&dx, sizeof(double), 1, fp);
 	if( !bigEndian() ) swapByteOrder((char *)&dx, sizeof(double) );
 
 	fseek(fp, 5008, SEEK_SET);
-	fread(&dy, sizeof(double), 1, fp);
+	(void)fread(&dy, sizeof(double), 1, fp);
 	if( !bigEndian() ) swapByteOrder((char *)&dy, sizeof(double) );
 
 	fseek(fp, 3744, SEEK_SET);
-	fread(&FOVrow, sizeof(double), 1, fp);
+	(void)fread(&FOVrow, sizeof(double), 1, fp);
 	if( !bigEndian() ) swapByteOrder((char *)&FOVrow, sizeof(double) );
 
 	fseek(fp, 3752, SEEK_SET);
-	fread(&FOVcol, sizeof(double), 1, fp);
+	(void)fread(&FOVcol, sizeof(double), 1, fp);
 	if( !bigEndian() ) swapByteOrder((char *)&FOVcol, sizeof(double) );
 
 	nx = (int)(FOVrow/dx + 0.5);
@@ -637,11 +637,11 @@ int VOLUME::readsiemensvision(int N, char **filename)
 	np = nx*ny;
 
 	fseek(fp, 1544, SEEK_SET);
-	fread(&slicethickness, sizeof(double), 1, fp);
+	(void)fread(&slicethickness, sizeof(double), 1, fp);
 	if( !bigEndian() ) swapByteOrder((char *)&slicethickness, sizeof(double) );
         
 	fseek(fp, 4136, SEEK_SET);
-	fread(&slicegapfactor, sizeof(double), 1, fp);
+	(void)fread(&slicegapfactor, sizeof(double), 1, fp);
 	if( !bigEndian() ) swapByteOrder((char *)&slicegapfactor, sizeof(double) );
 
 	// Ensure that the slice gap factor is a reasonable number
@@ -650,32 +650,32 @@ int VOLUME::readsiemensvision(int N, char **filename)
 	dz = slicethickness * (1.0 + slicegapfactor);
 
 	fseek(fp, 795, SEEK_SET);
-	fread(patientID,sizeof(char),12,fp);
+	(void)fread(patientID,sizeof(char),12,fp);
 	patientID[12]='\0';
 	printf("Patient ID: %s\n",patientID);
 
 	fseek(fp, 768, SEEK_SET);
-	fread(patientname,sizeof(char),25,fp);
+	(void)fread(patientname,sizeof(char),25,fp);
 	patientname[25]='\0';
 	printf("Patient Name: %s\n",patientname);
 
 	fseek(fp, 3200, SEEK_SET);
-	fread(&studynumber,sizeof(int),1,fp);
+	(void)fread(&studynumber,sizeof(int),1,fp);
 	if( !bigEndian() ) swapByteOrder((char *)&studynumber, sizeof(int) );
 	printf("Study Number: %d\n",studynumber);
 
 	fseek(fp, 3212, SEEK_SET);
-	fread(&imagenumber,sizeof(int),1,fp);
+	(void)fread(&imagenumber,sizeof(int),1,fp);
 	if( !bigEndian() ) swapByteOrder((char *)&imagenumber, sizeof(int) );
 	imagenumbermin=imagenumber;
 	imagenumbermax=imagenumber;
 
 	fseek(fp, 1568, SEEK_SET);
-	fread(&echotime, sizeof(double), 1, fp);
+	(void)fread(&echotime, sizeof(double), 1, fp);
 	if( !bigEndian() ) swapByteOrder((char *)&echotime, sizeof(double) );
 
 	fseek(fp, 3792, SEEK_SET);
-	fread(normalvec, sizeof(double), 3, fp);
+	(void)fread(normalvec, sizeof(double), 3, fp);
 	if( !bigEndian() ) 
 	{
 		swapByteOrder((char *)&normalvec[0], sizeof(double) );
@@ -684,7 +684,7 @@ int VOLUME::readsiemensvision(int N, char **filename)
 	}
 
 	fseek(fp, 3832, SEEK_SET);
-	fread(rowvec, sizeof(double), 3, fp);
+	(void)fread(rowvec, sizeof(double), 3, fp);
 	if( !bigEndian() ) 
 	{
 		swapByteOrder((char *)&rowvec[0], sizeof(double) );
@@ -693,7 +693,7 @@ int VOLUME::readsiemensvision(int N, char **filename)
 	}
 
 	fseek(fp, 3856, SEEK_SET);
-	fread(columnvec, sizeof(double), 3, fp);
+	(void)fread(columnvec, sizeof(double), 3, fp);
 	if( !bigEndian() ) 
 	{
 		swapByteOrder((char *)&columnvec[0], sizeof(double) );
@@ -711,23 +711,23 @@ int VOLUME::readsiemensvision(int N, char **filename)
         if(fp==NULL) file_open_error(filename[i]);
 
 		fseek(fp, 795, SEEK_SET);
-		fread(patientID2,sizeof(char),12,fp);
+		(void)fread(patientID2,sizeof(char),12,fp);
 		patientID2[12]='\0';
 		        
 		fseek(fp, 768, SEEK_SET);
-		fread(patientname2,sizeof(char),25,fp);
+		(void)fread(patientname2,sizeof(char),25,fp);
 		patientname2[25]='\0';
 		        
 		fseek(fp, 3200, SEEK_SET);
-		fread(&studynumber2,sizeof(int),1,fp);
+		(void)fread(&studynumber2,sizeof(int),1,fp);
 		if( !bigEndian() ) swapByteOrder((char *)&studynumber2, sizeof(int) );
 
 		fseek(fp, 3212, SEEK_SET);
-		fread(&imagenumber,sizeof(int),1,fp);
+		(void)fread(&imagenumber,sizeof(int),1,fp);
 		if( !bigEndian() ) swapByteOrder((char *)&imagenumber, sizeof(int) );
 
 		fseek(fp, 1568, SEEK_SET);
-		fread(&echotime2, sizeof(double), 1, fp);
+		(void)fread(&echotime2, sizeof(double), 1, fp);
 		if( !bigEndian() ) swapByteOrder((char *)&echotime2, sizeof(double) );
 
 		fclose(fp);
@@ -778,7 +778,7 @@ int VOLUME::readsiemensvision(int N, char **filename)
         if(fp==NULL) file_open_error(filename[i]);
 
 		fseek(fp, 3212, SEEK_SET);
-		fread(&imagenumber,sizeof(int),1,fp);
+		(void)fread(&imagenumber,sizeof(int),1,fp);
 		if( !bigEndian() ) swapByteOrder((char *)&imagenumber, sizeof(int) );
 
 		imagenumber -=  imagenumbermin;
@@ -786,7 +786,7 @@ int VOLUME::readsiemensvision(int N, char **filename)
 		if(imagenumber==0)
 		{
 	        fseek(fp, 3768, SEEK_SET);
-        	fread(centervec, sizeof(double), 3, fp);
+        	(void)fread(centervec, sizeof(double), 3, fp);
 			if( !bigEndian() ) 
 			{
 				swapByteOrder((char *)&centervec[0], sizeof(double) );
@@ -796,7 +796,7 @@ int VOLUME::readsiemensvision(int N, char **filename)
 		}
 
 		fseek(fp, 6144, SEEK_SET);
-		fread(data+imagenumber*np, sizeof(short), np, fp);
+		(void)fread(data+imagenumber*np, sizeof(short), np, fp);
 		if( !bigEndian() ) swapN((char *)(data+imagenumber*np), np*2);
 
 		fclose(fp);
@@ -832,17 +832,17 @@ void VOLUME::readmosaic(char *pathname)
     if(fp==NULL) file_open_error(pathname);
 
 	fseek(fp, 5000, SEEK_SET);
-	fread(&dx, sizeof(double), 1, fp);
+	(void)fread(&dx, sizeof(double), 1, fp);
 	if( !bigEndian() ) swapByteOrder((char *)&dx, sizeof(double) );
 
 	fseek(fp, 3744, SEEK_SET);
-	fread(&FOVrow, sizeof(double), 1, fp);
+	(void)fread(&FOVrow, sizeof(double), 1, fp);
 	if( !bigEndian() ) swapByteOrder((char *)&FOVrow, sizeof(double) );
 
 	W = (int)(FOVrow/dx + 0.5);
 
 	fseek(fp, 2864, SEEK_SET);
-	fread(&nx, sizeof(int), 1, fp); 
+	(void)fread(&nx, sizeof(int), 1, fp); 
 	if( !bigEndian() ) swapByteOrder((char *)&nx, sizeof(int) );
 	ny=nx;
 	np=nx*ny;
@@ -850,7 +850,7 @@ void VOLUME::readmosaic(char *pathname)
 	niy=W/ny;
 
 	fseek(fp, 3752, SEEK_SET);
-	fread(&FOVcol, sizeof(double), 1, fp);
+	(void)fread(&FOVcol, sizeof(double), 1, fp);
 	if( !bigEndian() ) swapByteOrder((char *)&FOVcol, sizeof(double) );
 
 	// dx and dy may be read directly from locations 5000 and 5008 
@@ -860,15 +860,15 @@ void VOLUME::readmosaic(char *pathname)
 	dy = FOVcol/ny;
 
 	fseek(fp, 1544, SEEK_SET);
-	fread(&slicethickness, sizeof(double), 1, fp);
+	(void)fread(&slicethickness, sizeof(double), 1, fp);
 	if( !bigEndian() ) swapByteOrder((char *)&slicethickness, sizeof(double) );
 
 	fseek(fp, 4136, SEEK_SET);
-	fread(&slicegapfactor, sizeof(double), 1, fp);
+	(void)fread(&slicegapfactor, sizeof(double), 1, fp);
 	if( !bigEndian() ) swapByteOrder((char *)&slicegapfactor, sizeof(double) );
 
 	fseek(fp, 3768, SEEK_SET);
-	fread(centervec, sizeof(double), 3, fp);
+	(void)fread(centervec, sizeof(double), 3, fp);
 	if( !bigEndian() ) 
 	{
 		swapByteOrder((char *)&centervec[0], sizeof(double) );
@@ -877,7 +877,7 @@ void VOLUME::readmosaic(char *pathname)
 	}
 
 	fseek(fp, 3792, SEEK_SET);
-	fread(normalvec, sizeof(double), 3, fp);
+	(void)fread(normalvec, sizeof(double), 3, fp);
 	if( !bigEndian() ) 
 	{
 		swapByteOrder((char *)&normalvec[0], sizeof(double) );
@@ -886,7 +886,7 @@ void VOLUME::readmosaic(char *pathname)
 	}
 
 	fseek(fp, 3832, SEEK_SET);
-	fread(rowvec, sizeof(double), 3, fp);
+	(void)fread(rowvec, sizeof(double), 3, fp);
 	if( !bigEndian() ) 
 	{
 		swapByteOrder((char *)&rowvec[0], sizeof(double) );
@@ -895,7 +895,7 @@ void VOLUME::readmosaic(char *pathname)
 	}
 
 	fseek(fp, 3856, SEEK_SET);
-	fread(columnvec, sizeof(double), 3, fp);
+	(void)fread(columnvec, sizeof(double), 3, fp);
 	if( !bigEndian() ) 
 	{
 		swapByteOrder((char *)&columnvec[0], sizeof(double) );
@@ -911,7 +911,7 @@ void VOLUME::readmosaic(char *pathname)
 
 	mosaic=(short *)calloc(W*W,sizeof(short));
 	fseek(fp, 6144, SEEK_SET);
-	fread(mosaic, sizeof(short), W*W, fp);
+	(void)fread(mosaic, sizeof(short), W*W, fp);
 	if( !bigEndian() ) swapN((char *)mosaic, 512*512*2);
 
 	fclose(fp);
@@ -1120,65 +1120,65 @@ void VOLUME::read_ge(char *pathname)
 	dt=0;
 
 	fseek(fp,4,0);
-	fread(&hdr_size,sizeof(int),1,fp);
+	(void)fread(&hdr_size,sizeof(int),1,fp);
 	if(!bigEndian() ) swapByteOrder( (char *)&hdr_size, sizeof(int));
 
 	fseek(fp,148,0);
-	fread(&im_hdr_offset,sizeof(int),1,fp);
+	(void)fread(&im_hdr_offset,sizeof(int),1,fp);
 	if(!bigEndian() ) swapByteOrder( (char *)&im_hdr_offset, sizeof(int));
 	
 	fseek(fp,132,0);
-	fread(&exam_hdr_offset,sizeof(int),1,fp);
+	(void)fread(&exam_hdr_offset,sizeof(int),1,fp);
 	if(!bigEndian() ) swapByteOrder( (char *)&exam_hdr_offset, sizeof(int));
 	
 	fseek(fp,140,0);
-	fread(&series_hdr_offset,sizeof(int),1,fp);
+	(void)fread(&series_hdr_offset,sizeof(int),1,fp);
 	if(!bigEndian() ) swapByteOrder( (char *)&series_hdr_offset, sizeof(int));
 
 	fseek(fp,im_hdr_offset+50,0);
-	fread(&fdum,sizeof(float),1,fp);
+	(void)fread(&fdum,sizeof(float),1,fp);
 	if(!bigEndian() ) swapByteOrder( (char *)&fdum, sizeof(float));
 	dx = fdum;
 
 	fseek(fp,im_hdr_offset+54,0);
-	fread(&fdum,sizeof(float),1,fp);
+	(void)fread(&fdum,sizeof(float),1,fp);
 	if(!bigEndian() ) swapByteOrder( (char *)&fdum, sizeof(float));
 	dy = fdum;
 
 	fseek(fp,im_hdr_offset+30,0);
-	fread(&sdum,sizeof(short),1,fp);
+	(void)fread(&sdum,sizeof(short),1,fp);
 	if(!bigEndian() ) swapByteOrder( (char *)&sdum, sizeof(short));
 	nx = sdum;
 
 	fseek(fp,im_hdr_offset+32,0);
-	fread(&sdum,sizeof(short),1,fp);
+	(void)fread(&sdum,sizeof(short),1,fp);
 	if(!bigEndian() ) swapByteOrder( (char *)&sdum, sizeof(short));
 	ny = sdum;
 
 	np = nx*ny;
 
 	fseek(fp,exam_hdr_offset+84,0);
-	fread(patientID,sizeof(char),12,fp);
+	(void)fread(patientID,sizeof(char),12,fp);
 	patientID[12]='\0';
 	printf("Patient ID: %s\n",patientID);
 
 	fseek(fp,exam_hdr_offset+97,0);
-	fread(patientname,sizeof(char),25,fp);
+	(void)fread(patientname,sizeof(char),25,fp);
 	patientname[25]='\0';
 	printf("Patient Name: %s\n",patientname);
 
 	fseek(fp,im_hdr_offset+202,0);
-	fread(&echotime, sizeof(int), 1, fp);
+	(void)fread(&echotime, sizeof(int), 1, fp);
 	if( !bigEndian() ) swapByteOrder((char *)&echotime, sizeof(int) );
 	printf("Echo time=%d (microseconds)\n",echotime);
 
 	fseek(fp, series_hdr_offset+10, 0);
-	fread(&seriesnumber,sizeof(short),1,fp);
+	(void)fread(&seriesnumber,sizeof(short),1,fp);
 	if( !bigEndian() ) swapByteOrder((char *)&seriesnumber, sizeof(short) );
 	printf("Series number: %d\n",seriesnumber);
 
 	fseek(fp,im_hdr_offset+154,0);
-	fread(TLHC,sizeof(float),3,fp);
+	(void)fread(TLHC,sizeof(float),3,fp);
 	if(!bigEndian() ) 
 	{
 		swapByteOrder( (char *)&TLHC[0], sizeof(float));
@@ -1188,7 +1188,7 @@ void VOLUME::read_ge(char *pathname)
 	TLHC[0] *= -1.0; TLHC[2] *= -1.0; // RAS to FAL system converstion
 
 	fseek(fp,im_hdr_offset+166,0);
-	fread(TRHC,sizeof(float),3,fp);
+	(void)fread(TRHC,sizeof(float),3,fp);
 	if(!bigEndian() ) 
 	{
 		swapByteOrder( (char *)&TRHC[0], sizeof(float));
@@ -1198,7 +1198,7 @@ void VOLUME::read_ge(char *pathname)
 	TRHC[0] *= -1.0; TRHC[2] *= -1.0; // RAS to FAL system converstion
 
 	fseek(fp,im_hdr_offset+178,0);
-	fread(BRHC,sizeof(float),3,fp);
+	(void)fread(BRHC,sizeof(float),3,fp);
 	if(!bigEndian() ) 
 	{
 		swapByteOrder( (char *)&BRHC[0], sizeof(float));
@@ -1259,25 +1259,25 @@ void VOLUME::read_ge(char *pathname)
         if(fp==NULL) file_open_error(filename);
 
 		fseek(fp,exam_hdr_offset+84,0);
-		fread(patientID2,sizeof(char),12,fp);
+		(void)fread(patientID2,sizeof(char),12,fp);
 		patientID2[12]='\0';
 
 		if( strcmp(patientID, patientID2) != 0 ) continue;
 		        
 		fseek(fp,exam_hdr_offset+97,0);
-		fread(patientname2,sizeof(char),25,fp);
+		(void)fread(patientname2,sizeof(char),25,fp);
 		patientname2[25]='\0';
 		        
 		if( strcmp(patientname, patientname2) != 0 ) continue;
 
 		fseek(fp, series_hdr_offset+10, 0);
-		fread(&seriesnumber2,sizeof(short),1,fp);
+		(void)fread(&seriesnumber2,sizeof(short),1,fp);
 		if( !bigEndian() ) swapByteOrder((char *)&seriesnumber2, sizeof(short) );
 
 		if( seriesnumber != seriesnumber2 ) continue;
 
 		fseek(fp,im_hdr_offset+202,0);
-		fread(&echotime2, sizeof(int), 1, fp);
+		(void)fread(&echotime2, sizeof(int), 1, fp);
 		if( !bigEndian() ) swapByteOrder((char *)&echotime2, sizeof(int) );
 
 		if( echotime != echotime2 )  continue;
@@ -1302,7 +1302,7 @@ void VOLUME::read_ge(char *pathname)
         if(fp==NULL) file_open_error(filenames[i]);
 
 		fseek(fp, hdr_size, SEEK_SET);
-		fread(data+i*np, sizeof(short), np, fp);
+		(void)fread(data+i*np, sizeof(short), np, fp);
 		if( !bigEndian() ) swapN((char *)(data+i*np), np*2);
 
 		fclose(fp);
@@ -1317,7 +1317,7 @@ void VOLUME::read_ge(char *pathname)
             if(fp==NULL) file_open_error(filenames[0]);
 
 			fseek(fp,im_hdr_offset+130,0);
-			fread(cntr,sizeof(float),3,fp);
+			(void)fread(cntr,sizeof(float),3,fp);
 			if(!bigEndian() )
 			{
 				swapByteOrder( (char *)&cntr[0], sizeof(float));
@@ -1331,7 +1331,7 @@ void VOLUME::read_ge(char *pathname)
 			centervec[2]=cntr[2];
 
 			fseek(fp,im_hdr_offset+26,0);
-			fread(&fdum,sizeof(float),1,fp);
+			(void)fread(&fdum,sizeof(float),1,fp);
 			if(!bigEndian() ) swapByteOrder( (char *)&fdum, sizeof(float));
 			dz = fdum;
 			fclose(fp);
@@ -1356,7 +1356,7 @@ void VOLUME::read_ge(char *pathname)
                 if(fp==NULL) file_open_error(filenames[i]);
 
 				fseek(fp,im_hdr_offset+130,0);
-				fread(Ca,sizeof(float),3,fp);
+				(void)fread(Ca,sizeof(float),3,fp);
 				if(!bigEndian() )
 				{
 					swapByteOrder( (char *)&Ca[0], sizeof(float));
@@ -1378,7 +1378,7 @@ void VOLUME::read_ge(char *pathname)
                 if(fp==NULL) file_open_error(filenames[i]);
 
 				fseek(fp,im_hdr_offset+130,0);
-				fread(Cb,sizeof(float),3,fp);
+				(void)fread(Cb,sizeof(float),3,fp);
 				if(!bigEndian() )
 				{
 					swapByteOrder( (char *)&Cb[0], sizeof(float));
@@ -1474,13 +1474,13 @@ void VOLUME::read_gelx(char *pathname)
 	nt=1;
 	dt=0;
 
-	fread(&suite_hdr, sizeof(SUITEDATATYPE), 1, fp);
+	(void)fread(&suite_hdr, sizeof(SUITEDATATYPE), 1, fp);
 	fseek(fp,116,SEEK_SET);
-	fread(&exam_hdr, sizeof(EXAMDATATYPE), 1, fp);
+	(void)fread(&exam_hdr, sizeof(EXAMDATATYPE), 1, fp);
 	fseek(fp,116+1040,SEEK_SET);
-	fread(&series_hdr, sizeof(SERIESDATATYPE), 1, fp);
+	(void)fread(&series_hdr, sizeof(SERIESDATATYPE), 1, fp);
 	fseek(fp,116+1040+1028,SEEK_SET);
-	fread(&image_hdr, sizeof(MRIMAGEDATATYPE), 1, fp);
+	(void)fread(&image_hdr, sizeof(MRIMAGEDATATYPE), 1, fp);
 
 	fdum = image_hdr.pixsize_X;
 	if(!bigEndian() ) swapByteOrder( (char *)&fdum, sizeof(float));
@@ -1639,15 +1639,15 @@ void VOLUME::read_gelx(char *pathname)
 		fp=fopen(filenames[i],"r");
         if(fp==NULL) file_open_error(filenames[i]);
 
-                fread(&suite_hdr, sizeof(SUITEDATATYPE), 1, fp);
+                (void)fread(&suite_hdr, sizeof(SUITEDATATYPE), 1, fp);
 		fseek(fp,116,SEEK_SET);
-                fread(&exam_hdr, sizeof(EXAMDATATYPE), 1, fp);
+                (void)fread(&exam_hdr, sizeof(EXAMDATATYPE), 1, fp);
 		fseek(fp,116+1040,SEEK_SET);
-                fread(&series_hdr, sizeof(SERIESDATATYPE), 1, fp);
+                (void)fread(&series_hdr, sizeof(SERIESDATATYPE), 1, fp);
 		fseek(fp,116+1040+1028,SEEK_SET);
-                fread(&image_hdr, sizeof(MRIMAGEDATATYPE), 1, fp);
+                (void)fread(&image_hdr, sizeof(MRIMAGEDATATYPE), 1, fp);
 		fseek(fp,116+1040+1028+1044,SEEK_SET);
-                fread(&pix_hdr, sizeof(PixHdr), 1, fp);
+                (void)fread(&pix_hdr, sizeof(PixHdr), 1, fp);
 
                 hdr_size=pix_hdr.img_hdr_length;
 		if( !bigEndian() ) swapByteOrder( (char *)&hdr_size, sizeof(int));
@@ -1655,7 +1655,7 @@ void VOLUME::read_gelx(char *pathname)
                 + sizeof(MRIMAGEDATATYPE);
 
 		fseek(fp, hdr_size, SEEK_SET);
-		fread(data+i*np, sizeof(short), np, fp);
+		(void)fread(data+i*np, sizeof(short), np, fp);
 		if( !bigEndian() ) swapN((char *)(data+i*np), np*2);
 
 		fclose(fp);
@@ -1669,13 +1669,13 @@ void VOLUME::read_gelx(char *pathname)
 		fp=fopen(filenames[0],"r");
         if(fp==NULL) file_open_error(filenames[0]);
 
-                fread(&suite_hdr, sizeof(SUITEDATATYPE), 1, fp);
+                (void)fread(&suite_hdr, sizeof(SUITEDATATYPE), 1, fp);
 		fseek(fp,116,SEEK_SET);
-                fread(&exam_hdr, sizeof(EXAMDATATYPE), 1, fp);
+                (void)fread(&exam_hdr, sizeof(EXAMDATATYPE), 1, fp);
 		fseek(fp,116+1040,SEEK_SET);
-                fread(&series_hdr, sizeof(SERIESDATATYPE), 1, fp);
+                (void)fread(&series_hdr, sizeof(SERIESDATATYPE), 1, fp);
 		fseek(fp,116+1040+1028,SEEK_SET);
-                fread(&image_hdr, sizeof(MRIMAGEDATATYPE), 1, fp);
+                (void)fread(&image_hdr, sizeof(MRIMAGEDATATYPE), 1, fp);
 
 		cntr[0]=image_hdr.ctr_R;
 		cntr[1]=image_hdr.ctr_A;
@@ -1718,13 +1718,13 @@ void VOLUME::read_gelx(char *pathname)
 				fp=fopen(filenames[i],"r");
                 if(fp==NULL) file_open_error(filenames[i]);
 
-				fread(&suite_hdr, sizeof(SUITEDATATYPE), 1, fp);
+				(void)fread(&suite_hdr, sizeof(SUITEDATATYPE), 1, fp);
 				fseek(fp,116,SEEK_SET);
-				fread(&exam_hdr, sizeof(EXAMDATATYPE), 1, fp);
+				(void)fread(&exam_hdr, sizeof(EXAMDATATYPE), 1, fp);
 				fseek(fp,116+1040,SEEK_SET);
-				fread(&series_hdr, sizeof(SERIESDATATYPE), 1, fp);
+				(void)fread(&series_hdr, sizeof(SERIESDATATYPE), 1, fp);
 				fseek(fp,116+1040+1028,SEEK_SET);
-				fread(&image_hdr, sizeof(MRIMAGEDATATYPE), 1, fp);
+				(void)fread(&image_hdr, sizeof(MRIMAGEDATATYPE), 1, fp);
 
 				Ca[0]=image_hdr.ctr_R;
 				Ca[1]=image_hdr.ctr_A;
@@ -1749,13 +1749,13 @@ void VOLUME::read_gelx(char *pathname)
 				fp=fopen(filenames[i],"r");
                 if(fp==NULL) file_open_error(filenames[i]);
 
-				fread(&suite_hdr, sizeof(SUITEDATATYPE), 1, fp);
+				(void)fread(&suite_hdr, sizeof(SUITEDATATYPE), 1, fp);
 				fseek(fp,116,SEEK_SET);
-				fread(&exam_hdr, sizeof(EXAMDATATYPE), 1, fp);
+				(void)fread(&exam_hdr, sizeof(EXAMDATATYPE), 1, fp);
 				fseek(fp,116+1040,SEEK_SET);
-				fread(&series_hdr, sizeof(SERIESDATATYPE), 1, fp);
+				(void)fread(&series_hdr, sizeof(SERIESDATATYPE), 1, fp);
 				fseek(fp,116+1040+1028,SEEK_SET);
-				fread(&image_hdr, sizeof(MRIMAGEDATATYPE), 1, fp);
+				(void)fread(&image_hdr, sizeof(MRIMAGEDATATYPE), 1, fp);
 
 				Cb[0]=image_hdr.ctr_R;
 				Cb[1]=image_hdr.ctr_A;
@@ -1859,7 +1859,7 @@ int VOLUME::read_analyze(const char *pathname)
 
 	fp = fopen(imgfile,"r");
     if(fp==NULL) file_open_error(imgfile);
-	fread(data,sizeof(short),nv,fp);
+	(void)fread(data,sizeof(short),nv,fp);
 	fclose(fp);
 
 	if ( analyzehdr.hk.sizeof_hdr != 348 )
