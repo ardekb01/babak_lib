@@ -331,7 +331,7 @@ float *AC, float *PC, float *RP, DIM HR, DIM Orig, short *volOrig, float *Tmsp)
    float ACPC[2];
    float X2I[16]; // 4x4 matrix that transforms a vector from xyz-coordinates to ijk-coordinates
    float ac[4], pc[4], rp[4];
-   short min, max;
+   short min=0, max=0;
    short *im;
 
    npHR = HR.nx * HR.ny;
@@ -403,7 +403,8 @@ float *AC, float *PC, float *RP, DIM HR, DIM Orig, short *volOrig, float *Tmsp)
 	}
    
    char dirname[DEFAULT_STRING_LENGTH]; // name of the directory only
-   char fullpath[DEFAULT_STRING_LENGTH]; // directory + filename
+   // char fullpath[DEFAULT_STRING_LENGTH]; // directory + filename
+   char fullpath[2*DEFAULT_STRING_LENGTH+1]; // directory + filename
    getDirectoryName(imagefilename, dirname);
    niftiFilename(filename,imagefilename);
    snprintf(fullpath,sizeof(fullpath),"%s/%s_ACPC_sagittal.ppm",dirname,filename);
@@ -683,7 +684,8 @@ void updateTmsp(const char *imagefilename, float *Tmsp, float *RP, float *AC, fl
       compute_MSP_parameters_from_Tmsp(Tmsp, n, &d);
 
       char dirname[DEFAULT_STRING_LENGTH]; // name of the directory only
-      char fullpath[DEFAULT_STRING_LENGTH]; // directory + filename
+      //char fullpath[DEFAULT_STRING_LENGTH]; // directory + filename
+      char fullpath[2*DEFAULT_STRING_LENGTH+1]; // directory + filename
       getDirectoryName(imagefilename, dirname);
       niftiFilename(filename,imagefilename);
       snprintf(fullpath,sizeof(fullpath),"%s/%s_ACPC.txt",dirname, filename);
@@ -716,7 +718,8 @@ float detectPC(float *PC, char *modelfile, short *volumeMSP_HR, char *PCregion, 
    float cc, ccmax;
    float *ccmap;
    float I2X[16]; // 4x4 matrix that transfomrs a vector from ijk-coordinates to xyz-coordinates
-   int PCint[3]; // variables storing PC ijk coordinates
+   //int PCint[3]; // variables storing PC ijk coordinates
+   int PCint[3]={0,0,0}; // variables storing PC ijk coordinates
    int npHR, nvHR;
    int *x, *y, *z; 
    int n;
@@ -729,7 +732,10 @@ float detectPC(float *PC, char *modelfile, short *volumeMSP_HR, char *PCregion, 
       exit(1);
    }
 
-   fread(&mhdr, sizeof(mhdr), 1, fp); 
+   if( fread(&mhdr, sizeof(mhdr), 1, fp) != 1 ) 
+   {
+      printf("Failed to read \"mhdr\" variable.\n");
+   }
 
    if(bigEndian()) 
    {
@@ -777,7 +783,11 @@ float detectPC(float *PC, char *modelfile, short *volumeMSP_HR, char *PCregion, 
    {
       fseek(fp, sizeof(float)*mhdr.RPtemplatesize*mhdr.nangles, SEEK_CUR);
       fseek(fp, sizeof(float)*mhdr.ACtemplatesize*mhdr.nangles, SEEK_CUR);
-      fread(pc_template+i*mhdr.PCtemplatesize*mhdr.nangles, sizeof(float),mhdr.PCtemplatesize*mhdr.nangles, fp);
+
+      if(fread(pc_template+i*mhdr.PCtemplatesize*mhdr.nangles, sizeof(float),mhdr.PCtemplatesize*mhdr.nangles, fp) != (size_t)(mhdr.PCtemplatesize*mhdr.nangles) )
+      {
+         printf("Failed to read \"pc_template\" variable.\n");
+      }
 
       if(bigEndian())
       {
@@ -858,7 +868,8 @@ float detectAC(float *AC, char *modelfile, short *volumeMSP_HR, char *ACregion, 
    int npHR, nvHR;
    int *x, *y, *z; 
    int n;
-   int ACint[3]; // variables storing AC ijk coordinates
+   //int ACint[3]; // variables storing AC ijk coordinates
+   int ACint[3]={0,0,0}; // variables storing AC ijk coordinates
    float *ac_template; // AC template, array of dimension ACtemplatesize
    float *mean_ac_template; // AC template, array of dimension ACtemplatesize
    float *ac_test_vec;
@@ -873,7 +884,10 @@ float detectAC(float *AC, char *modelfile, short *volumeMSP_HR, char *ACregion, 
       exit(1);
    }
 
-   fread(&mhdr, sizeof(mhdr), 1, fp); 
+   if( fread(&mhdr, sizeof(mhdr), 1, fp) != 1 ) 
+   {
+      printf("Failed to read \"mhdr\" variable.\n");
+   }
 
    if(bigEndian()) 
    {
@@ -921,7 +935,12 @@ float detectAC(float *AC, char *modelfile, short *volumeMSP_HR, char *ACregion, 
    for(int i=0; i<mhdr.nvol; i++)
    {
       fseek(fp, sizeof(float)*mhdr.RPtemplatesize*mhdr.nangles, SEEK_CUR);
-      fread(ac_template+i*mhdr.ACtemplatesize*mhdr.nangles, sizeof(float), mhdr.ACtemplatesize*mhdr.nangles, fp);
+
+      if( fread(ac_template+i*mhdr.ACtemplatesize*mhdr.nangles, sizeof(float), mhdr.ACtemplatesize*mhdr.nangles, fp) != (size_t)(mhdr.ACtemplatesize*mhdr.nangles) ) 
+      {
+         printf("Failed to read \"ac_template\" variable.\n");
+      }
+
       fseek(fp, sizeof(float)*mhdr.PCtemplatesize*mhdr.nangles, SEEK_CUR);
 
       if(bigEndian())
@@ -1074,7 +1093,8 @@ short *yRP, short *zRP, int opt_T2)
    DIM LR, HR;
    long templatesFilePosition;
    float *ccmap_LR;
-   int RPint[3]; // variables storing RP ijk coordinates
+   //int RPint[3]; // variables storing RP ijk coordinates
+   int RPint[3]={0,0,0}; // variables storing RP ijk coordinates
    int npLR;
    float *rp_template;
    float *mean_rp_template;
@@ -1089,7 +1109,10 @@ short *yRP, short *zRP, int opt_T2)
       exit(1);
    }
 
-   fread(&mhdr, sizeof(mhdr), 1, fp); 
+   if( fread(&mhdr, sizeof(mhdr), 1, fp) != 1 ) 
+   {
+      printf("Failed to read \"mhdr\" variable.\n");
+   }
 
    if(bigEndian()) 
    {
@@ -1119,7 +1142,12 @@ short *yRP, short *zRP, int opt_T2)
 
    for(int i=0; i<mhdr.nvol; i++)
    {
-      fread(rp_template+i*mhdr.RPtemplatesize*mhdr.nangles, sizeof(float), mhdr.RPtemplatesize*mhdr.nangles, fp);
+
+      if( fread(rp_template+i*mhdr.RPtemplatesize*mhdr.nangles, sizeof(float), mhdr.RPtemplatesize*mhdr.nangles, fp) != (size_t)(mhdr.RPtemplatesize*mhdr.nangles) )
+      {
+         printf("Failed to read \"rp_template\" variable.\n");
+      }
+
       fseek(fp, sizeof(float)*mhdr.ACtemplatesize*mhdr.nangles, SEEK_CUR);
       fseek(fp, sizeof(float)*mhdr.PCtemplatesize*mhdr.nangles, SEEK_CUR);
 
@@ -1396,7 +1424,10 @@ float *AC, float *PC, float *RP, float *Tmsp, int opt_v, int opt_T2)
          exit(1);
       }
 
-      fread(&mhdr, sizeof(mhdr), 1, fp); 
+      if( fread(&mhdr, sizeof(mhdr), 1, fp) != 1 ) 
+      {
+         printf("Failed to read \"mhdr\" variable.\n");
+      }
 
       if(bigEndian()) 
       {
@@ -1413,7 +1444,10 @@ float *AC, float *PC, float *RP, float *Tmsp, int opt_v, int opt_T2)
       fseek(fp, sizeof(float)*mhdr.ACtemplatesize*mhdr.nangles*mhdr.nvol, SEEK_CUR);
       fseek(fp, sizeof(float)*mhdr.PCtemplatesize*mhdr.nangles*mhdr.nvol, SEEK_CUR);
 
-      fread(&mtail, sizeof(mtail), 1, fp);
+      if( fread(&mtail, sizeof(mtail), 1, fp) != 1 ) 
+      {
+         printf("Failed to read \"mtail\" variable.\n");
+      }
 
       if(bigEndian()) 
       {
@@ -1955,7 +1989,7 @@ float reflection_cross_correlation(short *image, DIM dim, float a, float b, floa
    float dum1,dum2,dum3;
    int q;
    int np;
-   int nv;
+   //int nv;
    int N;
 
    float ic,jc,kc;
@@ -1971,7 +2005,7 @@ float reflection_cross_correlation(short *image, DIM dim, float a, float b, floa
    kc = (dim.nz-1.0)/2.0;
 
    np=dim.nx*dim.ny;
-   nv=dim.nz*np;
+   //nv=dim.nz*np;
 
    a1 = a * dim.dx;
    b1 = b * dim.dy;
@@ -2285,7 +2319,8 @@ int save_as_ppm(const char *filename, int nx, int ny, unsigned char *R, unsigned
     pngfilename[L-3]='p';
 
     snprintf(cmnd,sizeof(cmnd),"pnmtopng %s > %s",filename,pngfilename); 
-    if(opt_png) system(cmnd);
+    //if(opt_png) system(cmnd);
+    if(opt_png) (void)system(cmnd);
 
     free(pngfilename);
   }
@@ -2297,7 +2332,7 @@ int save_as_ppm(const char *filename, int nx, int ny, unsigned char *R, unsigned
 
 void computeTmsp(char *orientation, short *volOrig, DIM dim, float *Tmsp)
 {
-   float cc; // a variable to store correlation coefficient values
+   //float cc; // a variable to store correlation coefficient values
    float R[16], T[16];
    float TPIL[16]; // Transformation from original to PIL orientation
    float dum; // dummy floating point variable
@@ -2313,7 +2348,8 @@ void computeTmsp(char *orientation, short *volOrig, DIM dim, float *Tmsp)
    volumePIL=reorientVolume(volOrig,dim.nx,dim.ny,dim.nz,dim.dx,dim.dy,dim.dz,TPIL,nxPIL,nyPIL,nzPIL,dxPIL,dyPIL,dzPIL);
 
    // determine the MSP from the PIL orineted volume
-   cc=msp(volumePIL, nxPIL, nyPIL, nzPIL, dxPIL, dyPIL, dzPIL, &A, &B, &C);
+   //cc=msp(volumePIL, nxPIL, nyPIL, nzPIL, dxPIL, dyPIL, dzPIL, &A, &B, &C);
+   (void)msp(volumePIL, nxPIL, nyPIL, nzPIL, dxPIL, dyPIL, dzPIL, &A, &B, &C);
    delete volumePIL;
 
    // determine (a,b,c) from (A,B,C)
