@@ -41,6 +41,7 @@ void mspPPM(SHORTIM im, int *ii, int *jj, int nl, const char *ppmfile)
    unsigned char colour[3]={0xFF,0xFF,0xFF};
    unsigned char *imgTemp;
    FILE *fp;
+   int system_return_value;
 
    int kk=im.nz/2;
    
@@ -118,7 +119,14 @@ void mspPPM(SHORTIM im, int *ii, int *jj, int nl, const char *ppmfile)
     pngfilename[L-2]='n';
 
     snprintf(cmnd,sizeof(cmnd),"pnmtopng %s > %s",ppmfile,pngfilename); 
-    if(opt_png) system(cmnd);
+    if(opt_png) 
+    {
+        system_return_value = system(cmnd);
+        if( system_return_value == -1 || system_return_value == 127 )
+        {
+           printf("Execution of command: %s failed\n",cmnd);
+        }
+    }
 
     free(pngfilename);
   }
@@ -389,7 +397,7 @@ void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float
    int n; // number of landmarks
    float *LM;  // (3 x n) matrix of detected landmarks
    float *invT;
-   char filename[DEFAULT_STRING_LENGTH];
+   char filename[2048];
    SHORTIM subimPIL; 
    nifti_1_header PILbraincloud_hdr;
    // subfile without the directory structure and extension
@@ -486,15 +494,15 @@ void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float
       fp=fopen(modelfile, "r");
       if(fp==NULL) file_open_error(modelfile);
 
-      fread(&n, sizeof(int), 1, fp);
-      fread(&r, sizeof(int), 1, fp);
-      fread(&r2, sizeof(int), 1, fp);
+      if( fread(&n, sizeof(int), 1, fp) == 1) {};
+      if( fread(&r, sizeof(int), 1, fp) == 1) {};
+      if( fread(&r2, sizeof(int), 1, fp) == 1) {};
       SPH refsph(r);
 
       for(int i=0; i<n; i++)
       {
-         fread(cm, sizeof(int), 3, fp);
-         fread(refsph.v, sizeof(float), refsph.n, fp);
+         if( fread(cm, sizeof(int), 3, fp) == 3) {};
+         if( fread(refsph.v, sizeof(float), refsph.n, fp) == (size_t)refsph.n ) {};
          Q[0*n + i]=cm[0];
          Q[1*n + i]=cm[1];
          Q[2*n + i]=cm[2];
@@ -670,9 +678,9 @@ void standard_PIL_transformation(const char *imfile, const char *lmfile, char *o
       
       fp = fopen(lmfile,"r");
       if(fp==NULL) file_open_error(lmfile);
-      fscanf(fp,"%f %f %f\n", &ac[0], &ac[1], &ac[2]); ac[3]=1;
-      fscanf(fp,"%f %f %f\n", &pc[0], &pc[1], &pc[2]); pc[3]=1;
-      fscanf(fp,"%f %f %f\n", &rp[0], &rp[1], &rp[2]); rp[3]=1;
+      if( fscanf(fp,"%f %f %f\n", &ac[0], &ac[1], &ac[2])==3 ) {}; ac[3]=1;
+      if( fscanf(fp,"%f %f %f\n", &pc[0], &pc[1], &pc[2])==3 ) {}; pc[3]=1;
+      if( fscanf(fp,"%f %f %f\n", &rp[0], &rp[1], &rp[2])==3 ) {}; rp[3]=1;
       fclose(fp);
 
       opt_AC=opt_PC=opt_RP=NO;  // Do not find AC, PC, RP
