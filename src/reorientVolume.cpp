@@ -108,11 +108,11 @@ float *T_oldorient_to_neworient)
    inversePILtransform(neworient, T_PIL_to_neworient);
    multi(T_PIL_to_neworient,4,4, T_oldorient_to_PIL,4,4,T_oldorient_to_neworient);
 
-   int nx1, ny1, nz1;
-   int nx2, ny2, nz2;
+   int nx1=0, ny1=0, nz1=0;
+   int nx2=0, ny2=0, nz2=0;
 
-   float dx1, dy1, dz1;
-   float dx2, dy2, dz2;
+   float dx1=0.0, dy1=0.0, dz1=0.0;
+   float dx2=0.0, dy2=0.0, dz2=0.0;
 
    nx1=oldhdr.dim[1];
    ny1=oldhdr.dim[2];
