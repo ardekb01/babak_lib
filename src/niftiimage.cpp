@@ -379,16 +379,34 @@ void NIFTIIMAGE::read(const char *filename)
       return;
    }
 
-   fread(&hdr, sizeof(nifti_1_header), 1, fp);
-   fread(&ext, sizeof(nifti1_extender), 1, fp);
+   if( fread(&hdr, sizeof(nifti_1_header), 1, fp) != 1)
+   {
+      printf("Failed to read \"hdr\" variable.\n");
+   }
+
+   if( fread(&ext, sizeof(nifti1_extender), 1, fp) != 1)
+   {
+      printf("Failed to read \"ext\" variable.\n");
+   }
 
    if(ext.extension[0] == 1)
    {
-      fread(&(extension.esize), sizeof(int), 1, fp);
-      fread(&(extension.ecode), sizeof(int), 1, fp);
+      if( fread(&(extension.esize), sizeof(int), 1, fp) != 1)
+      {
+         printf("Failed to read \"extension.esize\" variable.\n");
+      }
+
+      if( fread(&(extension.ecode), sizeof(int), 1, fp) != 1)
+      {
+         printf("Failed to read \"extension.ecode\" variable.\n");
+      }
 
       extension.edata = (char *)calloc(extension.esize-2*sizeof(int), 1);
-      fread(extension.edata, 1, extension.esize-2*sizeof(int), fp);
+
+      if( fread(extension.edata, 1, extension.esize-2*sizeof(int), fp) != extension.esize-2*sizeof(int) )
+      {
+         printf("Failed to read \"extension.edata\" variable.\n");
+      }
    }
 
    datasize = 1;
@@ -399,7 +417,10 @@ void NIFTIIMAGE::read(const char *filename)
    datasize *= hdr.bitpix/8;
 
    data = (char *)calloc(datasize, 1);
-   fread(data, 1, datasize, fp);
+   if( fread(data, 1, datasize, fp) != (size_t)datasize )
+   {
+      printf("Failed to read \"data\" variable.\n");
+   }
 
    fclose(fp);
 
@@ -419,16 +440,33 @@ void NIFTIIMAGE::readheader(const char *filename)
       return;
    }
 
-   fread(&hdr, sizeof(nifti_1_header), 1, fp);
-   fread(&ext, sizeof(nifti1_extender), 1, fp);
+   if( fread(&hdr, sizeof(nifti_1_header), 1, fp) != 1)
+   {
+      printf("Failed to read \"hdr\" variable.\n");
+   }
+
+   if( fread(&ext, sizeof(nifti1_extender), 1, fp) != 1)
+   {
+      printf("Failed to read \"ext\" variable.\n");
+   }
 
    if(ext.extension[0] == 1)
    {
-      fread(&(extension.esize), sizeof(int), 1, fp);
-      fread(&(extension.ecode), sizeof(int), 1, fp);
+      if( fread(&(extension.esize), sizeof(int), 1, fp) != 1)
+      {
+         printf("Failed to read \"extension.esize\" variable.\n");
+      }
+
+      if( fread(&(extension.ecode), sizeof(int), 1, fp) != 1)
+      {
+         printf("Failed to read \"extension.ecode\" variable.\n");
+      }
 
       extension.edata = (char *)calloc(extension.esize-2*sizeof(int), 1);
-      fread(extension.edata, 1, extension.esize-2*sizeof(int), fp);
+      if( fread(extension.edata, 1, extension.esize-2*sizeof(int), fp) != extension.esize-2*sizeof(int) )
+      {
+         printf("Failed to read \"extension.edata\" variable.\n");
+      }
    }
 
    fclose(fp);
