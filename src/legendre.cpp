@@ -240,128 +240,129 @@ int main(int argc, char **argv)
 
 double *LegendreAnalysis(float *image, int nx, int ny, int nz, int mx, int my, int mz)
 {
-	double *x;
-	double *Px,*Qx;
-	double *y;
-	double *Py,*Qy;
-	double *z;
-	double *Pz,*Qz;
+   double *x;
+   double *Px,*Qx;
+   double *y;
+   double *Py,*Qy;
+   double *z;
+   double *Pz,*Qz;
 
-	double *c;			// series coefficients
-	int mp;
-	int np;
+   double *c;			// series coefficients
+   int mp;
+   int np;
 
-	np = nx*ny;
-	mp = mx*my;
+   np = nx*ny;
+   mp = mx*my;
 
-	/////////////////////////////////////////////////////////////////////////
-	c = (double *)calloc(mx*my*mz,sizeof(double));
-	/////////////////////////////////////////////////////////////////////////
+   /////////////////////////////////////////////////////////////////////////
+   c = (double *)calloc(mx*my*mz,sizeof(double));
+   /////////////////////////////////////////////////////////////////////////
 
-	/////////////////////////////////////////////////////////////////////////
-	x = (double *)calloc(nx,sizeof(double));
-	Px = (double *)calloc(mx*nx,sizeof(double));
-	Qx = (double *)calloc(mx*nx,sizeof(double));
+   /////////////////////////////////////////////////////////////////////////
+   x = (double *)calloc(nx,sizeof(double));
+   Px = (double *)calloc(mx*nx,sizeof(double));
+   Qx = (double *)calloc(mx*nx,sizeof(double));
 
-    // x is an array of nx real number going from -(nx-1.0)/nx to (nx-1.0)/nx
-    for(int i=0; i<nx; i++)
-        x[i] = -(nx-1.0)/nx + i*2.0/nx;
+   // x is an array of nx real number going from -(nx-1.0)/nx to (nx-1.0)/nx
+   for(int i=0; i<nx; i++)
+      x[i] = -(nx-1.0)/nx + i*2.0/nx;
 
-	// initialization
-	for(int i=0; i<nx; i++)
-	{
-		Px[i]=1.0; 
-		Qx[i]=0.0;
-	}
+   // initialization
+   for(int i=0; i<nx; i++)
+   {
+      Px[i]=1.0; 
+      Qx[i]=0.0;
+   }
 
-	for(int q=1; q<mx; q++)
-		LegendrePoly(Px+(q-1)*nx, Qx+(q-1)*nx, Px+q*nx, Qx+q*nx, x, nx, q);
+   for(int q=1; q<mx; q++)
+      LegendrePoly(Px+(q-1)*nx, Qx+(q-1)*nx, Px+q*nx, Qx+q*nx, x, nx, q);
 
-	for(int q=0; q<mx; q++)
-	for(int i=0; i<nx; i++)
-		Px[q*nx + i] /= sqrt( 2. / (2.0*q+1) );
-	/////////////////////////////////////////////////////////////////////////
+   for(int q=0; q<mx; q++)
+   for(int i=0; i<nx; i++)
+      Px[q*nx + i] /= sqrt( 2. / (2.0*q+1) );
+   /////////////////////////////////////////////////////////////////////////
 
-	y = (double *)calloc(ny,sizeof(double));
-	Py = (double *)calloc(my*ny,sizeof(double));
-	Qy = (double *)calloc(my*ny,sizeof(double));
+   y = (double *)calloc(ny,sizeof(double));
+   Py = (double *)calloc(my*ny,sizeof(double));
+   Qy = (double *)calloc(my*ny,sizeof(double));
 
-	// set y
-	for(int i=0; i<ny; i++)
-	{
-		y[i] = -(2.0/ny)*((ny-1)/2.0) + i*2.0/ny;
-	}
+   // set y
+   for(int i=0; i<ny; i++)
+   {
+      y[i] = -(2.0/ny)*((ny-1)/2.0) + i*2.0/ny;
+   }
 
-	// initialization
-	for(int i=0; i<ny; i++)
-	{
-		Py[i]=1.0; 
-		Qy[i]=0.0;
-	}
+   // initialization
+   for(int i=0; i<ny; i++)
+   {
+      Py[i]=1.0; 
+      Qy[i]=0.0;
+   }
 
-	for(int r=1; r<my; r++)
-		LegendrePoly(Py+(r-1)*ny, Qy+(r-1)*ny, Py+r*ny, Qy+r*ny, y, ny, r);
+   for(int r=1; r<my; r++)
+      LegendrePoly(Py+(r-1)*ny, Qy+(r-1)*ny, Py+r*ny, Qy+r*ny, y, ny, r);
 
-	for(int r=0; r<my; r++)
-	for(int i=0; i<ny; i++)
-		Py[r*ny + i] /= sqrt( 2. / (2.0*r+1) );
-	/////////////////////////////////////////////////////////////////////////
+   for(int r=0; r<my; r++)
+   for(int i=0; i<ny; i++)
+      Py[r*ny + i] /= sqrt( 2. / (2.0*r+1) );
+   /////////////////////////////////////////////////////////////////////////
 
-	z = (double *)calloc(nz,sizeof(double));
-	Pz = (double *)calloc(mz*nz,sizeof(double));
-	Qz = (double *)calloc(mz*nz,sizeof(double));
+   z = (double *)calloc(nz,sizeof(double));
+   Pz = (double *)calloc(mz*nz,sizeof(double));
+   Qz = (double *)calloc(mz*nz,sizeof(double));
 
-	// set z
-	for(int i=0; i<nz; i++)
-	{
-		z[i] = -(2.0/nz)*((nz-1)/2.0) + i*2.0/nz;
-	}
+   // set z
+   for(int i=0; i<nz; i++)
+   {
+      z[i] = -(2.0/nz)*((nz-1)/2.0) + i*2.0/nz;
+   }
 
-	// initialization
-	for(int i=0; i<nz; i++)
-	{
-		Pz[i]=1.0; 
-		Qz[i]=0.0;
-	}
+   // initialization
+   for(int i=0; i<nz; i++)
+   {
+      Pz[i]=1.0; 
+      Qz[i]=0.0;
+   }
 
-	for(int s=1; s<mz; s++)
-		LegendrePoly(Pz+(s-1)*nz, Qz+(s-1)*nz, Pz+s*nz, Qz+s*nz, z, nz, s);
+   for(int s=1; s<mz; s++)
+      LegendrePoly(Pz+(s-1)*nz, Qz+(s-1)*nz, Pz+s*nz, Qz+s*nz, z, nz, s);
 
-	for(int s=0; s<mz; s++)
-	for(int i=0; i<nz; i++)
-		Pz[s*nz + i] /= sqrt( 2. / (2.0*s+1) );
-	/////////////////////////////////////////////////////////////////////////
+   for(int s=0; s<mz; s++)
+   for(int i=0; i<nz; i++)
+      Pz[s*nz + i] /= sqrt( 2. / (2.0*s+1) );
+   /////////////////////////////////////////////////////////////////////////
 
-	double *dum1d;
-	double *dum2d;
+   double *dum1d;
+   double *dum2d;
+   
+   dum1d = (double *)calloc(nz,sizeof(double));
+   dum2d = (double *)calloc(nz*ny,sizeof(double));
 
-	dum1d = (double *)calloc(nz,sizeof(double));
-	dum2d = (double *)calloc(nz*ny,sizeof(double));
-	for(int q=0; q<mx; q++)
-	{
-		for(int j=0; j<ny; j++)
-		for(int k=0; k<nz; k++)
-			integral_1d(Px+q*nx, image+k*np+j*nx, nx, dum2d+k*ny+j);
+   for(int q=0; q<mx; q++)
+   {
+      for(int j=0; j<ny; j++)
+      for(int k=0; k<nz; k++)
+         integral_1d(Px+q*nx, image+k*np+j*nx, nx, dum2d+k*ny+j);
 
-		for(int r=0; r<my; r++)
-		{
-			for(int k=0; k<nz; k++)
-				integral_1d(Py+r*ny, dum2d+k*ny, ny, dum1d+k);
+      for(int r=0; r<my; r++)
+      {
+         for(int k=0; k<nz; k++)
+            integral_1d(Py+r*ny, dum2d+k*ny, ny, dum1d+k);
 
-			for(int s=0; s<mz; s++)
-				integral_1d(Pz+s*nz, dum1d, nz, c+s*mp+r*mx+q);
-		}
-	}
-	free(dum1d);
-	free(dum2d);
-	////////////////////////////////////////////////////////////////////////
+         for(int s=0; s<mz; s++)
+            integral_1d(Pz+s*nz, dum1d, nz, c+s*mp+r*mx+q);
+      }
+   }
+   free(dum1d);
+   free(dum2d);
+   ////////////////////////////////////////////////////////////////////////
 
-	free(x); free(y); free(z);
-	free(Px); free(Qx);
-	free(Py); free(Qy);
-	free(Pz); free(Qz);
+   free(x); free(y); free(z);
+   free(Px); free(Qx);
+   free(Py); free(Qy);
+   free(Pz); free(Qz);
 
-	return(c);
+   return(c);
 }
 
 float *LegendreSynthesis(double *c, int nx, int ny, int nz, int mx, int my, int mz)
@@ -501,84 +502,84 @@ float *LegendreSynthesis(double *c, int nx, int ny, int nz, int mx, int my, int 
 
 double *LegendreAnalysis(float *image, int nx, int ny, int mx, int my)
 {
-	double *x;
-	double *Px,*Qx;
-	double *y;
-	double *Py,*Qy;
+   double *x;
+   double *Px,*Qx;
+   double *y;
+   double *Py,*Qy;
 
-	double *c;			// series coefficients
+   double *c;			// series coefficients
 
-	/////////////////////////////////////////////////////////////////////////
-	c = (double *)calloc(mx*my,sizeof(double));
-	/////////////////////////////////////////////////////////////////////////
+   /////////////////////////////////////////////////////////////////////////
+   c = (double *)calloc(mx*my,sizeof(double));
+   /////////////////////////////////////////////////////////////////////////
 
-	/////////////////////////////////////////////////////////////////////////
-	x = (double *)calloc(nx,sizeof(double));
-	Px = (double *)calloc(mx*nx,sizeof(double));
-	Qx = (double *)calloc(mx*nx,sizeof(double));
+   /////////////////////////////////////////////////////////////////////////
+   x = (double *)calloc(nx,sizeof(double));
+   Px = (double *)calloc(mx*nx,sizeof(double));
+   Qx = (double *)calloc(mx*nx,sizeof(double));
 
-    // x is an array of nx real number going from -(nx-1.0)/nx to (nx-1.0)/nx
-    for(int i=0; i<nx; i++)
-        x[i] = -(nx-1.0)/nx + i*2.0/nx;
+   // x is an array of nx real number going from -(nx-1.0)/nx to (nx-1.0)/nx
+   for(int i=0; i<nx; i++)
+      x[i] = -(nx-1.0)/nx + i*2.0/nx;
 
-	// initialization
-	for(int i=0; i<nx; i++)
-	{
-		Px[i]=1.0; 
-		Qx[i]=0.0;
-	}
+   // initialization
+   for(int i=0; i<nx; i++)
+   {
+      Px[i]=1.0; 
+      Qx[i]=0.0;
+   }
 
-	for(int q=1; q<mx; q++)
-		LegendrePoly(Px+(q-1)*nx, Qx+(q-1)*nx, Px+q*nx, Qx+q*nx, x, nx, q);
+   for(int q=1; q<mx; q++)
+      LegendrePoly(Px+(q-1)*nx, Qx+(q-1)*nx, Px+q*nx, Qx+q*nx, x, nx, q);
 
-	for(int q=0; q<mx; q++)
-	for(int i=0; i<nx; i++)
-		Px[q*nx + i] /= sqrt( 2. / (2.0*q+1) );
-	/////////////////////////////////////////////////////////////////////////
+   for(int q=0; q<mx; q++)
+   for(int i=0; i<nx; i++)
+      Px[q*nx + i] /= sqrt( 2. / (2.0*q+1) );
+   /////////////////////////////////////////////////////////////////////////
 
-	y = (double *)calloc(ny,sizeof(double));
-	Py = (double *)calloc(my*ny,sizeof(double));
-	Qy = (double *)calloc(my*ny,sizeof(double));
+   y = (double *)calloc(ny,sizeof(double));
+   Py = (double *)calloc(my*ny,sizeof(double));
+   Qy = (double *)calloc(my*ny,sizeof(double));
 
-	// set y
-	for(int i=0; i<ny; i++)
-		y[i] = -(ny-1.0)/ny + i*2.0/ny;
+   // set y
+   for(int i=0; i<ny; i++)
+      y[i] = -(ny-1.0)/ny + i*2.0/ny;
 
-	// initialization
-	for(int i=0; i<ny; i++)
-	{
-		Py[i]=1.0; 
-		Qy[i]=0.0;
-	}
+   // initialization
+   for(int i=0; i<ny; i++)
+   {
+      Py[i]=1.0; 
+      Qy[i]=0.0;
+   }
 
-	for(int r=1; r<my; r++)
-		LegendrePoly(Py+(r-1)*ny, Qy+(r-1)*ny, Py+r*ny, Qy+r*ny, y, ny, r);
+   for(int r=1; r<my; r++)
+      LegendrePoly(Py+(r-1)*ny, Qy+(r-1)*ny, Py+r*ny, Qy+r*ny, y, ny, r);
 
-	for(int r=0; r<my; r++)
-	for(int i=0; i<ny; i++)
-		Py[r*ny + i] /= sqrt( 2. / (2.0*r+1) );
-	/////////////////////////////////////////////////////////////////////////
+   for(int r=0; r<my; r++)
+   for(int i=0; i<ny; i++)
+      Py[r*ny + i] /= sqrt( 2. / (2.0*r+1) );
+   /////////////////////////////////////////////////////////////////////////
 
-	double *dum;
+   double *dum;
 
-	dum = (double *)calloc(ny,sizeof(double));
-	for(int q=0; q<mx; q++)
-	{
-		for(int j=0; j<ny; j++)
-			integral_1d(Px+q*nx, image+j*nx, nx, dum+j);
+   dum = (double *)calloc(ny,sizeof(double));
+   for(int q=0; q<mx; q++)
+   {
+      for(int j=0; j<ny; j++)
+         integral_1d(Px+q*nx, image+j*nx, nx, dum+j);
 
-		for(int r=0; r<my; r++)
-			integral_1d(Py+r*ny, dum, ny, c+r*mx+q);
-	}
+      for(int r=0; r<my; r++)
+         integral_1d(Py+r*ny, dum, ny, c+r*mx+q);
+   }
 
-	free(dum);
-	////////////////////////////////////////////////////////////////////////
+   free(dum);
+   ////////////////////////////////////////////////////////////////////////
 
-	free(x); free(y);
-	free(Px); free(Qx);
-	free(Py); free(Qy);
+   free(x); free(y);
+   free(Px); free(Qx);
+   free(Py); free(Qy);
 
-	return(c);
+   return(c);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -592,12 +593,6 @@ void LegendreSynthesis(double *c, int mx, int my, float *image, int nx, int ny)
 	double *Py,*Qy;
 
 	double *sum;
-
-	int mp;
-	int np;
-
-	mp = mx*my;
-	np = nx*ny;
 
 	/////////////////////////////////////////////////////////////////////////
 	x = (double *)calloc(nx,sizeof(double));
