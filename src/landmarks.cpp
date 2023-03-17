@@ -145,9 +145,9 @@ float *detect_landmarks(const char *subfile, const char *mdlfile, int &nl, char 
    fpi=fopen(mdlfile, "r");
    if(fpi==NULL) file_open_error(mdlfile);
 
-   fread(&nl, sizeof(int), 1, fpi);
-   fread(&r, sizeof(int), 1, fpi);
-   fread(&R, sizeof(int), 1, fpi);
+   if( fread(&nl, sizeof(int), 1, fpi) != 1) {};
+   if( fread(&r, sizeof(int), 1, fpi) != 1) {};
+   if( fread(&R, sizeof(int), 1, fpi) != 1) {};
    SPH refsph(r);
    SPH subsph(r);
    SPH searchsph(R);
@@ -156,11 +156,11 @@ float *detect_landmarks(const char *subfile, const char *mdlfile, int &nl, char 
 
    for(int l=0; l<nl; l++)
    {
-      fread(&lmcm[0], sizeof(int), 1, fpi);
-      fread(&lmcm[1], sizeof(int), 1, fpi);
-      fread(&lmcm[2], sizeof(int), 1, fpi);
+      if( fread(&lmcm[0], sizeof(int), 1, fpi) != 1) {};
+      if( fread(&lmcm[1], sizeof(int), 1, fpi) != 1) {};
+      if( fread(&lmcm[2], sizeof(int), 1, fpi) != 1) {};
 
-      fread(refsph.v, sizeof(float), refsph.n, fpi);
+      if( fread(refsph.v, sizeof(float), refsph.n, fpi) != (size_t)refsph.n ) {};
 
       ccmax = detect_lm(searchsph, subsph, subim, lmcm, refsph, lm);
 
@@ -197,9 +197,9 @@ float *detect_landmarks(SHORTIM subim, const char *mdlfile, int &nl)
       exit(0);
    }
 
-   fread(&nl, sizeof(int), 1, fpi);
-   fread(&r, sizeof(int), 1, fpi);
-   fread(&R, sizeof(int), 1, fpi);
+   if( fread(&nl, sizeof(int), 1, fpi) != 1) {};
+   if( fread(&r, sizeof(int), 1, fpi) != 1) {};
+   if( fread(&R, sizeof(int), 1, fpi) != 1) {};
    SPH refsph(r);
    SPH subsph(r);
    SPH searchsph(R);
@@ -208,10 +208,10 @@ float *detect_landmarks(SHORTIM subim, const char *mdlfile, int &nl)
 
    for(int l=0; l<nl; l++)
    {
-      fread(&lmcm[0], sizeof(int), 1, fpi);
-      fread(&lmcm[1], sizeof(int), 1, fpi);
-      fread(&lmcm[2], sizeof(int), 1, fpi);
-      fread(refsph.v, sizeof(float), refsph.n, fpi);
+      if( fread(&lmcm[0], sizeof(int), 1, fpi) != 1) {};
+      if( fread(&lmcm[1], sizeof(int), 1, fpi) != 1) {};
+      if( fread(&lmcm[2], sizeof(int), 1, fpi) != 1) {};
+      if( fread(refsph.v, sizeof(float), refsph.n, fpi) != (size_t)refsph.n ) {};
 
       ccmax = detect_lm(searchsph, subsph, subim, lmcm, refsph, lm);
 
@@ -236,19 +236,19 @@ float *read_landmark_centers(const char *mdlfile, int &nl)
    fpi=fopen(mdlfile, "r");
    if(fpi==NULL) file_open_error(mdlfile);
 
-   fread(&nl, sizeof(int), 1, fpi);
-   fread(&r, sizeof(int), 1, fpi);
-   fread(&R, sizeof(int), 1, fpi);
+   if( fread(&nl, sizeof(int), 1, fpi) != 1) {};
+   if( fread(&r, sizeof(int), 1, fpi) != 1) {};
+   if( fread(&R, sizeof(int), 1, fpi) != 1) {};
    SPH refsph(r);
 
    Q = (float *)calloc(3*nl, sizeof(float));
 
    for(int l=0; l<nl; l++)
    {
-      fread(&lmcm[0], sizeof(int), 1, fpi);
-      fread(&lmcm[1], sizeof(int), 1, fpi);
-      fread(&lmcm[2], sizeof(int), 1, fpi);
-      fread(refsph.v, sizeof(float), refsph.n, fpi);
+      if( fread(&lmcm[0], sizeof(int), 1, fpi) != 1) {};
+      if( fread(&lmcm[1], sizeof(int), 1, fpi) != 1) {};
+      if( fread(&lmcm[2], sizeof(int), 1, fpi) != 1) {};
+      if( fread(refsph.v, sizeof(float), refsph.n, fpi) != (size_t)refsph.n) {};
 
       Q[0*nl + l]=lmcm[0];
       Q[1*nl + l]=lmcm[1];
