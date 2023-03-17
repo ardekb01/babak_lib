@@ -715,7 +715,6 @@ void affineLSE(short *msk, int nx, int ny, int nz, float dx, float dy, float dz,
 
 float *affineLSE(char *msk, int nx, int ny, float dx, float dy, float *Xwarp, float *Ywarp)
 {
-	int np;
 	int q,N;
 	float xc, yc;
 	float rx,ry;
@@ -730,8 +729,6 @@ float *affineLSE(char *msk, int nx, int ny, float dx, float dy, float *Xwarp, fl
 	double A[4],B[2];
 
 	T = (float *)calloc(9,sizeof(float));
-
-	np = nx*ny;
 
    	xc=dx*(nx-1)/2.0;     /* +---+---+ */
 	yc=dy*(ny-1)/2.0;

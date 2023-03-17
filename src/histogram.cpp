@@ -11,7 +11,7 @@ double *findHistogram(short *im1, short *im2, int nv, int nb1, int nb2, int *bw1
 void trimExtremes(short *image, short *msk, int nv, float percent)
 {
    short low, high;
-   short min, max;
+   short min=0, max=0;
    int *histogram;
    int hsize;			/* histogram size */
    int b;

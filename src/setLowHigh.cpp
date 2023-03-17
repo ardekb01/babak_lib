@@ -4,7 +4,7 @@
 
 void setLowHigh(int2 *image, int4 nv, int4 *low, int4 *high)
 {
-   int2 min, max;
+   int2 min=0, max=0;
    int4 *histogram;
    int4 hsize;			/* histogram size */
    int4 b;
@@ -49,7 +49,7 @@ void setLowHigh(int2 *image, int4 nv, int4 *low, int4 *high)
 
 void setLowHigh(int2 *image, int4 nv, int4 *low, int4 *high, float4 percent)
 {
-   int2 min, max;
+   int2 min=0, max=0;
    int4 *histogram;
    int4 hsize;			/* histogram size */
    int4 b;
@@ -94,7 +94,7 @@ void setLowHigh(int2 *image, int4 nv, int4 *low, int4 *high, float4 percent)
 
 void setMX(int2 *image, int2 *msk, int4 nv, int4 &high, float4 alpha)
 {
-   int2 min, max;
+   int2 min=0, max=0;
    int4 *histogram;
    float4 nmax;
 

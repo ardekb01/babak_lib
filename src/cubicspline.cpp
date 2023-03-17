@@ -481,7 +481,6 @@ int nx2, int ny2, int nz2, float dx2, float dy2, float dz2, float *T)
 
 	int q;
 	int np2,nv2;
-	int np1;
 
 	short *im2;
 
@@ -500,8 +499,6 @@ int nx2, int ny2, int nz2, float dx2, float dy2, float dz2, float *T)
 	xc2=dx2*(nx2-1)/2.0;     /* +---+---+ */
 	yc2=dy2*(ny2-1)/2.0;
 	zc2=dz2*(nz2-1)/2.0;
-
-	np1=nx1*ny1;
 
 	xc1=dx1*(nx1-1)/2.0;      /* +---+---+ */
 	yc1=dy1*(ny1-1)/2.0;
@@ -574,7 +571,6 @@ int nx2, int ny2, int nz2, float dx2, float dy2, float dz2, float *T)
 
 	int q;
 	int np2,nv2;
-	int np1;
 
 	float *im2;
 
@@ -593,8 +589,6 @@ int nx2, int ny2, int nz2, float dx2, float dy2, float dz2, float *T)
 	xc2=dx2*(nx2-1)/2.0;     /* +---+---+ */
 	yc2=dy2*(ny2-1)/2.0;
 	zc2=dz2*(nz2-1)/2.0;
-
-	np1=nx1*ny1;
 
 	xc1=dx1*(nx1-1)/2.0;      /* +---+---+ */
 	yc1=dy1*(ny1-1)/2.0;
