@@ -26,6 +26,7 @@ void hist1D_plot(const char *name, int n, int *bin, float *data1, float *data2)
    FILE *fp;
    char filename[DEFAULT_STRING_LENGTH]="";  // a generic filename for reading/writing stuff
    char command[DEFAULT_STRING_LENGTH]="";   // a generic command for running in the bash
+   int system_return_value;
 
    //////////////////////////////////////////////////////////////////////
    //Writing the data file
@@ -61,8 +62,11 @@ void hist1D_plot(const char *name, int n, int *bin, float *data1, float *data2)
 
    //Running the gnuplot to generate the .png file.
    snprintf(command,sizeof(command),"gnuplot %s.plt",name);
-   //system(command);
-   (void)system(command);
+   system_return_value=system(command);
+   if( system_return_value == -1 || system_return_value == 127 )
+   {
+      printf("Execution of %s command failed\n",command);
+   }
 }
 
 
@@ -74,6 +78,7 @@ void hist1D_plot(const char *name, int n, int *bin, float *data1, float *data2, 
    FILE *fp;
    char filename[DEFAULT_STRING_LENGTH]="";  // a generic filename for reading/writing stuff
    char command[DEFAULT_STRING_LENGTH]="";   // a generic command for running in the bash
+   int system_return_value;
 
    //////////////////////////////////////////////////////////////////////
    //Writing the data file
@@ -112,8 +117,11 @@ void hist1D_plot(const char *name, int n, int *bin, float *data1, float *data2, 
 
    //Running the gnuplot to generate the .png file.
    snprintf(command,sizeof(command),"gnuplot %s.plt",name);
-   //system(command);
-   (void)system(command);
+   system_return_value=system(command);
+   if( system_return_value == -1 || system_return_value == 127 )
+   {
+      printf("Execution of %s command failed\n",command);
+   }
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -123,6 +131,7 @@ void hist1D_plot(const char *name, int n, int *bin, float *data1, float *data2, 
    FILE *fp;
    char filename[DEFAULT_STRING_LENGTH]="";  // a generic filename for reading/writing stuff
    char command[DEFAULT_STRING_LENGTH]="";   // a generic command for running in the bash
+   int system_return_value;
 
    //////////////////////////////////////////////////////////////////////
    //Writing the data file
@@ -164,8 +173,11 @@ void hist1D_plot(const char *name, int n, int *bin, float *data1, float *data2, 
 
    //Running the gnuplot to generate the .png file.
    snprintf(command,sizeof(command),"gnuplot %s.plt",name);
-   //system(command);
-   (void)system(command);
+   system_return_value = system(command);
+   if( system_return_value == -1 || system_return_value == 127 )
+   {
+      printf("Execution of %s command failed\n",command);
+   }
 
    // added back to remove these files afterwards
    snprintf(filename,sizeof(filename),"%s.dat",name);
