@@ -61,7 +61,8 @@ void hist1D_plot(const char *name, int n, int *bin, float *data1, float *data2)
 
    //Running the gnuplot to generate the .png file.
    snprintf(command,sizeof(command),"gnuplot %s.plt",name);
-   system(command);
+   //system(command);
+   (void)system(command);
 }
 
 
@@ -111,7 +112,8 @@ void hist1D_plot(const char *name, int n, int *bin, float *data1, float *data2, 
 
    //Running the gnuplot to generate the .png file.
    snprintf(command,sizeof(command),"gnuplot %s.plt",name);
-   system(command);
+   //system(command);
+   (void)system(command);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -162,7 +164,8 @@ void hist1D_plot(const char *name, int n, int *bin, float *data1, float *data2, 
 
    //Running the gnuplot to generate the .png file.
    snprintf(command,sizeof(command),"gnuplot %s.plt",name);
-   system(command);
+   //system(command);
+   (void)system(command);
 
    // added back to remove these files afterwards
    snprintf(filename,sizeof(filename),"%s.dat",name);
