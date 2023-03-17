@@ -3292,19 +3292,19 @@ int read_element(char *filename, short S_GN, short S_EN, char *V, int *VL)
 	do {
 		i++;
 
-		fread (&GN, 2, 1, fp);
+		(void)fread (&GN, 2, 1, fp);
 		if( bigEndian() ) swapByteOrder( (char *)(&GN), 2);
 
-		fread (&EN, 1, 2, fp);
+		(void)fread (&EN, 1, 2, fp);
 		if( bigEndian() ) swapByteOrder( (char *)(&EN), 2);
 
-		fread (VL, 1, 4, fp);
+		(void)fread (VL, 1, 4, fp);
 		if( bigEndian() ) swapByteOrder( (char *)VL, 4);
 
 		if(EN != S_EN || GN != S_GN)
 			fseek(fp,*VL,1);
 		else
-			fread (V, 1, *VL, fp);
+			(void)fread (V, 1, *VL, fp);
       
 		// printf("Group=%04x   Element Number=%04x   Element Length=%4d\n",GN,EN,*VL); 
 
