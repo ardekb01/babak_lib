@@ -44,14 +44,14 @@ void update_qsform(const char *imagefilename , float *matrix)
    nifti1_extender ext; // 4 bytes
    char *extension;
    int extension_size=0;
-   char *data;
+   char *data=NULL;
    int data_size=0;
    char swapflg=0;
    mat44 R;
 
    fp = fopen(imagefilename,"r");
    if(fp==NULL) file_open_error(imagefilename);
-   fread(&hdr, sizeof(nifti_1_header), 1, fp);
+   if (fread(&hdr, sizeof(nifti_1_header), 1, fp) != 1 ) {};
 
    if(hdr.dim[0]<1 || hdr.dim[0]>7)
    {
@@ -82,14 +82,14 @@ void update_qsform(const char *imagefilename , float *matrix)
 
    if( hdr.magic[0]=='n' && hdr.magic[1]=='+' && hdr.magic[2]=='1' )
    {
-      fread(&ext, sizeof(nifti1_extender), 1, fp);
+      if( fread(&ext, sizeof(nifti1_extender), 1, fp) != 1) {};
 
       extension_size = (int)(hdr.vox_offset)-352;
 
       if( extension_size > 0 )
       {
          extension = (char *)calloc(extension_size, 1);
-         fread(extension, 1, extension_size, fp);
+         if( fread(extension, 1, extension_size, fp) != 1) {};
       }
 
       data_size = 1;
@@ -102,7 +102,7 @@ void update_qsform(const char *imagefilename , float *matrix)
       if( data_size > 0 )
       {
          data = (char *)calloc(data_size, 1);
-         fread(data, 1, data_size, fp);
+         if( fread(data, 1, data_size, fp) != (size_t)(data_size) ) {};
       }
    }
 
@@ -134,7 +134,7 @@ void update_qsform(const char *imagefilename , float *matrix)
       if( data_size > 0 )
       {
          fwrite(data, 1, data_size, fp);
-         delete data;
+         if(data != NULL) delete data;
       }
    }
    fclose(fp);
@@ -162,7 +162,7 @@ void update_qsform( const char *imagefile1, const char *imagefile2)
    fp = fopen(imagefile1,"r");
    if(fp==NULL) file_open_error(imagefile1);
 
-   fread(&hdr, sizeof(nifti_1_header), 1, fp);
+   if( fread(&hdr, sizeof(nifti_1_header), 1, fp) != 1) {};
    if(hdr.dim[0]<1 || hdr.dim[0]>7)
    {
       swapniftiheader(&hdr);
@@ -188,7 +188,7 @@ void update_qsform( const char *imagefile1, const char *imagefile2)
    fp = fopen(imagefile2,"r");
    if(fp==NULL) file_open_error(imagefile2);
 
-   fread(&hdr, sizeof(nifti_1_header), 1, fp);
+   if( fread(&hdr, sizeof(nifti_1_header), 1, fp) != 1) {};
    if(hdr.dim[0]<1 || hdr.dim[0]>7)
    {
       swapniftiheader(&hdr);
