@@ -817,8 +817,8 @@ void VOLUME::readmosaic(char *pathname)
 	double slicegapfactor;
 	short *mosaic;
 	int nix,niy;
-	int i; // tile row index 0,...,512/nx-1
-	int j; // tile column index 0,...,512/ny-1
+	int i=0; // tile row index 0,...,512/nx-1
+	int j=0; // tile column index 0,...,512/ny-1
 	int m; // image index 0,1,...,nz-1
 	int n; // nz/2 or (nz+1)/2
 	int k; // index from 0 to nz-1
