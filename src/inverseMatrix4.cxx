@@ -18,22 +18,22 @@ void print_matrix(char * title, float *T)
 
 int main(int argc, char **argv)
 {
-	float Tin[16];
-	float *Tout;
-	FILE *fp;
+   float Tin[16];
+   float *Tout;
+   FILE *fp;
 
-  if(argc==1) exit(0);
+   if(argc==1) exit(0);
 
-	loadTransformation(argv[1],Tin);
+   loadTransformation(argv[1],Tin);
 
-	Tout = inv4(Tin);
+   Tout = inv4(Tin);
 
-	fp = fopen(argv[2],"w");
-    fprintf(fp,"%f\t%f\t%f\t%f\n",Tout[0],Tout[1],Tout[2],Tout[3]);
-    fprintf(fp,"%f\t%f\t%f\t%f\n",Tout[4],Tout[5],Tout[6],Tout[7]);
-    fprintf(fp,"%f\t%f\t%f\t%f\n",Tout[8],Tout[9],Tout[10],Tout[11]);
-    fprintf(fp,"%f\t%f\t%f\t%f\n",Tout[12],Tout[13],Tout[14],Tout[15]);
-	fclose(fp);
+   fp = fopen(argv[2],"w");
+   fprintf(fp,"%f\t%f\t%f\t%f\n",Tout[0],Tout[1],Tout[2],Tout[3]);
+   fprintf(fp,"%f\t%f\t%f\t%f\n",Tout[4],Tout[5],Tout[6],Tout[7]);
+   fprintf(fp,"%f\t%f\t%f\t%f\n",Tout[8],Tout[9],Tout[10],Tout[11]);
+   fprintf(fp,"%f\t%f\t%f\t%f\n",Tout[12],Tout[13],Tout[14],Tout[15]);
+   fclose(fp);
 
 //	float I[16];
 //	multi(Tin, 4,4, Tout, 4,4, I);
