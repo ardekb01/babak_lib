@@ -665,8 +665,8 @@ void ivf(float *Xwarp1, float *Ywarp1, float *Zwarp1, DIM dim1, float *Xwarp2, f
 {
    int i2, j2, k2;
    int ii, jj, kk;
-   int np1, nv1;
-   int np2, nv2;
+   int np1=0, nv1=0;
+   int np2=0, nv2=0;
    int wx, wy, wz;
    int v1, v1_part1, v1_part2;
    int v2, v2_part1, v2_part2;
@@ -921,8 +921,8 @@ int main(int argc, char **argv)
    char orient[4]="";
    float *invT;		
    short *tmpmsk;
-   char atlaspath[1024];
-   char atlasmskpath[1024];
+   char atlaspath[2048];
+   char atlasmskpath[2048];
    int natlas_used=11;
 
    int4 *atlas_indx;
@@ -933,11 +933,11 @@ int main(int argc, char **argv)
 
    float threshold=50.0;
 
-   char atlaslistfile[1024]=""; 
+   char atlaslistfile[DEFAULT_STRING_LENGTH]=""; 
 
    float *label, *evidence0, *evidence1;
 
-   char brainwashatlasdir[1024]=""; 
+   char brainwashatlasdir[DEFAULT_STRING_LENGTH]=""; 
    int natlas=0; // number of available atlases
    
    // input image full path
@@ -945,8 +945,8 @@ int main(int argc, char **argv)
 
 
    // extracted image filename without suffix
-   char subprefix[1024]=""; 
-   char atlprefix[1024]="";
+   char subprefix[DEFAULT_STRING_LENGTH]=""; 
+   char atlprefix[DEFAULT_STRING_LENGTH]="";
 
    // original atlas and subject images loaded 
    short *sub, *atl;
@@ -982,7 +982,7 @@ int main(int argc, char **argv)
    float I[16];
 
    // space holder for a generic filename
-   char filename[1024];
+   char filename[2048];
 
    int patch_r=3; // patch radius
    int search_R=3; // search radius 
