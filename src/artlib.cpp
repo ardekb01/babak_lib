@@ -322,7 +322,7 @@ void brandImage(unsigned char *R, unsigned char *G, unsigned char *B, int nx, in
 void saveACPCimages(const char *imagefilename, char *ACregion, char *PCregion, char *RPregion,  
 float *AC, float *PC, float *RP, DIM HR, DIM Orig, short *volOrig, float *Tmsp)
 {
-   char filename[1024]; // filename variable for reading/writing data files
+   char filename[DEFAULT_STRING_LENGTH]; // filename variable for reading/writing data files
    unsigned char *Rchannel, *Gchannel, *Bchannel;
    int npHR;
    float TPIL2LPS[16];
@@ -403,7 +403,7 @@ float *AC, float *PC, float *RP, DIM HR, DIM Orig, short *volOrig, float *Tmsp)
 	}
    
    char dirname[DEFAULT_STRING_LENGTH]; // name of the directory only
-   char fullpath[3*DEFAULT_STRING_LENGTH]; // directory + filename
+   char fullpath[2048]; // directory + filename
    getDirectoryName(imagefilename, dirname);
    niftiFilename(filename,imagefilename);
    snprintf(fullpath,sizeof(fullpath),"%s/%s_ACPC_sagittal.ppm",dirname,filename);
@@ -415,55 +415,55 @@ float *AC, float *PC, float *RP, DIM HR, DIM Orig, short *volOrig, float *Tmsp)
 
    free(im);
 
-	/////////////////////////////////////////////////////////////////////////////////////////////////
+   /////////////////////////////////////////////////////////////////////////////////////////////////
 
-	// determined the AC-PC vector (a vector pointing from AC to PC)
-	ACPC[0]=PC[0]-AC[0];
-	ACPC[1]=PC[1]-AC[1];
+   // determined the AC-PC vector (a vector pointing from AC to PC)
+   ACPC[0]=PC[0]-AC[0];
+   ACPC[1]=PC[1]-AC[1];
 		
-	normalizeVector(ACPC,2);
+   normalizeVector(ACPC,2);
 
-	// determine the rotation vector necessary to align the AC-PC vector to the +x axis
-	rotate(R, ACPC[0], -ACPC[1], 0.0, 0.0, 1.0);
+   // determine the rotation vector necessary to align the AC-PC vector to the +x axis
+   rotate(R, ACPC[0], -ACPC[1], 0.0, 0.0, 1.0);
 
-	multi(R, 4, 4,  PC, 4,  1, pc);
-	multi(R, 4, 4,  AC, 4,  1, ac);
+   multi(R, 4, 4,  PC, 4,  1, pc);
+   multi(R, 4, 4,  AC, 4,  1, ac);
 
-	T[0]=1.0;  T[1]=0.0;  T[2]=0.0;  T[3]=-(ac[0]+pc[0])/2.0;
-	T[4]=0.0;  T[5]=1.0;  T[6]=0.0;  T[7]=-ac[1];
-	T[8]=0.0;  T[9]=0.0;  T[10]=1.0; T[11]=0;
-	T[12]=0.0; T[13]=0.0; T[14]=0.0; T[15]=1.0;
+   T[0]=1.0;  T[1]=0.0;  T[2]=0.0;  T[3]=-(ac[0]+pc[0])/2.0;
+   T[4]=0.0;  T[5]=1.0;  T[6]=0.0;  T[7]=-ac[1];
+   T[8]=0.0;  T[9]=0.0;  T[10]=1.0; T[11]=0;
+   T[12]=0.0; T[13]=0.0; T[14]=0.0; T[15]=1.0;
 
-	multi(T, 4, 4,  R, 4,  4, T);
+   multi(T, 4, 4,  R, 4,  4, T);
 
-	multi(T, 4, 4,  PC, 4,  1, pc);
-	multi(T, 4, 4,  AC, 4,  1, ac);
+   multi(T, 4, 4,  PC, 4,  1, pc);
+   multi(T, 4, 4,  AC, 4,  1, ac);
 
-	multi(T, 4,4, Tmsp, 4, 4, Tacpc);
-	multi(TPIL2LPS,4, 4, Tacpc, 4, 4, T);
+   multi(T, 4,4, Tmsp, 4, 4, Tacpc);
+   multi(TPIL2LPS,4, 4, Tacpc, 4, 4, T);
 
-	multi(TPIL2LPS, 4, 4,  pc, 4,  1, pc);
-	multi(TPIL2LPS, 4, 4,  ac, 4,  1, ac);
+   multi(TPIL2LPS, 4, 4,  pc, 4,  1, pc);
+   multi(TPIL2LPS, 4, 4,  ac, 4,  1, ac);
+   
+   multi(X2I, 4, 4,  pc, 4,  1, pc);
+   multi(X2I, 4, 4,  ac, 4,  1, ac);
 
-	multi(X2I, 4, 4,  pc, 4,  1, pc);
-	multi(X2I, 4, 4,  ac, 4,  1, ac);
+   invT = inv4(T);
+   im=resliceImage(volOrig,Orig.nx,Orig.ny,Orig.nz,Orig.dx,Orig.dy,Orig.dz,HR.nx,HR.ny,1, HR.dx,HR.dy,HR.dz,invT,LIN);
+   free(invT);
 
-	invT = inv4(T);
-	im=resliceImage(volOrig,Orig.nx,Orig.ny,Orig.nz,Orig.dx,Orig.dy,Orig.dz,HR.nx,HR.ny,1, HR.dx,HR.dy,HR.dz,invT,LIN);
-	free(invT);
+   minmax(im, npHR, min, max);
 
-	minmax(im, npHR, min, max);
+   for(int i=0; i<npHR; i++)
+   {
+      Rchannel[i] = (char)(im[i]*255.0/max);
+      Gchannel[i] = (char)(im[i]*255.0/max);
+      Bchannel[i] = (char)(im[i]*255.0/max);
+   }
 
-	for(int i=0; i<npHR; i++)
-	{
-		Rchannel[i] = (char)(im[i]*255.0/max);
-		Gchannel[i] = (char)(im[i]*255.0/max);
-		Bchannel[i] = (char)(im[i]*255.0/max);
-	}
-
-	brandImage(Rchannel, Gchannel, Bchannel, HR.nx, HR.ny, (HR.nx-1)/2, (HR.ny-1)/2, 0, (HR.nx-1)/2, 255, 255, 255);
-	brandImage(Rchannel, Gchannel, Bchannel, HR.nx, HR.ny, (int)(pc[0]+0.5), (int)(pc[1]+0.5), 4, 4, 255, 0, 0);
-	brandImage(Rchannel, Gchannel, Bchannel, HR.nx, HR.ny, (int)(ac[0]+0.5), (int)(ac[1]+0.5), 4, 4, 0, 255, 0);
+   brandImage(Rchannel, Gchannel, Bchannel, HR.nx, HR.ny, (HR.nx-1)/2, (HR.ny-1)/2, 0, (HR.nx-1)/2, 255, 255, 255);
+   brandImage(Rchannel, Gchannel, Bchannel, HR.nx, HR.ny, (int)(pc[0]+0.5), (int)(pc[1]+0.5), 4, 4, 255, 0, 0);
+   brandImage(Rchannel, Gchannel, Bchannel, HR.nx, HR.ny, (int)(ac[0]+0.5), (int)(ac[1]+0.5), 4, 4, 0, 255, 0);
 
 
    niftiFilename(filename,imagefilename);
@@ -486,7 +486,7 @@ void saveACPClocation(const char *imagefilename, float *Tmsp, DIM Orig, float *A
    float *invT; 
    float acpc_distance;
    float X2I[16]; // 4x4 matrix that transforms a vector from xyz-coordinates to ijk-coordinates
-   char filename[1024];
+   char filename[DEFAULT_STRING_LENGTH];
 
    invT = inv4(Tmsp);
 
@@ -513,7 +513,7 @@ void saveACPClocation(const char *imagefilename, float *Tmsp, DIM Orig, float *A
    }
 
    char dirname[DEFAULT_STRING_LENGTH]; // name of the directory only
-   char fullpath[3*DEFAULT_STRING_LENGTH]; // directory + filename
+   char fullpath[2048]; // directory + filename
    getDirectoryName(imagefilename, dirname);
    niftiFilename(filename,imagefilename);
    snprintf(fullpath,sizeof(fullpath),"%s/%s_ACPC.txt",dirname, filename);
