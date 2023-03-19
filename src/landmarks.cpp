@@ -51,11 +51,11 @@ void makePPM(SHORTIM im, int *lm, const char *ppmfile)
    fprintf(fp,"255\n");
 
    /*Write the data part of the PPM file*/
-   for (int j=0,ik=0;j<im.ny & ik<im.nx;j++,ik++)
+   for (int j=0,ik=0; (j<im.ny) && (ik<im.nx); j++,ik++)
    {
       for(int i=0;i<im.nx;i++)
       {
-         if(i==ii | j==jj) fwrite(yellow,1,3,fp);
+         if( (i==ii) || (j==jj) ) fwrite(yellow,1,3,fp);
          else {
             fwrite(imgTemp+np*kk+im.nx*j+i,1,1,fp);
             fwrite(imgTemp+np*kk+im.nx*j+i,1,1,fp);
@@ -65,7 +65,7 @@ void makePPM(SHORTIM im, int *lm, const char *ppmfile)
 
       for(int k=0;k<im.nz;k++)
       {
-         if(j==jj | k==kk) fwrite(yellow,1,3,fp);
+         if( (j==jj) || (k==kk) ) fwrite(yellow,1,3,fp);
          else {
             fwrite(imgTemp+np*k+im.nx*j+ii,1,1,fp);
             fwrite(imgTemp+np*k+im.nx*j+ii,1,1,fp);
@@ -75,7 +75,7 @@ void makePPM(SHORTIM im, int *lm, const char *ppmfile)
 
       for(int k=0;k<im.nz;k++)
       {
-         if(ik==ii | k==kk) fwrite(yellow,1,3,fp);
+         if( (ik==ii) || (k==kk) ) fwrite(yellow,1,3,fp);
          else {
             fwrite(imgTemp+np*k+im.nx*jj+ik,1,1,fp);
             fwrite(imgTemp+np*k+im.nx*jj+ik,1,1,fp);
@@ -120,14 +120,14 @@ float detect_lm(SPH &searchsph, SPH &testsph, SHORTIM testim, int cntr[], SPH &r
 float *detect_landmarks(const char *subfile, const char *mdlfile, int &nl, char ppmflg)
 {
    char prefix[DEFAULT_STRING_LENGTH];
-   char filename[DEFAULT_STRING_LENGTH];
+   char filename[2048];
    SHORTIM subim; 
    nifti_1_header hdr;
    FILE *fpi;
    int r; // patch radius
    int R; // search region radius
    int lm[3], lmcm[3];
-   float ccmax;
+   //float ccmax;
    float *P;
 
    if( niftiFilename(prefix, subfile)==0 )
@@ -162,7 +162,8 @@ float *detect_landmarks(const char *subfile, const char *mdlfile, int &nl, char 
 
       if( fread(refsph.v, sizeof(float), refsph.n, fpi) != (size_t)refsph.n ) {};
 
-      ccmax = detect_lm(searchsph, subsph, subim, lmcm, refsph, lm);
+      //ccmax = detect_lm(searchsph, subsph, subim, lmcm, refsph, lm);
+      (void)detect_lm(searchsph, subsph, subim, lmcm, refsph, lm);
 
       P[0*nl + l]=lm[0];
       P[1*nl + l]=lm[1];
@@ -186,7 +187,7 @@ float *detect_landmarks(SHORTIM subim, const char *mdlfile, int &nl)
    int r; // patch radius
    int R; // search region radius
    int lm[3], lmcm[3];
-   float ccmax;
+   //float ccmax;
    float *P;
 
    fpi=fopen(mdlfile, "r");
@@ -213,7 +214,8 @@ float *detect_landmarks(SHORTIM subim, const char *mdlfile, int &nl)
       if( fread(&lmcm[2], sizeof(int), 1, fpi) != 1) {};
       if( fread(refsph.v, sizeof(float), refsph.n, fpi) != (size_t)refsph.n ) {};
 
-      ccmax = detect_lm(searchsph, subsph, subim, lmcm, refsph, lm);
+      //ccmax = detect_lm(searchsph, subsph, subim, lmcm, refsph, lm);
+      (void)detect_lm(searchsph, subsph, subim, lmcm, refsph, lm);
 
       P[0*nl + l]=lm[0];
       P[1*nl + l]=lm[1];
