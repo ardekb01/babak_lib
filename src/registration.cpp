@@ -1601,7 +1601,7 @@ static float optimize(short *KMI, float ax,float bx,float cx,float tol, float *x
 	float cgold=0.381966;
 	float zeps=1.0e-10;
 	int itmax=100;
-	float a,b,v,w,x,u,fu,fx,fv,fw,e=0.0,xm,d,r,q,p,etemp;
+	float a,b,v,w,x,u,fu,fx,fv,fw,e=0.0,xm,d=0.0,r,q,p,etemp;
 	int i;
 	float tol1,tol2;
 
