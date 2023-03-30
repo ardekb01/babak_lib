@@ -349,7 +349,7 @@ int main(int argc, char **argv)
 //            opt_qform = YES;
 //            break;
          case 'V':
-            printf("acpcdetect v2.1, May 13, 2022 release\n");
+            printf("acpcdetect v2.1, March 30, 2023 release\n");
             exit(0);
          case 'x':
             nx = atoi(optarg);
