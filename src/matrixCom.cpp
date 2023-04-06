@@ -31,8 +31,8 @@ void transpose_matrix(float *A, int N,  int M, float *AT);
 double det3(double *A);
 
 /* computes the transpose of the NxM matrix A */
-static float *trans(float *A, int N,  int M);
-static double *trans(double *A, int N,  int M);
+float *trans(float *A, int N,  int M);
+double *trans(double *A, int N,  int M);
 /*****************************************************************************/
 
 /* computes the determinant of the 4x4 matrix A */
@@ -1176,7 +1176,7 @@ void transpose_matrix(float *A, int N,  int M, float *AT)
    return;
 }
 
-static float *trans(float *A, int N,  int M)
+float *trans(float *A, int N,  int M)
 {
    int i,j;
 
@@ -1191,7 +1191,7 @@ static float *trans(float *A, int N,  int M)
    return(transA);
 }
 
-static double *trans(double *A, int N,  int M)
+double *trans(double *A, int N,  int M)
 {
    int i,j;
 
