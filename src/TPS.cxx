@@ -30,12 +30,14 @@ static struct option options[] =
    {"-dz",1,'Z'},
    {"-version",0,'V'},
    {"-v",0,'v'},
-   {"-lmfg", 1, '1'},
-   {"-lmxy", 1, '2'},
+   {"-lmtarget", 1, '1'},
+   {"-lmsubject", 1, '2'},
    {"-i",1,'i'},
    {"-T", 1, 'T'},
    {"-output-orient",1,'u'},
    {"-oo",1,'u'},
+   {"-help",0,'h'},
+   {"-h",0,'h'},
    {0,0,0}
 /*
    {"-center-AC", 0, 'M'},
@@ -50,7 +52,6 @@ static struct option options[] =
    {"-rac",1,'1'},
    {"-rpc",1,'2'},
    {"-input-orient",1,'O'}, // secret option
-   {"-help",0,'h'},
 */
 };
 
@@ -59,44 +60,27 @@ static struct option options[] =
 void print_help_and_exit()
 {
   printf(
-  "\nUsage: TSP [options] -i <input NIFTI image> -lmxy <(x,y) landmarks> -lmfg <(f,g) landmarks>\n\n"
+  "\nUsage: TSP [options] -i <input NIFTI image> -lmsubject <file> -lmtarget <file>\n\n"
+
+  "-lmtarget <file>\n"
+  "\tSpecifies a text file containing the \"target\" set of landmarks. These are fixed\n"
+  "\tlandmarks to which the \"subject\" landmarks are mapped. These landmarks are\n"
+  "\tassumed to be in PIL space and are usually obtained using the acpcdetect program.\n\n"
+
+  "-lmsubject <file>\n"
+  "\tSpecifies a text file containing the \"subject\" set of landmarks. A TPS deformation\n"
+  "\tis found that maps these landmarks to the \"target\" landmarks. These landmarks are\n"
+  "\tassumed to be in PIL space and are usually obtained using the acpcdetect program.\n\n"
 
   "-i <input NIFTI image>\n"
-  "\t3D T1W MRI brain volume in NIFTI format of type short or unsigned short\n\n"
+  "\t3D T1W MRI brain volume in NIFTI format of type short or unsigned short.\n"
+  "\tA TPS deformation will be applied to this image so that the \"subject\"\n"
+  "\tlandmarks are precisely mapped to the \"target\" landmarks.\n\n"
 
   "Options:\n\n"
 
   "-v\n"
   "\tEnables verbose mode\n\n"
-
-  "-lm <landmarks-file>\n"
-  "\tA text file containing manually determined (i, j, k) coordinates\n"
-  "\tof the AC, PC and VSPS, respectively. When this file is supplied,\n"
-  "\tautomatic detection of these landmarks is suppressed. This is useful\n" 
-  "\tin cases when automatic landmark detection fails.\n\n"
-
-  "-no-tilt-correction\n"
-  "\tDoes not tilt-correct the output, but the SFORM and QFORM are set\n"
-  "\tcorrectly in the output volume header. This is useful for applications\n"
-  "\tthat would like to use acpcdetect as a preprocessing tilt-correction\n"
-  "\tstep without applying interpolation at this stage.\n\n"
-
-  "-center-AC\n"
-  "\tPlaces the output volume's FOV center at AC\n\n"
-
-  "-standard\n"
-  "\tTilt-correction is performed without using the Orion landmarks.\n"
-  "\tTilt-correction is done using the AC, PC and MSP only. This is the\n"
-  "\tmethod used in version 1.0 of acpcdetect.  In the current version, the\n"
-  "\t8 orion landmarks are also used to stabilize the standardization of the\n"
-  "\torientation. Using this option, therefore, reverts back to the method\n"
-  "\tof version 1.0 without using the additional Orion landmarks.\n\n"
-
-  "-output-orient <orientation-code>\n"
-  "\tSpecifies the orientation of the output volume (default: RAS).\n"
-  "\tIn ART, orientation codes are 3-letter codes consisting of 6 letters:\n"
-  "\tA, P, I, S, L, R.  There are 48 possible combinations. For example\n"
-  "\tPIL for Posterior-Inferior-Left or RAS for Right-Anterior-Superior.\n\n"
 
   "-nx <int>\n"
   "\tNumber of voxels in i direction (the fastest varying index) of the\n"
@@ -121,6 +105,30 @@ void print_help_and_exit()
   "-dz <float>\n"
   "\tVoxel dimension of the output volume in k direction. The default\n"
   "\tvalue is determined from the input volume.\n\n"
+
+  "-no-tilt-correction\n"
+  "\tDoes not tilt-correct the output, but the SFORM and QFORM are set\n"
+  "\tcorrectly in the output volume header. This is useful for applications\n"
+  "\tthat would like to use acpcdetect as a preprocessing tilt-correction\n"
+  "\tstep without applying interpolation at this stage.\n\n"
+
+  "-center-AC\n"
+  "\tPlaces the output volume's FOV center at AC\n\n"
+
+  "-standard\n"
+  "\tTilt-correction is performed without using the Orion landmarks.\n"
+  "\tTilt-correction is done using the AC, PC and MSP only. This is the\n"
+  "\tmethod used in version 1.0 of acpcdetect.  In the current version, the\n"
+  "\t8 orion landmarks are also used to stabilize the standardization of the\n"
+  "\torientation. Using this option, therefore, reverts back to the method\n"
+  "\tof version 1.0 without using the additional Orion landmarks.\n\n"
+
+  "-output-orient <orientation-code>\n"
+  "\tSpecifies the orientation of the output volume (default: RAS).\n"
+  "\tIn ART, orientation codes are 3-letter codes consisting of 6 letters:\n"
+  "\tA, P, I, S, L, R.  There are 48 possible combinations. For example\n"
+  "\tPIL for Posterior-Inferior-Left or RAS for Right-Anterior-Superior.\n\n"
+
 
   "-version\n"
   "\tPrints software version\n\n"
@@ -203,12 +211,12 @@ void print_help_and_exit()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-void invert_symmetric_matrix(float4 *X, int p)
+void invert_symmetric_matrix(float *X, int p)
 {
-   float4 *D;
-   float4 *Ut;
-   float4 *DUt;
-   float4 *Xinv;
+   float *D;
+   float *Ut;
+   float *DUt;
+   float *Xinv;
 
    // ensure memory was allocated for X and G
    if(X==NULL)
@@ -229,7 +237,7 @@ void invert_symmetric_matrix(float4 *X, int p)
    D=diagATA_float(X, p, 'L');
    Ut=X;
 
-   //printMatrix(Ut,p,p,"Ut",NULL);
+   //printMatrix(D,p,1,"D",NULL);
 
    if(D==NULL)
    {
@@ -237,15 +245,12 @@ void invert_symmetric_matrix(float4 *X, int p)
       exit(-1);
    }
 
-   DUt=(float4 *)calloc(p*p,sizeof(float4));
+   DUt=(float *)calloc(p*p,sizeof(float));
    if(DUt==NULL) 
    {
       printf("\n\ninvert_symmetric_matrix(): Memory allocation problem.\n\n");
       exit(-1);
    }
-
-   mat_trans_mat(Ut, p, p, Ut, p, DUt);
-   //printMatrix(DUt,p,p,"UUt",NULL);
 
    // compute diag(1/D) * U'
    for(int i=0; i<p; i++)
@@ -253,7 +258,10 @@ void invert_symmetric_matrix(float4 *X, int p)
       for(int j=0; j<p; j++) DUt[i*p + j]=Ut[i*p +j]/D[i];
    }
 
-   Xinv=(float4 *)calloc(p*p,sizeof(float4));
+   //mat_trans_mat(Ut, p, p, DUt, p, DUt);
+   //printMatrix(DUt,p,p,"UDUt",NULL);
+
+   Xinv=(float *)calloc(p*p,sizeof(float));
    if(Xinv==NULL) 
    {
       printf("\n\ninvert_symmetric_matrix(): Memory allocation problem.\n\n");
@@ -271,67 +279,205 @@ void invert_symmetric_matrix(float4 *X, int p)
    free(Xinv);
 }
 
-float4 tpsU(float4 x, float4 y)
+float tpsU(float x, float y)
 {
    double d;
-   float4 result;
+   float result;
 
    d = x*x + y*y;
 
    if( d > 0.0 )
-      result = (float4)(d*log(d));
+      result = (float)(d*log(d));
    else
       result=0.0;
 
    return(result);
 }
 
-float4 *compute_K_inverse(float4 *x, float4 *y, int n)
+float *compute_L_inverse(float *x, float *y, int n)
 {
-   int d;
-   float4 *K;
-   float4 *Kinv;
+   float *L;
+   float *Li;
    
+   int d;
    d = n+3;
+   L = (float *)calloc(d*d, sizeof(float));
+   Li = (float *)calloc(d*d, sizeof(float));
 
-   K = (float4 *)calloc(d*d, sizeof(float4));
-   Kinv = (float4 *)calloc(d*d, sizeof(float4));
+   ////////////////////////////////////////////////
+   // set K
+   ////////////////////////////////////////////////
+   float *K;  // nxn
+
+   K = (float *)calloc(n*n, sizeof(float));
 
    for(int i=0; i<n; i++)
    {
       for(int j=0; j<=i; j++)
       {
-         K[i*d + j] = tpsU(x[i]-x[j],y[i]-y[j]);
+         K[i*n + j] = tpsU(x[i]-x[j],y[i]-y[j]);
       }
    }
 
-   { 
-      int i1=n;
-      int i2=n+1;
-      int i3=n+2;
-      for(int j=0; j<n; j++)
-      {
-         K[i1*d + j] = x[j];
-         K[i2*d + j] = y[j];
-         K[i3*d + j] = 1.0;
-      }
-   }
-
-   for(int j=0; j<d; j++)
+   for(int j=0; j<n; j++)
    {
       for(int i=0; i<j; i++)
       {
-         K[i*d + j] =  K[j*d + i];
+         K[i*n + j] =  K[j*n + i];
       }
    }
 
-   // copy K in Kinv
-   for(int i=0; i<d*d; i++) Kinv[i]=K[i];
+   //printMatrix(K,n,n,"K:",NULL);  // for testing only
+   ////////////////////////////////////////////////
 
-   invert_symmetric_matrix(Kinv, d);
+   ////////////////////////////////////////////////
+   // compute Ki=inverse(K)
+   ////////////////////////////////////////////////
+   float *Ki; // inverse(K)  nxn
 
-   free(K);
-   return(Kinv);
+   Ki = (float *)calloc(n*n, sizeof(float));
+
+   for(int i=0; i<n*n; i++) 
+   {
+      Ki[i]=K[i]; // copy K in Ki temporarily
+   }
+
+   invert_symmetric_matrix(Ki, n);
+
+   //multi(Ki,n,n,K,n,n,Ki);  // for testing only
+   //printMatrix(Ki,n,n,"K*invserse(K):",NULL);  // for testing only
+   ////////////////////////////////////////////////
+
+   ////////////////////////////////////////////////
+   // set P and Pt=transpose(P)
+   ////////////////////////////////////////////////
+   float *P;  // nx3
+   float *Pt; // transpose(P) 3xn
+
+   P = (float *)calloc(n*3, sizeof(float));
+
+   for(int i=0; i<n; i++)
+   {
+      P[3*i] = 1.0;
+      P[3*i + 1] = x[i];
+      P[3*i + 2] = y[i];
+   }
+
+   Pt = trans(P, n, 3);
+
+   //printMatrix(P,n,3,"P:",NULL);  // for testing only
+   //printMatrix(Pt,3,n,"Pt:",NULL);  // for testing only
+   ////////////////////////////////////////////////
+
+   //////////////////////////////////////////////////////
+   // compute B and Bt=transpose(B) where B=inverse(K)*P
+   //////////////////////////////////////////////////////
+   float *B; // B=inverse(K)*P
+   float *Bt; // transpose(B)
+
+   B = (float *)calloc(n*3, sizeof(float));
+
+   multi(Ki,n,n,P,n,3,B); // compute B=inverse(K)*P 
+   Bt = trans(B, n, 3);
+
+   //printMatrix(B,n,3,"B:",NULL);  // for testing only
+   //printMatrix(Bt,3,n,"Bt:",NULL);  // for testing only
+   //////////////////////////////////////////////////////
+
+   //////////////////////////////////////////////////////
+   // compute A and Ai=inverse(A) 
+   // where A=transpose(P)*inverse(K)*P
+   //////////////////////////////////////////////////////
+   float *A;
+   float *Ai;
+
+   A = (float *)calloc(3*3, sizeof(float));
+
+   multi(Pt,3,n,B,n,3,A); // compute PtKiP=transpose(P)inverse(K)*P 
+   Ai = inv3(A);
+
+   //printMatrix(A,3,3,"A:",NULL);  // for testing only
+   //printMatrix(Ai,3,3,"Ai:",NULL);  // for testing only
+   //multi(Ai,3,3,A,3,3,Ai);  // for testing only
+   //printMatrix(Ai,3,3,"A*invserse(A):",NULL);  // for testing only
+   //////////////////////////////////////////////////////
+
+   //////////////////////////////////////////////////////
+   // compute BAi = B*inverse(A)
+   // and AiBt = inverse(A)*transpose(B)
+   //////////////////////////////////////////////////////
+   float *BAi;
+   float *AiBt;
+
+   BAi = (float *)calloc(n*3, sizeof(float));
+   multi(B,n,3,Ai,3,3,BAi);
+   AiBt = trans(BAi, n, 3);
+
+   //printMatrix(BAi,n,3,"BAi:",NULL);  // for testing only
+   //printMatrix(AiBt,3,n,"AiBt:",NULL);  // for testing only
+   //////////////////////////////////////////////////////
+
+   //////////////////////////////////////////////////////
+   // compute C
+   //////////////////////////////////////////////////////
+   float *C;
+   C = (float *)calloc(n*n, sizeof(float));
+
+   multi(BAi,n,3,Bt,3,n,C);
+
+   //printMatrix(C,n,n,"C:",NULL);  // for testing only
+   //////////////////////////////////////////////////////
+
+   for(int i=0; i<n; i++)
+   for(int j=0; j<n; j++)
+   {
+      L[i*d + j] = K[i*n + j];
+
+      Li[i*d + j] = Ki[i*n + j] - C[i*n + j];
+   }
+
+   for(int i=0; i<n; i++)
+   {
+      L[i*d + n] = P[i*3];
+      L[i*d + n + 1] = P[i*3 + 1];
+      L[i*d + n + 2] = P[i*3 + 2];
+
+      Li[i*d + n] = BAi[i*3];
+      Li[i*d + n + 1] = BAi[i*3 + 1];
+      Li[i*d + n + 2] = BAi[i*3 + 2];
+   }
+
+   for(int j=0; j<n; j++)
+   {
+      L[n*d + j] = Pt[j];
+      L[(n+1)*d + j] = Pt[n + j];
+      L[(n+2)*d + j] = Pt[2*n + j];
+
+      Li[n*d + j] = AiBt[j];
+      Li[(n+1)*d + j] = AiBt[n + j];
+      Li[(n+2)*d + j] = AiBt[2*n + j];
+   }
+
+   for(int i=0; i<3; i++)
+   for(int j=0; j<3; j++)
+   {
+      Li[(i+n)*d + j+n] = -Ai[i*3 + j];
+   }
+
+   //printMatrix(L,d,d,"L:",NULL);  // for testing only
+   //printMatrix(Li,d,d,"Li:",NULL);  // for testing only
+   //multi(L,d,d,Li,d,d,Li);
+   //printMatrix(Li,d,d,"I:",NULL);  // for testing only
+
+   free(K); free(Ki);
+   free(P); free(Pt);
+   free(B); free(Bt);
+   free(A); free(Ai);
+   free(BAi); free(AiBt);
+   free(C);
+   free(L);
+
+   return(Li);
 }
 
 void read_landmarks(char *filename, int &n, float * &X, float * &Y)
@@ -366,9 +512,9 @@ void read_landmarks(char *filename, int &n, float * &X, float * &Y)
 void tpsTransform(float *X, float *Y, float &x, float &y, float *wx, float *wy, int n, float *k)
 {
   for(int i=0; i<n; i++) k[i] = tpsU(X[i]-x,Y[i]-y);
-  k[n] = x;
-  k[n+1] = y;
-  k[n+2] = 1;
+  k[n] = 1;
+  k[n+1] = x;
+  k[n+2] = y;
 
   x=0.0;
   for(int i=0; i<n+3; i++) x += k[i]*wx[i];
@@ -390,16 +536,16 @@ int main(int argc, char **argv)
   int nx=0, ny=0, nz=0;
   float dx=0.0, dy=0.0, dz=0.0;
 
-  char landmarks_fg[DEFAULT_STRING_LENGTH]="";
+  char target_landmarks[DEFAULT_STRING_LENGTH]="";
   float *F=NULL, *G=NULL;  // Arrays that store the (f,g) set of landmarks
 
-  char landmarks_xy[DEFAULT_STRING_LENGTH]="";
+  char subject_landmarks[DEFAULT_STRING_LENGTH]="";
   float *X=NULL, *Y=NULL;  // Arrays that store the (x,y) set of landmarks
 
   int dum;
   int nlm=0;  // number of landmarks 
 
-  float *Kinv;
+  float *Linv;
   float *wx, *wy, *urow;
 
   char ipimagepath[DEFAULT_STRING_LENGTH]="";
@@ -428,6 +574,8 @@ int main(int argc, char **argv)
   {
       switch (opt) 
       {
+         case 'h':
+            print_help_and_exit();
          case 'u':
             sprintf(oporient,"%s",optarg);
             oporient[0]=(char)toupper((int)oporient[0]);
@@ -456,10 +604,10 @@ int main(int argc, char **argv)
             opt_v=YES;
             break;
          case '1':
-            sprintf(landmarks_fg,"%s",optarg);
+            sprintf(target_landmarks,"%s",optarg);
             break;
          case '2':
-            sprintf(landmarks_xy,"%s",optarg);
+            sprintf(subject_landmarks,"%s",optarg);
             break;
          case 'i':
             sprintf(ipimagepath,"%s",optarg);
@@ -475,35 +623,35 @@ int main(int argc, char **argv)
 
   /////////////////////////////////////////////////////////////////////////////////
 
-  if( landmarks_fg[0]=='\0' )
+  if( target_landmarks[0]=='\0' )
   {
-    printf("Please specify the (f,g) set of landmarks using: -lmfg <filename>\n");
+    printf("Please specify the target set of landmarks using: -lmtarget <file>\n");
     exit(0);
   }
-  if(opt_v) printf("(f,g) set of landmarks: %s\n",landmarks_fg);
+  if(opt_v) printf("Target set of landmarks: %s\n",target_landmarks);
 
-  read_landmarks(landmarks_fg, dum, F, G);
+  read_landmarks(target_landmarks, dum, F, G);
   if(opt_v) 
   {
     printf("Number of landmarks = %d\n",dum);
     for(int i=0; i<dum; i++)
-       printf("(f[%d],g[%d]) = (%f, %f)\n",i,i,F[i],G[i]);
+       printf("(%f, %f)\n",F[i],G[i]);
     printf("\n");
   }
 
   /////////////////////////////////////////////////////////////////////////////////
 
-  if( landmarks_xy[0]=='\0' )
+  if( subject_landmarks[0]=='\0' )
   {
-    printf("Please specify the (x,y) set of landmarks using: -lmxy <filename>\n");
+    printf("Please specify the subject set of landmarks using: -lmsubject <file>\n");
     exit(0);
   }
-  if(opt_v) printf("(x,y) set of landmarks: %s\n",landmarks_xy);
+  if(opt_v) printf("Subject set of landmarks: %s\n",subject_landmarks);
 
-  read_landmarks(landmarks_xy, nlm, X, Y);
+  read_landmarks(subject_landmarks, nlm, X, Y);
   if( nlm != dum)
   {
-    printf("Number (x,y) landmarks must equal the number of (f,g) landmarks, aborting ...\n");
+    printf("Number subject landmarks must equal the number of target landmarks, aborting ...\n");
     exit(0);
   }
 
@@ -511,10 +659,21 @@ int main(int argc, char **argv)
   {
     printf("Number of landmarks = %d\n",nlm);
     for(int i=0; i<nlm; i++)
-       printf("(x[%d],y[%d]) = (%f, %f)\n",i,i,X[i],Y[i]);
+       printf("(%f, %f)\n",X[i],Y[i]);
     printf("\n");
   }
 
+/*
+  //test segment for observing wx and wy
+  Linv = compute_L_inverse(X, Y, nlm);
+  wx=(float *)calloc(nlm+3, sizeof(float));
+  wy=(float *)calloc(nlm+3, sizeof(float));
+  urow=(float *)calloc(nlm+3, sizeof(float));
+  multi(Linv,nlm+3,nlm+3,F,nlm+3,1,wx);
+  multi(Linv,nlm+3,nlm+3,G,nlm+3,1,wy);
+  for(int i=0; i<nlm+3; i++) printf("%f, %f\n",wx[i],wy[i]);
+exit(0);
+*/
   /////////////////////////////////////////////////////////////////////////////////
 
   if( ipimagepath[0]=='\0' )
@@ -601,7 +760,7 @@ int main(int argc, char **argv)
   opdim.np=opdim.nx*opdim.ny; 
   opdim.nv=opdim.np*opdim.nz; 
 
-  sprintf(opimagepath,"%s/%s_%s.nii",ipimagedir,ipimagename,oporient);
+  sprintf(opimagepath,"%s/%s_TPS.nii",ipimagedir,ipimagename);
 
   if(opt_v) 
   {
@@ -675,100 +834,97 @@ int main(int argc, char **argv)
 
   /////////////////////////////////////////////////////////////////////////////////
 
-  Kinv = compute_K_inverse(X, Y, nlm);
+  Linv = compute_L_inverse(X, Y, nlm);
   wx=(float *)calloc(nlm+3, sizeof(float));
   wy=(float *)calloc(nlm+3, sizeof(float));
   urow=(float *)calloc(nlm+3, sizeof(float));
-  multi(Kinv,nlm+3,nlm+3,F,nlm+3,1,wx);
-  multi(Kinv,nlm+3,nlm+3,G,nlm+3,1,wy);
+  multi(Linv,nlm+3,nlm+3,F,nlm+3,1,wx);
+  multi(Linv,nlm+3,nlm+3,G,nlm+3,1,wy);
 
   {
-    int nx1, ny1, nz1;
-    int nx2, ny2, nz2;
-    float dx1, dy1, dz1;
-    float dx2, dy2, dz2;
+    int nxi, nyi, nzi;
+    int nxo, nyo, nzo;
+    float dxi, dyi, dzi;
+    float dxo, dyo, dzo;
 
     float  x,y,z;   
     float  xx,yy,zz;   
     int q;
-    int np1;
-    float xc1, yc1, zc1;
-    float xc2, yc2, zc2;
+    int npi;
+    float xci, yci, zci;
+    float xco, yco, zco;
     float *beta=NULL, del;
     float *c=NULL;
 
-/*
+//test code to make sure that the subject landmarks are indeed precisely
+//mapped to the target landmarks
 for(int i=0; i<nlm; i++)
 {
     xx = X[i]; yy=Y[i];
-    printf("(f,g) = %f %f\n",F[i],G[i]);
-    printf("(x,y) = %f %f\n",xx,yy);
+    printf("Target = %f %f\n",F[i],G[i]);
+    printf("Subject = %f %f\n",xx,yy);
     tpsTransform(X, Y, xx, yy, wx, wy, nlm, urow);
     printf("(x,y) = %f %f\n",xx,yy);
 }
-*/
+//exit(0);
 
-    nx1 = iphdr.dim[1]; ny1 = iphdr.dim[2]; nz1 = iphdr.dim[3];
-    nx2 = ophdr.dim[1]; ny2 = ophdr.dim[2]; nz2 = ophdr.dim[3];
-    dx1 = iphdr.pixdim[1]; dy1 = iphdr.pixdim[2]; dz1 = iphdr.pixdim[3];
-    dx2 = ophdr.pixdim[1]; dy2 = ophdr.pixdim[2]; dz2 = ophdr.pixdim[3];
-
-    //printf("Target voxel size: %f %f %f\n",dx2,dy2,dz2);
-    //printf("Target matrix size: %d %d %d\n",nx2,ny2,nz2);
-
-    //printf("Subject voxel size: %f %f %f\n",dx1,dy1,dz1);
-    //printf("Subject matrix size: %d %d %d\n",nx1,ny1,nz1);
+    nxi = iphdr.dim[1]; nyi = iphdr.dim[2]; nzi = iphdr.dim[3];
+    nxo = ophdr.dim[1]; nyo = ophdr.dim[2]; nzo = ophdr.dim[3];
+    dxi = iphdr.pixdim[1]; dyi = iphdr.pixdim[2]; dzi = iphdr.pixdim[3];
+    dxo = ophdr.pixdim[1]; dyo = ophdr.pixdim[2]; dzo = ophdr.pixdim[3];
 
     if(interpolation_method == CUBICSPLINE)
     {
       beta=computeBeta(&del);
-      c = (float *)calloc(nx1*ny1*nz1, sizeof(float));
-      cubicSplineAnalysis(ipimage, c, nx1, ny1, nz1);
+      c = (float *)calloc(nxi*nyi*nzi, sizeof(float));
+      cubicSplineAnalysis(ipimage, c, nxi, nyi, nzi);
     }
 
-    np1=nx1*ny1;
+    npi=nxi*nyi;
 
-    opimage=(short *)calloc(nx2*ny2*nz2,sizeof(short));
+    opimage=(short *)calloc(nxo*nyo*nzo,sizeof(short));
     if( opimage == NULL )
     {
       memory_allocation_error("opimage");
     }
 
-    xc1=dx1*(nx1-1)/2.0;     /* +---+---+ */
-    yc1=dy1*(ny1-1)/2.0;
-    zc1=dz1*(nz1-1)/2.0;
+    xci=dxi*(nxi-1)/2.0;     /* +---+---+ */
+    yci=dyi*(nyi-1)/2.0;
+    zci=dzi*(nzi-1)/2.0;
 
-    xc2=dx2*(nx2-1)/2.0;     /* +---+---+ */
-    yc2=dy2*(ny2-1)/2.0;
-    zc2=dz2*(nz2-1)/2.0;
+    xco=dxo*(nxo-1)/2.0;     /* +---+---+ */
+    yco=dyo*(nyo-1)/2.0;
+    zco=dzo*(nzo-1)/2.0;
 
     q=0;
-    for(int k=0;k<nz2;k++) 
+    for(int k=0;k<nzo;k++) 
     {
-      for(int j=0;j<ny2;j++) 
+      for(int j=0;j<nyo;j++) 
       {
-         for(int i=0;i<nx2;i++) 
+         for(int i=0;i<nxo;i++) 
          {
-            xx = i*dx2 - xc2;
-            yy = j*dy2 - yc2;
-            zz = k*dz2 - zc2;
+            xx = i*dxo - xco;
+            yy = j*dyo - yco;
+            zz = k*dzo - zco;
+
+            // here xx and yy are updated using TPS
             tpsTransform(X, Y, xx, yy, wx, wy, nlm, urow);
 
-            x = ( invT[0]*xx +invT[1]*yy +invT[2]*zz  +invT[3]   + xc1 )/dx1;
-            y = ( invT[4]*xx +invT[5]*yy +invT[6]*zz  +invT[7]   + yc1 )/dy1;
-            z = ( invT[8]*xx +invT[9]*yy +invT[10]*zz +invT[11]  + zc1 )/dz1;
+            x = ( invT[0]*xx +invT[1]*yy +invT[2]*zz  +invT[3]   + xci )/dxi;
+            y = ( invT[4]*xx +invT[5]*yy +invT[6]*zz  +invT[7]   + yci )/dyi;
+            z = ( invT[8]*xx +invT[9]*yy +invT[10]*zz +invT[11]  + zci )/dzi;
 
             if(interpolation_method == LIN )
             {
-              opimage[q++]=(short)(linearInterpolator(x,y,z,ipimage,nx1,ny1,nz1,np1)+0.5);
+              opimage[q++]=(short)(linearInterpolator(x,y,z,ipimage,nxi,nyi,nzi,npi)+0.5);
             }
             else if(interpolation_method == NEARN)
             {
-	      opimage[q++]=(short)(nearestNeighbor(x,y,z,ipimage,nx1,ny1,nz1,np1)+0.5);
+	      opimage[q++]=(short)(nearestNeighbor(x,y,z,ipimage,nxi,nyi,nzi,npi)+0.5);
             }
             else if(interpolation_method == CUBICSPLINE)
             {
-               opimage[q++] = (short)(cubicSplineSynthesis(c, nx1, ny1, nz1, x, y, z, beta, del)+0.5);
+               opimage[q++] = (short)(cubicSplineSynthesis(c, nxi, nyi, nzi, x, y, z, beta, del)+0.5);
             }
          }
       }
