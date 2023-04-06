@@ -2,6 +2,25 @@
 #include <cstddef>
 
 //Input: 'array' of size 'n'
+//Ouputs: The maximum values of 'array' is returned in 'max'
+template<class TYPE> void arraymax(TYPE *array, int n, TYPE &max)
+{
+   if(array==NULL) return;
+
+   max=array[0];
+
+   for(int i=0; i<n; i++)
+   {
+      if(array[i]>max) 
+      {
+         max=array[i];
+      }
+   }
+
+   return;
+}
+
+//Input: 'array' of size 'n'
 //Ouputs: The minimum and maximum values of 'array' are returned 
 //in 'min' and 'max' variables.
 template<class TYPE> void minmax(TYPE *array, int n, TYPE &min, TYPE &max)

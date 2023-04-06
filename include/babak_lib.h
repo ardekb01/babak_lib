@@ -25,6 +25,11 @@ typedef double float8;
 #define DEFAULT_STRING_LENGTH 512
 #define MAXIM 256 // maximum number of images allowed 
 
+#ifndef _TPS
+extern float4 tpsU(float4 x, float4 y);
+extern float4 *tpsK(float4 *x, float4 *y, int n);
+#endif
+
 #ifndef _update_qsform
 void update_qsform(nifti_1_header &hdr, float *matrix);
 void update_qsform( const char *imagefilename , float *matrix);
@@ -588,6 +593,9 @@ extern float8 vectorNorm(float4 *x, int4 n);
 extern void normalizeVector(float4 *x, int4 n);
 extern void transpose_matrix(float4 *A, int4 N,  int4 M);
 extern void transpose_matrix(float4 *A, int4 N,  int4 M, float4 *AT);
+/* computes the transpose of the NxM matrix A */
+extern float *trans(float *A, int N,  int M);
+extern double *trans(double *A, int N,  int M);
 
 extern float4 normalize(float4 *s, int4 n);
 extern float8 normalize(float8 *s, int4 n);

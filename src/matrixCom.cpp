@@ -23,6 +23,7 @@ int avgRow(double *X, int N, int P, double *avg);
 int varRow(float *X, int N, int P, float *avg, float *var);
 int varRow(double *X, int N, int P, double *avg, double *var);
 
+
 void transpose_matrix(float *A, int N,  int M);
 void transpose_matrix(float *A, int N,  int M, float *AT);
 
