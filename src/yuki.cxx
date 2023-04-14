@@ -2793,8 +2793,8 @@ int main(int argc, char **argv)
 
       if(opt_v)
       {
-         //printf("Atlas matrix size = %d x %d (pixels)\n", bbnx, bbny);
-         //printf("Atlas voxel size = %8.6f x %8.6f x %8.6f (mm3)\n", dx, dy, dz);
+         printf("Atlas matrix size = %d x %d (pixels)\n", bbnx, bbny);
+         printf("Atlas voxel size = %8.6f x %8.6f x %8.6f (mm3)\n", dx, dy, dz);
          printf("Number of atlases available = %d\n", number_of_atlases_available);
          printf("Number of atlases used = %d\n", number_of_atlases_used);
       }
