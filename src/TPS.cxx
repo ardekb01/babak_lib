@@ -30,9 +30,18 @@ static struct option options[] =
    {"-dz",1,'Z'},
    {"-version",0,'V'},
    {"-v",0,'v'},
-   {"-lmtarget", 1, '1'},
+
+   {"-lmatlas", 1, '1'},
+   {"-lma", 1, '1'},
+   {"-la", 1, '1'},
+
    {"-lmsubject", 1, '2'},
+   {"-lms", 1, '2'},
+   {"-ls", 1, '2'},
+
    {"-i",1,'i'},
+   {"-a",1,'i'},
+
    {"-T", 1, 'T'},
    {"-output-orient",1,'u'},
    {"-oo",1,'u'},
@@ -60,22 +69,22 @@ static struct option options[] =
 void print_help_and_exit()
 {
   printf(
-  "\nUsage: TSP [options] -i <input NIFTI image> -lmsubject <file> -lmtarget <file>\n\n"
+  "\nUsage: TSP [options] -i <input NIFTI image> -lmsubject <file> -lmatlas <file>\n\n"
 
-  "-lmtarget <file>\n"
-  "\tSpecifies a text file containing the \"target\" set of landmarks. These are fixed\n"
+  "-lmatlas <file>\n"
+  "\tSpecifies a text file containing the \"atlas\" set of landmarks. These are fixed\n"
   "\tlandmarks to which the \"subject\" landmarks are mapped. These landmarks are\n"
   "\tassumed to be in PIL space and are usually obtained using the acpcdetect program.\n\n"
 
   "-lmsubject <file>\n"
   "\tSpecifies a text file containing the \"subject\" set of landmarks. A TPS deformation\n"
-  "\tis found that maps these landmarks to the \"target\" landmarks. These landmarks are\n"
+  "\tis found that maps these landmarks to the \"atlas\" landmarks. These landmarks are\n"
   "\tassumed to be in PIL space and are usually obtained using the acpcdetect program.\n\n"
 
   "-i <input NIFTI image>\n"
   "\t3D T1W MRI brain volume in NIFTI format of type short or unsigned short.\n"
   "\tA TPS deformation will be applied to this image so that the \"subject\"\n"
-  "\tlandmarks are precisely mapped to the \"target\" landmarks.\n\n"
+  "\tlandmarks are precisely mapped to the \"atlas\" landmarks.\n\n"
 
   "Options:\n\n"
 
@@ -488,6 +497,7 @@ void read_landmarks(char *filename, int &n, float * &X, float * &Y)
    n = 0;
    
    fp=fopen(filename,"r");
+   if(fp==NULL) { printf("Error: Cound not open %s, aborting ...\n",filename); exit(0); }
    while( fscanf(fp,"%f", &dum) != EOF ) n++;
    fclose(fp);
    
@@ -536,7 +546,7 @@ int main(int argc, char **argv)
   int nx=0, ny=0, nz=0;
   float dx=0.0, dy=0.0, dz=0.0;
 
-  char target_landmarks[DEFAULT_STRING_LENGTH]="";
+  char atlas_landmarks[DEFAULT_STRING_LENGTH]="";
   float *F=NULL, *G=NULL;  // Arrays that store the (f,g) set of landmarks
 
   char subject_landmarks[DEFAULT_STRING_LENGTH]="";
@@ -604,7 +614,7 @@ int main(int argc, char **argv)
             opt_v=YES;
             break;
          case '1':
-            sprintf(target_landmarks,"%s",optarg);
+            sprintf(atlas_landmarks,"%s",optarg);
             break;
          case '2':
             sprintf(subject_landmarks,"%s",optarg);
@@ -623,14 +633,14 @@ int main(int argc, char **argv)
 
   /////////////////////////////////////////////////////////////////////////////////
 
-  if( target_landmarks[0]=='\0' )
+  if( atlas_landmarks[0]=='\0' )
   {
-    printf("Please specify the target set of landmarks using: -lmtarget <file>\n");
+    printf("Please specify the atlas landmarks using: -lmatlas <file>\n");
     exit(0);
   }
-  if(opt_v) printf("Target set of landmarks: %s\n",target_landmarks);
+  if(opt_v) printf("Atlas landmarks: %s\n",atlas_landmarks);
 
-  read_landmarks(target_landmarks, dum, F, G);
+  read_landmarks(atlas_landmarks, dum, F, G);
   if(opt_v) 
   {
     printf("Number of landmarks = %d\n",dum);
@@ -638,20 +648,19 @@ int main(int argc, char **argv)
        printf("(%f, %f)\n",F[i],G[i]);
     printf("\n");
   }
-
   /////////////////////////////////////////////////////////////////////////////////
 
   if( subject_landmarks[0]=='\0' )
   {
-    printf("Please specify the subject set of landmarks using: -lmsubject <file>\n");
+    printf("Please specify the subject landmarks using: -lmsubject <file>\n");
     exit(0);
   }
-  if(opt_v) printf("Subject set of landmarks: %s\n",subject_landmarks);
+  if(opt_v) printf("Subject landmarks: %s\n",subject_landmarks);
 
   read_landmarks(subject_landmarks, nlm, X, Y);
   if( nlm != dum)
   {
-    printf("Number subject landmarks must equal the number of target landmarks, aborting ...\n");
+    printf("Number of subject landmarks is not equal the number of atlas landmarks, aborting ...\n");
     exit(0);
   }
 
@@ -674,6 +683,7 @@ int main(int argc, char **argv)
   for(int i=0; i<nlm+3; i++) printf("%f, %f\n",wx[i],wy[i]);
 exit(0);
 */
+exit(0);
   /////////////////////////////////////////////////////////////////////////////////
 
   if( ipimagepath[0]=='\0' )
@@ -857,7 +867,7 @@ exit(0);
     float *c=NULL;
 
 //test code to make sure that the subject landmarks are indeed precisely
-//mapped to the target landmarks
+//mapped to the atlas landmarks
 for(int i=0; i<nlm; i++)
 {
     xx = X[i]; yy=Y[i];
