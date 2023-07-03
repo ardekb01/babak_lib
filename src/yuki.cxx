@@ -126,6 +126,7 @@ static struct option options[] =
    {"-t",1,'t'},
    {"-thresh",1,'t'},
    {"-threshold",1,'t'},
+   {"-atlas",1,'a'},
    {0, 0,  0}
 };
 
@@ -2519,6 +2520,9 @@ int main(int argc, char **argv)
             number_of_atlases_used=atoi(optarg);
             if(number_of_atlases_used<=0) number_of_atlases_used=49;
             break;
+         case 'a':
+            sprintf(atlasfile,"%s",optarg);
+            break;
          case 'T':
             sprintf(msp_transformation_file,"%s",optarg);
             break;
@@ -2707,6 +2711,14 @@ int main(int argc, char **argv)
    }
 
    atlas=(short *)read_nifti_image(inputfile, &atlas_hdr);
+
+   //atlas_hdr.dim[4]=130;
+   //atlas_hdr.dim[5]=141;
+   //atlas_hdr.dim[6]=354;
+   //atlas_hdr.dim[7]=279;
+   //save_nifti_image("tt.nii", atlas, &atlas_hdr);
+   //exit(0);
+
    UPPER_LEFT_i=atlas_hdr.dim[4];
    UPPER_LEFT_j=atlas_hdr.dim[5];
    LOWER_RIGHT_i=atlas_hdr.dim[6];
