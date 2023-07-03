@@ -22,10 +22,11 @@
 #define NY 512
 #define NP 512*512
 
-#define UPPER_LEFT_i 140
-#define UPPER_LEFT_j 160
-#define LOWER_RIGHT_i 360
-#define LOWER_RIGHT_j 280
+// these are read from the atlas file which is in NIFTI format
+int UPPER_LEFT_i;
+int UPPER_LEFT_j;
+int LOWER_RIGHT_i;
+int LOWER_RIGHT_j;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 float VSPS[4]={0.0, 0.0, 0.0, 1.0};
@@ -2706,6 +2707,10 @@ int main(int argc, char **argv)
    }
 
    atlas=(short *)read_nifti_image(inputfile, &atlas_hdr);
+   UPPER_LEFT_i=atlas_hdr.dim[4];
+   UPPER_LEFT_j=atlas_hdr.dim[5];
+   LOWER_RIGHT_i=atlas_hdr.dim[6];
+   LOWER_RIGHT_j=atlas_hdr.dim[7];
 
    if(atlas==NULL)
    {
