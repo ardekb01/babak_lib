@@ -1,0 +1,1 @@
+TPS -v -lmtarget ~/babak_lib/example1/v1_orion_PIL.txt -lmsubject ~/babak_lib/example2/v2_orion_PIL.txt -i ../example1/v1.nii -T ~/babak_lib/example1/v1.mrx -nx 255 -ny 255 -nz 189 -dx 1 -dy 1 -dz 1 -oo PIL
