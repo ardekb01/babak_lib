@@ -2748,7 +2748,7 @@ int main(int argc, char **argv)
 {
    int number_of_atlases_used=49;
    float max_t=0.0;
-   char atlasfile[1024]="babak628";  // this is a nifti file despite its name
+   char atlasfile[1024]="amir464";  // this is a nifti file despite its name
    char inputfile[1024]="";
    char subjectfile[1024]="";
 
@@ -3190,8 +3190,8 @@ int main(int argc, char **argv)
    /////////////////////////////////////////////////////////////////////////////////////////////
    //Altas selection
    /////////////////////////////////////////////////////////////////////////////////////////////
-   short *tpsatlas;
-   short *tpscc;
+   short *tpsatlas=NULL;
+   short *tpscc=NULL;
    float *corr=NULL;
    int *atlas_indx=NULL;
    short *atlas_cc=NULL;
