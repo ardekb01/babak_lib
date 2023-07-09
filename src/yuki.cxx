@@ -109,6 +109,9 @@ static struct option options[] =
    {"-h", 0,  'h'},
    {"-help", 0,  'h'},
    {"-n", 1,  'n'},
+   {"-d", 1,  'd'},
+   {"-dice", 1,  'd'},
+   {"-Dice", 1,  'd'},
    {"-o", 1, 'o'},
    {"-csv", 1,  'c'},
    {"-H", 0,  'H'},
@@ -2746,6 +2749,8 @@ void find_thickness_profile(short *cc, const char *prefix)
 
 int main(int argc, char **argv)
 {
+   int dice_atlas=-1;
+   float dice_index=0.0;
    int number_of_atlases_used=49;
    float max_t=0.0;
    char atlasfile[1024]="amir464";  // this is a nifti file despite its name
@@ -2839,6 +2844,9 @@ int main(int argc, char **argv)
             break;
          case 'o':
             sprintf(prefix,"%s",optarg);
+            break;
+         case 'd':
+            dice_atlas=atoi(optarg);
             break;
          case 'v':
             opt_v=YES;
@@ -3091,9 +3099,11 @@ int main(int argc, char **argv)
    // This is the MSP of the subject image in PIL 
    /////////////////////////////////////////////////////////////////////////////////////////////
    short *bbtrg;
+   short *cctrg;
    short *trg=NULL;
 
    bbtrg = (short *)calloc(bbnp, sizeof(short));
+   cctrg = (short *)calloc(bbnp, sizeof(short));
    if(!opt_cc)
    {
       if( msp_transformation_file[0]=='\0')
@@ -3580,10 +3590,12 @@ int main(int argc, char **argv)
                if( avg_warped_cc[voxel] > max_t)
                { 
                   cc_est[ (j+UPPER_LEFT_j)*NX + (i+UPPER_LEFT_i)]=1;
+                  cctrg[voxel]=1;
                }
                else 
                {
                   cc_est[ (j+UPPER_LEFT_j)*NX + (i+UPPER_LEFT_i)]=0;
+                  cctrg[voxel]=0;
                }
             } // j
          } // i
@@ -3596,6 +3608,32 @@ int main(int argc, char **argv)
       dx=output_hdr.pixdim[1]; 
       dy=output_hdr.pixdim[1]; 
    }
+
+   ////////////////////////////////////////////////////////////
+   //compute Dice index
+   ////////////////////////////////////////////////////////////
+   if(dice_atlas>=0 && dice_atlas<=number_of_atlases_available)
+   {
+      atlas_cc_ptr  = atlas+(2*dice_atlas+1)*bbnp;
+      count = 0;
+      for(int i=0; i<bbnp; i++)
+      {
+         if(atlas_cc_ptr[i]>0 && cctrg[i]>0) dice_index += 1.0;
+         if(atlas_cc_ptr[i]>0) count++;
+         if(cctrg[i]>0) count++;
+      }
+
+      dice_index *= 2.0;
+      if(count>0) dice_index /= count;
+
+      if(opt_v)
+      {
+         printf("Dice index of with atlas %d = %f\n",dice_atlas,dice_index);
+      }
+   }
+   ////////////////////////////////////////////////////////////
+   ////////////////////////////////////////////////////////////
+
 
    ////////////////////////////////////////////////////////////
    {
@@ -3862,6 +3900,7 @@ int main(int argc, char **argv)
    // free all allocated memory
    free(atlas);
    free(bbtrg);
+   free(cctrg);
 
    if(!opt_cc)
    {
