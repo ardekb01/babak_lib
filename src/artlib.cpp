@@ -1457,7 +1457,17 @@ float *AC, float *PC, float *RP, float *Tmsp, int opt_v, int opt_T2)
 
    ////////////////////////////////////////////////////////////////////////////
 
-   volOrig = readNiftiImage( (const char *)imagefilename, &Orig, 0);
+   //volOrig = readNiftiImage( (const char *)imagefilename, &Orig, 0);
+   nifti_1_header im_hdr;
+   volOrig = (short *)read_nifti_image( (const char *)imagefilename , &im_hdr);
+   Orig.nx = im_hdr.dim[1];
+   Orig.ny = im_hdr.dim[2];
+   Orig.nz = im_hdr.dim[3];
+   Orig.dx = im_hdr.pixdim[1];
+   Orig.dy = im_hdr.pixdim[2];
+   Orig.dz = im_hdr.pixdim[3];
+   Orig.np = Orig.nx*Orig.ny;
+   Orig.nv = Orig.np*Orig.nz;
 
    if(volOrig == NULL)
    {
