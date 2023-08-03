@@ -2,6 +2,7 @@
 #include <string.h>
 #include <nifti1_io.h>
 #include <babak_lib.h>
+#include <minmax.h>
 
 //////////////////////////////////////////////////////////////////
 nifti_1_header read_NIFTI_hdr(const char *filename)
@@ -1386,15 +1387,42 @@ char *read_nifti_image(const char *filename, nifti_1_header *hdr)
     nv *= hdr->dim[i];
   }
 
-  if( hdr->datatype == DT_SIGNED_SHORT || hdr->datatype == DT_UINT16) 
+
+  float *floatim;
+  float max;
+  floatim = (float *)calloc(nv, sizeof(float));
+
+  if( hdr->datatype == DT_SIGNED_SHORT) 
   {
     short *tmp;
-
     tmp = (short *)im;
+
     for(int i=0; i<nv; i++)
-      tmp[i] = (short)( tmp[i]*hdr->scl_slope + hdr->scl_inter + 0.5);    
+      floatim[i] = tmp[i]*hdr->scl_slope + hdr->scl_inter + .5;    
+
+    arraymax(floatim, nv, max);
+    if(max>32767) for(int i=0; i<nv; i++) floatim[i] *= (32767/max);    
+
+    for(int i=0; i<nv; i++)
+      tmp[i] = (short)(floatim[i]);    
+  }
+
+  if( hdr->datatype == DT_UINT16) 
+  {
+    unsigned short *tmp;
+    tmp = (unsigned short *)im;
+
+    for(int i=0; i<nv; i++)
+      floatim[i] = tmp[i]*hdr->scl_slope + hdr->scl_inter + .5;    
+
+    arraymax(floatim, nv, max);
+    if(max>32767) for(int i=0; i<nv; i++) floatim[i] *= (32767/max);    
+
+    for(int i=0; i<nv; i++)
+      tmp[i] = (unsigned short)(floatim[i]);    
   }
 
   free(imgname);
+  free(floatim);
   return(im);
 }
