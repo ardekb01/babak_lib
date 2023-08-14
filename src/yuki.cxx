@@ -19,9 +19,7 @@
 #define YES 1
 #define NO 0
 
-#define NX 512
-#define NY 512
-#define NP 512*512
+int NX, NY, NP;
 
 // these are read from the atlas file which is in NIFTI format
 int UPPER_LEFT_i;
@@ -109,9 +107,6 @@ static struct option options[] =
    {"-h", 0,  'h'},
    {"-help", 0,  'h'},
    {"-n", 1,  'n'},
-   {"-d", 1,  'd'},
-   {"-dice", 1,  'd'},
-   {"-Dice", 1,  'd'},
    {"-o", 1, 'o'},
    {"-csv", 1,  'c'},
    {"-H", 0,  'H'},
@@ -2749,20 +2744,18 @@ void find_thickness_profile(short *cc, const char *prefix)
 
 int main(int argc, char **argv)
 {
-   int nlm=4; 
-   float F[7]; // these must be nlm+3
-   float G[7];
-   float subj_lmk_X[7];
-   float subj_lmk_Y[7];
-   float wx[7];
-   float wy[7];
-   float urow[7];
+   int nlm=8; 
+   float F[11]; // these must be nlm+3
+   float G[11];
+   float subj_lmk_X[11];
+   float subj_lmk_Y[11];
+   float wx[11];
+   float wy[11];
+   float urow[11];
 
-   int Dice_atlas=-1;  // this would be the atlas # to leave out
-   float DSC=0.0; // Dice similarity coefficient
    int number_of_atlases_used=49;
    float max_t=0.0;
-   char atlas_filename[1024]="amir464";  // this is a nifti file despite its name
+   char atlas_filename[1024]="amir464_512";  // this is a nifti file despite its name
    char filename[1024]=""; // for keeping various filenames temporarily
    char subj_filename[1024]="";  // it is important to initialize this
 
@@ -2783,7 +2776,7 @@ int main(int argc, char **argv)
    float *dumf=NULL;
    short *cc_est=NULL;
 
-   int count;
+   int count=0;
    short *atlas_msp_ptr;
 
    char preselected_atlases_file[1024]="";
@@ -2855,9 +2848,6 @@ int main(int argc, char **argv)
          case 'o':
             sprintf(output_prefix,"%s",optarg);
             break;
-         case 'd':
-            Dice_atlas=atoi(optarg);
-            break;
          case 'v':
             opt_v=YES;
             break;
@@ -2897,7 +2887,6 @@ int main(int argc, char **argv)
    if(opt_cc) 
    {
       sprintf(subj_filename,"");
-      Dice_atlas=-1;
       opt_TPS=NO;
    }
    /////////////////////////////////////////////////////////////////////////////////////////////
@@ -2967,11 +2956,15 @@ int main(int argc, char **argv)
    //Read atlas_data from atlas_filename and set related variables
    /////////////////////////////////////////////////////////////////////////////////////////////
    short *atlas_data=NULL;
+   short *atlas_msp=NULL;
+   short *atlas_cc=NULL;
    nifti_1_header atlas_hdr;
    int bbnx, bbny, bbnp;
    int number_of_atlases_available;
    short *atlas_cc_ptr;
    short *bbtrg=NULL;
+   short *bbatlas_msp=NULL;
+   short *bbatlas_cc=NULL;
    short *cctrg=NULL;
 
    sprintf(filename,"%s/%s.nii",ARTHOME, atlas_filename);
@@ -3001,15 +2994,21 @@ int main(int argc, char **argv)
    LOWER_RIGHT_i=atlas_hdr.dim[6];
    LOWER_RIGHT_j=atlas_hdr.dim[7];
 
-   bbnx=atlas_hdr.dim[1]; 
-   bbny=atlas_hdr.dim[2];
+   bbnx =  LOWER_RIGHT_i - UPPER_LEFT_i + 1;
+   bbny =  LOWER_RIGHT_j - UPPER_LEFT_j + 1;
+   bbnp = bbnx*bbny;
+
+   NX=atlas_hdr.dim[1]; 
+   NY=atlas_hdr.dim[2];
+   NP=NX*NY;
    number_of_atlases_available = atlas_hdr.dim[3]/2;
    dx=atlas_hdr.pixdim[1]; 
    dy=atlas_hdr.pixdim[2]; 
    dz=atlas_hdr.pixdim[3];
 
-   bbnp= bbnx*bbny;
    bbtrg = (short *)calloc(bbnp, sizeof(short));
+   bbatlas_msp= (short *)calloc(bbnp, sizeof(short));
+   bbatlas_cc= (short *)calloc(bbnp, sizeof(short));
    cctrg = (short *)calloc(bbnp, sizeof(short));
 
    // ensures that the number of atlases used does no exceed the number of atlases available
@@ -3020,35 +3019,35 @@ int main(int argc, char **argv)
 
    if(opt_v)
    {
-      printf("Atlas matrix size = %d x %d (pixels)\n", bbnx, bbny);
+      printf("Atlas matrix size = %d x %d (pixels)\n", NX, NY);
       printf("Atlas voxel size = %8.6f x %8.6f (mm^2)\n", dx, dy);
       printf("Number of atlases available = %d\n", number_of_atlases_available);
       printf("Number of atlases used = %d\n", number_of_atlases_used);
+      printf("Bounding box size = %d x %d\n",bbnx,bbny);
+      printf("Bounding box upper left corner = (%d, %d)\n",UPPER_LEFT_i,UPPER_LEFT_j);
+      printf("Bounding box lower right corner = (%d, %d)\n",LOWER_RIGHT_i,LOWER_RIGHT_j);
    }
+
+   atlas_msp = (short *)calloc(NP*number_of_atlases_available, sizeof(short));
+   atlas_cc = (short *)calloc(NP*number_of_atlases_available, sizeof(short));
 
    // This is important!
    for(int a=0; a<number_of_atlases_available; a++)
    {
-         atlas_cc_ptr  = atlas_data + (2*a+1)*bbnp;
+         atlas_msp_ptr  = atlas_data + (2*a)*NP;
+         atlas_cc_ptr  = atlas_data + (2*a+1)*NP;
 
-         for(int v=0; v<bbnp; v++)
+         for(int v=0; v<NP; v++)
          {
-            if(atlas_cc_ptr[v] > 0) { atlas_cc_ptr[v] = 100; }
-            else { atlas_cc_ptr[v] = 0; }
+            atlas_msp[ a*NP + v]=atlas_msp_ptr[v];
+
+            if(atlas_cc_ptr[v] > 0) atlas_cc[ a*NP + v] = 100; else atlas_cc[ a*NP + v] = 0; 
          }
    }
+   free(atlas_data);
    /////////////////////////////////////////////////////////////////////////////////////////////
    /////////////////////////////////////////////////////////////////////////////////////////////
 
-   if(Dice_atlas!=-1)
-   {
-      // if calculating the dice index for a particular atlas, ignore the input image
-      sprintf(subj_filename,"");
-
-      atlas_msp_ptr = atlas_data + (2*Dice_atlas)*bbnp;
-      for(int v=0; v<bbnp; v++) bbtrg[v]=atlas_msp_ptr[v];
-   }
-   
    /////////////////////////////////////////////////////////////////////////////////////////////
    /////////////////////////////////////////////////////////////////////////////////////////////
    // read the subject volume if specified at the command line
@@ -3097,51 +3096,52 @@ int main(int argc, char **argv)
 
    /////////////////////////////////////////////////////////////////////////////////////////////
    /////////////////////////////////////////////////////////////////////////////////////////////
-   // trg image will be NX*NY (i.e., 512*512)
+   // subj_volume_msp image will be NX*NY*1 (i.e., 512*512*1)
    // This is the MSP of the subject image in PIL 
    /////////////////////////////////////////////////////////////////////////////////////////////
-   short *trg=NULL;
+   short *subj_volume_msp = NULL;
 
    if( subj_filename[0]!='\0')
    {
       if( msp_transformation_file[0]=='\0')
       {
-         trg = find_subject_msp(subj_filename, output_prefix, lmfile);
+         subj_volume_msp = find_subject_msp(subj_filename, output_prefix, lmfile);
       }
       else
       {
-         trg = find_subject_msp_using_transformation(subj_filename, output_prefix, msp_transformation_file);
+         subj_volume_msp = find_subject_msp_using_transformation(subj_filename, output_prefix, msp_transformation_file);
       }
 
       count=0;
       for(int j=UPPER_LEFT_j; j<=LOWER_RIGHT_j; j++)
       for(int i=UPPER_LEFT_i; i<=LOWER_RIGHT_i; i++)
       {
-         bbtrg[count] = trg[j*NX + i];
+         bbtrg[count] = subj_volume_msp[j*NX + i];
          count++;
       }
+
+      //uncomment the next 6 lines to save bbtrg as a test
+      //atlas_hdr.dim[1]=bbnx;
+      //atlas_hdr.dim[2]=bbny;
+      //atlas_hdr.dim[3]=1;
+      //sprintf(outputfile,"bbtrg.nii");
+      //save_nifti_image(outputfile, bbtrg, &atlas_hdr);
+      //exit(0);
    }
 
    /////////////////////////////////////////////////////////////////////////////////////////////
    /////////////////////////////////////////////////////////////////////////////////////////////
 
-   //uncomment to save bbtrg
-   //atlas_hdr.dim[3]=1;
-   //sprintf(outputfile,"bbtrg.nii");
-   //save_nifti_image(outputfile, bbtrg, &atlas_hdr);
-
    /////////////////////////////////////////////////////////////////////////////////////////////
    //TPS prep: Read subjet and atlas landmarks and correct their location relative to the bb
    /////////////////////////////////////////////////////////////////////////////////////////////
-   float delx, dely;
    float *Linv=NULL;
    float *atls_lmk_X=NULL, *atls_lmk_Y=NULL;
+   short *tpsatlas=NULL;
+   short *tpscc=NULL;
 
    if(opt_TPS)
    {
-      delx = ( (LOWER_RIGHT_i+UPPER_LEFT_i)/2.0 - (NX-1)/2.0 )*dx;
-      dely = ( (LOWER_RIGHT_j+UPPER_LEFT_j)/2.0 - (NY-1)/2.0 )*dy;
-
       sprintf(filename,"%s/%s.lmk",ARTHOME, atlas_filename);
 
       if(opt_v)
@@ -3150,56 +3150,31 @@ int main(int argc, char **argv)
       }
 
       read_landmarks(filename, count, atls_lmk_X, atls_lmk_Y);
-      for(int i=0; i<count; i++)
+
+      float *dumx, *dumy;
+      // determine input image filename without the .nii suffix
+      if( niftiFilename(input_prefix, subj_filename)==0 ) { exit(1); }
+      sprintf(filename,"%s_orion_PIL.txt",input_prefix);
+      read_landmarks(filename, count, dumx, dumy);
+
+      for(int i=0; i<nlm; i++)
       {
-         atls_lmk_X[i] -= delx;
-         atls_lmk_Y[i] -= dely;
+         subj_lmk_X[i]=dumx[i];
+         subj_lmk_Y[i]=dumy[i];
       }
+      subj_lmk_X[nlm]=subj_lmk_X[nlm+1]=subj_lmk_X[nlm+2]=0.0;
+      subj_lmk_Y[nlm]=subj_lmk_Y[nlm+1]=subj_lmk_Y[nlm+2]=0.0;
 
-      if(Dice_atlas!=-1)
-      {
-         subj_lmk_X[0]=atls_lmk_X[0 + nlm*Dice_atlas];
-         subj_lmk_X[1]=atls_lmk_X[1 + nlm*Dice_atlas];
-         subj_lmk_X[2]=atls_lmk_X[3 + nlm*Dice_atlas];
-         subj_lmk_X[3]=atls_lmk_X[6 + nlm*Dice_atlas];
-
-         subj_lmk_Y[0]=atls_lmk_Y[0 + nlm*Dice_atlas];
-         subj_lmk_Y[1]=atls_lmk_Y[1 + nlm*Dice_atlas];
-         subj_lmk_Y[2]=atls_lmk_Y[3 + nlm*Dice_atlas];
-         subj_lmk_Y[3]=atls_lmk_Y[6 + nlm*Dice_atlas];
-
-         subj_lmk_X[nlm]=subj_lmk_X[nlm+1]=subj_lmk_X[nlm+2]=0.0;
-         subj_lmk_Y[nlm]=subj_lmk_Y[nlm+1]=subj_lmk_Y[nlm+2]=0.0;
-      }
-      else
-      {
-         float *dumx, *dumy;
-         // determine input image filename without the .nii suffix
-         if( niftiFilename(input_prefix, subj_filename)==0 ) { exit(1); }
-         sprintf(filename,"%s_orion_PIL.txt",input_prefix);
-         read_landmarks(filename, count, dumx, dumy);
-
-         subj_lmk_X[0]=dumx[0];
-         subj_lmk_X[1]=dumx[1];
-         subj_lmk_X[2]=dumx[3];
-         subj_lmk_X[3]=dumx[6];
-         subj_lmk_X[nlm]=subj_lmk_X[nlm+1]=subj_lmk_X[nlm+2]=0.0;
-
-         subj_lmk_Y[0]=dumy[0];
-         subj_lmk_Y[1]=dumy[1];
-         subj_lmk_Y[2]=dumy[3];
-         subj_lmk_Y[3]=dumy[6];
-         subj_lmk_Y[nlm]=subj_lmk_Y[nlm+1]=subj_lmk_Y[nlm+2]=0.0;
-
-         for(int i=0; i<nlm; i++)
-         {
-            subj_lmk_X[i] -= delx;
-            subj_lmk_Y[i] -= dely;
-         }
-         free(dumx); free(dumy);
-      }
+      free(dumx); free(dumy);
   
+      //uncomment to print subject landmarks as a test
+      //for(int i=0; i<nlm; i++)
+      //printf("%f %f\n",subj_lmk_X[i], subj_lmk_Y[i]);
+
       Linv = compute_L_inverse(subj_lmk_X, subj_lmk_Y, nlm);
+
+      tpsatlas= (short *)calloc(NP, sizeof(short));
+      tpscc= (short *)calloc(NP, sizeof(short));
    }
    /////////////////////////////////////////////////////////////////////////////////////////////
    /////////////////////////////////////////////////////////////////////////////////////////////
@@ -3207,12 +3182,8 @@ int main(int argc, char **argv)
    /////////////////////////////////////////////////////////////////////////////////////////////
    //Altas selection
    /////////////////////////////////////////////////////////////////////////////////////////////
-   short *tpsatlas=NULL;
-   short *tpscc=NULL;
    float *corr=NULL;
    int *atlas_indx=NULL;
-   short *atlas_cc=NULL;
-   short *atlas_msp=NULL;
 
    if(!opt_cc)
    {
@@ -3221,50 +3192,43 @@ int main(int argc, char **argv)
 
       if(opt_TPS)
       {
-         tpsatlas= (short *)calloc(bbnp, sizeof(short));
-         tpscc= (short *)calloc(bbnp, sizeof(short));
-
          for(int a=0; a<number_of_atlases_available; a++)
          {
-            atlas_msp_ptr = atlas_data +(2*a)*bbnp;
-            atlas_cc_ptr  = atlas_data +(2*a+1)*bbnp;
+            atlas_msp_ptr = atlas_msp + a*NP;
+            atlas_cc_ptr  = atlas_cc + a*NP;
 
-            F[0]=atls_lmk_X[0 + nlm*a];
-            F[1]=atls_lmk_X[1 + nlm*a];
-            F[2]=atls_lmk_X[3 + nlm*a];
-            F[3]=atls_lmk_X[6 + nlm*a];
-            F[4]=F[5]=F[6]=0.0;
-
-            G[0]=atls_lmk_Y[0 + nlm*a];
-            G[1]=atls_lmk_Y[1 + nlm*a];
-            G[2]=atls_lmk_Y[3 + nlm*a];
-            G[3]=atls_lmk_Y[6 + nlm*a];
-            G[4]=G[5]=G[6]=0.0;
+            for(int i=0; i<nlm; i++)
+            {
+               F[i]=atls_lmk_X[i + nlm*a];
+               G[i]=atls_lmk_Y[i + nlm*a];
+            }
+            F[nlm]=F[nlm+1]=F[nlm+2]=0.0;
+            G[nlm]=G[nlm+1]=G[nlm+2]=0.0;
 
             multi(Linv,nlm+3,nlm+3,F,nlm+3,1,wx);
             multi(Linv,nlm+3,nlm+3,G,nlm+3,1,wy);
 
             count=0;
-            for(int j=0;j<bbny;j++) 
+            for(int j=0;j<NY;j++) 
             {
-               for(int i=0;i<bbnx;i++) 
+               for(int i=0;i<NX;i++) 
                {
-                  xx = (i - (bbnx-1)/2.0)*dx;
-                  yy = (j - (bbny-1)/2.0)*dy;
+                  xx = (i - (NX-1)/2.0)*dx;
+                  yy = (j - (NY-1)/2.0)*dy;
 
                   // here xx and yy are updated using TPS
                   tpsTransform(subj_lmk_X, subj_lmk_Y, xx, yy, wx, wy, nlm, urow);
 
-			  xx = xx/dx + (bbnx-1)/2.0;
-                  yy = yy/dy + (bbny-1)/2.0;
+		  xx /= dx; xx += (NX-1)/2.0;
+                  yy /= dy; yy += (NY-1)/2.0;
 
                   //it is important that only the second count++ is used
-                  tpsatlas[count]=(short)(linearInterpolator(xx,yy,0.0,atlas_msp_ptr,bbnx,bbny,1,bbnp)+0.5);
-                  tpscc[count++]=(short)(linearInterpolator(xx,yy,0.0,atlas_cc_ptr,bbnx,bbny,1,bbnp)+0.5);
+                  tpsatlas[count]=(short)(linearInterpolator(xx,yy,0.0,atlas_msp_ptr,NX,NY,1,NP)+0.5);
+                  tpscc[count++]=(short)(linearInterpolator(xx,yy,0.0,atlas_cc_ptr,NX,NY,1,NP)+0.5);
                }
             }
 
-            for(int v=0;v<bbnp;v++) 
+            for(int v=0;v<NP;v++) 
             {
                atlas_msp_ptr[v] = tpsatlas[v];
                atlas_cc_ptr[v] = tpscc[v];
@@ -3274,12 +3238,18 @@ int main(int argc, char **argv)
 
       for(int a=0; a<number_of_atlases_available; a++)
       {
-         atlas_msp_ptr = atlas_data + (2*a)*bbnp;
+         atlas_msp_ptr = atlas_msp + a*NP;
+
+         count=0;
+         for(int j=UPPER_LEFT_j; j<=LOWER_RIGHT_j; j++)
+         for(int i=UPPER_LEFT_i; i<=LOWER_RIGHT_i; i++)
+         {
+            bbatlas_msp[count] = atlas_msp_ptr[j*NX + i];
+            count++;
+         }
 
          atlas_indx[a] = a;
-         corr[a] = pearsonCorrelation(bbtrg, atlas_msp_ptr, bbnp );
-
-         if(a==Dice_atlas) corr[a]=0.0;  // leave-one-out
+         corr[a] = pearsonCorrelation(bbtrg, bbatlas_msp, bbnp );
       }
       hpsort(number_of_atlases_available, corr, atlas_indx);
 
@@ -3304,24 +3274,6 @@ int main(int argc, char **argv)
          fprintf(fp, "%d\n", atlas_indx[number_of_atlases_available-1-i]);
       }
       fclose(fp);
-
-      //it is important that these be allocated after number_of_atlases_used is set
-      atlas_cc = (short *)calloc(bbnp*number_of_atlases_used, sizeof(short));
-      atlas_msp = (short *)calloc(bbnp*number_of_atlases_used, sizeof(short));
-
-      for(int i=0; i<number_of_atlases_used; i++)
-      {
-         count = atlas_indx[number_of_atlases_available-1-i];
-         atlas_msp_ptr = atlas_data + (2*count)*bbnp;
-         atlas_cc_ptr  = atlas_data + (2*count+1)*bbnp;
-
-         for(int v=0; v<bbnp; v++)
-         {
-            atlas_msp[i*bbnp + v] = atlas_msp_ptr[v];
-
-            atlas_cc[i*bbnp + v] = atlas_cc_ptr[v];
-         }
-      }
    }  //if opt_cc
    /////////////////////////////////////////////////////////////////////////////////////////////
    /////////////////////////////////////////////////////////////////////////////////////////////
@@ -3373,7 +3325,6 @@ int main(int argc, char **argv)
 
       /////////////////////////////////////////////////////////////////////////////////////////
       //
-      //for(int i=1; i<number_of_atlases_used; i++)
       for(int i=0; i<number_of_atlases_used; i++)
       {
          int a;
@@ -3381,30 +3332,21 @@ int main(int argc, char **argv)
 
          {
             a = atlas_indx[number_of_atlases_available-1-i];
-            atlas_msp_ptr = atlas_msp+i*bbnp;
-            atlas_cc_ptr  = atlas_cc+i*bbnp;
+            atlas_msp_ptr = atlas_msp + a*NP;
+            atlas_cc_ptr  = atlas_cc +  a*NP;
 
-//if(i>0 && i<6)
-//{
-//sprintf(outputfile,"ccw%d.nii",i);
-//save_nifti_image(outputfile, atlas_msp_ptr, &atlas_hdr);
-//sprintf(outputfile,"CCL%d.nii",i);
-//save_nifti_image(outputfile, atlas_cc_ptr, &atlas_hdr);
-//}
+            count=0;
+            for(int jj=UPPER_LEFT_j; jj<=LOWER_RIGHT_j; jj++)
+            for(int ii=UPPER_LEFT_i; ii<=LOWER_RIGHT_i; ii++)
+            {
+               bbatlas_msp[count] = atlas_msp_ptr[jj*NX + ii];
+               bbatlas_cc[count] = atlas_cc_ptr[jj*NX + ii];
+               count++;
+            }
 
-            //computeWarpField(atlas_msp, bbtrg, sd, bbnp, bbnx, bbny);
-            computeWarpField(atlas_msp_ptr, bbtrg, sd, bbnp, bbnx, bbny);
+            computeWarpField(bbatlas_msp, bbtrg, sd, bbnp, bbnx, bbny);
 
-//if(i>0 && i<6)
-//{
-//warped_cc=computeReslicedImage(atlas_msp_ptr, bbnx,bbny,1, dx,dy,dz, bbnx,bbny,1, dx,dy,dz, Xwarp, Ywarp, Zwarp);
-//atlas_hdr.dim[3]=1;
-//sprintf(outputfile,"warp%d.nii",i);
-//save_nifti_image(outputfile, warped_cc, &atlas_hdr);
-//free(warped_cc);
-//}
-
-            warped_cc=computeReslicedImage(atlas_cc_ptr, bbnx,bbny,1, dx,dy,dz, bbnx,bbny,1, dx,dy,dz, Xwarp, Ywarp, Zwarp);
+            warped_cc=computeReslicedImage(bbatlas_cc, bbnx,bbny,1, dx,dy,dz, bbnx,bbny,1, dx,dy,dz, Xwarp, Ywarp, Zwarp);
 
             // copy warped cc back to its original memory
             for(int v=0; v<bbnp; v++) 
@@ -3621,29 +3563,6 @@ int main(int argc, char **argv)
       dx=output_hdr.pixdim[1]; 
       dy=output_hdr.pixdim[1]; 
    }
-
-   ////////////////////////////////////////////////////////////
-   //compute Dice index
-   ////////////////////////////////////////////////////////////
-   if(Dice_atlas>=0 && Dice_atlas<number_of_atlases_available)
-   {
-      atlas_cc_ptr  = atlas_data + (2*Dice_atlas+1)*bbnp;
-      count = 0;
-      for(int i=0; i<bbnp; i++)
-      {
-         if(atlas_cc_ptr[i]>0 && cctrg[i]>0) DSC += 1.0;
-         if(atlas_cc_ptr[i]>0) count++;
-         if(cctrg[i]>0) count++;
-      }
-
-      DSC *= 2.0;
-      if(count>0) DSC /= count;
-
-      //if(opt_v)
-      {
-         printf("Dice index of with atlas %d = %f\n",Dice_atlas,DSC);
-      }
-   }
    ////////////////////////////////////////////////////////////
    ////////////////////////////////////////////////////////////
 
@@ -3728,10 +3647,9 @@ int main(int argc, char **argv)
    }
 
    //////////////////////////////////////////////////////////////////////////
-   if( subj_filename[0]!='\0')
    {
-      // write program output
-      output_ppm(trg, cc_est, (const char *)output_prefix);
+      if( subj_filename[0]!='\0')
+         output_ppm(subj_volume_msp, cc_est, (const char *)output_prefix);
 
       output_hdr.pixdim[4]=ACi;
       output_hdr.pixdim[5]=PCi;
@@ -3771,7 +3689,7 @@ int main(int argc, char **argv)
       find_thickness_profile(cc_est, output_prefix);
 
       if( subj_filename[0]!='\0')
-         output_bounding_box_ppm(trg, (const char *)output_prefix);
+         output_bounding_box_ppm(subj_volume_msp, (const char *)output_prefix);
 
       if(opt_W)
       {
@@ -3909,44 +3827,41 @@ int main(int argc, char **argv)
    }
 
    ////////////////////////////////////////////////////////////
+   // Free Memory
+   ////////////////////////////////////////////////////////////
+   if(bbtrg != NULL) free(bbtrg);
+   if(cctrg != NULL) free(cctrg);
 
-   // free all allocated memory
-   if(subj_volume!=NULL) free(subj_volume);
-
-   if(atlas_data!=NULL) free(atlas_data);
-   if(bbtrg!=NULL) free(bbtrg);
-   if(cctrg!=NULL) free(cctrg);
-   if(trg!=NULL) free(trg);
-
-   if(!opt_cc)
+   if( subj_filename[0]!='\0')
    {
-      if(atlas_msp != NULL) free(atlas_msp);
-      if(atlas_cc != NULL) free(atlas_cc);
-      if(corr != NULL) free(corr);
-      if(atlas_indx != NULL) free(atlas_indx);
-   }
-
-   free(cc_est);
-   free(cci);
-   free(ccj);
-
-   if(!opt_cc)
-   {
-      free(dumf);
-      free(avg_warped_cc);
-      free(Xwarp);
-      free(Ywarp);
-      free(Zwarp);
-      free(ARobj);
-      free(ARtrg);
+      if(subj_volume != NULL) free(subj_volume);
+      if(subj_volume != NULL) free(subj_volume_msp);
    }
 
    if(opt_TPS)
    {
+      if(atls_lmk_X != NULL) free(atls_lmk_X);
+      if(atls_lmk_Y != NULL) free(atls_lmk_Y);
       if(Linv != NULL) free(Linv);
       if(tpsatlas != NULL) free(tpsatlas);
       if(tpscc != NULL) free(tpscc);
-      if(atls_lmk_X != NULL) free(atls_lmk_X);
-      if(atls_lmk_Y != NULL) free(atls_lmk_Y);
    }
+
+   if(!opt_cc)
+   {
+      if( corr != NULL) free(corr);
+      if( atlas_indx != NULL) free(atlas_indx);
+      if( dumf != NULL) free(dumf);
+
+      if( Xwarp != NULL ) free(Xwarp);
+      if( Ywarp != NULL ) free(Ywarp);
+      if( Zwarp != NULL ) free(Zwarp);
+      if( ARobj != NULL ) free(ARobj);
+      if( ARtrg != NULL ) free(ARtrg);
+      if( avg_warped_cc != NULL ) free(avg_warped_cc);
+   }
+
+   if(cc_est != NULL) free(cc_est);
+   ////////////////////////////////////////////////////////////
+   ////////////////////////////////////////////////////////////
 }
