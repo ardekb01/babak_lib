@@ -22,6 +22,7 @@ int opt;
 static struct option options[] =
 {
   {"-h",  0, 'h'},
+  {"-help",  0, 'h'},
   {"-i",  1, 'i'},
   {"-t",  1, 't'},
   {"-o",  1, 'o'},
@@ -52,10 +53,20 @@ int opt_nn=NO;
 
 void print_help_and_exit()
 {
-  printf("Usage: reslice [-v] [-cubicspline -nn] [-nx <nx> -ny <ny> -nz <nz>]\n"
-  "[-dx <dx> -dy <dy> -dz <dz>] -i <inputImageFile> -o <outputImageFile> -T <transformation matrix>\n"
-  "-cubicspline: applies the cubic spline interpolation method.\n"
-  "-nn: applies the nearest neighbor interpolation method.\n");
+  printf("\nUsage: reslice [-v] [-cubicspline -nn] [-nx <nx> -ny <ny> -nz <nz>]\n"
+  "[-dx <dx> -dy <dy> -dz <dz>] [-t <targetImageFile>]\n" 
+  "-i <inputImageFile> -o <outputImageFile> -T <transformation matrix>\n\n"
+  "Required flag:\n"
+  "-i <inputImageFile> the input image to be resliced\n\n"
+  "-o <outputImageFile> name for the output resliced image\n\n"
+  "-T <transformation matrix> Affine transformation used for reslicing\n\n"
+  
+  "Optional flag:\n"
+  "-cubicspline applies the cubic spline interpolation method\n\n"
+  "-nn applies the nearest neighbor interpolation method\n\n"
+  "-nx <nx> -ny <ny> -nz <nz> specifies the output matrix size\n\n"
+  "-dx <dx> -dy <dy> -dz <dz> specifies the output voxel size\n\n" 
+  "-t <targetImageFile> used to specify the output matrix and voxel sizes\n\n"); 
   exit(0);
 }
 
