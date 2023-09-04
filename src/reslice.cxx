@@ -21,6 +21,7 @@ int opt;
 
 static struct option options[] =
 {
+        {"-h",  0, 'h'},
         {"-i",  1, 'i'},
         {"-o",  1, 'o'},
         {"-v",  0, 'v'},
