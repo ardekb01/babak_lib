@@ -86,15 +86,15 @@
 #define NO 0
 
 #define DEFAULT_SEARCH_RADIUS 3
-#define DEFAULT_PATCh_RADIUS 7
+#define DEFAULT_PATCH_RADIUS 7
 #define MAX_RADIUS 100
 #define MAXITER 25  // default maxiter
 
 /////////////////////////////////////
 // Global variables required by ATRA
 int PILcloudthreshold=50;
-int del=20;
-int patch_radius=DEFAULT_PATCh_RADIUS;
+int del=15;
+int patch_radius=DEFAULT_PATCH_RADIUS;
 int search_radius=DEFAULT_SEARCH_RADIUS;
 int maxiter=MAXITER;
 int opt_nn=NO;
@@ -1031,7 +1031,7 @@ int main(int argc, char **argv)
             break;
          case 'r':
             patch_radius = atoi(optarg);
-            if(patch_radius<=0 || patch_radius>MAX_RADIUS) patch_radius=DEFAULT_PATCh_RADIUS;
+            if(patch_radius<=0 || patch_radius>MAX_RADIUS) patch_radius=DEFAULT_PATCH_RADIUS;
             break;
          case 'R':
             search_radius = atoi(optarg);

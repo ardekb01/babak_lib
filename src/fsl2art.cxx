@@ -21,6 +21,10 @@ int opt;
 
 static struct option options[] =
 {
+   {"-t", 1, 't'},
+   {"-trg", 1, 't'},
+   {"-s", 1, 's'},
+   {"-sub", 1, 's'},
    {"-i", 1, 'i'},
    {"-o", 1, 'o'},
    {"-v", 0, 'v'},
@@ -62,18 +66,20 @@ void print_help_and_exit()
 
 int main(int argc, char **argv)
 {
+   char trgImFile[DEFAULT_STRING_LENGTH]="";
+   char subImFile[DEFAULT_STRING_LENGTH]="";
    char inputmatrixfile[DEFAULT_STRING_LENGTH]="";
    char outputmatrixfile[DEFAULT_STRING_LENGTH]="";
    float Mart[16];
    float Mfsl[16];
-   DIM sub_dim, trg_dim;
+   DIM sdim, tdim;
    FILE *fp;
 
    // initialization to avoid complaining from the compiler
-   sub_dim.dx=sub_dim.dy=sub_dim.dz=0.0;
-   trg_dim.dx=trg_dim.dy=trg_dim.dz=0.0;
-   sub_dim.nx=sub_dim.ny=sub_dim.nz=0;
-   trg_dim.nx=trg_dim.ny=trg_dim.nz=0;
+   sdim.dx=sdim.dy=sdim.dz=0.0;
+   tdim.dx=tdim.dy=tdim.dz=0.0;
+   sdim.nx=sdim.ny=sdim.nz=0;
+   tdim.nx=tdim.ny=tdim.nz=0;
 
    if(argc==1) print_help_and_exit();
 
@@ -82,40 +88,46 @@ int main(int argc, char **argv)
       switch (opt) 
       {
          case '1':
-            sub_dim.dx = atof(optarg);
+            sdim.dx = atof(optarg);
             break;
          case '2':
-            sub_dim.dy = atof(optarg);
+            sdim.dy = atof(optarg);
             break;
          case '3':
-            sub_dim.dz = atof(optarg);
+            sdim.dz = atof(optarg);
             break;
          case '4':
-            sub_dim.nx = atoi(optarg);
+            sdim.nx = atoi(optarg);
             break;
          case '5':
-            sub_dim.ny = atoi(optarg);
+            sdim.ny = atoi(optarg);
             break;
          case '6':
-            sub_dim.nz = atoi(optarg);
+            sdim.nz = atoi(optarg);
             break;
          case 'X':
-            trg_dim.dx = atof(optarg);
+            tdim.dx = atof(optarg);
             break;
          case 'Y':
-            trg_dim.dy = atof(optarg);
+            tdim.dy = atof(optarg);
             break;
          case 'Z':
-            trg_dim.dz = atof(optarg);
+            tdim.dz = atof(optarg);
             break;
          case 'x':
-            trg_dim.nx = atoi(optarg);
+            tdim.nx = atoi(optarg);
             break;
          case 'y':
-            trg_dim.ny = atoi(optarg);
+            tdim.ny = atoi(optarg);
             break;
          case 'z':
-            trg_dim.nz = atoi(optarg);
+            tdim.nz = atoi(optarg);
+            break;
+         case 't':
+            sprintf(trgImFile,"%s",optarg);
+            break;
+         case 's':
+            sprintf(subImFile,"%s",optarg);
             break;
          case 'i':
             sprintf(inputmatrixfile,"%s",optarg);
@@ -129,19 +141,45 @@ int main(int argc, char **argv)
          case 'h':
             print_help_and_exit();
             break;
-         case '?':
-            print_help_and_exit();
       }
+   }
+
+   if(trgImFile[0] != '\0')
+   {
+      nifti_1_header trghdr;
+      trghdr = read_NIFTI_hdr(trgImFile);
+
+      tdim.nx=trghdr.dim[1]; tdim.ny=trghdr.dim[2]; tdim.nz=trghdr.dim[3];
+      tdim.dx=trghdr.pixdim[1]; tdim.dy=trghdr.pixdim[2]; tdim.dz=trghdr.pixdim[3];
+
+      // to deal with the sometimes -tive voxel dimensions in SPM/FSL data sets
+      if(tdim.dx<0.0) tdim.dx *= -1.0; 
+      if(tdim.dy<0.0) tdim.dy *= -1.0; 
+      if(tdim.dz<0.0) tdim.dz *= -1.0;
+   }
+
+   if(subImFile[0] != '\0')
+   {
+      nifti_1_header subhdr;
+      subhdr = read_NIFTI_hdr(subImFile);
+
+      sdim.nx=subhdr.dim[1]; sdim.ny=subhdr.dim[2]; sdim.nz=subhdr.dim[3];
+      sdim.dx=subhdr.pixdim[1]; sdim.dy=subhdr.pixdim[2]; sdim.dz=subhdr.pixdim[3];
+
+      // to deal with the sometimes -tive voxel dimensions in SPM/FSL data sets
+      if(sdim.dx<0.0) sdim.dx *= -1.0; 
+      if(sdim.dy<0.0) sdim.dy *= -1.0; 
+      if(sdim.dz<0.0) sdim.dz *= -1.0;
    }
 
    if(opt_v)
    {
-      printf("Input (FSL) transformation matrix file: %s\n",inputmatrixfile);
-      printf("Output (ART) transformation matrix file: %s\n",outputmatrixfile);
-      printf("Target (reference) image matrix dimensions: %d x %d x %d\n",trg_dim.nx,trg_dim.ny,trg_dim.nz);
-      printf("Target (reference) image voxel dimensions: %6.4f x %6.4f x %6.4f\n",trg_dim.dx,trg_dim.dy,trg_dim.dz);
-      printf("Subject (moving) image matrix dimensions: %d x %d x %d\n",sub_dim.nx,sub_dim.ny,sub_dim.nz);
-      printf("Subject (moving) image voxel dimensions: %6.4f x %6.4f x %6.4f\n",sub_dim.dx,sub_dim.dy,sub_dim.dz);
+      printf("Input (FSL) transformation matrix: %s\n",inputmatrixfile);
+      printf("Output (ART) transformation matrix: %s\n",outputmatrixfile);
+      printf("Target image (reference) matrix: %d x %d x %d\n",tdim.nx,tdim.ny,tdim.nz);
+      printf("Target image (reference) voxel: %6.4f x %6.4f x %6.4f\n",tdim.dx,tdim.dy,tdim.dz);
+      printf("Subject image (moving) matrix: %d x %d x %d\n",sdim.nx,sdim.ny,sdim.nz);
+      printf("Subject image (moving) voxel: %6.4f x %6.4f x %6.4f\n",sdim.dx,sdim.dy,sdim.dz);
    }
 
    loadTransformation(inputmatrixfile, Mfsl);
@@ -151,7 +189,7 @@ int main(int argc, char **argv)
       printMatrix(Mfsl, 4, 4, "Input FSL transformation:", NULL);
    }
 
-   fsl_to_art(Mfsl, Mart, sub_dim, trg_dim);
+   fsl_to_art(Mfsl, Mart, sdim, tdim);
 
    if(opt_v)
    {
