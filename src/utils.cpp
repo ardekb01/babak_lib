@@ -14,7 +14,6 @@
 #include <smooth.h>
 
 void art_to_fsl(float *Mart, float *Mfsl, DIM sub_dim, DIM trg_dim);
-void fsl_to_art(float *Mfsl, float *Mart, DIM sub_dim, DIM trg_dim);
 void fsl_to_art(float *Mfsl, float *Mart, DIM sub_dim, DIM trg_dim, int subflg, int trgflg);
 int ccsize(short *im, int nv);
 void checkDimension(int N, char **imagefile, int nx, int ny, int nz);
@@ -122,31 +121,6 @@ void art_to_fsl(float *Mart, float *Mfsl, DIM sub_dim, DIM trg_dim)
    multi(Mfsl,4,4,inv_Tsub,4,4, Mfsl);
 
    free(inv_Tsub);
-}
-
-void fsl_to_art(float *Mfsl, float *Mart, DIM sub_dim, DIM trg_dim)
-{
-   float Tsub[16], Ttrg[16];
-   float *inv_Ttrg;
-
-   //Tsub[0]=1.0;  Tsub[1]=0.0;  Tsub[2]=0.0;  Tsub[3]=(sub_dim.nx-1.0)*sub_dim.dx/2.0;
-   Tsub[0]=-1.0;  Tsub[1]=0.0;  Tsub[2]=0.0;  Tsub[3]=(sub_dim.nx-1.0)*sub_dim.dx/2.0;
-   Tsub[4]=0.0;  Tsub[5]=1.0;  Tsub[6]=0.0;  Tsub[7]=(sub_dim.ny-1.0)*sub_dim.dy/2.0;
-   Tsub[8]=0.0;  Tsub[9]=0.0;  Tsub[10]=1.0; Tsub[11]=(sub_dim.nz-1.0)*sub_dim.dz/2.0;
-   Tsub[12]=0.0; Tsub[13]=0.0; Tsub[14]=0.0; Tsub[15]=1.0;
-
-   //Ttrg[0]=1.0;  Ttrg[1]=0.0;  Ttrg[2]=0.0;  Ttrg[3]=(trg_dim.nx-1.0)*trg_dim.dx/2.0;
-   Ttrg[0]=-1.0;  Ttrg[1]=0.0;  Ttrg[2]=0.0;  Ttrg[3]=(trg_dim.nx-1.0)*trg_dim.dx/2.0;
-   Ttrg[4]=0.0;  Ttrg[5]=1.0;  Ttrg[6]=0.0;  Ttrg[7]=(trg_dim.ny-1.0)*trg_dim.dy/2.0;
-   Ttrg[8]=0.0;  Ttrg[9]=0.0;  Ttrg[10]=1.0; Ttrg[11]=(trg_dim.nz-1.0)*trg_dim.dz/2.0;
-   Ttrg[12]=0.0; Ttrg[13]=0.0; Ttrg[14]=0.0; Ttrg[15]=1.0;
-
-   inv_Ttrg = inv4(Ttrg);
-
-   multi(inv_Ttrg,4,4,Mfsl,4,4,Mart);
-   multi(Mart,4,4,Tsub,4,4, Mart);
-
-   free(inv_Ttrg);
 }
 
 void fsl_to_art(float *Mfsl, float *Mart, DIM sub_dim, DIM trg_dim, int subflg, int trgflg)
