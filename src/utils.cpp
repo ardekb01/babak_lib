@@ -15,6 +15,7 @@
 
 void art_to_fsl(float *Mart, float *Mfsl, DIM sub_dim, DIM trg_dim);
 void fsl_to_art(float *Mfsl, float *Mart, DIM sub_dim, DIM trg_dim);
+void fsl_to_art(float *Mfsl, float *Mart, DIM sub_dim, DIM trg_dim, int subflg, int trgflg);
 int ccsize(short *im, int nv);
 void checkDimension(int N, char **imagefile, int nx, int ny, int nz);
 void affineLSE(char *msk, int nx, int ny, int nz, float dx, float dy, float dz, float *Xwarp, float *Ywarp, float *Zwarp, float *T);
@@ -37,6 +38,66 @@ void read_transpose_save(char *inputfile, char *outputfile, int nr, int v);
 short *readMask(const char *filename, int *nx, int *ny, int *nz);
 float *readDataMatrix(char **imageList, int n, int p, short *mask);
 void sobel_edge(short *in, float *out, int nx, int ny);
+
+//////////////////////////////////////////////////////////////////////////////////
+
+// returns -1 for a right-hand orientation
+// returns 1 for a left-hand orientation
+int hand_system(char *code)
+{
+   int c=0;
+
+   if(      strcmp(code, "PIL") == 0) c=1;
+   else if( strcmp(code, "PSR") == 0) c=1;
+   else if( strcmp(code, "PLS") == 0) c=1;
+   else if( strcmp(code, "PRI") == 0) c=1;
+   else if( strcmp(code, "AIR") == 0) c=1;
+   else if( strcmp(code, "ASL") == 0) c=1;
+   else if( strcmp(code, "ALI") == 0) c=1;
+   else if( strcmp(code, "ARS") == 0) c=1;
+   else if( strcmp(code, "IPR") == 0) c=1;
+   else if( strcmp(code, "IAL") == 0) c=1;
+   else if( strcmp(code, "ILP") == 0) c=1;
+   else if( strcmp(code, "IRA") == 0) c=1;
+   else if( strcmp(code, "SPL") == 0) c=1;
+   else if( strcmp(code, "SAR") == 0) c=1;
+   else if( strcmp(code, "SLA") == 0) c=1;
+   else if( strcmp(code, "SRP") == 0) c=1;
+   else if( strcmp(code, "LPI") == 0) c=1;
+   else if( strcmp(code, "LAS") == 0) c=1;
+   else if( strcmp(code, "LIA") == 0) c=1;
+   else if( strcmp(code, "LSP") == 0) c=1;
+   else if( strcmp(code, "RPS") == 0) c=1;
+   else if( strcmp(code, "RAI") == 0) c=1;
+   else if( strcmp(code, "RIP") == 0) c=1;
+   else if( strcmp(code, "RSA") == 0) c=1;
+   else if( strcmp(code, "PIR") == 0) c=-1;
+   else if( strcmp(code, "PSL") == 0) c=-1;
+   else if( strcmp(code, "PLI") == 0) c=-1;
+   else if( strcmp(code, "PRS") == 0) c=-1;
+   else if( strcmp(code, "AIL") == 0) c=-1;
+   else if( strcmp(code, "ASR") == 0) c=-1;
+   else if( strcmp(code, "ALS") == 0) c=-1;
+   else if( strcmp(code, "ARI") == 0) c=-1;
+   else if( strcmp(code, "IPL") == 0) c=-1;
+   else if( strcmp(code, "IAR") == 0) c=-1;
+   else if( strcmp(code, "ILA") == 0) c=-1;
+   else if( strcmp(code, "IRP") == 0) c=-1;
+   else if( strcmp(code, "SPR") == 0) c=-1;
+   else if( strcmp(code, "SAL") == 0) c=-1;
+   else if( strcmp(code, "SLP") == 0) c=-1;
+   else if( strcmp(code, "SRA") == 0) c=-1;
+   else if( strcmp(code, "LPS") == 0) c=-1;
+   else if( strcmp(code, "LAI") == 0) c=-1;
+   else if( strcmp(code, "LIP") == 0) c=-1;
+   else if( strcmp(code, "LSA") == 0) c=-1;
+   else if( strcmp(code, "RPI") == 0) c=-1;
+   else if( strcmp(code, "RAS") == 0) c=-1;
+   else if( strcmp(code, "RIA") == 0) c=-1;
+   else if( strcmp(code, "RSP") == 0) c=-1;
+
+   return(c);
+}
 
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -76,6 +137,29 @@ void fsl_to_art(float *Mfsl, float *Mart, DIM sub_dim, DIM trg_dim)
 
    //Ttrg[0]=1.0;  Ttrg[1]=0.0;  Ttrg[2]=0.0;  Ttrg[3]=(trg_dim.nx-1.0)*trg_dim.dx/2.0;
    Ttrg[0]=-1.0;  Ttrg[1]=0.0;  Ttrg[2]=0.0;  Ttrg[3]=(trg_dim.nx-1.0)*trg_dim.dx/2.0;
+   Ttrg[4]=0.0;  Ttrg[5]=1.0;  Ttrg[6]=0.0;  Ttrg[7]=(trg_dim.ny-1.0)*trg_dim.dy/2.0;
+   Ttrg[8]=0.0;  Ttrg[9]=0.0;  Ttrg[10]=1.0; Ttrg[11]=(trg_dim.nz-1.0)*trg_dim.dz/2.0;
+   Ttrg[12]=0.0; Ttrg[13]=0.0; Ttrg[14]=0.0; Ttrg[15]=1.0;
+
+   inv_Ttrg = inv4(Ttrg);
+
+   multi(inv_Ttrg,4,4,Mfsl,4,4,Mart);
+   multi(Mart,4,4,Tsub,4,4, Mart);
+
+   free(inv_Ttrg);
+}
+
+void fsl_to_art(float *Mfsl, float *Mart, DIM sub_dim, DIM trg_dim, int subflg, int trgflg)
+{
+   float Tsub[16], Ttrg[16];
+   float *inv_Ttrg;
+
+   Tsub[0]=subflg;  Tsub[1]=0.0;  Tsub[2]=0.0;  Tsub[3]=(sub_dim.nx-1.0)*sub_dim.dx/2.0;
+   Tsub[4]=0.0;  Tsub[5]=1.0;  Tsub[6]=0.0;  Tsub[7]=(sub_dim.ny-1.0)*sub_dim.dy/2.0;
+   Tsub[8]=0.0;  Tsub[9]=0.0;  Tsub[10]=1.0; Tsub[11]=(sub_dim.nz-1.0)*sub_dim.dz/2.0;
+   Tsub[12]=0.0; Tsub[13]=0.0; Tsub[14]=0.0; Tsub[15]=1.0;
+
+   Ttrg[0]=trgflg;  Ttrg[1]=0.0;  Ttrg[2]=0.0;  Ttrg[3]=(trg_dim.nx-1.0)*trg_dim.dx/2.0;
    Ttrg[4]=0.0;  Ttrg[5]=1.0;  Ttrg[6]=0.0;  Ttrg[7]=(trg_dim.ny-1.0)*trg_dim.dy/2.0;
    Ttrg[8]=0.0;  Ttrg[9]=0.0;  Ttrg[10]=1.0; Ttrg[11]=(trg_dim.nz-1.0)*trg_dim.dz/2.0;
    Ttrg[12]=0.0; Ttrg[13]=0.0; Ttrg[14]=0.0; Ttrg[15]=1.0;
