@@ -26,7 +26,7 @@
 /////////////////////////////////////
 // Global variables required by ATRA
 int PILcloudthreshold=50;
-int del=15;
+int del=10;
 int patch_radius=DEFAULT_PATCH_RADIUS;
 int search_radius=DEFAULT_SEARCH_RADIUS;
 int maxiter=MAXITER;
@@ -654,7 +654,7 @@ void atra(const char *imagelistfile, DIM output_dim, const char *outputOrientati
 
       if(nlm<6)
       {
-         printf("Warning: insufficient LOOC detected. Skipping the generalized Procrustes anlaysis ...\n");
+         printf("Warning: insufficient LOOC detected. Skipping the generalized Procrustes analysis ...\n");
          break;
       }
       else
@@ -664,7 +664,7 @@ void atra(const char *imagelistfile, DIM output_dim, const char *outputOrientati
          float *Ptmp;
          float *Qtmp;
    
-         if(opt_v) printf("Generalized Procrustes anlaysis ...\n");
+         if(opt_v) printf("Generalized Procrustes analysis ...\n");
    
          for(int i=0; i<nim; i++)
          {
