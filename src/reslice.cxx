@@ -218,7 +218,7 @@ int main(int argc, char **argv)
 //////////////////////////////////////////////////////////////////////////////////////////////////
   if(transFile[0]=='\0')
   {
-    printf("Please specify the transformation matrix using the \"-T <transformation matrix>\" flag.\n");
+    printf("Please specify the transformation matrix using the \"-T <matrix>\" flag.\n");
     exit(0);
   }
 
