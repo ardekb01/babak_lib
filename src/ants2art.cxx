@@ -27,7 +27,7 @@ static struct option options[] =
    {"-s", 1, 's'},
    {"-sub", 1, 's'},
    {"-i", 1, 'i'},
-   {"-FSL", 1, 'i'},
+   {"-ANTS", 1, 'i'},
    {"-o", 1, 'o'},
    {"-ART", 1, 'o'},
    {"-v", 0, 'v'},
@@ -38,9 +38,9 @@ static struct option options[] =
 
 void print_help_and_exit()
 {
-   printf("\nUsage: fsl2art [-v] -FSL <matrix.mat> -ART <matrix.mrx> -t <image.nii> -s <image.nii>"
+   printf("\nUsage: ants2art [-v] -ANTS <matrix.txt> -ART <matrix.mrx> -t <image.nii> -s <image.nii>"
    "\nRequired:\n"
-   "\t-FSL <matrix.mat>: Input FSL matrix file\n"
+   "\t-ANTS <matrix.txt>: Input ANTS matrix file (after running ConvertTransformFile)\n"
    "\t-ART <matrix.mrx>: Output ART matrix file\n"
    "\t-t <image.nii>: Target (reference) image for registration\n"
    "\t-s <image.nii>: Subject (moving) image for registration\n"
@@ -81,12 +81,11 @@ int main(int argc, char **argv)
 {
    char trgImFile[DEFAULT_STRING_LENGTH]="";
    char subImFile[DEFAULT_STRING_LENGTH]="";
-   char FSLmatrixfile[DEFAULT_STRING_LENGTH]="";
+   char ANTSmatrixfile[DEFAULT_STRING_LENGTH]="";
    char ARTmatrixfile[DEFAULT_STRING_LENGTH]="";
-   float Mart[16];
-   float Mfsl[16];
+   float *Mart;
+   float Mants[16];
    DIM sdim, tdim;
-   FILE *fp;
 
    // initialization to avoid complaining from the compiler
    sdim.dx=sdim.dy=sdim.dz=0.0;
@@ -105,7 +104,7 @@ int main(int argc, char **argv)
             sprintf(subImFile,"%s",optarg);
             break;
          case 'i':
-            sprintf(FSLmatrixfile,"%s",optarg);
+            sprintf(ANTSmatrixfile,"%s",optarg);
             break;
          case 'o':
             sprintf(ARTmatrixfile,"%s",optarg);
@@ -128,6 +127,8 @@ int main(int argc, char **argv)
 
    nifti_1_header trghdr;
    char trg_orientation_code[4];
+   float txc, tyc, tzc;
+
    trghdr = read_NIFTI_hdr(trgImFile);
 
    tdim.nx=trghdr.dim[1]; tdim.ny=trghdr.dim[2]; tdim.nz=trghdr.dim[3];
@@ -137,6 +138,10 @@ int main(int argc, char **argv)
    if(tdim.dx<0.0) tdim.dx *= -1.0; 
    if(tdim.dy<0.0) tdim.dy *= -1.0; 
    if(tdim.dz<0.0) tdim.dz *= -1.0;
+
+   txc = (tdim.nx-1.0)*tdim.dx/2.0;
+   tyc = (tdim.ny-1.0)*tdim.dy/2.0;
+   tzc = (tdim.nz-1.0)*tdim.dz/2.0;
 
    if(trghdr.qform_code == 0 && trghdr.sform_code == 0)
    {
@@ -165,6 +170,8 @@ int main(int argc, char **argv)
 
    nifti_1_header subhdr;
    char sub_orientation_code[4];
+   float sxc, syc, szc;
+
    subhdr = read_NIFTI_hdr(subImFile);
 
    sdim.nx=subhdr.dim[1]; sdim.ny=subhdr.dim[2]; sdim.nz=subhdr.dim[3];
@@ -174,6 +181,10 @@ int main(int argc, char **argv)
    if(sdim.dx<0.0) sdim.dx *= -1.0; 
    if(sdim.dy<0.0) sdim.dy *= -1.0; 
    if(sdim.dz<0.0) sdim.dz *= -1.0;
+
+   sxc = (sdim.nx-1.0)*sdim.dx/2.0;
+   syc = (sdim.ny-1.0)*sdim.dy/2.0;
+   szc = (sdim.nz-1.0)*sdim.dz/2.0;
 
    if(subhdr.qform_code == 0 && subhdr.sform_code == 0)
    {
@@ -193,17 +204,95 @@ int main(int argc, char **argv)
    }
    ////////////////////////////////////////////////////////////////////////////////////
 
-   if(FSLmatrixfile[0] == '\0')
+   if(ANTSmatrixfile[0] == '\0')
    {
-     printf("Please the FSL matrix using the \"-FSL <matrix.mat>\" flag\n");
+     printf("Please the ANTS matrix using the \"-ANTS <matrix.txt>\" flag\n");
      exit(0);
    }
 
-   loadTransformation(FSLmatrixfile, Mfsl);
+   if(opt_v)
+   {
+     printf("ANTS matrix file: %s\n",ANTSmatrixfile);
+   }
+
+   FILE *fp;
+   char line[1000];
+   char dum[1024];
+   float R[9];
+   float Rc[3];
+   float t[3];
+   float c[3];
+
+   fp=fopen(ANTSmatrixfile,"r");
+   fgets(line,1000,fp);
+   fgets(line,1000,fp);
+   fgets(line,1000,fp);
+   fgets(line,1000,fp);
+   sscanf(line,"%s %f %f %f %f %f %f %f %f %f %f %f %f",dum,&R[0],&R[1],&R[2],&R[3],&R[4],&R[5],
+		   &R[6],&R[7],&R[8],&t[0],&t[1],&t[2]);
+   fgets(line,1000,fp);
+   sscanf(line,"%s %f %f %f",dum,&c[0],&c[1],&c[2]);
 
    if(opt_v)
    {
-      printMatrix(Mfsl, 4, 4, "FSL transformation matrix:", NULL);
+      printf("\tRotation:\n");
+      printf("\t\t%f %f %f\n",R[0],R[1],R[2]);
+      printf("\t\t%f %f %f\n",R[3],R[4],R[5]);
+      printf("\t\t%f %f %f\n",R[6],R[7],R[8]);
+
+      printf("\tTranslation:\n");
+      printf("\t\t%f %f %f\n",t[0],t[1],t[2]);
+
+      printf("\tCenter of rotation:\n");
+      printf("\t\t%f %f %f\n",c[0],c[1],c[2]);
+   }
+   fclose(fp);
+  
+   // This gives Mants in LPS->LPS coordinates
+   multi(R,3,3,c,3,1,Rc);
+   Mants[3] =  c[0]+t[0]-Rc[0];
+   Mants[7] =  c[1]+t[1]-Rc[1];
+   Mants[11] = c[2]+t[2]-Rc[2];
+
+   Mants[0]=R[0]; Mants[1]=R[1]; Mants[2]=R[2]; 
+   Mants[4]=R[3]; Mants[5]=R[4]; Mants[6]=R[5];
+   Mants[8]=R[6]; Mants[9]=R[7]; Mants[10]=R[8]; 
+  
+   Mants[12]=0.0; Mants[13]=0.0; Mants[14]=0.0; Mants[15]=1.0;
+
+   // These negations convert Mants to RAS->RAS coordinates
+   Mants[2] *= (-1);
+   Mants[3] *= (-1);
+   Mants[6] *= (-1);
+   Mants[7] *= (-1);
+   Mants[8] *= (-1);
+   Mants[9] *= (-1);
+   
+   if(opt_v)
+   {
+      printf("\tRAS-to-RAS Matrix\n");
+      printf("\t\t%9.6f  %9.6f  %9.6f  %9.6f\n",Mants[0],Mants[1],Mants[2],Mants[3]);
+      printf("\t\t%9.6f  %9.6f  %9.6f  %9.6f\n",Mants[4],Mants[5],Mants[6],Mants[7]);
+      printf("\t\t%9.6f  %9.6f  %9.6f  %9.6f\n",Mants[8],Mants[9],Mants[10],Mants[11]);
+      printf("\t\t%9.6f  %9.6f  %9.6f  %9.6f\n",Mants[12],Mants[13],Mants[14],Mants[15]);
+   }
+
+   // The following converts it to ART matrix format
+   Mants[3] -= (sxc + subhdr.qoffset_x);
+   Mants[7] -= (syc + subhdr.qoffset_y);
+   Mants[11] -= (szc + subhdr.qoffset_z);
+   Mart=inv4(Mants);
+   Mart[3] -= (txc + trghdr.qoffset_x);
+   Mart[7] -= (tyc + trghdr.qoffset_y);
+   Mart[11] -= (tzc + trghdr.qoffset_z);
+
+   if(opt_v)
+   {
+      printf("ART transformation matrix:\n");
+      printf("%9.6f  %9.6f  %9.6f  %9.6f\n",Mart[0],Mart[1],Mart[2],Mart[3]);
+      printf("%9.6f  %9.6f  %9.6f  %9.6f\n",Mart[4],Mart[5],Mart[6],Mart[7]);
+      printf("%9.6f  %9.6f  %9.6f  %9.6f\n",Mart[8],Mart[9],Mart[10],Mart[11]);
+      printf("%9.6f  %9.6f  %9.6f  %9.6f\n",Mart[12],Mart[13],Mart[14],Mart[15]);
    }
 
    ////////////////////////////////////////////////////////////////////////////////////
@@ -224,13 +313,6 @@ int main(int argc, char **argv)
 
    trgSysFlg = hand_system(trg_orientation_code);
    subSysFlg = hand_system(sub_orientation_code);
-
-   fsl_to_art(Mfsl, Mart, sdim, tdim, subSysFlg, trgSysFlg);
-
-   if(opt_v)
-   {
-      printMatrix(Mart, 4, 4, "ART transformation matrix:", NULL);
-   }
 
    fp = fopen(ARTmatrixfile,"w");
    if(fp==NULL) file_open_error(ARTmatrixfile);
