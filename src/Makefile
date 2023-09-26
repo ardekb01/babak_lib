@@ -9,7 +9,7 @@ INC= -I../include
 LIBS =  -L../lib -lbabak -lniftiio -lznz -lm -lz -lc -llapack -lblas
 LESSLIBS =  -L../lib -lbabak -lniftiio -lznz -lm -lz -lc
 
-all: libbabak.a brainwash 3dwarper acpcdetect applywarp3d scaleImage avgImage one_sample_t ivf unwarp2d cphdr reslice kaiba oi PILtransform atra art2fsl fsl2art yuki analyze2nii multiplyTransformation niftiinfo break4D gambling_vancova_setup medianImage threshold ccstats applymask inverseMatrix4 LMdetect ijk2xyz TPS pixeldisplacement
+all: libbabak.a brainwash 3dwarper acpcdetect applywarp3d scaleImage avgImage one_sample_t ivf unwarp2d cphdr reslice kaiba oi PILtransform atra art2fsl fsl2art ants2art yuki analyze2nii multiplyTransformation niftiinfo break4D gambling_vancova_setup medianImage threshold ccstats applymask inverseMatrix4 LMdetect ijk2xyz TPS pixeldisplacement
 
 # because of functions in matrixops, linking the libbabak will possibly require lapack libs.
 
@@ -265,6 +265,10 @@ art2fsl: art2fsl.cxx
 fsl2art: fsl2art.cxx
 	$(CC) $(CFLAGS) -o fsl2art fsl2art.cxx $(INC) $(LIBS)
 	mv fsl2art ${ARTHOME}/bin
+
+ants2art: ants2art.cxx
+	$(CC) $(CFLAGS) -o ants2art ants2art.cxx $(INC) $(LIBS)
+	mv ants2art ${ARTHOME}/bin
 
 yuki: yuki.cxx
 #	$(CC) $(CFLAGS) -o yuki yuki.cxx $(INC) $(LIBS)
