@@ -119,20 +119,26 @@ int main(int argc, char **argv)
    }
 
    ////////////////////////////////////////////////////////////////////////////////////
+   float Qart[16];  // This is the matrix that converts target ijk to xyz in ART;
+   float Qant[16];  // This is the matrix that converts target ijk to xyz in ANTS;
+   float *iQart; // inverse of Qart
+   float *iQant; // inverse of Qant
+   float Q[16];  // Qart * iQant
+
    if(trgImFile[0] == '\0')
    {
      printf("Please specify the target image using the \"-t <image.nii>\" flag\n");
      exit(0);
    }
 
-   nifti_1_header trghdr;
+   nifti_1_header thdr;
    char trg_orientation_code[4];
    float txc, tyc, tzc;
 
-   trghdr = read_NIFTI_hdr(trgImFile);
+   thdr = read_NIFTI_hdr(trgImFile);
 
-   tdim.nx=trghdr.dim[1]; tdim.ny=trghdr.dim[2]; tdim.nz=trghdr.dim[3];
-   tdim.dx=trghdr.pixdim[1]; tdim.dy=trghdr.pixdim[2]; tdim.dz=trghdr.pixdim[3];
+   tdim.nx=thdr.dim[1]; tdim.ny=thdr.dim[2]; tdim.nz=thdr.dim[3];
+   tdim.dx=thdr.pixdim[1]; tdim.dy=thdr.pixdim[2]; tdim.dz=thdr.pixdim[3];
 
    // to deal with the sometimes -tive voxel dimensions in SPM/FSL data sets
    if(tdim.dx<0.0) tdim.dx *= -1.0; 
@@ -143,14 +149,14 @@ int main(int argc, char **argv)
    tyc = (tdim.ny-1.0)*tdim.dy/2.0;
    tzc = (tdim.nz-1.0)*tdim.dz/2.0;
 
-   if(trghdr.qform_code == 0 && trghdr.sform_code == 0)
+   if(thdr.qform_code == 0 && thdr.sform_code == 0)
    {
      printf("I cannot determine the orientation of the target image, because\n"
      "the NIFTI qform_code sform_code are both zero, aborting ...\n");
      exit(0);
    }
 
-   orientation_code(trghdr,trg_orientation_code);
+   orientation_code(thdr,trg_orientation_code);
 
    if(opt_v)
    {
@@ -160,7 +166,28 @@ int main(int argc, char **argv)
      printf("\tOrientation = %s\n", trg_orientation_code);
    }
 
+   Qart[0]=tdim.dx; Qart[1]=0.0;     Qart[2]=0.0;      Qart[3]=-txc;
+   Qart[4]=0.0;     Qart[5]=tdim.dy; Qart[6]=0.0;      Qart[7]=-tyc;
+   Qart[8]=0.0;     Qart[9]=0.0;     Qart[10]=tdim.dz; Qart[11]=-tzc;
+   Qart[12]=0.0;    Qart[13]=0.0;    Qart[14]=0.0;     Qart[15]=1.0;
+
+   Qant[0]=thdr.srow_x[0]; Qant[1]=thdr.srow_x[1]; Qant[2]=thdr.srow_x[2]; Qant[3]=thdr.srow_x[3];
+   Qant[4]=thdr.srow_y[0]; Qant[5]=thdr.srow_y[1]; Qant[6]=thdr.srow_y[2]; Qant[7]=thdr.srow_y[3];
+   Qant[8]=thdr.srow_z[0]; Qant[9]=thdr.srow_z[1]; Qant[10]=thdr.srow_z[2];Qant[11]=thdr.srow_z[3];
+   Qant[12]=0.0;    Qant[13]=0.0;    Qant[14]=0.0;     Qant[15]=1.0;
+
+   iQart=inv4(Qart);
+   iQant=inv4(Qant);
+   
+   multi(Qart,4,4,iQant,4,4,Q);
+
    ////////////////////////////////////////////////////////////////////////////////////
+
+   float Sart[16];  // This is the matrix that converts subject ijk to xyz in ART;
+   float Sant[16];  // This is the matrix that converts subject ijk to xyz in ANTS;
+   float *iSart; // inverse of Sart
+   float *iSant; // inverse of Sant
+   float S[16];  // Sant * iSart
 
    if(subImFile[0] == '\0')
    {
@@ -168,14 +195,14 @@ int main(int argc, char **argv)
      exit(0);
    }
 
-   nifti_1_header subhdr;
+   nifti_1_header shdr;
    char sub_orientation_code[4];
    float sxc, syc, szc;
 
-   subhdr = read_NIFTI_hdr(subImFile);
+   shdr = read_NIFTI_hdr(subImFile);
 
-   sdim.nx=subhdr.dim[1]; sdim.ny=subhdr.dim[2]; sdim.nz=subhdr.dim[3];
-   sdim.dx=subhdr.pixdim[1]; sdim.dy=subhdr.pixdim[2]; sdim.dz=subhdr.pixdim[3];
+   sdim.nx=shdr.dim[1]; sdim.ny=shdr.dim[2]; sdim.nz=shdr.dim[3];
+   sdim.dx=shdr.pixdim[1]; sdim.dy=shdr.pixdim[2]; sdim.dz=shdr.pixdim[3];
 
    // to deal with the sometimes -tive voxel dimensions in SPM/FSL data sets
    if(sdim.dx<0.0) sdim.dx *= -1.0; 
@@ -186,14 +213,14 @@ int main(int argc, char **argv)
    syc = (sdim.ny-1.0)*sdim.dy/2.0;
    szc = (sdim.nz-1.0)*sdim.dz/2.0;
 
-   if(subhdr.qform_code == 0 && subhdr.sform_code == 0)
+   if(shdr.qform_code == 0 && shdr.sform_code == 0)
    {
      printf("I cannot determine the orientation of the subject image, because\n"
      "the NIFTI qform_code sform_code are both zero, aborting ...\n");
      exit(0);
    }
 
-   orientation_code(subhdr,sub_orientation_code);
+   orientation_code(shdr,sub_orientation_code);
 
    if(opt_v)
    {
@@ -202,6 +229,22 @@ int main(int argc, char **argv)
      printf("\tVoxel = %6.4f x %6.4f x %6.4f\n",sdim.dx,sdim.dy,sdim.dz);
      printf("\tOrientation = %s\n", sub_orientation_code);
    }
+
+   Sart[0]=sdim.dx; Sart[1]=0.0;     Sart[2]=0.0;      Sart[3]=-sxc;
+   Sart[4]=0.0;     Sart[5]=sdim.dy; Sart[6]=0.0;      Sart[7]=-syc;
+   Sart[8]=0.0;     Sart[9]=0.0;     Sart[10]=sdim.dz; Sart[11]=-szc;
+   Sart[12]=0.0;    Sart[13]=0.0;    Sart[14]=0.0;     Sart[15]=1.0;
+
+   Sant[0]=shdr.srow_x[0]; Sant[1]=shdr.srow_x[1]; Sant[2]=shdr.srow_x[2]; Sant[3]=shdr.srow_x[3];
+   Sant[4]=shdr.srow_y[0]; Sant[5]=shdr.srow_y[1]; Sant[6]=shdr.srow_y[2]; Sant[7]=shdr.srow_y[3];
+   Sant[8]=shdr.srow_z[0]; Sant[9]=shdr.srow_z[1]; Sant[10]=shdr.srow_z[2];Sant[11]=shdr.srow_z[3];
+   Sant[12]=0.0;    Sant[13]=0.0;    Sant[14]=0.0;     Sant[15]=1.0;
+
+   iSart=inv4(Sart);
+   iSant=inv4(Sant);
+
+   multi(Sant,4,4,iSart,4,4,S);
+
    ////////////////////////////////////////////////////////////////////////////////////
 
    if(ANTSmatrixfile[0] == '\0')
@@ -278,13 +321,9 @@ int main(int argc, char **argv)
    }
 
    // The following converts it to ART matrix format
-   Mants[3] -= (sxc + subhdr.qoffset_x);
-   Mants[7] -= (syc + subhdr.qoffset_y);
-   Mants[11] -= (szc + subhdr.qoffset_z);
    Mart=inv4(Mants);
-   Mart[3] -= (txc + trghdr.qoffset_x);
-   Mart[7] -= (tyc + trghdr.qoffset_y);
-   Mart[11] -= (tzc + trghdr.qoffset_z);
+   multi(Q,4,4,Mart,4,4,Mart);
+   multi(Mart,4,4,S,4,4,Mart);
 
    if(opt_v)
    {
