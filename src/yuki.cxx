@@ -19,7 +19,9 @@
 #define YES 1
 #define NO 0
 
-int NX, NY, NP;
+int NX=512;
+int NY=512;
+int NP;
 
 // these are read from the atlas file which is in NIFTI format
 int UPPER_LEFT_i;
@@ -127,12 +129,10 @@ static struct option options[] =
    {"-threshold",1,'t'},
    {"-atlas",1,'a'},
    {"-a",1,'a'},
-   {"-TPS", 0, 'P'},
    {0, 0,  0}
 };
 
 int opt_cc=NO;
-int opt_TPS=NO;
 int opt_box=NO;
 int opt_W=NO;
 int opt_H=NO;
@@ -140,35 +140,6 @@ int opt_border=NO;
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 void print_help();
-
-void tpsTransform(float *X, float *Y, float &x, float &y, float *wx, float *wy, int n, float *k)
-{
-  for(int i=0; i<n; i++) k[i] = tpsU(X[i]-x,Y[i]-y);
-  k[n] = 1;
-  k[n+1] = x;
-  k[n+2] = y;
-
-  x=0.0;
-  for(int i=0; i<n+3; i++) x += k[i]*wx[i];
-
-  y=0.0;
-  for(int i=0; i<n+3; i++) y += k[i]*wy[i];
-}
-
-float tpsU(float x, float y)
-{
-   double d;
-   float result;
-
-   d = x*x + y*y;
-
-   if( d > 0.0 )
-      result = (float)(d*log(d));
-   else
-      result=0.0;
-
-   return(result);
-}
 
 void invert_symmetric_matrix(float *X, int p)
 {
@@ -236,222 +207,6 @@ void invert_symmetric_matrix(float *X, int p)
    free(DUt);
    free(D);
    free(Xinv);
-}
-
-float *compute_L_inverse(float *x, float *y, int n)
-{
-   float *L;
-   float *Li;
-   
-   int d;
-   d = n+3;
-   L = (float *)calloc(d*d, sizeof(float));
-   Li = (float *)calloc(d*d, sizeof(float));
-
-   ////////////////////////////////////////////////
-   // set K
-   ////////////////////////////////////////////////
-   float *K;  // nxn
-
-   K = (float *)calloc(n*n, sizeof(float));
-
-   for(int i=0; i<n; i++)
-   {
-      for(int j=0; j<=i; j++)
-      {
-         K[i*n + j] = tpsU(x[i]-x[j],y[i]-y[j]);
-      }
-   }
-
-   for(int j=0; j<n; j++)
-   {
-      for(int i=0; i<j; i++)
-      {
-         K[i*n + j] =  K[j*n + i];
-      }
-   }
-
-   //printMatrix(K,n,n,"K:",NULL);  // for testing only
-   ////////////////////////////////////////////////
-
-   ////////////////////////////////////////////////
-   // compute Ki=inverse(K)
-   ////////////////////////////////////////////////
-   float *Ki; // inverse(K)  nxn
-
-   Ki = (float *)calloc(n*n, sizeof(float));
-
-   for(int i=0; i<n*n; i++) 
-   {
-      Ki[i]=K[i]; // copy K in Ki temporarily
-   }
-
-   invert_symmetric_matrix(Ki, n);
-
-   //multi(Ki,n,n,K,n,n,Ki);  // for testing only
-   //printMatrix(Ki,n,n,"K*invserse(K):",NULL);  // for testing only
-   ////////////////////////////////////////////////
-
-   ////////////////////////////////////////////////
-   // set P and Pt=transpose(P)
-   ////////////////////////////////////////////////
-   float *P;  // nx3
-   float *Pt; // transpose(P) 3xn
-
-   P = (float *)calloc(n*3, sizeof(float));
-
-   for(int i=0; i<n; i++)
-   {
-      P[3*i] = 1.0;
-      P[3*i + 1] = x[i];
-      P[3*i + 2] = y[i];
-   }
-
-   Pt = trans(P, n, 3);
-
-   //printMatrix(P,n,3,"P:",NULL);  // for testing only
-   //printMatrix(Pt,3,n,"Pt:",NULL);  // for testing only
-   ////////////////////////////////////////////////
-
-   //////////////////////////////////////////////////////
-   // compute B and Bt=transpose(B) where B=inverse(K)*P
-   //////////////////////////////////////////////////////
-   float *B; // B=inverse(K)*P
-   float *Bt; // transpose(B)
-
-   B = (float *)calloc(n*3, sizeof(float));
-
-   multi(Ki,n,n,P,n,3,B); // compute B=inverse(K)*P 
-   Bt = trans(B, n, 3);
-
-   //printMatrix(B,n,3,"B:",NULL);  // for testing only
-   //printMatrix(Bt,3,n,"Bt:",NULL);  // for testing only
-   //////////////////////////////////////////////////////
-
-   //////////////////////////////////////////////////////
-   // compute A and Ai=inverse(A) 
-   // where A=transpose(P)*inverse(K)*P
-   //////////////////////////////////////////////////////
-   float *A;
-   float *Ai;
-
-   A = (float *)calloc(3*3, sizeof(float));
-
-   multi(Pt,3,n,B,n,3,A); // compute PtKiP=transpose(P)inverse(K)*P 
-   Ai = inv3(A);
-
-   //printMatrix(A,3,3,"A:",NULL);  // for testing only
-   //printMatrix(Ai,3,3,"Ai:",NULL);  // for testing only
-   //multi(Ai,3,3,A,3,3,Ai);  // for testing only
-   //printMatrix(Ai,3,3,"A*invserse(A):",NULL);  // for testing only
-   //////////////////////////////////////////////////////
-
-   //////////////////////////////////////////////////////
-   // compute BAi = B*inverse(A)
-   // and AiBt = inverse(A)*transpose(B)
-   //////////////////////////////////////////////////////
-   float *BAi;
-   float *AiBt;
-
-   BAi = (float *)calloc(n*3, sizeof(float));
-   multi(B,n,3,Ai,3,3,BAi);
-   AiBt = trans(BAi, n, 3);
-
-   //printMatrix(BAi,n,3,"BAi:",NULL);  // for testing only
-   //printMatrix(AiBt,3,n,"AiBt:",NULL);  // for testing only
-   //////////////////////////////////////////////////////
-
-   //////////////////////////////////////////////////////
-   // compute C
-   //////////////////////////////////////////////////////
-   float *C;
-   C = (float *)calloc(n*n, sizeof(float));
-
-   multi(BAi,n,3,Bt,3,n,C);
-
-   //printMatrix(C,n,n,"C:",NULL);  // for testing only
-   //////////////////////////////////////////////////////
-
-   for(int i=0; i<n; i++)
-   for(int j=0; j<n; j++)
-   {
-      L[i*d + j] = K[i*n + j];
-
-      Li[i*d + j] = Ki[i*n + j] - C[i*n + j];
-   }
-
-   for(int i=0; i<n; i++)
-   {
-      L[i*d + n] = P[i*3];
-      L[i*d + n + 1] = P[i*3 + 1];
-      L[i*d + n + 2] = P[i*3 + 2];
-
-      Li[i*d + n] = BAi[i*3];
-      Li[i*d + n + 1] = BAi[i*3 + 1];
-      Li[i*d + n + 2] = BAi[i*3 + 2];
-   }
-
-   for(int j=0; j<n; j++)
-   {
-      L[n*d + j] = Pt[j];
-      L[(n+1)*d + j] = Pt[n + j];
-      L[(n+2)*d + j] = Pt[2*n + j];
-
-      Li[n*d + j] = AiBt[j];
-      Li[(n+1)*d + j] = AiBt[n + j];
-      Li[(n+2)*d + j] = AiBt[2*n + j];
-   }
-
-   for(int i=0; i<3; i++)
-   for(int j=0; j<3; j++)
-   {
-      Li[(i+n)*d + j+n] = -Ai[i*3 + j];
-   }
-
-   //printMatrix(L,d,d,"L:",NULL);  // for testing only
-   //printMatrix(Li,d,d,"Li:",NULL);  // for testing only
-   //multi(L,d,d,Li,d,d,Li);
-   //printMatrix(Li,d,d,"I:",NULL);  // for testing only
-
-   free(K); free(Ki);
-   free(P); free(Pt);
-   free(B); free(Bt);
-   free(A); free(Ai);
-   free(BAi); free(AiBt);
-   free(C);
-   free(L);
-
-   return(Li);
-}
-
-void read_landmarks(char *filename, int &n, float * &X, float * &Y)
-{  
-   FILE *fp;
-   float dum;
-   
-   n = 0;
-   
-   fp=fopen(filename,"r");
-   if(fp==NULL) { printf("Error: Cound not open %s, aborting ...\n",filename); exit(0); }
-   while( fscanf(fp,"%f", &dum) != EOF ) n++;
-   fclose(fp);
-   
-   n /= 3;
-
-   X = (float *)calloc(n+3, sizeof(float) );
-   Y = (float *)calloc(n+3, sizeof(float) );
-
-   fp=fopen(filename,"r");
-   for(int i=0; i<n; i++) 
-   {
-      fscanf(fp,"%f", X+i);
-      fscanf(fp,"%f", Y+i);
-      fscanf(fp,"%f", &dum);
-   }
-   fclose(fp);
-
-   X[n]=X[n+1]=X[n+2]=0.0;
-   Y[n]=Y[n+1]=Y[n+2]=0.0;
 }
 
 void computeWarpField(short *obj, short *trg, float sd, int bbnp, int bbnx, int bbny)
@@ -2744,22 +2499,12 @@ void find_thickness_profile(short *cc, const char *prefix)
 
 int main(int argc, char **argv)
 {
-   int nlm=8; 
-   float F[11]; // these must be nlm+3
-   float G[11];
-   float subj_lmk_X[11];
-   float subj_lmk_Y[11];
-   float wx[11];
-   float wy[11];
-   float urow[11];
-
    int number_of_atlases_used=49;
    float max_t=0.0;
-   char atlas_filename[1024]="amir464_512";
+   char atlas_filename[1024]="amir464";
    char filename[1024]=""; // for keeping various filenames temporarily
    char subj_filename[1024]="";  // it is important to initialize this
 
-   float xx,yy;
    char lmfile[DEFAULT_STRING_LENGTH]="";
 
    FILE *fp;
@@ -2789,7 +2534,6 @@ int main(int argc, char **argv)
    int N=11; // N=2*L+1
 
    char output_prefix[1024]="";
-   char input_prefix[1024]="";
    char outputfile[1024]="";
    char msp_transformation_file[1024]="";
 
@@ -2840,9 +2584,6 @@ int main(int argc, char **argv)
          case 'c':
             sprintf(csvfile,"%s",optarg);
             break;
-         case 'P':
-            opt_TPS=YES;
-            break;
          case 'i':
             sprintf(subj_filename,"%s",optarg);
             break;
@@ -2888,7 +2629,6 @@ int main(int argc, char **argv)
    if(opt_cc) 
    {
       sprintf(subj_filename,"");
-      opt_TPS=NO;
    }
    /////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -3000,8 +2740,6 @@ int main(int argc, char **argv)
   bbny =  LOWER_RIGHT_j - UPPER_LEFT_j + 1;
   bbnp = bbnx*bbny;
 
-  NX=atlas_hdr.dim[1]; 
-  NY=atlas_hdr.dim[2];
   NP=NX*NY;
   number_of_atlases_available = atlas_hdr.dim[3]/2;
   dx=atlas_hdr.pixdim[1]; 
@@ -3032,21 +2770,21 @@ int main(int argc, char **argv)
     printf("Bounding box lower right corner = (%d, %d)\n",LOWER_RIGHT_i,LOWER_RIGHT_j);
   }
 
-  atlas_msp = (short *)calloc(NP*number_of_atlases_available, sizeof(short));
-  atlas_cc = (short *)calloc(NP*number_of_atlases_available, sizeof(short));
+  atlas_msp = (short *)calloc(bbnp*number_of_atlases_available, sizeof(short));
+  atlas_cc = (short *)calloc(bbnp*number_of_atlases_available, sizeof(short));
 
   // This is important!
   for(int a=0; a<number_of_atlases_available; a++)
   {
-    atlas_msp_ptr  = atlas_data + (2*a)*NP;
-    atlas_cc_ptr   = atlas_data + (2*a+1)*NP;
+    atlas_msp_ptr  = atlas_data + (2*a)*bbnp;
+    atlas_cc_ptr   = atlas_data + (2*a+1)*bbnp;
 
-    for(int v=0; v<NP; v++)
+    for(int v=0; v<bbnp; v++)
     {
-      atlas_msp[a*NP + v] = atlas_msp_ptr[v];
+      atlas_msp[a*bbnp + v] = atlas_msp_ptr[v];
 
       //important: ensures that segmented CC values are 0 or 100
-      if(atlas_cc_ptr[v] > 0) atlas_cc[a*NP + v] = 100; else atlas_cc[a*NP + v] = 0; 
+      if(atlas_cc_ptr[v] > 0) atlas_cc[a*bbnp + v] = 100; else atlas_cc[a*bbnp + v] = 0; 
     }
   }
   free(atlas_data);
@@ -3137,53 +2875,6 @@ int main(int argc, char **argv)
   /////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////////////
 
-   /////////////////////////////////////////////////////////////////////////////////////////////
-   //TPS prep: Read subjet and atlas landmarks and correct their location relative to the bb
-   /////////////////////////////////////////////////////////////////////////////////////////////
-   float *Linv=NULL;
-   float *atls_lmk_X=NULL, *atls_lmk_Y=NULL;
-   short *tpsatlas=NULL;
-   short *tpscc=NULL;
-
-   if(opt_TPS)
-   {
-      sprintf(filename,"%s/%s.lmk",ARTHOME, atlas_filename);
-
-      if(opt_v)
-      {
-         printf("Atlas landmarks file = %s\n", filename);
-      }
-
-      read_landmarks(filename, count, atls_lmk_X, atls_lmk_Y);
-
-      float *dumx, *dumy;
-      // determine input image filename without the .nii suffix
-      if( niftiFilename(input_prefix, subj_filename)==0 ) { exit(1); }
-      sprintf(filename,"%s_orion_PIL.txt",input_prefix);
-      read_landmarks(filename, count, dumx, dumy);
-
-      for(int i=0; i<nlm; i++)
-      {
-         subj_lmk_X[i]=dumx[i];
-         subj_lmk_Y[i]=dumy[i];
-      }
-      subj_lmk_X[nlm]=subj_lmk_X[nlm+1]=subj_lmk_X[nlm+2]=0.0;
-      subj_lmk_Y[nlm]=subj_lmk_Y[nlm+1]=subj_lmk_Y[nlm+2]=0.0;
-
-      free(dumx); free(dumy);
-  
-      //uncomment to print subject landmarks as a test
-      //for(int i=0; i<nlm; i++)
-      //printf("%f %f\n",subj_lmk_X[i], subj_lmk_Y[i]);
-
-      Linv = compute_L_inverse(subj_lmk_X, subj_lmk_Y, nlm);
-
-      tpsatlas= (short *)calloc(NP, sizeof(short));
-      tpscc= (short *)calloc(NP, sizeof(short));
-   }
-   /////////////////////////////////////////////////////////////////////////////////////////////
-   /////////////////////////////////////////////////////////////////////////////////////////////
-
   /////////////////////////////////////////////////////////////////////////////////////////////
   //Altas selection
   /////////////////////////////////////////////////////////////////////////////////////////////
@@ -3195,66 +2886,12 @@ int main(int argc, char **argv)
     corr=(float *)calloc(number_of_atlases_available,sizeof(float));
     atlas_indx = (int *)calloc(number_of_atlases_available, sizeof(int));
 
-      if(opt_TPS)
-      {
-         for(int a=0; a<number_of_atlases_available; a++)
-         {
-            atlas_msp_ptr = atlas_msp + a*NP;
-            atlas_cc_ptr  = atlas_cc + a*NP;
-
-            for(int i=0; i<nlm; i++)
-            {
-               F[i]=atls_lmk_X[i + nlm*a];
-               G[i]=atls_lmk_Y[i + nlm*a];
-            }
-            F[nlm]=F[nlm+1]=F[nlm+2]=0.0;
-            G[nlm]=G[nlm+1]=G[nlm+2]=0.0;
-
-            multi(Linv,nlm+3,nlm+3,F,nlm+3,1,wx);
-            multi(Linv,nlm+3,nlm+3,G,nlm+3,1,wy);
-
-            count=0;
-            for(int j=0;j<NY;j++) 
-            {
-               for(int i=0;i<NX;i++) 
-               {
-                  xx = (i - (NX-1)/2.0)*dx;
-                  yy = (j - (NY-1)/2.0)*dy;
-
-                  // here xx and yy are updated using TPS
-                  tpsTransform(subj_lmk_X, subj_lmk_Y, xx, yy, wx, wy, nlm, urow);
-
-		  xx /= dx; xx += (NX-1)/2.0;
-                  yy /= dy; yy += (NY-1)/2.0;
-
-                  //it is important that only the second count++ is used
-                  tpsatlas[count]=(short)(linearInterpolator(xx,yy,0.0,atlas_msp_ptr,NX,NY,1,NP)+0.5);
-                  tpscc[count++]=(short)(linearInterpolator(xx,yy,0.0,atlas_cc_ptr,NX,NY,1,NP)+0.5);
-               }
-            }
-
-            for(int v=0;v<NP;v++) 
-            {
-               atlas_msp_ptr[v] = tpsatlas[v];
-               atlas_cc_ptr[v] = tpscc[v];
-            }
-         }
-      } // opt_TPS
-
     for(int a=0; a<number_of_atlases_available; a++)
     {
-      atlas_msp_ptr = atlas_msp + a*NP;
-
-      count=0;
-      for(int j=UPPER_LEFT_j; j<=LOWER_RIGHT_j; j++)
-      for(int i=UPPER_LEFT_i; i<=LOWER_RIGHT_i; i++)
-      {
-        bbatlas_msp[count] = atlas_msp_ptr[j*NX + i];
-        count++;
-      }
+      atlas_msp_ptr = atlas_msp + a*bbnp;
 
       atlas_indx[a] = a;
-      corr[a] = pearsonCorrelation(bbtrg, bbatlas_msp, bbnp );
+      corr[a] = pearsonCorrelation(bbtrg, atlas_msp_ptr, bbnp );
     }
     hpsort(number_of_atlases_available, corr, atlas_indx);
 
@@ -3328,21 +2965,12 @@ int main(int argc, char **argv)
       short *warped_cc_ptr;
 
       a = atlas_indx[number_of_atlases_available-1-i];
-      atlas_msp_ptr = atlas_msp + a*NP;
-      atlas_cc_ptr  = atlas_cc +  a*NP;
+      atlas_msp_ptr = atlas_msp + a*bbnp;
+      atlas_cc_ptr  = atlas_cc +  a*bbnp;
 
-      count=0;
-      for(int jj=UPPER_LEFT_j; jj<=LOWER_RIGHT_j; jj++)
-      for(int ii=UPPER_LEFT_i; ii<=LOWER_RIGHT_i; ii++)
-      {
-        bbatlas_msp[count] = atlas_msp_ptr[jj*NX + ii];
-        bbatlas_cc[count] = atlas_cc_ptr[jj*NX + ii];
-        count++;
-      }
+      computeWarpField(atlas_msp_ptr, bbtrg, sd, bbnp, bbnx, bbny);
 
-      computeWarpField(bbatlas_msp, bbtrg, sd, bbnp, bbnx, bbny);
-
-      warped_cc_ptr=computeReslicedImage(bbatlas_cc, bbnx,bbny,1, dx,dy,dz, bbnx,bbny,1, dx,dy,dz, 
+      warped_cc_ptr=computeReslicedImage(atlas_cc_ptr, bbnx,bbny,1, dx,dy,dz, bbnx,bbny,1, dx,dy,dz, 
         Xwarp, Ywarp, Zwarp);
 
       // copy warped cc back to its original memory
@@ -3839,15 +3467,6 @@ int main(int argc, char **argv)
    {
       if(subj_volume != NULL) free(subj_volume);
       if(subj_volume != NULL) free(subj_volume_msp);
-   }
-
-   if(opt_TPS)
-   {
-      if(atls_lmk_X != NULL) free(atls_lmk_X);
-      if(atls_lmk_Y != NULL) free(atls_lmk_Y);
-      if(Linv != NULL) free(Linv);
-      if(tpsatlas != NULL) free(tpsatlas);
-      if(tpscc != NULL) free(tpscc);
    }
 
    if(!opt_cc)
