@@ -107,35 +107,37 @@ int opt;
 
 static struct option options[] =
 {
-   {"-i", 1,  'i'},
-   {"-v", 0,  'v'},
-   {"-verbose", 0,  'v'},
-   {"-V", 0,  'V'},
-   {"-version", 0,  'V'},
-   {"-h", 0,  'h'},
-   {"-help", 0,  'h'},
-   {"-n", 1,  'n'},
-   {"-o", 1, 'o'},
-   {"-csv", 1,  'c'},
-   {"-H", 0,  'H'},
-   {"-Hampel", 0,  'H'},
-   {"-W", 0,  'W'},
-   {"-Witelson", 0,  'W'},
-   {"-png", 0,  'p'},
-   {"-lm",1,'l'},  // landmark  file
-   {"-A", 1,  'L'},
-   {"-T", 1,  'T'},
-   {"-mrx", 0,  'm'},
-   {"-box", 0,  'b'},
-   {"-secret", 0,  's'},
-   {"-border", 0, 'B'},
-   {"-cc", 1, 'C'},
-   {"-t",1,'t'},
-   {"-thresh",1,'t'},
-   {"-threshold",1,'t'},
-   {"-atlas",1,'a'},
-   {"-a",1,'a'},
-   {0, 0,  0}
+  {"-i", 1,  'i'},
+  {"-v", 0,  'v'},
+  {"-verbose", 0,  'v'},
+  {"-V", 0,  'V'},
+  {"-version", 0,  'V'},
+  {"-Version", 0,  'V'},
+  {"-h", 0,  'h'},
+  {"-help", 0,  'h'},
+  {"-Help", 0,  'h'},
+  {"-n", 1,  'n'},
+  {"-o", 1, 'o'},
+  {"-csv", 1,  'c'},
+  {"-H", 0,  'H'},
+  {"-Hampel", 0,  'H'},
+  {"-W", 0,  'W'},
+  {"-Witelson", 0,  'W'},
+  {"-png", 0,  'p'},
+  {"-lm",1,'l'},  // landmark  file
+  {"-A", 1,  'L'},
+  {"-T", 1,  'T'},
+  {"-mrx", 0,  'm'},
+  {"-box", 0,  'b'},
+  {"-secret", 0,  's'},
+  {"-border", 0, 'B'},
+  {"-cc", 1, 'C'},
+  {"-t",1,'t'},
+  {"-thresh",1,'t'},
+  {"-threshold",1,'t'},
+  {"-atlas",1,'a'},
+  {"-a",1,'a'},
+  {0, 0,  0}
 };
 
 int opt_cc=NO;
@@ -364,10 +366,12 @@ void update_qsform( const char *imagefilename , float *matrix)
    int data_size=0;
    char swapflg=0;
    mat44 R;
+   size_t sizeread;
 
    fp = fopen(imagefilename,"r");
    if(fp==NULL) file_open_error(imagefilename);
-   fread(&hdr, sizeof(nifti_1_header), 1, fp);
+   sizeread = fread(&hdr, sizeof(nifti_1_header), 1, fp);  
+   if(sizeread != 1 ) errorMessage("Read error, aborting ...");
 
    if(hdr.dim[0]<1 || hdr.dim[0]>7)
    {
@@ -398,14 +402,16 @@ void update_qsform( const char *imagefilename , float *matrix)
 
    if( hdr.magic[0]=='n' && hdr.magic[1]=='+' && hdr.magic[2]=='1' )
    {
-      fread(&ext, sizeof(nifti1_extender), 1, fp);
+      sizeread=fread(&ext, sizeof(nifti1_extender), 1, fp);
+      if(sizeread != 1 ) errorMessage("Read error, aborting ...");
 
       extension_size = (int)(hdr.vox_offset)-352;
 
       if( extension_size > 0 )
       {
          extension = (char *)calloc(extension_size, 1);
-         fread(extension, 1, extension_size, fp);
+         sizeread=fread(extension, 1, extension_size, fp);
+         if(sizeread != (size_t)extension_size) errorMessage("Read error, aborting ...");
       }
 
       data_size = 1;
@@ -418,7 +424,8 @@ void update_qsform( const char *imagefilename , float *matrix)
       if( data_size > 0 )
       {
          data = (char *)calloc(data_size, 1);
-         fread(data, 1, data_size, fp);
+         sizeread = fread(data, 1, data_size, fp);
+         if(sizeread != (size_t)data_size) errorMessage("Read error, aborting ...");
       }
    }
 
@@ -1205,48 +1212,50 @@ void output_bounding_box_ppm(short *trg, const char *prefix)
 // NOTE: The commented out lines reflect secret options
 void print_help()
 {
-   printf("\nUsage: yuki [optional arguments] -i <input image> -o <output prefix>\n\n"
+   printf("\nUsage: yuki [optional arguments] -i <input volume>.nii -o <output prefix>\n\n"
  
-   "Required argument:\n\n"
+   "Required arguments:\n\n"
 
-   "-i <input image>.nii : the 3D MRI volume (short int NIFTI format) on which the\n"
-   "corpus callosum is to be located\n\n"
+   "-i <input volume>.nii\n\t3D MRI volume on which the corpus callosum is to be segmented.\n"
+   "\tThis image must be in NIFTI format of type \"short int\"\n\n"
 
-   "-o <output prefix> : prefix for naming output files\n\n"
+   "-o <output prefix>\n\tprefix for naming output files\n\n"
 
    "Optional arguments:\n\n"
 
-   "-verbose or -v : enables verbose mode\n\n"
+   "-verbose or -v\n\tEnables verbose mode\n\n"
 
-   "-version or -V: reports software version\n\n"
+   "-version or -V\n\tReports software version\n\n"
 
-   "-help or -h : prints help message\n\n"
+   "-help or -h\n\tPrints help message\n\n"
 
-   "-n <integer> : specifies the number of atlases to be used\n\n"
+   "-n <integer>\n\tSpecifies the number of atlases to be used (default=49)\n\n"
 
-   "-csv <csvfile> : CC measurments (area, perimeter, etc.) will be appended to this file in\n"
-   "comma-separated values (CSV) format (default: <output-prefix>.csv)\n\n"
+   "-threshold or -t <float>\n\tThreshold used for label fusion (default=50.0)\n\n"
 
-   "-Hampel or H: segments the CC according to Hampel's method and outputs the 5 sub-areas\n"
-   "as well as <output-prefix>_cc_hampel.ppm and <output-prefix>_cc_hampel.nii images\n\n"
+   "-csv <csvfile>\n\tCC measurments (area, perimeter, etc.) will be appended to this file\n"
+   "\tin comma-separated values (CSV) format (default: <output-prefix>.csv)\n\n"
 
-   "-Witelson or W: segments the CC according to Witelson's method and outputs the 7 sub-areas\n"
-   "as well as <output-prefix>_cc_witelson.ppm and <output-prefix>_cc_witelson.nii images\n\n"
+   "-Hampel or H\n\tSegments the CC according to Hampel's method and outputs the 5 sub-areas\n"
+   "\tas well as <output-prefix>_cc_hampel.ppm and <output-prefix>_cc_hampel.nii images\n\n"
 
-   "-png : Outputs *.png images in addition to the *.ppm images\n\n"
+   "-Witelson or W\n\tSegments the CC according to Witelson's method and outputs the 7 sub-areas\n"
+   "\tas well as <output-prefix>_cc_witelson.ppm and <output-prefix>_cc_witelson.nii images\n\n"
 
-   "-lm <filename> : Manually specifies AC/PC/VSPS landmarks for <input-filename>.nii\n\n"
+   "-png\n\tOutputs *.png images in addition to the *.ppm images\n\n"
 
-   "-A <filename> : Uses preselected set of atlases specified in <filename> instead of\n"
-   "automated atlas selection. <filename> is always the output of a previous yuki run.\n\n"
+   "-lm <filename>\n\tManually specifies AC/PC/VSPS landmarks for <input-filename>.nii\n\n"
 
-   "-cc <corrected_cc.nii>: This option is used when the out binary CC image is corrected\n"
-   "manually and we need to recalculate the CC related measurements (area, circularlity, etc.)\n"
-   "for the corrected image.\n\n"
+   "-A <filename>\n\tUses preselected set of atlases specified in <filename> instead of\n"
+   "\tautomated atlas selection. <filename> is always the output of a previous yuki run.\n\n"
 
-   "-T <filename.mrx>: Applies the transformation matrix in <filename.mrx> to reorient\n"
-   "the <input-filename>.nii volume in preperation for CC detection. Thus, automatic\n"
-   "reorientation is disabled.\n\n");
+   "-cc <corrected_cc.nii>\n\tThis option is used when the out binary CC image is corrected\n"
+   "\tmanually and we need to recalculate the CC related measurements (area, circularlity, etc.)\n"
+   "\tfor the corrected image.\n\n"
+
+   "-T <filename.mrx>\n\tApplies the transformation matrix in <filename.mrx> to reorient\n"
+   "\tthe <input-filename>.nii volume in preperation for CC detection. Thus, automatic\n"
+   "\treorientation is disabled.\n\n");
 
    return;
 }
@@ -1255,7 +1264,7 @@ void print_secret_help()
 {
    printf("\nUsage: yuki [-version -h -o <output-prefix> -csv <csvfile>] -i <subject volume>\n\n"
    "[-v -mrx -ppm -box -W -border -n <# atlases>]\n"
-   "-mrx : saves the transformation matrix that makes the input image MSP/AC-PC aligned\n\n"
+   "-mrx : saves the transformation matrix that makes the input volume MSP/AC-PC aligned\n\n"
    "-box : draws the CC search window on <prefix>_cc.ppm\n\n"
    "-border : outputs <prefix>_cc_border.ppm\n\n");
    return;
@@ -1447,10 +1456,7 @@ float estimate_circumference(short *msk, int nx, int ny, float dx, float dy, int
 
 void estimate_witelson(short *msk, int nx, int ny, float dx, float dy, float *W)
 {
-   int np;
    int v;
-
-   np = nx*ny;
 
    for(int i=0; i<=7; i++)
    {
@@ -1512,10 +1518,7 @@ void estimate_hampel(short *msk, int nx, int ny, float dx, float dy, float *H)
    i0 = hampel_origin[0];
    j0 = hampel_origin[1];
 
-   int np;
    int v;
-
-   np = nx*ny;
 
    for(int i=0; i<=5; i++)
    {
@@ -2505,11 +2508,12 @@ void find_thickness_profile(short *cc, const char *prefix)
 
 int main(int argc, char **argv)
 {
-   int number_of_atlases_used=49;
-   float max_t=0.0;
+  char subj_filename[1024]="";  // it is important to initialize this
+  int number_of_atlases_used=49;
+  float max_t=50.0;
+
    char atlas_filename[1024]="amir464";
    char filename[1024]=""; // for keeping various filenames temporarily
-   char subj_filename[1024]="";  // it is important to initialize this
 
    char lmfile[DEFAULT_STRING_LENGTH]="";
 
@@ -2561,23 +2565,56 @@ int main(int argc, char **argv)
    }
    ////////////////////////////////////////////////////////////////////////
 
-   while( (opt=getoption(argc, argv, options)) != -1)
-   {
-      switch (opt) {
+  while( (opt=getoption(argc, argv, options)) != -1)
+  {
+    switch (opt) 
+    {
          case 's':
             print_secret_help();
             exit(0);
-         case 'V':
-            printf("Version 3.0 (July 2023)\n");
-            printf("Author: Babak A. Ardekani, Ph.D.\n");
-            exit(0);
-         case 'h':
-            print_help();
-            exit(0);
-         case 'n':
-            number_of_atlases_used=atoi(optarg);
-            if(number_of_atlases_used<=0) number_of_atlases_used=49;
-            break;
+      case 'V':
+        printf("Version 3.0 (March 2024)\n");
+        printf("Author: Babak A. Ardekani, Ph.D.\n");
+        exit(0);
+      case 'h':
+        print_help();
+        exit(0);
+      case 'n':
+        number_of_atlases_used=atoi(optarg);
+        if(number_of_atlases_used<=0) number_of_atlases_used=49;
+        break;
+      case 'i':
+        sprintf(subj_filename,"%s",optarg);
+        break;
+      case 'C':
+        opt_cc=YES;
+        sprintf(subj_filename,"%s",optarg);
+        break;
+      case 't':
+        max_t  = atof(optarg);
+        break;
+      case 'o':
+        sprintf(output_prefix,"%s",optarg);
+        break;
+      case 'c':
+        sprintf(csvfile,"%s",optarg);
+        break;
+      case 'v':
+        opt_v=YES;
+        break;
+      case 'W':
+        opt_W=YES;
+        break;
+      case 'H':
+        opt_H=YES;
+        break;
+      case 'p':
+        opt_png=YES;
+        break;
+      case 'l':
+        strcpy(lmfile,optarg);
+        break;
+
          case 'a':
             sprintf(atlas_filename,"%s",optarg);
             break;
@@ -2587,57 +2624,24 @@ int main(int argc, char **argv)
          case 'L':
             sprintf(preselected_atlases_file,"%s",optarg);
             break;
-         case 'c':
-            sprintf(csvfile,"%s",optarg);
-            break;
-         case 'i':
-            sprintf(subj_filename,"%s",optarg);
-            break;
-         case 'o':
-            sprintf(output_prefix,"%s",optarg);
-            break;
-         case 'v':
-            opt_v=YES;
-            break;
-         case 'p':
-            opt_png=YES;
-            break;
          case 'b':
             opt_box=YES;
-            break;
-         case 'W':
-            opt_W=YES;
-            break;
-         case 'H':
-            opt_H=YES;
             break;
          case 'B':
             opt_border=YES;
             break;
-         case 'C':
-            opt_cc=YES;
-            sprintf(subj_filename,"%s",optarg);
-            break;
-         case 't':
-            max_t  = atof(optarg);
-            break;
-         case 'l':
-            strcpy(lmfile,optarg);
-            break;
          case '?':
             print_help();
             exit(0);
-      }
-   }
+    }
+  }
 
-   /////////////////////////////////////////////////////////////////////////////////////////////
-   /////////////////////////////////////////////////////////////////////////////////////////////
-   if(opt_cc) 
-   {
-      sprintf(subj_filename,"");
-   }
-   /////////////////////////////////////////////////////////////////////////////////////////////
-
+  /////////////////////////////////////////////////////////////////////////////////////////////
+  // Guard against nonsense values entered
+  /////////////////////////////////////////////////////////////////////////////////////////////
+  if(max_t > 100.0 || max_t < 0 ) max_t = 50.0;
+  /////////////////////////////////////////////////////////////////////////////////////////////
+  
   /////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////////////
   // get the value of the ARTHOME environment variable
@@ -2662,6 +2666,22 @@ int main(int argc, char **argv)
   /////////////////////////////////////////////////////////////////////////////////////////////
 
   /////////////////////////////////////////////////////////////////////////////////////////////
+  //Ensure than a subject filename has been specified at the command line
+  /////////////////////////////////////////////////////////////////////////////////////////////
+  if( subj_filename[0]=='\0')
+  {
+    printf("Please specify an input volume using: -i <input volume>.nii\n");
+    exit(0);
+  }
+
+  if(opt_v)
+  {
+    printf("Input volume = %s\n",subj_filename);
+  }
+  /////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////
+
+  /////////////////////////////////////////////////////////////////////////////////////////////
   //Ensure than an output prefix has been specified at the command line
   /////////////////////////////////////////////////////////////////////////////////////////////
   if( output_prefix[0]=='\0')
@@ -2677,26 +2697,29 @@ int main(int argc, char **argv)
   /////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////////////
 
-   /////////////////////////////////////////////////////////////////////////////////////////////
-   //If using preselected atlases, read the number_of_atlases_used and max_t for now
-   /////////////////////////////////////////////////////////////////////////////////////////////
-   if(preselected_atlases_file[0]!='\0') 
-   {
-      int dum;
+  /////////////////////////////////////////////////////////////////////////////////////////////
+  //If using preselected atlases, read the number_of_atlases_used and max_t for now
+  /////////////////////////////////////////////////////////////////////////////////////////////
+  if(preselected_atlases_file[0]!='\0') 
+  {
+    int dum;
 
-      if(opt_v) printf("Preselected atlases = %s\n", preselected_atlases_file);
+    if(opt_v) printf("Preselected atlases = %s\n", preselected_atlases_file);
 
-      fp = fopen(preselected_atlases_file,"r");
-      if(fp==NULL) file_open_error(preselected_atlases_file);
-      fscanf(fp,"%d\n",&number_of_atlases_used);
-      for(int i=0; i<number_of_atlases_used; i++) fscanf(fp,"%d\n",&dum);
-      fscanf(fp,"%f\n",&max_t);
-      fclose(fp);
+    fp = fopen(preselected_atlases_file,"r");
+    if(fp==NULL) file_open_error(preselected_atlases_file);
+    if( fscanf(fp,"%d\n",&number_of_atlases_used) == EOF ) errorMessage("Read error, aborting ...");
+    for(int i=0; i<number_of_atlases_used; i++) 
+    {
+      if( fscanf(fp,"%d\n",&dum) == EOF) errorMessage("Read error, aborting ...");
+    }
+    if( fscanf(fp,"%f\n",&max_t) == EOF ) errorMessage("Read error, aborting ...");
+    fclose(fp);
 
-      if(max_t<0.0 || max_t>100.0) max_t=0.0;
-   }
-   /////////////////////////////////////////////////////////////////////////////////////////////
-   /////////////////////////////////////////////////////////////////////////////////////////////
+    if(max_t<0.0 || max_t>100.0) max_t=50.0;
+  }
+  /////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////
 
   /////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////////////
@@ -2711,8 +2734,6 @@ int main(int argc, char **argv)
   int number_of_atlases_available;
   short *atlas_cc_ptr;
   short *bbtrg=NULL; // the bounding box MSP subimage of the subject image
-  short *bbatlas_msp=NULL;
-  short *bbatlas_cc=NULL;
   short *cctrg=NULL;
 
   sprintf(filename,"%s/%s.nii",ARTHOME, atlas_filename);
@@ -2753,8 +2774,6 @@ int main(int argc, char **argv)
   dz=atlas_hdr.pixdim[3];
 
   bbtrg = (short *)calloc(bbnp, sizeof(short));
-  bbatlas_msp= (short *)calloc(bbnp, sizeof(short));
-  bbatlas_cc= (short *)calloc(bbnp, sizeof(short));
   cctrg = (short *)calloc(bbnp, sizeof(short));
 
   // ensures that the number of atlases used does no exceed the number of atlases available
@@ -2906,9 +2925,12 @@ int main(int argc, char **argv)
       {
          fp = fopen(preselected_atlases_file,"r");
          if(fp==NULL) file_open_error(preselected_atlases_file);
-         fscanf(fp,"%d\n",&number_of_atlases_used);
+         if( fscanf(fp,"%d\n",&number_of_atlases_used) == EOF ) errorMessage("Read error, aborting ...");
          for(int i=0; i<number_of_atlases_used; i++)
-            fscanf(fp,"%d\n",&atlas_indx[number_of_atlases_available-1-i]);
+         {
+            if( fscanf(fp,"%d\n",&atlas_indx[number_of_atlases_available-1-i]) == EOF ) 
+	      errorMessage("Read error, aborting ...");
+         }
          fclose(fp);
       }
 
@@ -3060,8 +3082,8 @@ int main(int argc, char **argv)
              }
          }
 
-         if( opt_v )
-            printf("Threshold selection interval: [%d, %d]\n",kmin, kmax);
+         //if( opt_v )
+         //   printf("Threshold selection interval: [%d, %d]\n",kmin, kmax);
     }
 
       
@@ -3148,20 +3170,14 @@ int main(int argc, char **argv)
       //{
       //   printf("maxfdr=%f maxidx=%d\n",maxfdr, maxidx);
       //}
-      if(max_t != 0.0)
-      {
-        if( opt_v )
-        {
-          printf("Manually selected threshold = %3.1f\n",max_t);
-        }
-      }
-      else
+      if(max_t == 0.0)
       {
         max_t = maxidx*1.0;
-        if( opt_v )
-        {
-          printf("Automatically selected threshold = %3.1f\n",max_t);
-        }
+      }
+
+      if( opt_v )
+      {
+         printf("Label fusion threshold = %3.1f\n",max_t);
       }
 
       // save the threshold used for label fusion
@@ -3192,14 +3208,14 @@ int main(int argc, char **argv)
     }
   }
 
-   if(opt_cc)
-   {
-      cc_est=(short *)read_nifti_image(subj_filename, &output_hdr);
-      dx=output_hdr.pixdim[1]; 
-      dy=output_hdr.pixdim[1]; 
-   }
-   ////////////////////////////////////////////////////////////
-   ////////////////////////////////////////////////////////////
+  if(opt_cc)
+  {
+    cc_est=(short *)read_nifti_image(subj_filename, &output_hdr);
+    dx=output_hdr.pixdim[1]; 
+    dy=output_hdr.pixdim[1]; 
+  }
+  ////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////
 
    ////////////////////////////////////////////////////////////
    {
@@ -3326,55 +3342,55 @@ int main(int argc, char **argv)
       if( subj_filename[0]!='\0')
          output_bounding_box_ppm(subj_volume_msp, (const char *)output_prefix);
 
-      if(opt_W)
+    if(opt_W)
+    {
+      estimate_witelson(cc_est, NX, NY, dx, dy, W);
+
+      if( subj_filename[0]!='\0')
       {
-         estimate_witelson(cc_est, NX, NY, dx, dy, W);
+        output_hdr.pixdim[4]=ACi;
+        output_hdr.pixdim[5]=PCi;
+        output_hdr.pixdim[6]=ACx;
+        output_hdr.pixdim[7]=PCx;
+        output_hdr.pixdim[1]=0.5;
+        output_hdr.pixdim[2]=0.5; 
+        output_hdr.pixdim[3]=1.0;
+        output_hdr.dim[1]=NX; 
+        output_hdr.dim[2]=NY; 
+        output_hdr.dim[3]=1;
+        output_hdr.datatype=16;
 
-         if( subj_filename[0]!='\0')
-         {
-            output_hdr.pixdim[4]=ACi;
-            output_hdr.pixdim[5]=PCi;
-            output_hdr.pixdim[6]=ACx;
-            output_hdr.pixdim[7]=PCx;
-            output_hdr.pixdim[1]=0.5;
-            output_hdr.pixdim[2]=0.5; 
-            output_hdr.pixdim[3]=1.0;
-            output_hdr.dim[1]=NX; 
-            output_hdr.dim[2]=NY; 
-            output_hdr.dim[3]=1;
-            output_hdr.datatype=16;
+        sprintf(outputfile,"%s_cc_witelson.nii",output_prefix);
+        save_nifti_image(outputfile, cc_est, &output_hdr);
 
-            sprintf(outputfile,"%s_cc_witelson.nii",output_prefix);
-            save_nifti_image(outputfile, cc_est, &output_hdr);
-
-            update_qsform( (const char *)outputfile, Tacpc );
-         }
+        update_qsform( (const char *)outputfile, Tacpc );
       }
+    }
 
-      if(opt_H)
+    if(opt_H)
+    {
+      estimate_hampel(cc_est, NX, NY, dx, dy, H);
+
+      if( subj_filename[0]!='\0')
       {
-         estimate_hampel(cc_est, NX, NY, dx, dy, H);
+        output_hdr.pixdim[4]=ACi;
+        output_hdr.pixdim[5]=PCi;
+        output_hdr.pixdim[6]=ACx;
+        output_hdr.pixdim[7]=PCx;
+        output_hdr.pixdim[1]=0.5;
+        output_hdr.pixdim[2]=0.5; 
+        output_hdr.pixdim[3]=1.0;
+        output_hdr.dim[1]=NX; 
+        output_hdr.dim[2]=NY; 
+        output_hdr.dim[3]=1;
+        output_hdr.datatype=16;
 
-         if( subj_filename[0]!='\0')
-         {
-            output_hdr.pixdim[4]=ACi;
-            output_hdr.pixdim[5]=PCi;
-            output_hdr.pixdim[6]=ACx;
-            output_hdr.pixdim[7]=PCx;
-            output_hdr.pixdim[1]=0.5;
-            output_hdr.pixdim[2]=0.5; 
-            output_hdr.pixdim[3]=1.0;
-            output_hdr.dim[1]=NX; 
-            output_hdr.dim[2]=NY; 
-            output_hdr.dim[3]=1;
-            output_hdr.datatype=16;
+        sprintf(outputfile,"%s_cc_hampel.nii",output_prefix);
+        save_nifti_image(outputfile, cc_est, &output_hdr);
 
-            sprintf(outputfile,"%s_cc_hampel.nii",output_prefix);
-            save_nifti_image(outputfile, cc_est, &output_hdr);
-
-            update_qsform( (const char *)outputfile, Tacpc );
-         }
+        update_qsform( (const char *)outputfile, Tacpc );
       }
+    }
 
       if(csvfile[0]=='\0')
       {
