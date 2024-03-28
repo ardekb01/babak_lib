@@ -135,6 +135,7 @@ static struct option options[] =
   {"-t",1,'t'},
   {"-thresh",1,'t'},
   {"-threshold",1,'t'},
+  {"-Atlas", 1,  'a'},
   {"-atlas",1,'a'},
   {"-a",1,'a'},
   {0, 0,  0}
@@ -1245,6 +1246,9 @@ void print_help()
    "-png\n\tOutputs *.png images in addition to the *.ppm images\n\n"
 
    "-lm <filename>\n\tManually specifies AC/PC/VSPS landmarks for <input-filename>.nii\n\n"
+
+   "-atlas or -a <filename>\n\tSpecifies the atlas to be used (default: amir464).\n"
+   "\tThe other option is: babak628.\n\n"
 
    "-A <filename>\n\tUses preselected set of atlases specified in <filename> instead of\n"
    "\tautomated atlas selection. <filename> is always the output of a previous yuki run.\n\n"
@@ -2614,17 +2618,16 @@ int main(int argc, char **argv)
       case 'l':
         strcpy(lmfile,optarg);
         break;
-
-         case 'a':
-            sprintf(atlas_filename,"%s",optarg);
-            break;
-         case 'T':
-            sprintf(msp_transformation_file,"%s",optarg);
-            break;
-         case 'L':
-            sprintf(preselected_atlases_file,"%s",optarg);
-            break;
-         case 'b':
+      case 'a':
+        sprintf(atlas_filename,"%s",optarg);
+        break;
+      case 'T':
+        sprintf(msp_transformation_file,"%s",optarg);
+        break;
+      case 'L':
+        sprintf(preselected_atlases_file,"%s",optarg);
+        break;
+      case 'b':
             opt_box=YES;
             break;
          case 'B':
