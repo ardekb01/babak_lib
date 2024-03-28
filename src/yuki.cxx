@@ -1213,16 +1213,16 @@ void output_bounding_box_ppm(short *trg, const char *prefix)
 // NOTE: The commented out lines reflect secret options
 void print_help()
 {
-   printf("\nUsage: yuki [optional arguments] -i <input volume>.nii -o <output prefix>\n\n"
+   printf("\nUsage: yuki [optional arguments] -i <input volume>.nii\n\n"
  
-   "Required arguments:\n\n"
+   "Required argument:\n\n"
 
    "-i <input volume>.nii\n\t3D MRI volume on which the corpus callosum is to be segmented.\n"
    "\tThis image must be in NIFTI format of type \"short int\"\n\n"
 
-   "-o <output prefix>\n\tprefix for naming output files\n\n"
-
    "Optional arguments:\n\n"
+
+   "-o <output prefix>\n\tprefix for naming output files (default: <input volume> name)\n\n"
 
    "-verbose or -v\n\tEnables verbose mode\n\n"
 
@@ -2512,7 +2512,9 @@ void find_thickness_profile(short *cc, const char *prefix)
 
 int main(int argc, char **argv)
 {
-  char subj_filename[1024]="";  // it is important to initialize this
+  char ipimagepath[1024]="";  // important to initialize to "" 
+  char ipimagedir[1024]="";     // important to initialize to ""
+
   int number_of_atlases_used=49;
   float max_t=50.0;
 
@@ -2542,6 +2544,7 @@ int main(int argc, char **argv)
    char preselected_atlases_file[1024]="";
    char selected_atlases_file[1024]="";
    char csvfile[1024]="";
+   char csvfilepath[1024]="";
 
    float sd;
 
@@ -2588,11 +2591,11 @@ int main(int argc, char **argv)
         if(number_of_atlases_used<=0) number_of_atlases_used=49;
         break;
       case 'i':
-        sprintf(subj_filename,"%s",optarg);
+        sprintf(ipimagepath,"%s",optarg);
         break;
       case 'C':
         opt_cc=YES;
-        sprintf(subj_filename,"%s",optarg);
+        sprintf(ipimagepath,"%s",optarg);
         break;
       case 't':
         max_t  = atof(optarg);
@@ -2671,26 +2674,28 @@ int main(int argc, char **argv)
   /////////////////////////////////////////////////////////////////////////////////////////////
   //Ensure than a subject filename has been specified at the command line
   /////////////////////////////////////////////////////////////////////////////////////////////
-  if( subj_filename[0]=='\0')
+  if( ipimagepath[0]=='\0')
   {
     printf("Please specify an input volume using: -i <input volume>.nii\n");
     exit(0);
   }
 
+  // determine input image directory
+  getDirectoryName(ipimagepath, ipimagedir);
+
   if(opt_v)
   {
-    printf("Input volume = %s\n",subj_filename);
+    printf("Input volume = %s\n",ipimagepath);
   }
   /////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////////////
 
   /////////////////////////////////////////////////////////////////////////////////////////////
-  //Ensure than an output prefix has been specified at the command line
+  //Determine the outut_prefix
   /////////////////////////////////////////////////////////////////////////////////////////////
   if( output_prefix[0]=='\0')
   {
-    printf("Please specify an output prefix using: -o <output prefix>\n");
-    exit(0);
+    if( niftiFilename(output_prefix, ipimagepath)==0 ) { exit(1); }
   }
 
   if(opt_v)
@@ -2823,24 +2828,24 @@ int main(int argc, char **argv)
   /////////////////////////////////////////////////////////////////////////////////////////////
   // read the subject volume if specified at the command line
   /////////////////////////////////////////////////////////////////////////////////////////////
-  if( subj_filename[0] != '\0')
+  if( ipimagepath[0] != '\0')
   {
-    // check to see if subj_filename appears to be a NIFTI image
-    if( not_magical_nifti(subj_filename) )
+    // check to see if ipimagepath appears to be a NIFTI image
+    if( not_magical_nifti(ipimagepath) )
     {
       exit(0);
     }
 
     if( opt_v )
     {
-      printf("Subject volume = %s\n",subj_filename);
+      printf("Subject volume = %s\n",ipimagepath);
     }
 
-    subj_volume=(short *)read_nifti_image(subj_filename, &sub_hdr);
+    subj_volume=(short *)read_nifti_image(ipimagepath, &sub_hdr);
 
     if(subj_volume == NULL)
     {
-      printf("Error reading %s, aborting ...\n", subj_filename);
+      printf("Error reading %s, aborting ...\n", ipimagepath);
       exit(0);
     }
 
@@ -2851,7 +2856,7 @@ int main(int argc, char **argv)
     {
       printf("\nSorry, this program only handles images of datatype\n"
       "DT_SIGNED_SHORT=4 or DT_UINT16=512. %s has datatype %d. Aborting ...\n\n", 
-      subj_filename, sub_hdr.datatype);
+      ipimagepath, sub_hdr.datatype);
       free(subj_volume);
       exit(0);
     }
@@ -2872,16 +2877,17 @@ int main(int argc, char **argv)
   /////////////////////////////////////////////////////////////////////////////////////////////
   short *subj_volume_msp = NULL;
 
-  if( subj_filename[0] != '\0')
+  sprintf(outputfile,"%s/%s",ipimagedir, output_prefix);
+  if( ipimagepath[0] != '\0')
   {
     if( msp_transformation_file[0]=='\0')
     {
-      subj_volume_msp = find_subject_msp(subj_filename, output_prefix, lmfile);
+      subj_volume_msp = find_subject_msp(ipimagepath, outputfile, lmfile);
     }
     else
     {
-      subj_volume_msp = find_subject_msp_using_transformation(subj_filename, output_prefix, 
-        msp_transformation_file);
+      subj_volume_msp = find_subject_msp_using_transformation(ipimagepath, outputfile, 
+      msp_transformation_file);
     }
 
     count=0;
@@ -2938,7 +2944,7 @@ int main(int argc, char **argv)
       }
 
     // saves the selected atlases
-    sprintf(selected_atlases_file,"%s_A.txt",output_prefix);
+    sprintf(selected_atlases_file,"%s/%s_A.txt",ipimagedir, output_prefix);
     fp = fopen(selected_atlases_file, "w");
     if(fp==NULL) file_open_error(selected_atlases_file);
     fprintf(fp, "%d\n", number_of_atlases_used);
@@ -3028,9 +3034,8 @@ int main(int argc, char **argv)
 
     atlas_hdr.dim[1]=bbnx;
     atlas_hdr.dim[2]=bbny;
-//    atlas_hdr.dim[3]=number_of_atlases_available;
     atlas_hdr.dim[3]=number_of_atlases_used;
-    sprintf(outputfile,"%s_WACC.nii",output_prefix);  //warped atlases corpora callosa
+    sprintf(outputfile,"%s/%s_WACC.nii",ipimagedir,output_prefix);  //warped atlases corpora callosa
     save_nifti_image(outputfile, warped_cc, &atlas_hdr);
 
     ////////////////////////////////////////////////////////////
@@ -3215,7 +3220,7 @@ int main(int argc, char **argv)
 
   if(opt_cc)
   {
-    cc_est=(short *)read_nifti_image(subj_filename, &output_hdr);
+    cc_est=(short *)read_nifti_image(ipimagepath, &output_hdr);
     dx=output_hdr.pixdim[1]; 
     dy=output_hdr.pixdim[1]; 
   }
@@ -3304,7 +3309,7 @@ int main(int argc, char **argv)
 
    //////////////////////////////////////////////////////////////////////////
    {
-      if( subj_filename[0]!='\0')
+      if( ipimagepath[0]!='\0')
          output_ppm(subj_volume_msp, cc_est, (const char *)output_prefix);
 
       output_hdr.pixdim[4]=ACi;
@@ -3319,7 +3324,7 @@ int main(int argc, char **argv)
       output_hdr.dim[3]=1;
       output_hdr.datatype=16;
 
-      sprintf(outputfile,"%s_cc.nii",output_prefix);
+      sprintf(outputfile,"%s/%s_cc.nii",ipimagedir,output_prefix);
       save_nifti_image(outputfile, cc_est, &output_hdr);
 
       update_qsform( (const char *)outputfile, Tacpc );
@@ -3342,16 +3347,19 @@ int main(int argc, char **argv)
       
       CCcircularity = compute_circularity(CCarea, CCperimeter);
 
-      find_thickness_profile(cc_est, output_prefix);
+    sprintf(outputfile,"%s/%s",ipimagedir, output_prefix);
+    find_thickness_profile(cc_est, outputfile);
 
-      if( subj_filename[0]!='\0')
-         output_bounding_box_ppm(subj_volume_msp, (const char *)output_prefix);
+    if( ipimagepath[0]!='\0')
+    {
+      output_bounding_box_ppm(subj_volume_msp, (const char *)outputfile);
+    }
 
     if(opt_W)
     {
       estimate_witelson(cc_est, NX, NY, dx, dy, W);
 
-      if( subj_filename[0]!='\0')
+      if( ipimagepath[0]!='\0')
       {
         output_hdr.pixdim[4]=ACi;
         output_hdr.pixdim[5]=PCi;
@@ -3376,7 +3384,7 @@ int main(int argc, char **argv)
     {
       estimate_hampel(cc_est, NX, NY, dx, dy, H);
 
-      if( subj_filename[0]!='\0')
+      if( ipimagepath[0]!='\0')
       {
         output_hdr.pixdim[4]=ACi;
         output_hdr.pixdim[5]=PCi;
@@ -3397,10 +3405,11 @@ int main(int argc, char **argv)
       }
     }
 
-      if(csvfile[0]=='\0')
-      {
-         sprintf(csvfile,"%s.csv",output_prefix);
-      }
+    if(csvfile[0]=='\0')
+    {
+      sprintf(csvfile,"%s.csv",output_prefix);
+    }
+    sprintf(csvfilepath,"%s/%s",ipimagedir,csvfile);
 
       if(opt_v)
       {
@@ -3430,14 +3439,14 @@ int main(int argc, char **argv)
          }
       }
 
-      if( csvfile[0]!='\0')
+      if( csvfilepath[0]!='\0')
       {
          FILE *fp;
 
-         if (checkFileExistence(csvfile)==0)
+         if (checkFileExistence(csvfilepath)==0)
          {
-            fp = fopen(csvfile,"a");
-            if(fp==NULL) file_open_error(csvfile);
+            fp = fopen(csvfilepath,"a");
+            if(fp==NULL) file_open_error(csvfilepath);
             fprintf(fp,"\"ID\", CC_area, CC_perimeter, CC_circularity, CC_length");
             if(opt_W) 
             {
@@ -3451,9 +3460,9 @@ int main(int argc, char **argv)
             fclose(fp);
          }
 
-         fp = fopen(csvfile,"a");
-         if(fp==NULL) file_open_error(csvfile);
-         if(opt_cc) fprintf(fp,"\"%s\", ",subj_filename); 
+         fp = fopen(csvfilepath,"a");
+         if(fp==NULL) file_open_error(csvfilepath);
+         if(opt_cc) fprintf(fp,"\"%s\", ",ipimagepath); 
          else fprintf(fp,"\"%s_cc.nii\", ",output_prefix);
          fprintf(fp,"%6.2f, ",CCarea);
          fprintf(fp,"%6.2f, ",CCperimeter);
@@ -3490,7 +3499,7 @@ int main(int argc, char **argv)
    if(bbtrg != NULL) free(bbtrg);
    if(cctrg != NULL) free(cctrg);
 
-   if( subj_filename[0]!='\0')
+   if( ipimagepath[0]!='\0')
    {
       if(subj_volume != NULL) free(subj_volume);
       if(subj_volume != NULL) free(subj_volume_msp);
