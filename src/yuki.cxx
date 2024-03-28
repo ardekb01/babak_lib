@@ -1222,7 +1222,7 @@ void print_help()
 
    "Optional arguments:\n\n"
 
-   "-o <output prefix>\n\tprefix for naming output files (default: <input volume> name)\n\n"
+   "-o <output prefix>\n\tPrefix for naming output files (default: input volume prefix)\n\n"
 
    "-verbose or -v\n\tEnables verbose mode\n\n"
 
@@ -1234,7 +1234,7 @@ void print_help()
 
    "-threshold or -t <float>\n\tThreshold used for label fusion (default=50.0)\n\n"
 
-   "-csv <csvfile>\n\tCC measurments (area, perimeter, etc.) will be appended to this file\n"
+   "-csv <csvfile>\n\tCC measurements (area, perimeter, etc.) will be appended to this file\n"
    "\tin comma-separated values (CSV) format (default: <output-prefix>.csv)\n\n"
 
    "-Hampel or H\n\tSegments the CC according to Hampel's method and outputs the 5 sub-areas\n"
@@ -1254,11 +1254,11 @@ void print_help()
    "\tautomated atlas selection. <filename> is always the output of a previous yuki run.\n\n"
 
    "-cc <corrected_cc.nii>\n\tThis option is used when the out binary CC image is corrected\n"
-   "\tmanually and we need to recalculate the CC related measurements (area, circularlity, etc.)\n"
+   "\tmanually and we need to recalculate the CC related measurements (area, circularity, etc.)\n"
    "\tfor the corrected image.\n\n"
 
    "-T <filename.mrx>\n\tApplies the transformation matrix in <filename.mrx> to reorient\n"
-   "\tthe <input-filename>.nii volume in preperation for CC detection. Thus, automatic\n"
+   "\tthe <input-filename>.nii volume in preparation for CC detection. Thus, automatic\n"
    "\treorientation is disabled.\n\n");
 
    return;
