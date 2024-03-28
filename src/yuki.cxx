@@ -3310,7 +3310,10 @@ int main(int argc, char **argv)
    //////////////////////////////////////////////////////////////////////////
    {
       if( ipimagepath[0]!='\0')
-         output_ppm(subj_volume_msp, cc_est, (const char *)output_prefix);
+      {
+         sprintf(outputfile,"%s/%s",ipimagedir, output_prefix);
+         output_ppm(subj_volume_msp, cc_est, (const char *)outputfile);
+      }
 
       output_hdr.pixdim[4]=ACi;
       output_hdr.pixdim[5]=PCi;
@@ -3373,7 +3376,7 @@ int main(int argc, char **argv)
         output_hdr.dim[3]=1;
         output_hdr.datatype=16;
 
-        sprintf(outputfile,"%s_cc_witelson.nii",output_prefix);
+        sprintf(outputfile,"%s/%s_cc_witelson.nii", ipimagedir, output_prefix);
         save_nifti_image(outputfile, cc_est, &output_hdr);
 
         update_qsform( (const char *)outputfile, Tacpc );
@@ -3398,7 +3401,7 @@ int main(int argc, char **argv)
         output_hdr.dim[3]=1;
         output_hdr.datatype=16;
 
-        sprintf(outputfile,"%s_cc_hampel.nii",output_prefix);
+        sprintf(outputfile,"%s/%s_cc_hampel.nii", ipimagedir, output_prefix);
         save_nifti_image(outputfile, cc_est, &output_hdr);
 
         update_qsform( (const char *)outputfile, Tacpc );
