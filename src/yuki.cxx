@@ -1224,30 +1224,30 @@ void print_help()
 
    "-o <output prefix>\n\tPrefix for naming output files (default: input volume prefix)\n\n"
 
-   "-verbose or -v\n\tEnables verbose mode\n\n"
+   "-verbose (-v)\n\tEnables verbose mode\n\n"
 
-   "-version or -V\n\tReports software version\n\n"
+   "-version (-V)\n\tReports software version\n\n"
 
-   "-help or -h\n\tPrints help message\n\n"
+   "-help (-h)\n\tPrints help message\n\n"
 
    "-n <integer>\n\tSpecifies the number of atlases to be used (default=49)\n\n"
 
-   "-threshold or -t <float>\n\tThreshold used for label fusion (default=50.0)\n\n"
+   "-threshold (-t) <float>\n\tThreshold used for label fusion (default=50.0)\n\n"
 
    "-csv <csvfile>\n\tCC measurements (area, perimeter, etc.) will be appended to this file\n"
    "\tin comma-separated values (CSV) format (default: <output-prefix>.csv)\n\n"
 
-   "-Hampel or H\n\tSegments the CC according to Hampel's method and outputs the 5 sub-areas\n"
+   "-Hampel (-H)\n\tSegments the CC according to Hampel's method and outputs the 5 sub-areas\n"
    "\tas well as <output-prefix>_cc_hampel.ppm and <output-prefix>_cc_hampel.nii images\n\n"
 
-   "-Witelson or W\n\tSegments the CC according to Witelson's method and outputs the 7 sub-areas\n"
+   "-Witelson (-W)\n\tSegments the CC according to Witelson's method and outputs the 7 sub-areas\n"
    "\tas well as <output-prefix>_cc_witelson.ppm and <output-prefix>_cc_witelson.nii images\n\n"
 
    "-png\n\tOutputs *.png images in addition to the *.ppm images\n\n"
 
    "-lm <filename>\n\tManually specifies AC/PC/VSPS landmarks for <input-filename>.nii\n\n"
 
-   "-atlas or -a <filename>\n\tSpecifies the atlas to be used (default: amir464).\n"
+   "-atlas (-a) <filename>\n\tSpecifies the atlas to be used (default: amir464).\n"
    "\tThe other option is: babak628.\n\n"
 
    "-A <filename>\n\tUses preselected set of atlases specified in <filename> instead of\n"
