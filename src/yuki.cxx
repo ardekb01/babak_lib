@@ -3008,7 +3008,8 @@ int main(int argc, char **argv)
       for(int v=0; v<bbnp; v++) 
       {
         avg_warped_cc[v] += warped_cc_ptr[v];
-        warped_cc[a*bbnp + v] = warped_cc_ptr[v];
+//        warped_cc[a*bbnp + v] = warped_cc_ptr[v];
+        warped_cc[i*bbnp + v] = warped_cc_ptr[v];
       }
 
       free(warped_cc_ptr);
@@ -3027,7 +3028,8 @@ int main(int argc, char **argv)
 
     atlas_hdr.dim[1]=bbnx;
     atlas_hdr.dim[2]=bbny;
-    atlas_hdr.dim[3]=number_of_atlases_available;
+//    atlas_hdr.dim[3]=number_of_atlases_available;
+    atlas_hdr.dim[3]=number_of_atlases_used;
     sprintf(outputfile,"%s_WACC.nii",output_prefix);  //warped atlases corpora callosa
     save_nifti_image(outputfile, warped_cc, &atlas_hdr);
 
