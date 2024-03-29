@@ -1,9 +1,1 @@
-DISCLAIMER: The following Automatic Registration Toolbox (ART) software is provided "as is", 
-without warranty of any kind, express or implied, including but not limited to the warranties 
-of merchantability, fitness for a particular purpose and noninfringement. In no event shall 
-the authors or copyright holders be liable for any claim, damages or other liability, 
-whether in an action of contract, tort or otherwise, arising from, out of or in connection 
-with this software or the use or other dealings in this software. Permission is granted
-for non-clinical and non-commercial use of this software for research purposes only. Commericial
-entities interested in intergrating this software or any part of it in their products should 
-contact the author: Babak A. Ardekani, PhD.  Ardekani@nki.rfmh.org.
+DISCLAIMER: The following Automatic Registration Toolbox (ART) software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. In no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with this software or the use or other dealings in this software. Permission is granted for non-clinical and non-commercial use of this software for research purposes only. Commericial entities interested in intergrating this software or any part of it in their products should contact the author: Babak A. Ardekani, PhD.  Ardekani@nki.rfmh.org.
