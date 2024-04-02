@@ -1501,7 +1501,7 @@ int main(int argc, char **argv)
       switch (opt) 
       {
          case 'V':
-            printf("KAIBA Version 3.1 released Dec. 18, 2019.\n");
+            printf("KAIBA Version 3.1.1 (April 2024)\n");
             printf("Author: Babak A. Ardekani, Ph.D.\n");
             exit(0);
          case 't':
