@@ -69,7 +69,9 @@ int anterior_point[2];
 int posterior_point[2];
 int posterior_genu[2];
 int rostrum[2];
+int cc_length_sixth;
 int cc_length_fifth;
+int cc_length_fourth;
 int cc_length_third;
 int cc_length_half;
 int cc_length;
@@ -119,6 +121,8 @@ static struct option options[] =
   {"-n", 1,  'n'},
   {"-o", 1, 'o'},
   {"-csv", 1,  'c'},
+  {"-HF", 0,  'F'},
+  {"-Hofer-Frahm", 0,  'F'},
   {"-H", 0,  'H'},
   {"-Hampel", 0,  'H'},
   {"-W", 0,  'W'},
@@ -145,6 +149,7 @@ int opt_cc=NO;
 int opt_box=NO;
 int opt_W=NO;
 int opt_H=NO;
+int opt_HF=NO;
 int opt_border=NO;
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -754,6 +759,63 @@ void output_ppm(short *trg, short *cc_est, const char *prefix)
       save_as_ppm((const char *)outputfile, NX, NY, R, G, B);
    }
    //////////////////////////////////////////////////////////////////////////////////
+
+   //////////////////////////////////////////////////////////////////////////////////
+   // outputs visualization of Hofer-Frahm subdivisions
+   if(opt_HF)
+   {
+      for(int i=0; i<NX; i++)
+      for(int j=0; j<NY; j++)
+      {
+         int v;
+
+         v = j*NX + i;
+
+         if(cc_est[v]>0)
+         {
+            if(i >= (posterior_point[0]-cc_length_fourth) ) // HF5
+            {
+               R[v] = 0;
+               G[v] = 0;
+               B[v] = 255;
+            }
+            else if(i >= (posterior_point[0]-cc_length_third) ) // HF4
+            {
+               R[v] = 0;
+               G[v] = 255;
+               B[v] = 0;
+            }
+            else if(i >= (posterior_point[0]-cc_length_half) ) // HF3
+            {
+               R[v] = 255;
+               G[v] = 255;
+               B[v] = 0;
+            }
+            else if(i >= (anterior_point[0]+cc_length_sixth) && j<posterior_genu[1]) // HF2
+            {
+               R[v] = 255;
+               G[v] = 127;
+               B[v] = 0;
+            } 
+            else // HF1 
+            {
+               R[v] = 255;
+               G[v] = 0;
+               B[v] = 0;
+            }
+         }
+         else
+         {
+            R[v] = (unsigned char)(trg[v]*255.0/max);
+            G[v] = (unsigned char)(trg[v]*255.0/max);
+            B[v] = (unsigned char)(trg[v]*255.0/max);
+         }
+      }
+
+      sprintf(outputfile,"%s_cc_hofer_frahm.ppm",prefix);
+      save_as_ppm((const char *)outputfile, NX, NY, R, G, B);
+   }
+   //////////////////////////////////////////////////////////////////////////////////
    
    //////////////////////////////////////////////////////////////////////////////////
    // outputs visualization of Hampel's subdivisions
@@ -1243,6 +1305,9 @@ void print_help()
    "-Witelson (-W)\n\tSegments the CC according to Witelson's method and outputs the 7 sub-areas\n"
    "\tas well as <output-prefix>_cc_witelson.ppm and <output-prefix>_cc_witelson.nii images\n\n"
 
+   "-Hofer-Frahm (-HF)\n\tSegments the CC according to Hofer-Frahm's method and outputs the 5\n"
+   "\tsub-areas, <output-prefix>_cc_hofer_frahm.ppm and <output-prefix>_cc_hofer_frahm.nii\n\n"
+
    "-png\n\tOutputs *.png images in addition to the *.ppm images\n\n"
 
    "-lm <filename>\n\tManually specifies AC/PC/VSPS landmarks for <input-filename>.nii\n\n"
@@ -1505,6 +1570,48 @@ void estimate_witelson(short *msk, int nx, int ny, float dx, float dy, float *W)
       {
          W[3] += dx*dy;
          msk[v]=3;
+      }
+   }
+}
+
+void estimate_hofer_frahm(short *msk, int nx, int ny, float dx, float dy, float *HF)
+{
+   int v;
+
+   for(int i=0; i<=5; i++)
+   {
+      HF[i]=0;
+   }
+
+   for(int i=0; i<nx; i++)
+   for(int j=0; j<ny; j++)
+   {
+      v = j*nx + i;
+      if(msk[v]>0 && i>=(posterior_point[0]-cc_length_fourth) ) // HF5
+      {
+         HF[5] += dx*dy;
+         msk[v]=5;
+      }
+      else if(msk[v]>0 && i>=(posterior_point[0]-cc_length_third) ) // HF4
+      {
+         HF[4] += dx*dy;
+         msk[v]=4;
+      }
+      else if(msk[v]>0 && i>=(posterior_point[0]-cc_length_half) ) // HF3
+      {
+         HF[3] += dx*dy;
+         msk[v]=3;
+      }
+      else if(msk[v]>0 && i>=(anterior_point[0]+cc_length_sixth) 
+      && j<posterior_genu[1]) // HF2
+      {
+         HF[2] += dx*dy;
+         msk[v]=2;
+      }
+      else if(msk[v]>0) // HF1 
+      {
+         HF[1] += dx*dy;
+         msk[v]=1;
       }
    }
 }
@@ -2529,6 +2636,7 @@ int main(int argc, char **argv)
 
    float W[8]; // areas of Witelson's subdivisions are stored in W[1], ... W[7]; W[0] is unused
    float H[6]; // areas of Hampel's subdivisions are stored in H[1], ... H[5]; H[0] is unused
+   float HF[6]; // Hofer-Frahm's subdivisions stored as HF[1], ... HF[5]; HF[0] is unused
    float CCarea;
    float CCperimeter;
    float CCcircularity;
@@ -2576,11 +2684,11 @@ int main(int argc, char **argv)
   {
     switch (opt) 
     {
-         case 's':
-            print_secret_help();
-            exit(0);
+      case 's':
+        print_secret_help();
+        exit(0);
       case 'V':
-        printf("Version 3.0 (March 2024)\n");
+        printf("Version 3.1 (August 2024)\n");
         printf("Author: Babak A. Ardekani, Ph.D.\n");
         exit(0);
       case 'h':
@@ -2608,6 +2716,9 @@ int main(int argc, char **argv)
         break;
       case 'v':
         opt_v=YES;
+        break;
+      case 'F':
+        opt_HF=YES;
         break;
       case 'W':
         opt_W=YES;
@@ -3292,7 +3403,9 @@ int main(int argc, char **argv)
       }
 
       cc_length = posterior_point[0]-anterior_point[0];
+      cc_length_sixth= (int)nearbyint( cc_length/6.0 );
       cc_length_fifth = (int)nearbyint( cc_length/5.0 );
+      cc_length_fourth = (int)nearbyint( cc_length/4.0 );
       cc_length_third = (int)nearbyint( cc_length/3.0 );
       cc_length_half = (int)nearbyint( cc_length/2.0 );
 
@@ -3383,6 +3496,31 @@ int main(int argc, char **argv)
       }
     }
 
+    if(opt_HF)
+    {
+      estimate_hofer_frahm(cc_est, NX, NY, dx, dy, HF);
+
+      if( ipimagepath[0]!='\0')
+      {
+        output_hdr.pixdim[4]=ACi;
+        output_hdr.pixdim[5]=PCi;
+        output_hdr.pixdim[6]=ACx;
+        output_hdr.pixdim[7]=PCx;
+        output_hdr.pixdim[1]=0.5;
+        output_hdr.pixdim[2]=0.5; 
+        output_hdr.pixdim[3]=1.0;
+        output_hdr.dim[1]=NX; 
+        output_hdr.dim[2]=NY; 
+        output_hdr.dim[3]=1;
+        output_hdr.datatype=16;
+
+        sprintf(outputfile,"%s/%s_cc_hofer_frahm.nii", ipimagedir, output_prefix);
+        save_nifti_image(outputfile, cc_est, &output_hdr);
+
+        update_qsform( (const char *)outputfile, Tacpc );
+      }
+    }
+
     if(opt_H)
     {
       estimate_hampel(cc_est, NX, NY, dx, dy, H);
@@ -3422,7 +3560,7 @@ int main(int argc, char **argv)
          printf("CC length = %5.1f mm\n",cc_length*dx);
          if(opt_W)
          {
-            printf("Witelson's subdivisoins:\n");
+            printf("Witelson's subdivisions:\n");
             printf("\tW1 = %6.2f mm^2\n",W[1]);
             printf("\tW2 = %6.2f mm^2\n",W[2]);
             printf("\tW3 = %6.2f mm^2\n",W[3]);
@@ -3433,12 +3571,21 @@ int main(int argc, char **argv)
          }
          if(opt_H)
          {
-            printf("Hampels's subdivisoins:\n");
-            printf("\tC1 = %6.2f mm^2\n",H[1]);
-            printf("\tC2 = %6.2f mm^2\n",H[2]);
-            printf("\tC3 = %6.2f mm^2\n",H[3]);
-            printf("\tC4 = %6.2f mm^2\n",H[4]);
-            printf("\tC5 = %6.2f mm^2\n",H[5]);
+            printf("Hampels's subdivisions:\n");
+            printf("\tH1 = %6.2f mm^2\n",H[1]);
+            printf("\tH2 = %6.2f mm^2\n",H[2]);
+            printf("\tH3 = %6.2f mm^2\n",H[3]);
+            printf("\tH4 = %6.2f mm^2\n",H[4]);
+            printf("\tH5 = %6.2f mm^2\n",H[5]);
+         }
+         if(opt_HF)
+         {
+            printf("Hofer-Frahm's subdivisions:\n");
+            printf("\tHF1 = %6.2f mm^2\n",HF[1]);
+            printf("\tHF2 = %6.2f mm^2\n",HF[2]);
+            printf("\tHF3 = %6.2f mm^2\n",HF[3]);
+            printf("\tHF4 = %6.2f mm^2\n",HF[4]);
+            printf("\tHF5 = %6.2f mm^2\n",HF[5]);
          }
       }
 
@@ -3457,7 +3604,11 @@ int main(int argc, char **argv)
             }
             if(opt_H) 
             {
-               fprintf(fp,", C1, C2, C3, C4, C5");
+               fprintf(fp,", H1, H2, H3, H4, H5");
+            }
+            if(opt_HF) 
+            {
+               fprintf(fp,", HF1, HF2, HF3, HF4, HF5");
             }
             fprintf(fp,"\n");
             fclose(fp);
@@ -3488,6 +3639,14 @@ int main(int argc, char **argv)
             fprintf(fp,"%6.2f, ",H[3]);
             fprintf(fp,"%6.2f, ",H[4]);
             fprintf(fp,"%6.2f",H[5]);
+         }
+         if(opt_HF)
+         {
+            fprintf(fp,", %6.2f, ",HF[1]);
+            fprintf(fp,"%6.2f, ",HF[2]);
+            fprintf(fp,"%6.2f, ",HF[3]);
+            fprintf(fp,"%6.2f, ",HF[4]);
+            fprintf(fp,"%6.2f",HF[5]);
          }
          fprintf(fp,"\n");
          fclose(fp);
