@@ -1366,6 +1366,96 @@ void cw_eight_neighbor(short *im, int nx, int ny, int del_i, int del_j, int &bi,
 
 //////////////////////////////////////////////////////////////////////////////////
 
+void find_border(short *msk, int nx, int ny, int *borderi, int *borderj, int &nb)
+{
+   int si, sj;
+   int b;
+   int indx;
+   int ci, cj;
+   int ni[8];
+   int nj[8];
+   int zero_image_flg=1;
+
+   // zeros the first and last rows
+   for(int i=0; i<nx; i++)
+   {
+      msk[  0*nx    + i ]=0;
+      msk[(ny-1)*nx + i ]=0;
+   }
+
+   // zeros the first and last columns
+   for(int j=0; j<ny; j++)
+   {
+      msk[ j*nx +   0    ]=0;
+      msk[ j*nx + (nx-1) ]=0;
+   }
+
+   // find s (Step 1)
+   for(int n=0; n<nx*ny; n++)
+   {
+      if( msk[n]>0 ) 
+      {
+         si = n%nx;
+         sj = n/nx;
+         zero_image_flg=0;
+         break;
+      }
+   }
+
+   if( zero_image_flg )
+   {
+      nb=0;
+      return;
+   }
+
+   // initialize c (Step 2)
+   ci=si;
+   cj=sj;
+
+   // initialize b (Step 2)
+   b = 0;
+
+   nb=0;
+   do {
+
+      borderi[nb]=ci;
+      borderj[nb]=cj;
+      nb++;
+
+      // set n (Step 3)
+      ni[0]=ci-1; nj[0]=cj;
+      ni[1]=ci-1; nj[1]=cj-1;
+      ni[2]=ci;   nj[2]=cj-1;
+      ni[3]=ci+1; nj[3]=cj-1;
+      ni[4]=ci+1; nj[4]=cj;
+      ni[5]=ci+1; nj[5]=cj+1;
+      ni[6]=ci;   nj[6]=cj+1;
+      ni[7]=ci-1; nj[7]=cj+1;
+
+      // initialize next c (Step 3)
+      for(int k=0; k<8; k++)
+      {
+         indx = (b+k)%8;   
+         if( msk[ nj[indx]*nx + ni[indx] ] > 0)
+         {
+            ci = ni[indx];
+            cj = nj[indx];
+
+            // very important derivation takes:
+            // index =0 or 1 to b=6
+            // index =2 or 3 to b=0 
+            // index =4 or 5 to b=2 
+            // index =6 or 7 to b=4
+            b = ((indx/2 - 1)*2 + 8)%8;
+            break;
+         }
+      }
+
+   } while( ci!=si || cj!=sj);
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+
 float estimate_circumference(short *msk, int nx, int ny, float dx, float dy, int *borderi, int *borderj, int &nb)
 {
    int si, sj;
@@ -2537,8 +2627,6 @@ int main(int argc, char **argv)
 
    FILE *fp;
 
-   int kmin=0, kmax=100;
-
    float W[8]; // areas of Witelson's subdivisions are stored in W[1], ... W[7]; W[0] is unused
    float H[6]; // areas of Hampel's subdivisions are stored in H[1], ... H[5]; H[0] is unused
    float CCarea;
@@ -2754,6 +2842,7 @@ int main(int argc, char **argv)
   int number_of_atlases_available;
   short *atlas_cc_ptr;
   short *bbtrg=NULL; // the bounding box MSP subimage of the subject image
+  float *bbtrg_sobel=NULL; // the Sobel edges on bbtrg
   short *cctrg=NULL;
 
   sprintf(filename,"%s/%s.nii",ARTHOME, atlas_filename);
@@ -2793,6 +2882,7 @@ int main(int argc, char **argv)
   dy=atlas_hdr.pixdim[2]; 
   dz=atlas_hdr.pixdim[3];
 
+  bbtrg_sobel = (float *)calloc(bbnp, sizeof(float));
   bbtrg = (short *)calloc(bbnp, sizeof(short));
   cctrg = (short *)calloc(bbnp, sizeof(short));
 
@@ -2910,12 +3000,24 @@ int main(int argc, char **argv)
       count++;
     }
 
+    sobel_edge(bbtrg, bbtrg_sobel, bbnx, bbny);
+
     //uncomment the next 6 lines to save bbtrg as a test
     //atlas_hdr.dim[1]=bbnx;
     //atlas_hdr.dim[2]=bbny;
     //atlas_hdr.dim[3]=1;
     //sprintf(outputfile,"bbtrg.nii");
     //save_nifti_image(outputfile, bbtrg, &atlas_hdr);
+    //exit(0);
+    
+    //uncomment the next 8 lines to save bbtrg_sobel as a test
+    //atlas_hdr.dim[1]=bbnx;
+    //atlas_hdr.dim[2]=bbny;
+    //atlas_hdr.dim[3]=1;
+    //atlas_hdr.datatype = DT_FLOAT32;
+    //atlas_hdr.bitpix= 32;
+    //sprintf(outputfile,"bbtrg_sobel.nii");
+    //save_nifti_image(outputfile, bbtrg_sobel, &atlas_hdr);
     //exit(0);
   }
   /////////////////////////////////////////////////////////////////////////////////////////////
@@ -3051,184 +3153,76 @@ int main(int argc, char **argv)
     save_nifti_image(outputfile, warped_cc, &atlas_hdr);
 
     ////////////////////////////////////////////////////////////
-    // find kmin and kmax
     {
-         float ccarea[101];
-         int run[100];
-         int vox;
-         for(int k=0; k<=100; k++)
-         {
-            ccarea[k]=0.0;
-            for(int i=1; i<bbnx-1; i++)
-            for(int j=1; j<bbny-1; j++)
-            {
-               vox = j*bbnx + i;
-               if( avg_warped_cc[vox] > (k*1.0) ) 
-               {
-                  ccarea[k] += dx*dy;
-               }
-            }
-         }
+      float sobel_score;
+      float max_sobel_score=0.0;
+      cci = (int *)calloc(bbnp,sizeof(int));
+      ccj = (int *)calloc(bbnp,sizeof(int));
 
-         for(int k=0; k<100; k++)
-         {
-            //if( (ccarea[k]-ccarea[k+1]) < 10.0) run[k]=1; else run[k]=0;
-            if( (ccarea[k]-ccarea[k+1]) < 5.0) run[k]=1; else run[k]=0;
-         }
-
-         int nruns=0;
-         int run_start_index[100];
-         int run_length[100];
-         int max_run=0;
-
-         for(int k=0; k<100; k++)
-         if( run[k]==1 )
-         {
-            run_start_index[nruns]=k;
-            run_length[nruns] = 0;
-            while( run[k]==1 && k<100) 
-            {  
-               run_length[nruns]++;
-               k++;
-            }  
-            nruns++;
-         }
-
-         for(int i=0; i<nruns; i++) 
-         {
-             if( run_length[i] > max_run )
-             {
-                max_run = run_length[i];
-                kmin = run_start_index[i];
-                kmax = run_start_index[i]+max_run-1;
-             }
-         }
-
-         //if( opt_v )
-         //   printf("Threshold selection interval: [%d, %d]\n",kmin, kmax);
-    }
-
-      
-    {
-      float mean1, mean2;
-      float ssd;
-      int n1, n2;
-      float *fdr; // Fisher's discriminant ratio
-
-      copyarray(avg_warped_cc, dumf, bbnp);
-
-      fdr = (float *)calloc(101, sizeof(float));
-
-         for(int k=kmin; k<=kmax; k++)
-         {
-            float t;
-            t = k*1.0;
-
-            n1=n2=0;
-            mean1=mean2=0.0;
-            ssd=0.0;
-            for(int i=0; i<bbnx; i++)
-            {
-               for(int j=0; j<bbny; j++)
-               {
-                  int voxel = j*bbnx + i;
-
-                  if( avg_warped_cc[voxel] > t && dumf[voxel] > 0.0) 
-                  { 
-                     n1++;
-                     mean1 += bbtrg[voxel];
-                  }
-                  else if ( dumf[voxel] > 0.0)
-                  {
-                     n2++;
-                     mean2 += bbtrg[voxel];
-                  }
-               } // j
-            } // i
-
-            if( n1>0 ) mean1 /= n1; 
-            if( n2>0 ) mean2 /= n2; 
-            if( n1==0 || n2==0 ) mean1=mean2=0.0;
-
-            for(int i=0; i<bbnx; i++)
-            {
-               for(int j=0; j<bbny; j++)
-               {
-                  int voxel = j*bbnx + i;
-
-                  if( avg_warped_cc[voxel] > t && dumf[voxel] > 0.0) 
-                  { 
-                     ssd += (mean1-bbtrg[voxel])*(mean1-bbtrg[voxel]);
-                  }
-                  else if ( dumf[voxel] > 0.0)
-                  {
-                     ssd += (mean2-bbtrg[voxel])*(mean2-bbtrg[voxel]);
-                  }
-               } // j
-            } // i
-
-         if( n1==0 || n2==0 ) fdr[k]=0.0;
-
-         if( (n1+n2-2.0) > 0 ) ssd /= (n1+n2-2.0);
-
-         fdr[k] = sqrtf( (mean1 - mean2)*(mean1 - mean2) / ssd);
-
-        // printf("%f %d %d %d mean1 = %f mean2 = %f fdr=%f\n", t, n1, n2, n1+n2, mean1, mean2, fdr[k]);
-      }
-
-      int maxidx=0;
-      float maxfdr=0.0;
-      for(int k=kmin; k<=kmax; k++)
+      for(float t=20.0; t<=80.0; t+=1.0)
       {
-        if(fdr[k] > maxfdr) 
+        for(int i=0; i<bbnx; i++)
         {
-          maxidx=k;
-          maxfdr = fdr[k];
-        }
-      }
-      free(fdr);
-
-      //if(opt_v)
-      //{
-      //   printf("maxfdr=%f maxidx=%d\n",maxfdr, maxidx);
-      //}
-      if(max_t == 0.0)
-      {
-        max_t = maxidx*1.0;
-      }
-
-      if( opt_v )
-      {
-         printf("Label fusion threshold = %3.1f\n",max_t);
-      }
-
-      // save the threshold used for label fusion
-      fp = fopen(selected_atlases_file, "a");
-      if(fp==NULL) file_open_error(selected_atlases_file);
-      fprintf(fp, "%f\n", max_t);
-      fclose(fp);
-
-      for(int i=0; i<bbnx; i++)
-      {
-        for(int j=0; j<bbny; j++)
-        {
-          int voxel = j*bbnx + i;
-
-          if( avg_warped_cc[voxel] > max_t)
-          { 
-            cc_est[ (j+UPPER_LEFT_j)*NX + (i+UPPER_LEFT_i)]=1;
-            cctrg[voxel]=1;
-          }
-          else 
+          for(int j=0; j<bbny; j++)
           {
-            cc_est[ (j+UPPER_LEFT_j)*NX + (i+UPPER_LEFT_i)]=0;
-            cctrg[voxel]=0;
-          }
-        } // j
-      } // i
+            int voxel = j*bbnx + i;
 
+            if( avg_warped_cc[voxel] > t)
+            { 
+              cc_est[ (j+UPPER_LEFT_j)*NX + (i+UPPER_LEFT_i)]=1;
+              cctrg[voxel]=1;
+            }
+            else 
+            {
+              cc_est[ (j+UPPER_LEFT_j)*NX + (i+UPPER_LEFT_i)]=0;
+              cctrg[voxel]=0;
+            }
+          } // j
+        } // i
+
+        find_border(cctrg, bbnx, bbny, cci, ccj, nb);
+	
+        sobel_score=0.0;
+	for(int k=0; k<nb; k++) sobel_score += bbtrg_sobel[ccj[k]*bbnx + cci[k]];
+
+	if(sobel_score > max_sobel_score) { max_sobel_score = sobel_score; max_t = t; }
+	printf("t=%f score=%f\n",t,sobel_score);
+      } // t
+      printf("max score=%f at t=%f\n",max_sobel_score,max_t);
+
+      free(cci); free(ccj);
     }
-  }
+
+    if( opt_v )
+    {
+      printf("Label fusion threshold = %3.1f\n",max_t);
+    }
+
+    // save the threshold used for label fusion
+    fp = fopen(selected_atlases_file, "a");
+    if(fp==NULL) file_open_error(selected_atlases_file);
+    fprintf(fp, "%f\n", max_t);
+    fclose(fp);
+
+    for(int i=0; i<bbnx; i++)
+    {
+      for(int j=0; j<bbny; j++)
+      {
+        int voxel = j*bbnx + i;
+
+        if( avg_warped_cc[voxel] > max_t)
+        { 
+          cc_est[ (j+UPPER_LEFT_j)*NX + (i+UPPER_LEFT_i)]=1;
+          cctrg[voxel]=1;
+        }
+        else 
+        {
+          cc_est[ (j+UPPER_LEFT_j)*NX + (i+UPPER_LEFT_i)]=0;
+          cctrg[voxel]=0;
+        }
+      } // j
+    } // i
+  }  // if !opt_cc
 
   if(opt_cc)
   {
@@ -3514,6 +3508,7 @@ int main(int argc, char **argv)
 
    if(bbtrg != NULL) free(bbtrg);
    if(cctrg != NULL) free(cctrg);
+   if(bbtrg_sobel != NULL) free(bbtrg_sobel);
 
    if( ipimagepath[0]!='\0')
    {
