@@ -138,6 +138,7 @@ static struct option options[] =
   {"-Atlas", 1,  'a'},
   {"-atlas",1,'a'},
   {"-a",1,'a'},
+  {"-autofuse",0,'F'},
   {0, 0,  0}
 };
 
@@ -2614,6 +2615,7 @@ void find_thickness_profile(short *cc, const char *prefix)
 
 int main(int argc, char **argv)
 {
+  int opt_automatic_fusion_threshold = NO;
   char ipimagepath[1024]="";  // important to initialize to "" 
   char ipimagedir[1024]="";     // important to initialize to ""
 
@@ -2676,9 +2678,9 @@ int main(int argc, char **argv)
   {
     switch (opt) 
     {
-         case 's':
-            print_secret_help();
-            exit(0);
+      case 's':
+        print_secret_help();
+        exit(0);
       case 'V':
         printf("Version 3.1 (Nov. 2024)\n");
         printf("Author: Babak A. Ardekani, Ph.D.\n");
@@ -2686,6 +2688,9 @@ int main(int argc, char **argv)
       case 'h':
         print_help();
         exit(0);
+      case 'F':
+        opt_automatic_fusion_threshold = YES;
+        break;
       case 'n':
         number_of_atlases_used=atoi(optarg);
         if(number_of_atlases_used<=0) number_of_atlases_used=49;
@@ -2821,6 +2826,8 @@ int main(int argc, char **argv)
     {
       if( fscanf(fp,"%d\n",&dum) == EOF) errorMessage("Read error, aborting ...");
     }
+
+    // read max_t from the preselected_atlases_file
     if( fscanf(fp,"%f\n",&max_t) == EOF ) errorMessage("Read error, aborting ...");
     fclose(fp);
 
@@ -3043,9 +3050,9 @@ int main(int argc, char **argv)
     }
     hpsort(number_of_atlases_available, corr, atlas_indx);
 
-      // if atlases are preselected, read them into last elements of atlas_indx
-      if(preselected_atlases_file[0] != '\0') 
-      {
+    // if atlases are preselected, read them into last elements of atlas_indx
+    if(preselected_atlases_file[0] != '\0') 
+    {
          fp = fopen(preselected_atlases_file,"r");
          if(fp==NULL) file_open_error(preselected_atlases_file);
          if( fscanf(fp,"%d\n",&number_of_atlases_used) == EOF ) errorMessage("Read error, aborting ...");
@@ -3055,7 +3062,7 @@ int main(int argc, char **argv)
 	      errorMessage("Read error, aborting ...");
          }
          fclose(fp);
-      }
+    }
 
     // saves the selected atlases
     sprintf(selected_atlases_file,"%s/%s_A.txt",ipimagedir, output_prefix);
@@ -3153,6 +3160,7 @@ int main(int argc, char **argv)
     save_nifti_image(outputfile, warped_cc, &atlas_hdr);
 
     ////////////////////////////////////////////////////////////
+    if( opt_automatic_fusion_threshold )
     {
       float sobel_score;
       float max_sobel_score=0.0;
@@ -3186,9 +3194,9 @@ int main(int argc, char **argv)
 	for(int k=0; k<nb; k++) sobel_score += bbtrg_sobel[ccj[k]*bbnx + cci[k]];
 
 	if(sobel_score > max_sobel_score) { max_sobel_score = sobel_score; max_t = t; }
-	printf("t=%f score=%f\n",t,sobel_score);
+	//printf("t=%f score=%f\n",t,sobel_score);
       } // t
-      printf("max score=%f at t=%f\n",max_sobel_score,max_t);
+      //printf("max score=%f at t=%f\n",max_sobel_score,max_t);
 
       free(cci); free(ccj);
     }
