@@ -65,7 +65,11 @@ void readinputlm( char *filename , int &n, float * &inputLM)
 
    inputLM = (float *)calloc(n, sizeof(float) );
    fp=fopen(filename,"r");
-   for(int i=0; i<n; i++) fscanf(fp,"%f", inputLM+i);
+   for(int i=0; i<n; i++) {
+      if ( fscanf(fp,"%f", inputLM+i) != 1) {
+         fprintf(stderr, "Error: Failed to read inputLM from file.\n");
+      }
+   }
    fclose(fp);
 
    n /= 3;

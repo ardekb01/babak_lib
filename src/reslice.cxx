@@ -165,7 +165,9 @@ int main(int argc, char **argv)
   dx=iphdr.pixdim[1]; dy=iphdr.pixdim[2]; dz=iphdr.pixdim[3]; 
 
   // to deal with the sometimes -tive voxel dimensions in SPM/FSL data sets
-  if(dx<0.0) dx *= -1.0; if(dy<0.0) dy *= -1.0; if(dz<0.0) dz *= -1.0;
+  if(dx<0.0) dx *= -1.0; 
+  if(dy<0.0) dy *= -1.0; 
+  if(dz<0.0) dz *= -1.0;
 
   if(opt_v)
   {
@@ -203,7 +205,9 @@ int main(int argc, char **argv)
     dx2=ophdr.pixdim[1]; dy2=ophdr.pixdim[2]; dz2=ophdr.pixdim[3]; 
 
     // to deal with the sometimes -tive voxel dimensions in SPM/FSL data sets
-    if(dx2<0.0) dx2 *= -1.0; if(dy2<0.0) dy2 *= -1.0; if(dz2<0.0) dz2 *= -1.0;
+    if(dx2<0.0) dx2 *= -1.0; 
+    if(dy2<0.0) dy2 *= -1.0; 
+    if(dz2<0.0) dz2 *= -1.0;
   }
 
   if(opt_v)

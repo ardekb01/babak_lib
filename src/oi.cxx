@@ -41,7 +41,7 @@ int main(int argc, char **argv)
    }
 
 //////////////////////////////////////////////////////////////////////////////////////
-   int nx, ny, nz, np, nv;
+   int nx, ny, nz, nv;
    float dx, dy, dz;
    float min=0.0, max=0.0;
    float avgsize=0.0;
@@ -61,7 +61,6 @@ int main(int argc, char **argv)
    dy = hdr.pixdim[2];
    dz = hdr.pixdim[3];
    nv = nx*ny*nz;
-   np = nx*ny;
 
    minmax(im,nv,min,max);
 

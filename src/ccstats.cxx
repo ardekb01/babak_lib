@@ -90,9 +90,17 @@ char **read_idata(const char *dataFile, const char *dataTypeCode, const char *da
 	for(int j=0; j<nc; j++)
 	{
 		if( dataTypeCode[j]=='i' && dataMaskCode[j]=='1' )
-			fscanf(fp, "%s", idata[count++]);
+                {
+                   if( fscanf(fp, "%s", idata[count++]) != 1) {
+                      fprintf(stderr, "Error: Failed to read idata from file.\n");
+                   }
+                }
 		else
-			fscanf(fp, "%s", s);
+                {
+                   if( fscanf(fp, "%s", s) != 1) {
+                      fprintf(stderr, "Error: Failed to read idata from file.\n");
+                   }
+                }
 	}
 
 	fclose(fp);
