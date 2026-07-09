@@ -620,8 +620,8 @@ void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float
   }
 
    {
-      float ssd1=0.0;
-      float ssd3=0.0;
+      //float ssd1=0.0;
+      //float ssd3=0.0;
       float x[4], y[4];
       
       x[3]=y[3]=1.0;
@@ -636,14 +636,14 @@ void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float
          y[1] = P[i+n]+Pavg[1];
          y[2] = P[i+2*n]+Pavg[2];
 
-         ssd1 += (x[0]-y[0])*(x[0]-y[0]); 
-         ssd1 += (x[1]-y[1])*(x[1]-y[1]); 
-         ssd1 += (x[2]-y[2])*(x[2]-y[2]); 
+         //ssd1 += (x[0]-y[0])*(x[0]-y[0]); 
+         //ssd1 += (x[1]-y[1])*(x[1]-y[1]); 
+         //ssd1 += (x[2]-y[2])*(x[2]-y[2]); 
 
          multi(TLM,4,4,y,4,1,y);
-         ssd3 += (x[0]-y[0])*(x[0]-y[0]); 
-         ssd3 += (x[1]-y[1])*(x[1]-y[1]); 
-         ssd3 += (x[2]-y[2])*(x[2]-y[2]); 
+         //ssd3 += (x[0]-y[0])*(x[0]-y[0]); 
+         //ssd3 += (x[1]-y[1])*(x[1]-y[1]); 
+         //ssd3 += (x[2]-y[2])*(x[2]-y[2]); 
       }
       //if(opt_v) printf("SSD (MSP + AC/PC transformation) = %f\n",ssd1);
       //if(opt_v) printf("SSD (MSP + AC/PC + LM transformation) = %f\n",ssd3);

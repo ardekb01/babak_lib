@@ -21,7 +21,6 @@ static struct option options[] =
         {"-scale", 1, 'S'},
         {"-threshold", 1, 't'},
         {"-o", 1, 'o'},
-        {"-s", 0, 's'},
         {"-b", 0, 'b'},
         {"-h", 0, 'h'},
         {"-help", 0, 'h'},
@@ -38,7 +37,6 @@ void print_help_and_exit()
    "-h or -help: Prints help message\n" 
    "-o <output image name>: Specifies the filename for the outputted average image\n\n"
    "-scale <scale>: Multiplies the average image by <scale>\n\n"
-   "-s: Save the output image as type short\n\n"
    "-threshold <threshold>: Binarizes the average images using <threhsold> level\n\n"
    "\n\n");
 
@@ -50,7 +48,7 @@ float *avg(int N, char **imagefile)
    nifti_1_header hdr;
 
    int nx, ny, nz;
-   float dx, dy, dz;
+   //float dx, dy, dz;
    int nv;
    int type;
    char *image;
@@ -61,7 +59,7 @@ float *avg(int N, char **imagefile)
    image = read_nifti_image(imagefile[0], &hdr);
    if(image==NULL) return(NULL);
    nx=hdr.dim[1]; ny=hdr.dim[2]; nz=hdr.dim[3];
-   dx=hdr.pixdim[1]; dy=hdr.pixdim[2]; dz=hdr.pixdim[3];
+   //dx=hdr.pixdim[1]; dy=hdr.pixdim[2]; dz=hdr.pixdim[3];
 
    nv = nx*ny*nz;
    avg_image = (float *)calloc(nv, sizeof(float));
@@ -318,7 +316,6 @@ float *avg4d(char *imagefile)
 int checkDimension_avgImage(int N, char **imagefile, int *nx, int *ny, int *nz, float *dx, float *dy, float *dz)
 {
    nifti_1_header hdr;
-   short dataType;
 
    if(N==0) return(1);
 
@@ -331,7 +328,6 @@ int checkDimension_avgImage(int N, char **imagefile, int *nx, int *ny, int *nz, 
    *dx = hdr.pixdim[1];
    *dy = hdr.pixdim[2];
    *dz = hdr.pixdim[3];
-   dataType = hdr.datatype;
 
    for(int i=1; i<N; i++)
    {
@@ -350,10 +346,6 @@ int checkDimension_avgImage(int N, char **imagefile, int *nx, int *ny, int *nz, 
 int main(int argc, char **argv)
 {
    char **imagefile;
-   int opt_s=NO;
-
-   float scale=1.0;
-   float threshold=0.0;
 
    nifti_1_header hdr;
    int nx, ny, nz, nv;
@@ -365,12 +357,6 @@ int main(int argc, char **argv)
    {
       switch (opt) 
       {
-         case 't':
-            threshold = atof(optarg);
-            break;
-         case 'S':
-            scale = atof(optarg);
-            break;
          case 'o':
             snprintf(outputfile,sizeof(outputfile),"%s",optarg);
             opt_o=YES;
@@ -380,9 +366,6 @@ int main(int argc, char **argv)
             break;
          case 'b':
             opt_b=YES;
-            break;
-         case 's':
-            opt_s=YES;
             break;
          case '?':
             print_help_and_exit();
