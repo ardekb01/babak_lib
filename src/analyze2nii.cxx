@@ -127,6 +127,7 @@ int main(int argc, char **argv)
 
    char analyzefile[512];
    char niftifile[512];
+   char opfile[1024];
    char orientation[4];
    int swapflg=0;
 
@@ -345,14 +346,15 @@ int main(int argc, char **argv)
          niftifile[L-3]='n'; 
          niftifile[L-2]='i';  
          niftifile[L-1]='i';
+         snprintf(opfile,sizeof(opfile),"%s",niftifile);
       }
       else
       {
-         snprintf(niftifile,sizeof(niftifile),"%s.nii",niftifile);
+         snprintf(opfile,sizeof(opfile),"%s.nii",niftifile);
       }
    }
 
-   fp = fopen(niftifile,"w");
+   fp = fopen(opfile,"w");
 
    if(fp==NULL)
    {

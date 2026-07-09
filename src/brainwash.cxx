@@ -36,7 +36,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 float FWHM=1.0;
-char atlasfilename[MAXNATLAS][64];
+char atlasfilename[MAXNATLAS][1024];
 
 // multi-resolution image dimensions
 DIM dim1, dim2, dim4, dim8;
@@ -485,20 +485,14 @@ void approximate_affine(int nx, int ny, int nz, float dx, float dy, float dz, fl
 	float rx,ry,rz;
 	float sx,sy,sz;
   	float  x,y,z;   
-	float *AFF, *invAFF;	// affine transform
+        float AFF[16]; // affine transform
+	float *invAFF;	
 
 	double Mrx, Mry, Mrz;
 	double Msx, Msy, Msz;
 	double SR[9], RR[9];
 	double *invRR;
 	double A[9],B[3];
-
-   AFF = (float *)calloc(16,sizeof(float));
-   if(AFF==NULL)
-   {
-      printf("\nMemory allocation error (AFF) ...\n");
-      exit(1);
-   }
 
 	np = nx*ny;
 
@@ -609,7 +603,6 @@ void approximate_affine(int nx, int ny, int nz, float dx, float dy, float dz, fl
 
 	// Eq. (3.5) of tech. notes
 	invAFF = inv4(AFF);
-	delete AFF;
 
 	///////////////////////////////////////////////////////////////////////////////
 
@@ -665,7 +658,7 @@ void ivf(float *Xwarp1, float *Ywarp1, float *Zwarp1, DIM dim1, float *Xwarp2, f
 {
    int i2, j2, k2;
    int ii, jj, kk;
-   int np1=0, nv1=0;
+   int np1=0;
    int np2=0, nv2=0;
    int wx, wy, wz;
    int v1, v1_part1, v1_part2;
@@ -695,7 +688,6 @@ void ivf(float *Xwarp1, float *Ywarp1, float *Zwarp1, DIM dim1, float *Xwarp2, f
 
    ////////////////////////////////////////////////////////////////////////////////
 
-   nv1 = nx1 * ny1 * nz1;
    np1 = nx1 * ny1;
 
    nv2 = nx2 * ny2 * nz2;
