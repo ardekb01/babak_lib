@@ -267,13 +267,33 @@ int main(int argc, char **argv)
    float c[3];
 
    fp=fopen(ANTSmatrixfile,"r");
-   fgets(line,1000,fp);
-   fgets(line,1000,fp);
-   fgets(line,1000,fp);
-   fgets(line,1000,fp);
+   if (fgets(line,1000,fp) == NULL) 
+   {
+      fprintf(stderr, "Error: Failed to read line  from file.\n");
+   }
+
+   if (fgets(line,1000,fp) == NULL) 
+   {
+      fprintf(stderr, "Error: Failed to read line  from file.\n");
+   }
+
+   if (fgets(line,1000,fp) == NULL) 
+   {
+      fprintf(stderr, "Error: Failed to read line  from file.\n");
+   }
+
+   if (fgets(line,1000,fp) == NULL) 
+   {
+      fprintf(stderr, "Error: Failed to read line  from file.\n");
+   }
+
    sscanf(line,"%s %f %f %f %f %f %f %f %f %f %f %f %f",dum,&R[0],&R[1],&R[2],&R[3],&R[4],&R[5],
 		   &R[6],&R[7],&R[8],&t[0],&t[1],&t[2]);
-   fgets(line,1000,fp);
+
+   if (fgets(line,1000,fp) == NULL) 
+   {
+      fprintf(stderr, "Error: Failed to read line  from file.\n");
+   }
    sscanf(line,"%s %f %f %f",dum,&c[0],&c[1],&c[2]);
 
    if(opt_v)
