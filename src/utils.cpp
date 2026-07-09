@@ -1581,7 +1581,7 @@ void get_temp_filename(char *filename)
 
 	n++;
 
-	sprintf(filename,"DELETEME%d%d",getpid(),n);
+	snprintf(filename,512,"DELETEME%d%d",getpid(),n);
 	fp=fopen(filename,"w");
 	if(fp != NULL)
 	{
@@ -1590,7 +1590,7 @@ void get_temp_filename(char *filename)
 		return;
 	}
 
-	sprintf(filename,"/usr/tmp/DELETEME%d%d",getpid(),n);
+	snprintf(filename,512,"/usr/tmp/DELETEME%d%d",getpid(),n);
 	fp=fopen(filename,"w");
 	if(fp != NULL)
 	{
@@ -1599,7 +1599,7 @@ void get_temp_filename(char *filename)
 		return;
 	}
 
-	sprintf(filename,"/tmp/DELETEME%d%d",getpid(),n);
+	snprintf(filename,512,"/tmp/DELETEME%d%d",getpid(),n);
 	fp=fopen(filename,"w");
 	if(fp != NULL)
 	{
@@ -1611,11 +1611,11 @@ void get_temp_filename(char *filename)
 	homedir=getenv("HOME");
 	if(homedir != NULL)
 	{
-		sprintf(filename,"%s/DELETEME%d%d",homedir,getpid(),n);
+		snprintf(filename,512,"%s/DELETEME%d%d",homedir,getpid(),n);
 	}
 	else
 	{
-		sprintf(filename,"DELETEME%d%d",getpid(),n);
+		snprintf(filename,512,"DELETEME%d%d",getpid(),n);
 	}
 
 	fp=fopen(filename,"w");

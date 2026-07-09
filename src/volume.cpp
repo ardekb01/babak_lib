@@ -1883,8 +1883,8 @@ void VOLUME::get_analyze_file_names(const char *filename, char *basename_hdr, ch
 		cannot have .hdr or .img extensions. It must be the
 		base name alone. */   
       
-		sprintf(basename_hdr,"%s.hdr",filename);
-		sprintf(basename_img,"%s.img",filename);
+		snprintf(basename_hdr,sizeof(basename_hdr),"%s.hdr",filename);
+		snprintf(basename_img,sizeof(basename_img),"%s.img",filename);
 
 		return;
 	}
@@ -1893,8 +1893,8 @@ void VOLUME::get_analyze_file_names(const char *filename, char *basename_hdr, ch
 	{
 		/* filename is the .hdr file */
 
-		sprintf(basename_hdr,"%s",filename);
-		sprintf(basename_img,"%s",filename);
+		snprintf(basename_hdr,sizeof(basename_hdr),"%s",filename);
+		snprintf(basename_img,sizeof(basename_img),"%s",filename);
 		basename_img[n-3]='i'; basename_img[n-2]='m'; basename_img[n-1]='g';
 
 		return;
@@ -1904,16 +1904,16 @@ void VOLUME::get_analyze_file_names(const char *filename, char *basename_hdr, ch
 	{
 		/* filename is the .img file */
 
-		sprintf(basename_img,"%s",filename);
-		sprintf(basename_hdr,"%s",filename);
+		snprintf(basename_img,sizeof(basename_img),"%s",filename);
+		snprintf(basename_hdr,sizeof(basename_hdr),"%s",filename);
 		basename_hdr[n-3]='h'; basename_hdr[n-2]='d'; basename_hdr[n-1]='r';
 
 		return;
       	}
 
 	// filename is the basename
-	sprintf(basename_hdr,"%s.hdr",filename);
-	sprintf(basename_img,"%s.img",filename);
+	snprintf(basename_hdr,sizeof(basename_hdr),"%s.hdr",filename);
+	snprintf(basename_img,sizeof(basename_img),"%s.img",filename);
 
 	return;
 }
