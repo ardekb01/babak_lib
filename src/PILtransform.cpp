@@ -441,7 +441,7 @@ void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float
 
    /////////////////////////////////////////////////////////
    // Reslice subim to PIL space 
-   sprintf(filename,"%s/PILbrain.nii",ARTHOME);
+   snprintf(filename,sizeof(filename),"%s/PILbrain.nii",ARTHOME);
    PILbraincloud_hdr=read_NIFTI_hdr(filename);
 
    set_dim(subimPIL, PILbraincloud_hdr);
@@ -463,7 +463,7 @@ void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float
       FILE *fp;
       float landmark[4];
       invT = inv4(TPIL0);
-      sprintf(filename,"%s/%s_orion.txt",imagedir,subfile_prefix);
+      snprintf(filename,sizeof(filename),"%s/%s_orion.txt",imagedir,subfile_prefix);
       fp=fopen(filename,"w");
       if(fp==NULL) file_open_error(filename);
       for(int i=0; i<n; i++)
@@ -574,7 +574,7 @@ void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float
         Ttmp[12]=0.0; Ttmp[13]=0.0; Ttmp[14]=0.0; Ttmp[15]=1.0;
       }
 
-      sprintf(filename,"%s/%s_orion_PIL.txt",imagedir,subfile_prefix);
+      snprintf(filename,sizeof(filename),"%s/%s_orion_PIL.txt",imagedir,subfile_prefix);
       fp=fopen(filename,"w");
       if(fp==NULL) file_open_error(filename);
 
@@ -599,7 +599,7 @@ void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float
 
       if(opt_ppm || opt_png)
       {
-         sprintf(filename,"%s/%s_orion.ppm",imagedir, subfile_prefix);
+         snprintf(filename,sizeof(filename),"%s/%s_orion.ppm",imagedir, subfile_prefix);
          mspPPM(subimPIL, lmx, lmy, n, filename);
       }
 
