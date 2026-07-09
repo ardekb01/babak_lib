@@ -308,7 +308,7 @@ void save_cluster_avg(float *spm,int nx,int ny,int nz, int N, char **imlist)
       //printf("minimum statistical parameter value=%f\n",min);
       //printf("maximum statistical parameter value=%f\n",max);
       printf("average statistical parameter value=%f\n",avg);
-      //printf("centroid (i,j,k)=(%.2f,%.2f,%.2f)\n",iavg,javg,kavg);
+      printf("centroid (i,j,k)=(%.2f,%.2f,%.2f)\n",iavg,javg,kavg);
       printf("peak (i,j,k)=(%d,%d,%d)\n",imax,jmax,kmax);
       printf("trough (i,j,k)=(%d,%d,%d)\n",imin,jmin,kmin);
 
@@ -347,7 +347,7 @@ int main(int argc, char **argv)
 	char ccFile[512];
 	int n;	// number of images
 	char **imlist=NULL;
-	int nx,ny,nz,nv;
+	int nx,ny,nz;
 	float dx,dy,dz;
 	float *ccim;
 
@@ -382,7 +382,6 @@ int main(int argc, char **argv)
 	imlist = read_idata(dataFile, "i", "1", n, 1, 1);
 
    checkDimension_vancova(n, imlist, &nx, &ny, &nz, &dx, &dy, &dz);
-   nv = nx*ny*nz;
 
    // ccim=(float *)read_analyze_image(ccFile, &nx0, &ny0, &nz0, &dx, &dy, &dz, &type, 0);
    {
