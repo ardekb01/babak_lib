@@ -668,9 +668,9 @@ double compute_t_value(double *y, double *X, double *c, int n, int p, double *df
 	double ctbeta;
 	double ctGc, var, t;
 	double yty, ytPy;
-	double mu;
+	//double mu;
 
-	mu=removeVectorMean(y, n);
+	removeVectorMean(y, n);
 	removeVectorMean(X, n, p);
 	scaleAbsToOne(X, n, p);
 
@@ -745,14 +745,14 @@ double compute_t_value(double *y, double *X, double *c, int n, int p, double *df
 // Model: y = X*beta + e = X1*beta1 + X2*beta2 + e
 double compute_F_value(double *y, double *X, double *c, int n, int p, double *dfn, double *dfd, float *r2)
 {
-	int rank, rank1, rank2;
+	int rank, rank1;
 	float *G=NULL, *G1=NULL, *G2=NULL;
 	double *X1=NULL, *X2=NULL;
 	double *beta=NULL, *beta1=NULL, *beta2=NULL;
 	double *Xty;
 	double evar, var1, F;
 	double yty, ytPy;
-	double mu;
+	//double mu;
 	double *P2X1=NULL, *X2tX1=NULL, *G2X2tX1=NULL;
 	double *X1ty=NULL, *X2ty=NULL;
 	
@@ -763,7 +763,7 @@ double compute_F_value(double *y, double *X, double *c, int n, int p, double *df
 
 	
 	//////////////////////////////////////////////////////////////////
-	mu=removeVectorMean(y, n);
+	removeVectorMean(y, n);
 	removeVectorMean(X, n, p);
 	scaleAbsToOne(X, n, p);
 	yty = dot(y,y,n);			// computes yt * y
@@ -835,7 +835,7 @@ double compute_F_value(double *y, double *X, double *c, int n, int p, double *df
 	if(p2 != 0)
 	{
 		G2 = (float *)calloc(p2*p2, sizeof(float));
-		rank2 = ginverse(X2, n, p2, G2);
+		ginverse(X2, n, p2, G2);
 
 		X2ty= (double *)calloc(p2, sizeof(double));
 		mat_trans_mat(X2, n, p2, y, 1, X2ty);
@@ -940,7 +940,8 @@ int main(int argc, char **argv)
    double *ndata=NULL;
 	double *X, *y;
 	double *c;
-	double t, df, dfn, dfd, F;
+	double df, dfn, dfd;
+        //double t, F;
    float *spm_t, *spm_r2, *spm_F;
 
 	int nc=0;	// number of columns of the data file
@@ -1340,7 +1341,7 @@ exit(0);
 
 			if(vi == vox )  
 			{
-				t=spm_t[vi];
+				//t=spm_t[vi];
 				if(opt_v) 
 				{
 					printf("\nt-value at (%d,%d,%d) = %f with %d d.f.\n",xi,yi,zi,spm_t[vi],dfmap[vi]);
@@ -1359,7 +1360,7 @@ exit(0);
 
 			if(vi == vox )  
 			{
-				F=spm_F[vi];
+				//F=spm_F[vi];
 
 				if(opt_v) 
 				{
@@ -1419,9 +1420,10 @@ exit(0);
 	if(F_flag==0)
 	{
 		FILE *fp;
-		int nbv=0, N;
+		int nbv=0;
+                //int N;
 		float mint, maxt;
-		float tval;
+		//float tval;
 		double sum = 0.0;;
 		int count;
 		double df=1;
@@ -1441,7 +1443,7 @@ exit(0);
 		{
 			if(mask[i]!=0) nbv++;
 		}
-		//printf("\nnbv=%d\n",nbv);
+		printf("\nnbv=%d\n",nbv);
 
 		minmax(spm_t, nv, mint, maxt);
 		//printf("mint=%f, maxt=%f\n",mint,maxt);
@@ -1452,12 +1454,12 @@ exit(0);
 		fprintf(fp,"df=%lf\n\n",df);
 		fprintf(fp,"t-value threshold\tp-value threshold\tFDR\n");
 
-		for(tval=0.0; tval<=maxt; tval+=0.1)
-		{
-			N=0;
-			for(int i=0; i<nv; i++)
-			if(mask[i]!=0 && (spm_t[i]>tval || -spm_t[i]>tval)) N++;
-		}
+		//for(tval=0.0; tval<=maxt; tval+=0.1)
+		//{
+		//	N=0;
+		//	for(int i=0; i<nv; i++)
+		//	if(mask[i]!=0 && (spm_t[i]>tval || -spm_t[i]>tval)) N++;
+		//}
 
 		fclose(fp);
 	}

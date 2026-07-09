@@ -53,9 +53,6 @@ static struct option options[] =
 
 	{"-FWHM", 1, 'F'},
 
-	{"-x", 1, 'x'},
-	{"-y", 1, 'y'},
-	{"-z", 1, 'z'},
 	{0, 0, 0}
 };
 
@@ -75,7 +72,7 @@ int opt_FWHM=NO;
 void print_help_and_exit()
 {
 	printf("\n\nUsage: vancova [-v/-verbose] [-dataMask <dataMaskCode>] [-FWHM <FWHM>]\n"
-	"[-o/-output <prefix>] [-m/-mask mask] [-x <column>] [-y <row>] [-z <slice>] [-nozero]\n"
+	"[-o/-output <prefix>] [-m/-mask mask] [-nozero]\n"
 	"-d/-data <dataFile> -dataType <dataTypeCode> -c/-contrast <contrastFile>\n\n");
 
 	printf("This program performs voxelwise analysis of covariance on image data.\n\n");
@@ -135,11 +132,6 @@ void print_help_and_exit()
 
 	printf("-v or -verbose\n"
 	"\tRuns the program in verbose mode.\n\n");
-
-	printf("-x <column> -y <row> -z <slice>\n"
-	"\tThese options are intended for testing the software.  When specified, a table is created\n"
-	"\tand written to the log file.  This table can be ported into other statistical programs\n"
-	"\t(e.g., SPSS) in order to validate the results of the current program at the specified voxel.\n\n");
 
 	printf("Outputs:\n"
 	"\tThe program outputs alog file <prefix>.log, and two NIFTI images: <prefix>_t.nii, and\n"
@@ -615,9 +607,9 @@ double compute_t_value(double *y, double *X, double *c, int n, int p, double *df
 	double ctbeta;
 	double ctGc, var, t;
 	double yty, ytPy;
-	double mu;
 
-	mu=removeVectorMean(y, n);
+	removeVectorMean(y, n);
+
 	removeVectorMean(X, n, p);
 	scaleAbsToOne(X, n, p);
 
@@ -664,24 +656,6 @@ double compute_t_value(double *y, double *X, double *c, int n, int p, double *df
 			*r2=0.0;
 	}
 
-/***
-{
-	double *tt;
-	double sum=0.0;
-	tt = (double *)calloc(n, sizeof(double));
-
-	for(int i=0; i<n; i++) tt[i] = mu + beta[0]*X[i*p + 0] + beta[1]*X[i*p + 1];
-
-	sum=0.0;
-	for(int i=0; i<28; i++) sum += tt[i];
-	printf("\n%lf\n",sum/28.0);
-
-	sum=0.0;
-	for(int i=28; i<n; i++) sum += tt[i];
-	printf("\n%lf\n",sum/36.0);
-}
-**/
-
 	free(G);
 	free(Xty);
 	free(beta);
@@ -692,14 +666,13 @@ double compute_t_value(double *y, double *X, double *c, int n, int p, double *df
 // Model: y = X*beta + e = X1*beta1 + X2*beta2 + e
 double compute_F_value(double *y, double *X, double *c, int n, int p, double *dfn, double *dfd, float *r2)
 {
-	int rank, rank1, rank2;
+	int rank, rank1;
 	float *G=NULL, *G1=NULL, *G2=NULL;
 	double *X1=NULL, *X2=NULL;
 	double *beta=NULL, *beta1=NULL, *beta2=NULL;
 	double *Xty;
 	double evar, var1, F;
 	double yty, ytPy;
-	double mu;
 	double *P2X1=NULL, *X2tX1=NULL, *G2X2tX1=NULL;
 	double *X1ty=NULL, *X2ty=NULL;
 	
@@ -710,7 +683,7 @@ double compute_F_value(double *y, double *X, double *c, int n, int p, double *df
 
 	
 	//////////////////////////////////////////////////////////////////
-	mu=removeVectorMean(y, n);
+	removeVectorMean(y, n);
 	removeVectorMean(X, n, p);
 	scaleAbsToOne(X, n, p);
 	yty = dot(y,y,n);			// computes yt * y
@@ -782,7 +755,7 @@ double compute_F_value(double *y, double *X, double *c, int n, int p, double *df
 	if(p2 != 0)
 	{
 		G2 = (float *)calloc(p2*p2, sizeof(float));
-		rank2 = ginverse(X2, n, p2, G2);
+		ginverse(X2, n, p2, G2);
 
 		X2ty= (double *)calloc(p2, sizeof(double));
 		mat_trans_mat(X2, n, p2, y, 1, X2ty);
@@ -866,7 +839,7 @@ int main(int argc, char **argv)
    NIFTIIMAGE im0;
    int nt=0;
 
-   float FWHM=0.0; // FWHM of the smoothing filter specified using the -FWHM <FWHM>. Default is set to 0 here.
+//float FWHM=0.0; // FWHM of the smoothing filter specified using the -FWHM <FWHM>. Default is set to 0 here.
 
 	char contrastFile[512];
 	char maskFile[512];
@@ -874,8 +847,6 @@ int main(int argc, char **argv)
 	char dataTypeCode[128];		// a string composed of characters 'i' and 'n' only, where 'i' denotes
 								// image type variables and 'n' denotes numerical type variables
 
-	int xi=0, yi=0, zi=0;
-	
    while( (opt=getoption(argc, argv, options)) != -1)
    {
       switch (opt) {
@@ -897,21 +868,9 @@ int main(int argc, char **argv)
          case 'p':
             snprintf(paramfile,sizeof(paramfile),"%s",optarg);
             break;
-			case 'x':
-				xi = atoi(optarg);
-				opt_x=YES;
-				break;
-			case 'y':
-				yi = atoi(optarg);
-				opt_y=YES;
-				break;
-			case 'z':
-				zi = atoi(optarg);
-				opt_z=YES;
-				break;
-			case 'F':
-				FWHM = atof(optarg);
-				break;
+//case 'F':
+//FWHM = atof(optarg);
+//break;
 			case 'n':
 				opt_nozero=YES;
 				break;

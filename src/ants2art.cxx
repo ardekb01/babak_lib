@@ -121,7 +121,7 @@ int main(int argc, char **argv)
    ////////////////////////////////////////////////////////////////////////////////////
    float Qart[16];  // This is the matrix that converts target ijk to xyz in ART;
    float Qant[16];  // This is the matrix that converts target ijk to xyz in ANTS;
-   float *iQart; // inverse of Qart
+   //float *iQart; // inverse of Qart
    float *iQant; // inverse of Qant
    float Q[16];  // Qart * iQant
 
@@ -176,7 +176,7 @@ int main(int argc, char **argv)
    Qant[8]=thdr.srow_z[0]; Qant[9]=thdr.srow_z[1]; Qant[10]=thdr.srow_z[2];Qant[11]=thdr.srow_z[3];
    Qant[12]=0.0;    Qant[13]=0.0;    Qant[14]=0.0;     Qant[15]=1.0;
 
-   iQart=inv4(Qart);
+   //iQart=inv4(Qart);
    iQant=inv4(Qant);
    
    multi(Qart,4,4,iQant,4,4,Q);
@@ -186,7 +186,7 @@ int main(int argc, char **argv)
    float Sart[16];  // This is the matrix that converts subject ijk to xyz in ART;
    float Sant[16];  // This is the matrix that converts subject ijk to xyz in ANTS;
    float *iSart; // inverse of Sart
-   float *iSant; // inverse of Sant
+   //float *iSant; // inverse of Sant
    float S[16];  // Sant * iSart
 
    if(subImFile[0] == '\0')
@@ -241,7 +241,7 @@ int main(int argc, char **argv)
    Sant[12]=0.0;    Sant[13]=0.0;    Sant[14]=0.0;     Sant[15]=1.0;
 
    iSart=inv4(Sart);
-   iSant=inv4(Sant);
+   //iSant=inv4(Sant);
 
    multi(Sant,4,4,iSart,4,4,S);
 
@@ -347,11 +347,11 @@ int main(int argc, char **argv)
       printf("ART matrix file: %s\n",ARTmatrixfile);
    }
  
-   int trgSysFlg;
-   int subSysFlg;
+   //int trgSysFlg;
+   //int subSysFlg;
 
-   trgSysFlg = hand_system(trg_orientation_code);
-   subSysFlg = hand_system(sub_orientation_code);
+   //trgSysFlg = hand_system(trg_orientation_code);
+   //subSysFlg = hand_system(sub_orientation_code);
 
    fp = fopen(ARTmatrixfile,"w");
    if(fp==NULL) file_open_error(ARTmatrixfile);

@@ -88,7 +88,6 @@ void print_help_and_exit()
 int checkDimension_avgImage(int N, char **imagefile, int *nx, int *ny, int *nz, float *dx, float *dy, float *dz)
 {
    nifti_1_header hdr;
-   short dataType;
 
    if(N==0) return(1);
 
@@ -101,7 +100,6 @@ int checkDimension_avgImage(int N, char **imagefile, int *nx, int *ny, int *nz, 
    *dx = hdr.pixdim[1];
    *dy = hdr.pixdim[2];
    *dz = hdr.pixdim[3];
-   dataType = hdr.datatype;
 
    for(int i=1; i<N; i++)
    {
@@ -281,7 +279,7 @@ void atra(const char *imagelistfile, DIM output_dim, const char *outputOrientati
    float **Pt;
    float **P;
    int nlm;
-   int nlm_nonconvergent;
+   //int nlm_nonconvergent;
    int current_nlm_aligned;
    int final_nlm_aligned=0;
    float *A; // (NxM) matrix where N=n; M=sph.n
@@ -580,7 +578,7 @@ void atra(const char *imagelistfile, DIM output_dim, const char *outputOrientati
    for(int iteration=0; iteration<maxiter; iteration++)
    {
       nlm=0;
-      nlm_nonconvergent=0;
+      //nlm_nonconvergent=0;
       current_nlm_aligned=0;
 
       for(int s=0; s<nseeds; s++)
@@ -597,7 +595,8 @@ void atra(const char *imagelistfile, DIM output_dim, const char *outputOrientati
    
          cbd = seek_lm(nim, refsph, PILim, lm_in, A, ssd, loomsk, lmcm, searchsph, testsph, lm_out);
    
-         if(cbd>0) { nlm_nonconvergent++; continue; }
+         //if(cbd>0) { nlm_nonconvergent++; continue; }
+         if(cbd>0) { continue; }
    
          /////////////////////////////////////////////////////////////////////////////////////////////////////
          // check to see if the LOOC converged to the same location in all images
