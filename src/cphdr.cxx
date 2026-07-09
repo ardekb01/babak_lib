@@ -109,7 +109,6 @@ int main(int argc, char **argv)
    struct stat output_buf; // variable - file stats returned by stat()
 
    nifti_1_header *input_hdr_ptr;
-   nifti_1_header *output_hdr_ptr;
 
    printf("Input file: %s\n", inputfile);
    printf("Output file: %s\n", outputfile);
@@ -131,7 +130,10 @@ int main(int argc, char **argv)
    input_hdr_segment = (char *)calloc(input_hdr_size, 1);
    input_fp = fopen(inputfile,"r");
    if(input_fp==NULL) file_open_error(inputfile);
-   fread(input_hdr_segment, 1, input_hdr_size, input_fp);
+   if( fread(input_hdr_segment, 1, input_hdr_size, input_fp) != (size_t)input_hdr_size )
+   {
+      fprintf(stderr, "Error: Failed to read input_hdr_segment from file.\n");
+   }
    fclose(input_fp);
    input_hdr_ptr = (nifti_1_header *)input_hdr_segment;
 
@@ -164,10 +166,17 @@ int main(int argc, char **argv)
 
    output_fp = fopen(outputfile,"r");
    if(output_fp==NULL) file_open_error(outputfile);
-   fread(output_hdr_segment, 1, output_hdr_size, output_fp);
-   fread(output_data_segment, 1, output_data_size, output_fp);
+   if( fread(output_hdr_segment, 1, output_hdr_size, output_fp) != (size_t)output_hdr_size )
+   {
+      fprintf(stderr, "Error: Failed to read output_hdr_segment from file.\n");
+   }
+
+   if( fread( output_data_segment, 1, output_data_size, output_fp) != (size_t)output_data_size )
+   {
+      fprintf(stderr, "Error: Failed to read output_data_segment from file.\n");
+   }
+
    fclose(output_fp);
-   output_hdr_ptr = (nifti_1_header *)output_hdr_segment;
 
    output_fp = fopen(outputfile,"w");
    if(output_fp==NULL) file_open_error(outputfile);

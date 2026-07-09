@@ -80,7 +80,7 @@ int main(int argc, char **argv)
 	int N2=0;	// N*N
 	int niter=0;
 
-	int Onx,Ony,Onz,Onp;
+	int Onx,Ony,Onz;
 	int Tnx,Tny,Tnz,Tnp,Tnv;
 	int HRnx, HRny;
 
@@ -221,7 +221,6 @@ int main(int argc, char **argv)
    objOrig=(short *)read_nifti_image(subfile, &sub_hdr);
    Onx=sub_hdr.dim[1]; Ony=sub_hdr.dim[2]; Onz=sub_hdr.dim[3];
    Odx=sub_hdr.pixdim[1]; Ody=sub_hdr.pixdim[2]; Odz=sub_hdr.pixdim[3];
-   Onp=Onx*Ony;
 
    if(sub_hdr.datatype != DT_SIGNED_SHORT && sub_hdr.datatype != 512)
    {

@@ -227,7 +227,7 @@ void approximate_affine(int nx, int ny, int nz, float dx, float dy, float dz, fl
 
 	// Eq. (3.5) of tech. notes
 	invAFF = inv4(AFF);
-	delete AFF;
+	free(AFF);
 
 	///////////////////////////////////////////////////////////////////////////////
 
@@ -323,6 +323,7 @@ int main(int argc, char **argv)
       {
          case 'h':
             print_help_and_exit();
+            break;
          case 'v':
             opt_v = YES;
             break;
@@ -384,8 +385,15 @@ int main(int argc, char **argv)
    fp=fopen(filename1,"r");
    if(fp==NULL) file_open_error(filename1);
 
-   fread(&hdr,sizeof(nifti_1_header),1,fp);
-   fread(&extender, sizeof(nifti1_extender), 1, fp);
+   if( fread(&hdr,sizeof(nifti_1_header),1,fp) != 1)
+   {
+      fprintf(stderr, "Error: Failed to read hdr from file.\n");
+   }
+
+   if( fread(&extender, sizeof(nifti1_extender), 1, fp) != 1 )
+   {
+      fprintf(stderr, "Error: Failed to read extender from file.\n");
+   }
 
    nx1 = hdr.dim[1];
    ny1 = hdr.dim[2];
@@ -402,16 +410,26 @@ int main(int argc, char **argv)
    Ywarp1 = (float *)calloc(nv1,sizeof(float));
    Zwarp1 = (float *)calloc(nv1,sizeof(float));
 
-   fread(sdum,sizeof(short),nv1,fp);
+   if( fread(sdum,sizeof(short),nv1,fp) != (size_t)nv1 )
+   {
+      fprintf(stderr, "Error: Failed to read sdum from file.\n");
+   }
+
    for(int i=0; i<nv1; i++) Xwarp1[i] = sdum[i]*hdr.scl_slope;
 
-   fread(sdum,sizeof(short),nv1,fp);
+   if( fread(sdum,sizeof(short),nv1,fp) != (size_t)nv1 )
+   {
+      fprintf(stderr, "Error: Failed to read sdum from file.\n");
+   }
    for(int i=0; i<nv1; i++) Ywarp1[i] = sdum[i]*hdr.scl_slope;
 
-   fread(sdum,sizeof(short),nv1,fp);
+   if( fread(sdum,sizeof(short),nv1,fp) != (size_t)nv1 )
+   {
+      fprintf(stderr, "Error: Failed to read sdum from file.\n");
+   }
    for(int i=0; i<nv1; i++) Zwarp1[i] = sdum[i]*hdr.scl_slope;
 
-   delete sdum;
+   free(sdum);
 
    fclose(fp);
 
