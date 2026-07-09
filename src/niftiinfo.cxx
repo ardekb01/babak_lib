@@ -31,16 +31,34 @@ int main(int argc, char **argv)
    }
 
    fp = fopen(argv[1],"r");
-   fread(&hdr, sizeof(nifti_1_header), 1, fp);
-   fread(&hdr_extender, sizeof(nifti1_extender), 1, fp);
+   if( fread(&hdr, sizeof(nifti_1_header), 1, fp) != 1 )
+   {
+      fprintf(stderr, "Error: Failed to read hdr from file.\n");
+   }
+
+   if( fread(&hdr_extender, sizeof(nifti1_extender), 1, fp) != 1 )
+   {
+      fprintf(stderr, "Error: Failed to read hdr_extender from file.\n");
+   }
+
    if(hdr_extender.extension[0] == 1)
    {
-      fread(&hdr_extension.esize, 4, 1, fp);
-      fread(&hdr_extension.ecode, 4, 1, fp);
+      if( fread(&hdr_extension.esize, 4, 1, fp) != 1 )
+      {
+         fprintf(stderr, "Error: Failed to read hdr_extension.esize from file.\n");
+      }
+
+      if( fread(&hdr_extension.ecode, 4, 1, fp) != 1 )
+      {
+         fprintf(stderr, "Error: Failed to read hdr_extension.ecode from file.\n");
+      }
 
       if(hdr_extension.ecode == 1022)
       {
-         fread(&extension_data, sizeof(dicominfo), 1, fp);
+        if( fread(&extension_data, sizeof(dicominfo), 1, fp) != 1)
+        {
+           fprintf(stderr, "Error: Failed to read extension_data from file.\n");
+        }
       }
    }
    fclose(fp);
