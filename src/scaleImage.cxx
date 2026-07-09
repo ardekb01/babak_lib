@@ -55,8 +55,8 @@ void print_help_and_exit()
 int main(int argc, char **argv)
 {
   nifti_1_header hdr;
-  char prefix[1024];
-  char tempfile[1024];
+  char prefix[512];
+  char tempfile[512];
   char opfile[1024];
   char *im;
   char **imagefile;
@@ -136,7 +136,9 @@ int main(int argc, char **argv)
     nv = nx*ny*nz;
 
     // I added this because some SPM ANALYZE images have negative dimensions
-    if(dx<0) dx *= -1; if(dy<0) dy *= -1; if(dz<0) dz *= -1;
+    if(dx<0) dx *= -1; 
+    if(dy<0) dy *= -1; 
+    if(dz<0) dz *= -1;
 
     if(im==NULL) continue;
 
