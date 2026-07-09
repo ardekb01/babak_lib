@@ -785,7 +785,6 @@ void symmetric_registration(SHORTIM &aimpil, const char *bfile, const char *ffil
    float4 bTPIL[16]; // takes the baseline image to standard PIL orientation 
    float4 fTPIL[16]; // takes the follow-up image to standard PIL orientation 
    float4 *ibTPIL; // inverse of bTPIL
-   float4 *ifTPIL; // inverse of fTPIL
 
    if(verbose) printf("Computing baseline image PIL transformation ...\n");
    orient[0]='\0';
@@ -796,8 +795,6 @@ void symmetric_registration(SHORTIM &aimpil, const char *bfile, const char *ffil
    if(verbose) printf("Computing follow-up image PIL transformation ...\n");
    orient[0]='\0';
    new_PIL_transform(ffile, flmfile, orient, fTPIL, 0);
-
-   ifTPIL= inv4(fTPIL);
 
    ///////////////////////////////////////////////////////////////////////////////////////////////
    // Read baseline and follow-up images
@@ -1043,8 +1040,8 @@ void symmetric_registration(SHORTIM &aimpil, const char *bfile, const char *ffil
    }
    /////////////////////////////////////////////////
 
-   delete sclbim;
-   delete sclfim;
+   free(sclbim);
+   free(sclfim);
    delete bmsk;
    delete fmsk;
 }
@@ -1070,9 +1067,21 @@ void compute_lm_transformation(char *lmfile, SHORTIM im, float4 *A)
       exit(0);
    }
 
-   fread(&NLM, sizeof(int), 1, fp);
-   fread(&r, sizeof(int), 1, fp);
-   fread(&R, sizeof(int), 1, fp);
+   if( fread(&NLM, sizeof(int), 1, fp) != 1 )
+   {
+      fprintf(stderr, "Error: Failed to read NLM from file.\n");
+   }
+
+   if( fread(&r, sizeof(int), 1, fp) != 1 )
+   {
+      fprintf(stderr, "Error: Failed to read r from file.\n");
+   }
+
+   if( fread(&R, sizeof(int), 1, fp) != 1)
+   {
+      fprintf(stderr, "Error: Failed to read R from file.\n");
+   }
+
    SPH searchsph(R);
    SPH testsph(r);
    SPH refsph(r);
@@ -1081,10 +1090,25 @@ void compute_lm_transformation(char *lmfile, SHORTIM im, float4 *A)
 
    for(int n=0; n<NLM; n++)
    {
-      fread(&cm[0], sizeof(int), 1, fp);
-      fread(&cm[1], sizeof(int), 1, fp);
-      fread(&cm[2], sizeof(int), 1, fp);
-      fread(refsph.v, sizeof(float4), refsph.n, fp);
+      if( fread(&cm[0], sizeof(int), 1, fp) != 1 )
+      {
+         fprintf(stderr, "Error: Failed to read cm from file.\n");
+      }
+
+      if( fread(&cm[1], sizeof(int), 1, fp) != 1 )
+      {
+         fprintf(stderr, "Error: Failed to read cm from file.\n");
+      }
+
+      if( fread(&cm[2], sizeof(int), 1, fp) != 1 )
+      {
+         fprintf(stderr, "Error: Failed to read cm from file.\n");
+      }
+
+      if( (int)fread(refsph.v, sizeof(float4), refsph.n, fp) != refsph.n )
+      {
+         fprintf(stderr, "Error: Failed to read refsph.v from file.\n");
+      }
 
       CM[0*NLM + n]=(cm[0] - (im.nx-1)/2.0)*im.dx; 
       CM[1*NLM + n]=(cm[1] - (im.ny-1)/2.0)*im.dy;
@@ -1222,8 +1246,7 @@ void compute_hi(char *imfile, char *roifile, float4 &parenchymasize, int &voisiz
    int2 *roi;
    int2 *im;
    nifti_1_header hdr;
-   int nx, ny, nz, np, nv;
-   float4 dx, dy, dz;
+   int nx, ny, nz, nv;
    int I_alpha;
    int nbin;
    char roifileprefix[DEFAULT_STRING_LENGTH]=""; //baseline image prefix
@@ -1244,11 +1267,7 @@ void compute_hi(char *imfile, char *roifile, float4 &parenchymasize, int &voisiz
    nx = hdr.dim[1];
    ny = hdr.dim[2];
    nz = hdr.dim[3];
-   dx = hdr.pixdim[1];
-   dy = hdr.pixdim[2];
-   dz = hdr.pixdim[3];
    nv = nx*ny*nz;
-   np = nx*ny;
 
    im = (int2 *)read_nifti_image(imfile, &hdr);
    setMX(im, roi, nv, I_alpha, alpha_param);
@@ -1559,7 +1578,9 @@ int main(int argc, char **argv)
    {
       fp=fopen(bfile,"r");
       if(fp==NULL) file_open_error(bfile);
-      fscanf(fp,"%d",&nim);
+      if ( fscanf(fp,"%d",&nim) != 1) {
+         fprintf(stderr, "Error: Failed to read nim from file.\n");
+      }
       fclose(fp);
    }
 
@@ -1603,12 +1624,23 @@ int main(int argc, char **argv)
       //////////////////////////////////////////////////////////////////////////////////
       fp=fopen(bfile,"r");
       if(fp==NULL) file_open_error(bfile);
-      fscanf(fp,"%d",&nim);
+      if ( fscanf(fp,"%d",&nim) != 1) {
+         fprintf(stderr, "Error: Failed to read nim from file.\n");
+      }
       for(int i=0; i<nim; i++)
       {
-         fscanf(fp,"%s",imagefile[i]);
-         fscanf(fp,"%f",&scalefactor[i]);
-         fscanf(fp,"%s",mrxfile[i]);
+         if (fscanf(fp,"%s",imagefile[i]) != 1) {
+            fprintf(stderr, "Error: Failed to read imagefile from file.\n");
+         }
+
+         if (fscanf(fp,"%f",&scalefactor[i]) != 1) {
+            fprintf(stderr, "Error: Failed to read scalefactor from file.\n");
+         }
+
+         if (fscanf(fp,"%s",mrxfile[i]) != 1) {
+            fprintf(stderr, "Error: Failed to read mrxfile from file.\n");
+         }
+
          if( niftiFilename(imagefileprefix[i], imagefile[i])==0 ) { exit(0); }
          getDirectoryName(imagefile[i], imagedir[i]);
       }
