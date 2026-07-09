@@ -50,10 +50,10 @@ int main(int argc, char **argv)
 
   nifti_1_header hdr;
 
-	char inputfile[512];
+  char inputfile[512];
 
-	int nx, ny, nz, nv;
-	float dx, dy, dz;
+  int nx, ny, nz, nv;
+  //float dx, dy, dz;
 
   while( (opt=getoption(argc, argv, options)) != -1)
   {
@@ -95,7 +95,7 @@ int main(int argc, char **argv)
    
   ip_image = (float *)read_nifti_image(inputfile, &hdr);
   nx = hdr.dim[1]; ny = hdr.dim[2]; nz = hdr.dim[3];
-  dx = hdr.pixdim[1]; dy = hdr.pixdim[2]; dz = hdr.pixdim[3];
+  //dx = hdr.pixdim[1]; dy = hdr.pixdim[2]; dz = hdr.pixdim[3];
 
   nv = nx*ny*nz;
   op_image = (float *)calloc(nv, sizeof(float));
