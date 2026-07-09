@@ -53,10 +53,10 @@ int main(int argc, char **argv)
       switch (opt) 
       {
          case 't':
-            sprintf(outputfile,"%s",optarg);
+            snprintf(outputfile,sizeof(outputfile),"%s",optarg);
             break;
          case 'f':
-            sprintf(inputfile,"%s",optarg);
+            snprintf(inputfile,sizeof(inputfile),"%s",optarg);
             break;
          case 'h':
             print_help_and_exit();

@@ -109,13 +109,13 @@ int main(int argc, char **argv)
             sub_dim.nz = atoi(optarg);
             break;
          case 'T':
-            sprintf(inputmatrixfile,"%s",optarg);
+            snprintf(inputmatrixfile,sizeof(inputmatrixfile),"%s",optarg);
             break;
          case 'i':
-            sprintf(inputlmfile,"%s",optarg);
+            snprintf(inputlmfile,sizeof(inputlmfile),"%s",optarg);
             break;
          case 'o':
-            sprintf(outputmatrixfile,"%s",optarg);
+            snprintf(outputmatrixfile,sizeof(outputmatrixfile),"%s",optarg);
             break;
          case 'v':
             opt_v=YES;

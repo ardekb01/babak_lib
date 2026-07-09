@@ -118,10 +118,10 @@ int main(int argc, char **argv)
             trg_dim.nz = atoi(optarg);
             break;
          case 'i':
-            sprintf(inputmatrixfile,"%s",optarg);
+            snprintf(inputmatrixfile,sizeof(inputmatrixfile),"%s",optarg);
             break;
          case 'o':
-            sprintf(outputmatrixfile,"%s",optarg);
+            snprintf(outputmatrixfile,sizeof(outputmatrixfile),"%s",optarg);
             break;
          case 'v':
             opt_v=YES;

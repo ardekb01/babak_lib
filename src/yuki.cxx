@@ -496,7 +496,7 @@ short *find_subject_msp(char *imagefilename, char *prefix, char *lmfile)
    free(invT);
    
    {
-      sprintf(outputfilename,"%s_msp.mrx",prefix);
+      snprintf(outputfilename,sizeof(outputfilename),"%s_msp.mrx",prefix);
       fp = fopen(outputfilename,"w");
 
       if(fp != NULL)
@@ -522,9 +522,9 @@ short *find_subject_msp(char *imagefilename, char *prefix, char *lmfile)
       output_hdr.dim[2]=output_dim.ny; 
       output_hdr.dim[3]=output_dim.nz;
       output_hdr.magic[0]='n'; output_hdr.magic[1]='+'; output_hdr.magic[2]='1';
-      sprintf(output_hdr.descrip,"Created by ART yuki");
+      snprintf(output_hdr.descrip,sizeof(output_hdr.descrip),"Created by ART yuki");
 
-      sprintf(outputfilename,"%s_msp.nii",prefix);
+      snprintf(outputfilename,sizeof(outputfilename),"%s_msp.nii",prefix);
       save_nifti_image(outputfilename, msp, &output_hdr);
 
       //////////////////////////////////////////////////////////////////////////////////
@@ -635,9 +635,9 @@ short *find_subject_msp_using_transformation(char *imagefilename, char *prefix, 
       output_hdr.dim[2]=output_dim.ny; 
       output_hdr.dim[3]=output_dim.nz;
       output_hdr.magic[0]='n'; output_hdr.magic[1]='+'; output_hdr.magic[2]='1';
-      sprintf(output_hdr.descrip,"Created by ART yuki");
+      snprintf(output_hdr.descrip,sizeof(output_hdr.descrip),"Created by ART yuki");
 
-      sprintf(outputfilename,"%s_msp.nii",prefix);
+      snprintf(outputfilename,sizeof(outputfilename),"%s_msp.nii",prefix);
       save_nifti_image(outputfilename, msp, &output_hdr);
 
       //////////////////////////////////////////////////////////////////////////////////
@@ -751,7 +751,7 @@ void output_ppm(short *trg, short *cc_est, const char *prefix)
          }
       }
 
-      sprintf(outputfile,"%s_cc_witelson.ppm",prefix);
+      snprintf(outputfile,sizeof(outputfile),"%s_cc_witelson.ppm",prefix);
       save_as_ppm((const char *)outputfile, NX, NY, R, G, B);
    }
    //////////////////////////////////////////////////////////////////////////////////
@@ -847,7 +847,7 @@ void output_ppm(short *trg, short *cc_est, const char *prefix)
          B[j*NX+O[0]] = 255;
       }
 
-      sprintf(outputfile,"%s_cc_hampel.ppm",prefix);
+      snprintf(outputfile,sizeof(outputfile),"%s_cc_hampel.ppm",prefix);
       save_as_ppm((const char *)outputfile, NX, NY, R, G, B);
    }
    //////////////////////////////////////////////////////////////////////////////////
@@ -916,7 +916,7 @@ void output_ppm(short *trg, short *cc_est, const char *prefix)
       }
       /////////////////////////////////////////////////////////////////////
       
-      sprintf(outputfile,"%s_cc_border.ppm",prefix);
+      snprintf(outputfile,sizeof(outputfile),"%s_cc_border.ppm",prefix);
       //save_as_ppm((const char *)outputfile, NX, NY, R, G, B);
    }
 
@@ -1211,7 +1211,7 @@ void output_bounding_box_ppm(short *trg, const char *prefix)
    */
    //////////////////////////////////////////////////////////////////////
 
-   sprintf(outputfile,"%s_cc.ppm",prefix);
+   snprintf(outputfile,sizeof(outputfile),"%s_cc.ppm",prefix);
    save_as_ppm((const char *)outputfile, NX, NY, R, G, B);
 
    free(R);
@@ -2588,7 +2588,7 @@ void find_thickness_profile(short *cc, const char *prefix)
    tmp = smoothY(thickness_profile, 1, 1001, 1, 10.0);
    tmp[0]=tmp[1000]=0.0;
 
-   sprintf(outputfile,"%s_TP.txt",prefix);
+   snprintf(outputfile,sizeof(outputfile),"%s_TP.txt",prefix);
    fp = fopen(outputfile,"w");
 
    if(fp != NULL)
@@ -2696,20 +2696,20 @@ int main(int argc, char **argv)
         if(number_of_atlases_used<=0) number_of_atlases_used=49;
         break;
       case 'i':
-        sprintf(ipimagepath,"%s",optarg);
+        snprintf(ipimagepath,sizeof(ipimagepath),"%s",optarg);
         break;
       case 'C':
         opt_cc=YES;
-        sprintf(ipimagepath,"%s",optarg);
+        snprintf(ipimagepath,sizeof(ipimagepath),"%s",optarg);
         break;
       case 't':
         max_t  = atof(optarg);
         break;
       case 'o':
-        sprintf(output_prefix,"%s",optarg);
+        snprintf(output_prefix,sizeof(output_prefix),"%s",optarg);
         break;
       case 'c':
-        sprintf(csvfile,"%s",optarg);
+        snprintf(csvfile,sizeof(csvfile),"%s",optarg);
         break;
       case 'v':
         opt_v=YES;
@@ -2727,13 +2727,13 @@ int main(int argc, char **argv)
         strcpy(lmfile,optarg);
         break;
       case 'a':
-        sprintf(atlas_filename,"%s",optarg);
+        snprintf(atlas_filename,sizeof(atlas_filename),"%s",optarg);
         break;
       case 'T':
-        sprintf(msp_transformation_file,"%s",optarg);
+        snprintf(msp_transformation_file,sizeof(msp_transformation_file),"%s",optarg);
         break;
       case 'L':
-        sprintf(preselected_atlases_file,"%s",optarg);
+        snprintf(preselected_atlases_file,sizeof(preselected_atlases_file),"%s",optarg);
         break;
       case 'b':
         opt_box=YES;
@@ -2840,7 +2840,7 @@ int main(int argc, char **argv)
   float *bbtrg_sobel=NULL; // the Sobel edges on bbtrg
   short *cctrg=NULL;
 
-  sprintf(filename,"%s/%s.nii",ARTHOME, atlas_filename);
+  snprintf(filename,sizeof(filename),"%s/%s.nii",ARTHOME, atlas_filename);
 
   if(opt_v)
   {
@@ -2974,7 +2974,7 @@ int main(int argc, char **argv)
   /////////////////////////////////////////////////////////////////////////////////////////////
   short *subj_volume_msp = NULL;
 
-  sprintf(outputfile,"%s/%s",ipimagedir, output_prefix);
+  snprintf(outputfile,sizeof(outputfile),"%s/%s",ipimagedir, output_prefix);
   if( ipimagepath[0] != '\0')
   {
     if( msp_transformation_file[0]=='\0')
@@ -3001,7 +3001,7 @@ int main(int argc, char **argv)
     //atlas_hdr.dim[1]=bbnx;
     //atlas_hdr.dim[2]=bbny;
     //atlas_hdr.dim[3]=1;
-    //sprintf(outputfile,"bbtrg.nii");
+    //snprintf(outputfile,sizeof(outputfile),"bbtrg.nii");
     //save_nifti_image(outputfile, bbtrg, &atlas_hdr);
     //exit(0);
     
@@ -3011,7 +3011,7 @@ int main(int argc, char **argv)
     //atlas_hdr.dim[3]=1;
     //atlas_hdr.datatype = DT_FLOAT32;
     //atlas_hdr.bitpix= 32;
-    //sprintf(outputfile,"bbtrg_sobel.nii");
+    //snprintf(outputfile,sizeof(outputfile),"bbtrg_sobel.nii");
     //save_nifti_image(outputfile, bbtrg_sobel, &atlas_hdr);
     //exit(0);
   }
@@ -3053,7 +3053,7 @@ int main(int argc, char **argv)
     }
 
     // saves the selected atlases
-    sprintf(selected_atlases_file,"%s/%s_A.txt",ipimagedir, output_prefix);
+    snprintf(selected_atlases_file,sizeof(selected_atlases_file),"%s/%s_A.txt",ipimagedir, output_prefix);
     fp = fopen(selected_atlases_file, "w");
     if(fp==NULL) file_open_error(selected_atlases_file);
     fprintf(fp, "%d\n", number_of_atlases_used);
@@ -3072,7 +3072,7 @@ int main(int argc, char **argv)
     output_hdr.dim[3] = 1;
     output_hdr.dim[1] = NX;
     output_hdr.dim[2] = NY;
-    sprintf(output_hdr.descrip,"Created by ART yuki");
+    snprintf(output_hdr.descrip,sizeof(output_hdr.descrip),"Created by ART yuki");
 
     if(N<=0) N=11;
     if( (N%2)==0 ) N += 1; // ensuring it's odd
@@ -3144,7 +3144,7 @@ int main(int argc, char **argv)
     atlas_hdr.dim[1]=bbnx;
     atlas_hdr.dim[2]=bbny;
     atlas_hdr.dim[3]=number_of_atlases_used;
-    sprintf(outputfile,"%s/%s_WACC.nii",ipimagedir,output_prefix);  //warped atlases corpora callosa
+    snprintf(outputfile,sizeof(outputfile),"%s/%s_WACC.nii",ipimagedir,output_prefix);  //warped atlases corpora callosa
     save_nifti_image(outputfile, warped_cc, &atlas_hdr);
 
     ////////////////////////////////////////////////////////////
@@ -3313,7 +3313,7 @@ int main(int argc, char **argv)
    {
       if( ipimagepath[0]!='\0')
       {
-         sprintf(outputfile,"%s/%s",ipimagedir, output_prefix);
+         snprintf(outputfile,sizeof(outputfile),"%s/%s",ipimagedir, output_prefix);
          output_ppm(subj_volume_msp, cc_est, (const char *)outputfile);
       }
 
@@ -3329,7 +3329,7 @@ int main(int argc, char **argv)
       output_hdr.dim[3]=1;
       output_hdr.datatype=16;
 
-      sprintf(outputfile,"%s/%s_cc.nii",ipimagedir,output_prefix);
+      snprintf(outputfile,sizeof(outputfile),"%s/%s_cc.nii",ipimagedir,output_prefix);
       save_nifti_image(outputfile, cc_est, &output_hdr);
 
       update_qsform( (const char *)outputfile, Tacpc );
@@ -3353,7 +3353,7 @@ int main(int argc, char **argv)
       
       CCcircularity = compute_circularity(CCarea, CCperimeter);
 
-    sprintf(outputfile,"%s/%s",ipimagedir, output_prefix);
+    snprintf(outputfile,sizeof(outputfile),"%s/%s",ipimagedir, output_prefix);
     find_thickness_profile(cc_est, outputfile);
 
     if( ipimagepath[0]!='\0')
@@ -3379,7 +3379,7 @@ int main(int argc, char **argv)
         output_hdr.dim[3]=1;
         output_hdr.datatype=16;
 
-        sprintf(outputfile,"%s/%s_cc_witelson.nii", ipimagedir, output_prefix);
+        snprintf(outputfile,sizeof(outputfile),"%s/%s_cc_witelson.nii", ipimagedir, output_prefix);
         save_nifti_image(outputfile, cc_est, &output_hdr);
 
         update_qsform( (const char *)outputfile, Tacpc );
@@ -3404,7 +3404,7 @@ int main(int argc, char **argv)
         output_hdr.dim[3]=1;
         output_hdr.datatype=16;
 
-        sprintf(outputfile,"%s/%s_cc_hampel.nii", ipimagedir, output_prefix);
+        snprintf(outputfile,sizeof(outputfile),"%s/%s_cc_hampel.nii", ipimagedir, output_prefix);
         save_nifti_image(outputfile, cc_est, &output_hdr);
 
         update_qsform( (const char *)outputfile, Tacpc );
@@ -3413,9 +3413,9 @@ int main(int argc, char **argv)
 
     if(csvfile[0]=='\0')
     {
-      sprintf(csvfile,"%s.csv",output_prefix);
+      snprintf(csvfile,sizeof(csvfile),"%s.csv",output_prefix);
     }
-    sprintf(csvfilepath,"%s/%s",ipimagedir,csvfile);
+    snprintf(csvfilepath,sizeof(csvfilepath),"%s/%s",ipimagedir,csvfile);
 
       if(opt_v)
       {

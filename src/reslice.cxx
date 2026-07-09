@@ -92,7 +92,7 @@ int main(int argc, char **argv)
 				opt_v=YES;
 				break;
 			case 'T':
-				sprintf(transFile,"%s",optarg);
+				snprintf(transFile,sizeof(transFile),"%s",optarg);
 				opt_T=YES;
 				break;
 			case '1':
@@ -120,13 +120,13 @@ int main(int argc, char **argv)
 				opt_dz=YES;
 				break;
 			case 'i':
-				sprintf(inputImageFile,"%s",optarg);
+				snprintf(inputImageFile,sizeof(inputImageFile),"%s",optarg);
 				break;
 			case 't':
-				sprintf(targetImageFile,"%s",optarg);
+				snprintf(targetImageFile,sizeof(targetImageFile),"%s",optarg);
 				break;
 			case 'o':
-				sprintf(outputImageFile,"%s",optarg);
+				snprintf(outputImageFile,sizeof(outputImageFile),"%s",optarg);
 				opt_o=YES;
 				break;
 			case '7':

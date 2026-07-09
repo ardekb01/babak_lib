@@ -383,10 +383,10 @@ int main(int argc, char **argv)
             opt_tiltcorrect=NO;
             break;
          case 'L':
-            sprintf(landmarksfilepath,"%s",optarg);
+            snprintf(landmarksfilepath,sizeof(landmarksfilepath),"%s",optarg);
             break;
          case 'i':
-            sprintf(ipimagepath,"%s",optarg);
+            snprintf(ipimagepath,sizeof(ipimagepath),"%s",optarg);
             break;
          case '0':
             searchradius[0] = atof(optarg); // searchradius[0] is for VSPS
@@ -404,19 +404,19 @@ int main(int argc, char **argv)
             print_help_and_exit();
             break;
          case 'O':
-            sprintf(iporient,"%s",optarg);
+            snprintf(iporient,sizeof(iporient),"%s",optarg);
             iporient[0]=(char)toupper((int)iporient[0]);
             iporient[1]=(char)toupper((int)iporient[1]);
             iporient[2]=(char)toupper((int)iporient[2]);
             break;
          case 'u':
-            sprintf(oporient,"%s",optarg);
+            snprintf(oporient,sizeof(oporient),"%s",optarg);
             oporient[0]=(char)toupper((int)oporient[0]);
             oporient[1]=(char)toupper((int)oporient[1]);
             oporient[2]=(char)toupper((int)oporient[2]);
             break;
 //         case 'm':
-//            sprintf(modelfile,"%s",optarg);
+//            snprintf(modelfile,sizeof(modelfile),"%s",optarg);
 //            break;
          case '?':
             print_help_and_exit();
@@ -528,7 +528,7 @@ int main(int argc, char **argv)
   opdim.np=opdim.nx*opdim.ny; 
   opdim.nv=opdim.np*opdim.nz; 
 
-  sprintf(opimagepath,"%s/%s_%s.nii",ipimagedir,ipimagename,oporient);
+  snprintf(opimagepath,sizeof(opimagepath),"%s/%s_%s.nii",ipimagedir,ipimagename,oporient);
 
   if(opt_v) 
   {
@@ -560,7 +560,7 @@ int main(int argc, char **argv)
   ophdr.dim[4] = 1;
   ophdr.scl_slope = 1.0;
   ophdr.scl_inter = 0.0;
-  sprintf(ophdr.descrip,"Created by ART acpcdetect");
+  snprintf(ophdr.descrip,sizeof(ophdr.descrip),"Created by ART acpcdetect");
   //////////////////////////////////////////////////////////////////////////////
 
   //////////////////////////////////////////////////////////////////////////////
@@ -594,7 +594,7 @@ int main(int argc, char **argv)
   {
     float Tout_FSL[16];
 
-    sprintf(optransformationpath,"%s/%s.mrx",ipimagedir,ipimagename);
+    snprintf(optransformationpath,sizeof(optransformationpath),"%s/%s.mrx",ipimagedir,ipimagename);
     if(opt_v) printf("Output transformation matrix: %s\n",optransformationpath);
 
     fp = fopen(optransformationpath,"w");
@@ -603,7 +603,7 @@ int main(int argc, char **argv)
     fclose(fp);
 
     art_to_fsl(Tout, Tout_FSL, ipdim, opdim);
-    sprintf(optransformationpath,"%s/%s_FSL.mat",ipimagedir,ipimagename);
+    snprintf(optransformationpath,sizeof(optransformationpath),"%s/%s_FSL.mat",ipimagedir,ipimagename);
     if(opt_v) printf("Output transformation matrix (FSL format): %s\n",optransformationpath);
     fp=fopen(optransformationpath,"w");
     if(fp==NULL) file_open_error(optransformationpath);

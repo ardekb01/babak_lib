@@ -99,16 +99,16 @@ int main(int argc, char **argv)
       switch (opt) 
       {
          case 't':
-            sprintf(trgImFile,"%s",optarg);
+            snprintf(trgImFile,sizeof(trgImFile),"%s",optarg);
             break;
          case 's':
-            sprintf(subImFile,"%s",optarg);
+            snprintf(subImFile,sizeof(subImFile),"%s",optarg);
             break;
          case 'i':
-            sprintf(FSLmatrixfile,"%s",optarg);
+            snprintf(FSLmatrixfile,sizeof(FSLmatrixfile),"%s",optarg);
             break;
          case 'o':
-            sprintf(ARTmatrixfile,"%s",optarg);
+            snprintf(ARTmatrixfile,sizeof(ARTmatrixfile),"%s",optarg);
             break;
          case 'v':
             opt_v=YES;

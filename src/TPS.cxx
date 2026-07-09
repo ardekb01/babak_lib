@@ -587,7 +587,7 @@ int main(int argc, char **argv)
          case 'h':
             print_help_and_exit();
          case 'u':
-            sprintf(oporient,"%s",optarg);
+            snprintf(oporient,sizeof(oporient),"%s",optarg);
             oporient[0]=(char)toupper((int)oporient[0]);
             oporient[1]=(char)toupper((int)oporient[1]);
             oporient[2]=(char)toupper((int)oporient[2]);
@@ -614,16 +614,16 @@ int main(int argc, char **argv)
             opt_v=YES;
             break;
          case '1':
-            sprintf(atlas_landmarks,"%s",optarg);
+            snprintf(atlas_landmarks,sizeof(atlas_landmarks),"%s",optarg);
             break;
          case '2':
-            sprintf(subject_landmarks,"%s",optarg);
+            snprintf(subject_landmarks,sizeof(subject_landmarks),"%s",optarg);
             break;
          case 'i':
-            sprintf(ipimagepath,"%s",optarg);
+            snprintf(ipimagepath,sizeof(ipimagepath),"%s",optarg);
             break;
          case 'T':
-            sprintf(transformation_matrix,"%s",optarg);
+            snprintf(transformation_matrix,sizeof(transformation_matrix),"%s",optarg);
             break;
          case 'V':
             printf("TPS v1.0, March 20, 2023 release\n");
@@ -770,7 +770,7 @@ exit(0);
   opdim.np=opdim.nx*opdim.ny; 
   opdim.nv=opdim.np*opdim.nz; 
 
-  sprintf(opimagepath,"%s/%s_TPS.nii",ipimagedir,ipimagename);
+  snprintf(opimagepath,sizeof(opimagepath),"%s/%s_TPS.nii",ipimagedir,ipimagename);
 
   if(opt_v) 
   {
@@ -803,7 +803,7 @@ exit(0);
   ophdr.dim[4] = 1;
   ophdr.scl_slope = 1.0;
   ophdr.scl_inter = 0.0;
-  sprintf(ophdr.descrip,"Created by ART acpcdetect");
+  snprintf(ophdr.descrip, sizeof(ophdr.descrip),"Created by ART acpcdetect");
 
   // setup ophdr sform and qform
   float Ttmp[16];

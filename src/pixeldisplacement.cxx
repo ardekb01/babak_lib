@@ -108,7 +108,7 @@ int main(int argc, char **argv)
     switch (opt) 
     {
       case 'T':
-        sprintf(transFile,"%s",optarg);
+        snprintf(transFile,sizeof(transFile),"%s",optarg);
         break;
       case 'i':
         strcpy(ipimfile,optarg);

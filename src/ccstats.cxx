@@ -261,7 +261,7 @@ void save_cluster_avg(float *spm,int nx,int ny,int nz, int N, char **imlist)
 
 	for(int j=0; j<ncc; j++)	// j is CC index
 	{
-        sprintf(ccfile,"%s_cc_stats%d.csv",prefix,j);
+        snprintf(ccfile,sizeof(ccfile),"%s_cc_stats%d.csv",prefix,j);
         fp = fopen(ccfile,"w");
 
 		// determine size of the connected component from array S
@@ -355,15 +355,15 @@ int main(int argc, char **argv)
 	{
 		switch (opt) {
 			case 'd':
-				sprintf(dataFile,"%s",optarg);
+				snprintf(dataFile,sizeof(dataFile),"%s",optarg);
 				opt_d=YES;
 				break;
 			case 'c':
-				sprintf(ccFile,"%s",optarg);
+				snprintf(ccFile,sizeof(ccFile),"%s",optarg);
 				opt_c=YES;
 				break;
 			case 'o':
-				sprintf(prefix,"%s",optarg);
+				snprintf(prefix,sizeof(prefix),"%s",optarg);
 				opt_o=YES;
 				break;
 			case '?':
@@ -372,7 +372,7 @@ int main(int argc, char **argv)
 	}
 
 	if(!opt_d || !opt_c) print_help_and_exit();
-	if(!opt_o) sprintf(prefix,"cc");
+	if(!opt_o) snprintf(prefix,sizeof(prefix),"cc");
 
 	printf("\nImage data file = %s\n",dataFile);
 	printf("\nConnected components image = %s\n",ccFile);

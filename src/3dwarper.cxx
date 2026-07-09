@@ -601,13 +601,13 @@ int main(int argc, char **argv)
             iter1 = atoi(optarg);
             break;
          case 'T':
-            sprintf(affineTransformationFile,"%s",optarg);
+            snprintf(affineTransformationFile,sizeof(affineTransformationFile),"%s",optarg);
             break;
          case 'm':
-            sprintf(trglmfile,"%s",optarg);
+            snprintf(trglmfile,sizeof(trglmfile),"%s",optarg);
             break;
          case 'M':
-            sprintf(sublmfile,"%s",optarg);
+            snprintf(sublmfile,sizeof(sublmfile),"%s",optarg);
             break;
          case 'h':
             print_help_and_exit();
@@ -616,16 +616,16 @@ int main(int argc, char **argv)
             opt_v=YES;
             break;
          case 's':
-            sprintf(subjectImageFile,"%s",optarg);
+            snprintf(subjectImageFile,sizeof(subjectImageFile),"%s",optarg);
             break;
          case 't':
-            sprintf(targetImageFile,"%s",optarg);
+            snprintf(targetImageFile,sizeof(targetImageFile),"%s",optarg);
             break;
          case 'u':
-            sprintf(warpfile,"%s",optarg);
+            snprintf(warpfile,sizeof(warpfile),"%s",optarg);
             break;
          case 'o':
-            sprintf(outputfile,"%s",optarg);
+            snprintf(outputfile,sizeof(outputfile),"%s",optarg);
             break;
          case 'c':
             opt_cubicspline=YES;
@@ -780,7 +780,7 @@ int main(int argc, char **argv)
       DIM PILbraincloud_dim;
       nifti_1_header PILbraincloud_hdr;
 
-      sprintf(filename,"%s/PILbrain.nii",ARTHOME);
+      snprintf(filename,sizeof(filename),"%s/PILbrain.nii",ARTHOME);
 
       PILbraincloud = (int2 *)read_nifti_image(filename, &PILbraincloud_hdr);
 
@@ -844,7 +844,7 @@ int main(int argc, char **argv)
       multi(invT, 4,4, subTPIL, 4, 4, sub_to_trg);
       free(invT);
 
-      sprintf(filename,"%s_affine.mrx",subprefix);
+      snprintf(filename,sizeof(filename),"%s_affine.mrx",subprefix);
       if(opt_v) printf("Saving subject image -> target image affine transformaion in %s ...\n",filename);
       fp = fopen(filename,"w");
       if(fp==NULL) file_open_error(filename);
@@ -865,7 +865,7 @@ int main(int argc, char **argv)
       tmp = resliceImage(sub, dim_sub, dim_trg, invT, LIN); 
       free(invT);
 
-      sprintf(filename,"%s_affine.nii",subprefix);
+      snprintf(filename,sizeof(filename),"%s_affine.nii",subprefix);
       if(opt_v) printf("Saving subject image affine transformed to target space in %s ...\n",filename);
       save_nifti_image(filename, tmp, &trg_hdr);
       free(tmp);
@@ -949,8 +949,8 @@ int main(int argc, char **argv)
 
       Csub=computeReslicedImage2(sub, dim_sub, dim_trg, Xout, Yout, Zout);
 
-      if(outputfile[0]=='\0') sprintf(filename,"C%s.nii",subprefix);
-      else sprintf(filename,"%s",outputfile);
+      if(outputfile[0]=='\0') snprintf(filename,sizeof(filename),"C%s.nii",subprefix);
+      else snprintf(filename,sizeof(filename),"%s",outputfile);
       if(opt_v) printf("Saving non-linearly transformed subject image in %s ...\n",filename);
       save_nifti_image(filename, Csub, &trg_hdr);
 
@@ -966,7 +966,7 @@ int main(int argc, char **argv)
       nifti1_extender extender;
       FILE *fp;
 
-      if(warpfile[0]=='\0') sprintf(warpfile,"%s_wrp.nii",subprefix);
+      if(warpfile[0]=='\0') snprintf(warpfile,sizeof(warpfile),"%s_wrp.nii",subprefix);
 
       if(opt_v) printf("Saving displacement field %s ...\n",warpfile);
 

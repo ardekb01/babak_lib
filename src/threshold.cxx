@@ -65,10 +65,10 @@ int main(int argc, char **argv)
         ccthresh=atoi(optarg);
         break;
       case 'i':
-        sprintf(inputfile,"%s",optarg);
+        snprintf(inputfile,sizeof(inputfile),"%s",optarg);
         break;
       case 'o':
-        sprintf(op_image_file,"%s",optarg);
+        snprintf(op_image_file,sizeof(op_image_file),"%s",optarg);
         break;
       case '1':
         opt_t1=YES;

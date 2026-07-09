@@ -354,11 +354,11 @@ int main(int argc, char **argv)
             opt_dz = YES;
             break;
          case 'i':
-            sprintf(filename1,"%s",optarg);
+            snprintf(filename1,sizeof(filename1),"%s",optarg);
             opt_i = YES;
             break;
          case 'o':
-            sprintf(filename2,"%s",optarg);
+            snprintf(filename2,sizeof(filename2),"%s",optarg);
             opt_o = YES;
             break;
          case '?':

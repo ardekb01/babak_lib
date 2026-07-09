@@ -33,7 +33,7 @@ int main(int argc, char **argv)
             opt_v=YES;
             break;
          case 'i':
-            sprintf(imfile,"%s",optarg);
+            snprintf(imfile,sizeof(imfile),"%s",optarg);
             break;
          case '?':
             exit(0);

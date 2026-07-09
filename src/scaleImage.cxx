@@ -85,7 +85,7 @@ int main(int argc, char **argv)
         opt_f=YES;
         break;
       case 'p':
-        sprintf(prefix,"%s",optarg);
+        snprintf(prefix,sizeof(prefix),"%s",optarg);
         opt_p=YES;
         break;
       case 'c':
@@ -105,7 +105,7 @@ int main(int argc, char **argv)
     exit(0);
   }
 
-  if(!opt_p) sprintf(prefix,"scl_");
+  if(!opt_p) snprintf(prefix,sizeof(prefix),"scl_");
 
   if(opt_v && opt_p) printf("\nOutput image prefix is '%s'\n",prefix);
 
@@ -159,7 +159,7 @@ int main(int argc, char **argv)
     }
 
     getfilename(tempfile,imagefile[i]);
-    sprintf(opfile,"%s%s",prefix,tempfile);
+    snprintf(opfile,sizeof(opfile),"%s%s",prefix,tempfile);
 
     if(opt_v) printf("\tOutput image filename = %s\n",opfile);
 

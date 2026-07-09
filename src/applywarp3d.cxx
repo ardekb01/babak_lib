@@ -120,7 +120,7 @@ int main(int argc, char **argv)
             exit(0);
          case 'o':
             opt_o=YES;
-            sprintf(prefix,"%s",optarg);
+            snprintf(prefix,sizeof(prefix),"%s",optarg);
             break;
 			case 'n':
 				opt_nn=YES;
@@ -129,15 +129,15 @@ int main(int argc, char **argv)
 				opt_secret=YES;
 				break;
 			case '1':
-				sprintf(warpfile,"%s",optarg);
+				snprintf(warpfile,sizeof(warpfile),"%s",optarg);
 				opt_w=YES;
 				break;
 			case '2':
-				sprintf(Tfile,"%s",optarg);
+				snprintf(Tfile,sizeof(Tfile),"%s",optarg);
 				opt_T=YES;
 				break;
 			case '3':
-				sprintf(w2dfile,"%s",optarg);
+				snprintf(w2dfile,sizeof(w2dfile),"%s",optarg);
 				opt_w2d=YES;
 				break;
 			case '4':
@@ -330,19 +330,19 @@ int main(int argc, char **argv)
    {
       char *sub_im;
 
-      sprintf(objfile,"%s",argv[i+optind]);
+      snprintf(objfile,sizeof(objfile),"%s",argv[i+optind]);
 
       printf("\nTransforming image %s ...\n",objfile);
 
       if(opt_o)
       {
-         if(N>1) sprintf(outputfile,"%s%03d.nii",prefix,i+1);
-         else sprintf(outputfile,"%s.nii",prefix);
+         if(N>1) snprintf(outputfile,sizeof(outputfile),"%s%03d.nii",prefix,i+1);
+         else snprintf(outputfile,sizeof(outputfile),"%s.nii",prefix);
       }
       else
       {
          getfilename(dum,objfile); 
-         sprintf(outputfile,"C%s",dum);
+         snprintf(outputfile,sizeof(outputfile),"C%s",dum);
       }
 
       printf("Output filename = %s ...\n", outputfile);

@@ -859,12 +859,12 @@ void read_default_atlas_names(const char *brainwashatlasdir, int &natlas)
       if(L != 8 || strcmp(dir->d_name+(L-4), ".nii")!=0 )
          continue;
 
-      sprintf(filename,"%s/%s",brainwashatlasdir,dir->d_name);
+      snprintf(filename,sizeof(filename),"%s/%s",brainwashatlasdir,dir->d_name);
 
       // then looks like a real NIFTI image since niftiFilename does some checks
       if( niftiFilename(fileprefix, filename)==1 ) 
       {
-         sprintf(atlasfilename[natlas],"%s",fileprefix);
+         snprintf(atlasfilename[natlas],sizeof(atlasfilename[natlas]),"%s",fileprefix);
          natlas++; // increment natlas to indicate that one more atlas has been read 
       }
    };
@@ -897,7 +897,7 @@ void read_atlas_list(const char *atlaslistfile, int &natlas)
       // then looks like a real NIFTI image since niftiFilename does some checks
       if( niftiFilename(fileprefix, filename)==1 ) 
       {
-         sprintf(atlasfilename[natlas],"%s",filename);
+         snprintf(atlasfilename[natlas],sizeof(atlasfilename[natlas]),"%s",filename);
          natlas++; // increment natlas to indicate that one more atlas has been read 
       }
    };
@@ -1043,13 +1043,13 @@ int main(int argc, char **argv)
             iter1 = atoi(optarg);
             break;
          case 'l':
-            sprintf(atlaslistfile,"%s",optarg);
+            snprintf(atlaslistfile,sizeof(atlaslistfile),"%s",optarg);
             break;
          case 'd':
-            sprintf(brainwashatlasdir,"%s",optarg);
+            snprintf(brainwashatlasdir,sizeof(brainwashatlasdir),"%s",optarg);
             break;
          case 'M':
-            sprintf(subLMfile,"%s",optarg);
+            snprintf(subLMfile,sizeof(subLMfile),"%s",optarg);
             break;
          case 'h':
             print_help_and_exit();
@@ -1058,7 +1058,7 @@ int main(int argc, char **argv)
             opt_v=YES;
             break;
          case 'i':
-            sprintf(subImageFile,"%s",optarg);
+            snprintf(subImageFile,sizeof(subImageFile),"%s",optarg);
             break;
          case '?':
             print_help_and_exit();
@@ -1125,7 +1125,7 @@ int main(int argc, char **argv)
 
    if(brainwashatlasdir[0]=='\0')
    {
-      sprintf(brainwashatlasdir,"%s/brainwashatlas",ARTHOME);
+      snprintf(brainwashatlasdir,sizeof(brainwashatlasdir),"%s/brainwashatlas",ARTHOME);
    }
 
    ////////////////////////////////////////////////////////////////////////////////////////////
@@ -1157,7 +1157,7 @@ int main(int argc, char **argv)
 
    // compute PILmsk1, PILmsk2, PILmsk4 and PILmsk8
    {
-      sprintf(filename,"%s/PILbrain.nii",ARTHOME);
+      snprintf(filename,sizeof(filename),"%s/PILbrain.nii",ARTHOME);
 
       PILbraincloud = (int2 *)read_nifti_image(filename, &PILbraincloudHdr);
 
@@ -1236,7 +1236,7 @@ int main(int argc, char **argv)
 
       for(int a=0; a<natlas; a++)
       {
-         sprintf(atlaspath,"%s/%s_PIL.nii",brainwashatlasdir,atlasfilename[a]);
+         snprintf(atlaspath,sizeof(atlaspath),"%s/%s_PIL.nii",brainwashatlasdir,atlasfilename[a]);
 
          tmp2 = (int2 *)read_nifti_image(atlaspath, &PILbraincloudHdr);
 
@@ -1286,8 +1286,8 @@ int main(int argc, char **argv)
 
       a = atlas_indx[natlas-2-i];
 
-      sprintf(atlaspath,"%s/%s.nii",brainwashatlasdir,atlasfilename[a]);
-      sprintf(atlasmskpath,"%s/%s_msk.nii",brainwashatlasdir,atlasfilename[a]);
+      snprintf(atlaspath,sizeof(atlaspath),"%s/%s.nii",brainwashatlasdir,atlasfilename[a]);
+      snprintf(atlasmskpath,sizeof(atlasmskpath),"%s/%s_msk.nii",brainwashatlasdir,atlasfilename[a]);
 
       // extract the atlas filename without path/suffix
       if( niftiFilename(atlprefix, atlasmskpath )==0 ) { exit(0); } // just for checking
@@ -1380,8 +1380,8 @@ int main(int argc, char **argv)
 
       a = atlas_indx[natlas-2-ai];
 
-      sprintf(atlaspath,"%s/%s.nii",brainwashatlasdir,atlasfilename[a]);
-      sprintf(atlasmskpath,"%s/%s_msk.nii",brainwashatlasdir,atlasfilename[a]);
+      snprintf(atlaspath,sizeof(atlaspath),"%s/%s.nii",brainwashatlasdir,atlasfilename[a]);
+      snprintf(atlasmskpath,sizeof(atlasmskpath),"%s/%s_msk.nii",brainwashatlasdir,atlasfilename[a]);
 
       // extract the atlas filename without path/suffix
       if( niftiFilename(atlprefix, atlasmskpath )==0 ) { exit(0); } // just for checking
@@ -1420,7 +1420,7 @@ int main(int argc, char **argv)
       PILatl1 = resliceImage(atl, atlDim, dim1, invT, LIN); 
       free(invT);
 
-      //sprintf(filename,"%s_bw.nii",atlprefix);
+      //snprintf(filename,sizeof(filename),"%s_bw.nii",atlprefix);
       //save_nifti_image(filename, PILatl1, &PILbraincloudHdr);
 
       SHORTIM subim; 
@@ -1478,7 +1478,7 @@ int main(int argc, char **argv)
 
       for(int v=0; v<subDim.nv; v++) if(tmp[v]<50) sub[v] = 0;
 
-      sprintf(filename,"%s_bw.nii",subprefix);
+      snprintf(filename,sizeof(filename),"%s_bw.nii",subprefix);
       save_nifti_image(filename, sub, &subHdr);
 
       free(tmp);
@@ -1498,8 +1498,8 @@ exit(0);
 
       a = atlas_indx[natlas-2-ai];
 
-      sprintf(atlaspath,"%s/%s.nii",brainwashatlasdir,atlasfilename[a]);
-      sprintf(atlasmskpath,"%s/%s_msk.nii",brainwashatlasdir,atlasfilename[a]);
+      snprintf(atlaspath,sizeof(atlaspath),"%s/%s.nii",brainwashatlasdir,atlasfilename[a]);
+      snprintf(atlasmskpath,sizeof(atlasmskpath),"%s/%s_msk.nii",brainwashatlasdir,atlasfilename[a]);
 
       // extract the atlas filename without path/suffix
       if( niftiFilename(atlprefix, atlasmskpath )==0 ) { exit(0); } // just for checking
@@ -1602,13 +1602,13 @@ exit(0);
       free(tmp);
    }
 
-   //sprintf(filename,"%s_brainwash.nii",subprefix);
+   //snprintf(filename,sizeof(filename),"%s_brainwash.nii",subprefix);
    //save_nifti_image(filename, sub, &subHdr);
 
 /*
    for(int i=0; i<subDim.nv; i++)
       sub[i] = (short)(label[i]+0.5);
-   sprintf(filename,"%s_brainmask.nii",subprefix);
+   snprintf(filename,sizeof(filename),"%s_brainmask.nii",subprefix);
    save_nifti_image(filename, sub, &subHdr);
 */
 

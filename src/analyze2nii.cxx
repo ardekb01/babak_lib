@@ -135,7 +135,7 @@ int main(int argc, char **argv)
       switch (opt) 
       {
          case 'i':
-            sprintf(analyzefile,"%s",optarg);
+            snprintf(analyzefile,sizeof(analyzefile),"%s",optarg);
             opt_i=YES;
             break;
          case 'D':
@@ -148,7 +148,7 @@ int main(int argc, char **argv)
             print_help_and_exit();
             break;
          case 'O':
-            sprintf(orientation,"%s",optarg);
+            snprintf(orientation,sizeof(orientation),"%s",optarg);
             opt_orient=YES;
             break;
          case '?':
@@ -240,7 +240,7 @@ int main(int argc, char **argv)
    set_shift(orientation[2], &(hdr.srow_x[3]), &(hdr.srow_y[3]), &(hdr.srow_z[3]), -hdr.pixdim[3]*(hdr.dim[3]-1.0)/2.0);
 
    hdr.intent_name[0]=0;
-   sprintf(hdr.magic,"n+1"); 
+   snprintf(hdr.magic,sizeof(hdr.magic),"n+1"); 
 
    // sets the Quaternions
    {
@@ -348,7 +348,7 @@ int main(int argc, char **argv)
       }
       else
       {
-         sprintf(niftifile,"%s.nii",niftifile);
+         snprintf(niftifile,sizeof(niftifile),"%s.nii",niftifile);
       }
    }
 

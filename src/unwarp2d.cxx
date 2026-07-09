@@ -127,18 +127,18 @@ int main(int argc, char **argv)
             opt_v=YES;
             break;
          case 'T':
-            sprintf(Tfile,"%s",optarg);
+            snprintf(Tfile,sizeof(Tfile),"%s",optarg);
             break;
          case 's':
-            sprintf(subfile,"%s",optarg);
+            snprintf(subfile,sizeof(subfile),"%s",optarg);
             opt_sub=YES;
             break;
          case 't':
-            sprintf(trgfile,"%s",optarg);
+            snprintf(trgfile,sizeof(trgfile),"%s",optarg);
             opt_trg=YES;
             break;
          case 'o':
-            sprintf(outputfile,"%s",optarg);
+            snprintf(outputfile,sizeof(outputfile),"%s",optarg);
             break;
 			case 'S':
 				sd=atof(optarg);
@@ -149,7 +149,7 @@ int main(int argc, char **argv)
 				opt_iter=YES;
 				break;
 			case '6':
-				sprintf(warpfile,"%s",optarg);
+				snprintf(warpfile,sizeof(warpfile),"%s",optarg);
 				break;
 			case '7':
 				N=atoi(optarg);
@@ -186,7 +186,7 @@ int main(int argc, char **argv)
    {
       // returns the filename in dum, without the path information.
       getfilename(dum,subfile); 
-      sprintf(outputfile,"C%s",dum);
+      snprintf(outputfile,sizeof(outputfile),"C%s",dum);
    }
 
    if(opt_v)
@@ -430,7 +430,7 @@ int main(int argc, char **argv)
          // returns the filename in dum, without the path information.
          getfilename(dum,subfile);
 
-         sprintf(warpfile,"%s_wrp.nii", strsep(&dum, "."));
+         snprintf(warpfile,sizeof(warpfile),"%s_wrp.nii", strsep(&dum, "."));
       }
 
       if(opt_v)

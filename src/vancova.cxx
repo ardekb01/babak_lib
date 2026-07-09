@@ -1003,27 +1003,27 @@ int main(int argc, char **argv)
 				opt_v=YES;
 				break;
 			case 'c':
-				sprintf(contrastFile,"%s",optarg);
+				snprintf(contrastFile,sizeof(contrastFile),"%s",optarg);
 				opt_c=YES;
 				break;
 			case 'm':
-				sprintf(maskFile,"%s",optarg);
+				snprintf(maskFile,sizeof(maskFile),"%s",optarg);
 				opt_m=YES;
 				break;
 			case 'd':
-				sprintf(dataFile,"%s",optarg);
+				snprintf(dataFile,sizeof(dataFile),"%s",optarg);
 				opt_d=YES;
 				break;
 			case 'T':
-				sprintf(dataTypeCode,"%s",optarg);
+				snprintf(dataTypeCode,sizeof(dataTypeCode),"%s",optarg);
 				opt_dataType=YES;
 				break;
 			case 'M':
-				sprintf(dataMaskCode,"%s",optarg);
+				snprintf(dataMaskCode,sizeof(dataMaskCode),"%s",optarg);
 				opt_dataMask=YES;
 				break;
 			case 'o':
-				sprintf(prefix,"%s",optarg);
+				snprintf(prefix,sizeof(prefix),"%s",optarg);
 				opt_o=YES;
 				break;
 			case '?':
@@ -1035,10 +1035,10 @@ int main(int argc, char **argv)
       print_help_and_exit();
 
    // if no prefix is specified at the command line, set the default prefix to "V"
-   if(!opt_o) sprintf(prefix,"%s","V");
+   if(!opt_o) snprintf(prefix,sizeof(prefix),"%s","V");
 
    // name the log file <prefix>.log
-   sprintf(logFile,"%s.log",prefix);
+   snprintf(logFile,sizeof(logFile),"%s.log",prefix);
 
    // open the log file for writting
    logFilePtr = fopen(logFile,"w");
@@ -1200,11 +1200,11 @@ int main(int argc, char **argv)
 
 		if(vi == vox )  
 		{
-			sprintf(s,"y vector at voxel (%d,%d,%d):",xi,yi,zi);
+			snprintf(s,sizeof(s),"y vector at voxel (%d,%d,%d):",xi,yi,zi);
 			printMatrix(y,nr,1,s, logFilePtr);
 			if(opt_v) printMatrix(y,nr,1,s, NULL);
 
-			sprintf(s,"X matrix at voxel (%d,%d,%d):",xi,yi,zi);
+			snprintf(s,sizeof(s),"X matrix at voxel (%d,%d,%d):",xi,yi,zi);
 			printMatrix(X,nr,p,s, logFilePtr);
 			if(opt_v) printMatrix(X,nr,p,s, NULL);
 		}
@@ -1267,7 +1267,7 @@ int main(int argc, char **argv)
    {
       hdr.datatype=NIFTI_TYPE_INT32;
       hdr.bitpix = 32;
-      sprintf(s,"%s_r2.nii",prefix);
+      snprintf(s,sizeof(s),"%s_r2.nii",prefix);
       save_nifti_image(s, spm_r2, &hdr);
    }
 
@@ -1275,29 +1275,29 @@ int main(int argc, char **argv)
    {
       hdr.datatype=NIFTI_TYPE_INT32;
       hdr.bitpix = 32;
-      sprintf(s,"%s_t.nii",prefix);
+      snprintf(s,sizeof(s),"%s_t.nii",prefix);
       save_nifti_image(s, spm_t, &hdr);
 
       hdr.datatype=NIFTI_TYPE_INT16;
       hdr.bitpix = 16;
 
-      sprintf(s,"%s_df.nii",prefix);
+      snprintf(s,sizeof(s),"%s_df.nii",prefix);
       save_nifti_image(s, dfmap, &hdr);
    }
    else
    {
       hdr.datatype=NIFTI_TYPE_INT32;
       hdr.bitpix = 32;
-      sprintf(s,"%s_F.nii",prefix);
+      snprintf(s,sizeof(s),"%s_F.nii",prefix);
       save_nifti_image(s, spm_F, &hdr);
 
       hdr.datatype=NIFTI_TYPE_INT16;
       hdr.bitpix = 16;
 
-      sprintf(s,"%s_df1.nii",prefix);
+      snprintf(s,sizeof(s),"%s_df1.nii",prefix);
       save_nifti_image(s, df1map, &hdr);
    
-      sprintf(s,"%s_df2.nii",prefix);
+      snprintf(s,sizeof(s),"%s_df2.nii",prefix);
       save_nifti_image(s, df2map, &hdr);
    }
 
@@ -1332,7 +1332,7 @@ int main(int argc, char **argv)
 		minmax(spm_t, nv, mint, maxt);
 		//printf("mint=%f, maxt=%f\n",mint,maxt);
 
-		sprintf(s,"%s_FDR.tbl",prefix);
+		snprintf(s,sizeof(s),"%s_FDR.tbl",prefix);
 		fp=fopen(s,"w");
 
 		fprintf(fp,"df=%lf\n\n",df);

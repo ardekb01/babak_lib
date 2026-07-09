@@ -372,7 +372,7 @@ int main(int argc, char **argv)
             scale = atof(optarg);
             break;
          case 'o':
-            sprintf(outputfile,"%s",optarg);
+            snprintf(outputfile,sizeof(outputfile),"%s",optarg);
             opt_o=YES;
             break;
          case 'h':

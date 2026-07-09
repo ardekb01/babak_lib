@@ -251,7 +251,7 @@ int main(int argc, char **argv)
       switch (opt) 
       {
          case 'o':
-            sprintf(prefix,"%s",optarg);
+            snprintf(prefix,sizeof(prefix),"%s",optarg);
             opt_o=YES;
             break;
          case 'h':
@@ -342,11 +342,11 @@ int main(int argc, char **argv)
    }
 
    hdr.datatype=16;
-   sprintf(outputfile,"%s_tmap.nii",prefix);
+   snprintf(outputfile,sizeof(outputfile),"%s_tmap.nii",prefix);
    save_nifti_image(outputfile, tmap, &hdr);
 
    hdr.datatype=4;
-   sprintf(outputfile,"%s_df.nii",prefix);
+   snprintf(outputfile,sizeof(outputfile),"%s_df.nii",prefix);
    save_nifti_image(outputfile, dfmap, &hdr);
 
    free(tmap);

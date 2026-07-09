@@ -34,10 +34,10 @@ int main(int argc, char **argv)
    {
       switch (opt) {
          case 'm':
-            sprintf(lmfile,"%s",optarg);
+            snprintf(lmfile,sizeof(lmfile),"%s",optarg);
             break;
          case 'i':
-            sprintf(subfile,"%s",optarg);
+            snprintf(subfile,sizeof(subfile),"%s",optarg);
             break;
          case 'v':
             opt_v=YES;

@@ -883,19 +883,19 @@ int main(int argc, char **argv)
 			nt = atoi(optarg);
             break;
          case 'P':
-            sprintf(eigenvecfile,"%s",optarg);
+            snprintf(eigenvecfile,sizeof(eigenvecfile),"%s",optarg);
             break;
          case 'r':
-            sprintf(rwfile,"%s",optarg);
+            snprintf(rwfile,sizeof(rwfile),"%s",optarg);
             break;
          case 'i':
-            sprintf(prefix,"%s",optarg);
+            snprintf(prefix,sizeof(prefix),"%s",optarg);
             break;
          case 'd':
-            sprintf(dataFile,"%s",optarg);
+            snprintf(dataFile,sizeof(dataFile),"%s",optarg);
             break;
          case 'p':
-            sprintf(paramfile,"%s",optarg);
+            snprintf(paramfile,sizeof(paramfile),"%s",optarg);
             break;
 			case 'x':
 				xi = atoi(optarg);
@@ -919,23 +919,23 @@ int main(int argc, char **argv)
 				opt_v=YES;
 				break;
 			case 'c':
-				sprintf(contrastFile,"%s",optarg);
+				snprintf(contrastFile,sizeof(contrastFile),"%s",optarg);
 				opt_c=YES;
 				break;
 			case 'm':
-				sprintf(maskFile,"%s",optarg);
+				snprintf(maskFile,sizeof(maskFile),"%s",optarg);
 				opt_m=YES;
 				break;
 			case 'T':
-				sprintf(dataTypeCode,"%s",optarg);
+				snprintf(dataTypeCode,sizeof(dataTypeCode),"%s",optarg);
 				opt_dataType=YES;
 				break;
 			case 'M':
-				sprintf(dataMaskCode,"%s",optarg);
+				snprintf(dataMaskCode,sizeof(dataMaskCode),"%s",optarg);
 				opt_dataMask=YES;
 				break;
 			case 'o':
-				sprintf(prefix,"%s",optarg);
+				snprintf(prefix,sizeof(prefix),"%s",optarg);
 				opt_o=YES;
 				break;
 			case '?':
@@ -1049,7 +1049,7 @@ int main(int argc, char **argv)
    fp = fopen(dataFile,"w");
    for(int i=0; i<nt; i++)
    {
-      sprintf(outputfile,"%s%04d.nii",prefix,i);
+      snprintf(outputfile,sizeof(outputfile),"%s%04d.nii",prefix,i);
       fprintf(fp,"%s\t",outputfile);
 
       if( eigenvecfile[0] != '\0' )
