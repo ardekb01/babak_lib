@@ -1395,7 +1395,7 @@ char *read_nifti_image(const char *filename, nifti_1_header *hdr)
 
 
   float *floatim;
-  float max;
+  float max=0.0;
   floatim = (float *)calloc(nv, sizeof(float));
 
   if( hdr->datatype == DT_SIGNED_SHORT) 

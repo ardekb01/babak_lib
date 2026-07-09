@@ -83,19 +83,27 @@ double LogFact( int n )
 *                                                                          *
 ***************************************************************************/
 double BinomialCoeff( int n, int k )
-    {
-    double b;
-    int    p = n - k;
-    if( k <= 1 || p <= 1 )  // Check for errors and special cases.
-        {
+{
+   double b;
+   int    p = n - k;
+
+   if( p<0 )
+   {
+        fprintf(stderr, "BinomialCoeff(%d,%d) is undefined\n", n, k );
+        return 0;
+   }
+
+   if( k <= 1 || p <= 1 )  // Check for errors and special cases.
+   {
         if( k == 0 || p == 0 ) return 1;
         if( k == 1 || p == 1 ) return n;
-        //cerr << form( "BinomialCoeff(%d,%d) is undefined", n, k );
+        fprintf(stderr, "BinomialCoeff(%d,%d) is undefined\n", n, k );
         return 0;
-        }
+   }
+
     static const int  // Store part of Pascal's triange for small coeffs.
-        n0[] = { 1 },
-        n1[] = { 1, 1 },
+        //n0[] = { 1 },
+        //n1[] = { 1, 1 },
         n2[] = { 1, 2, 1 },
         n3[] = { 1, 3, 3, 1 },
         n4[] = { 1, 4, 6, 4, 1 },
@@ -104,10 +112,12 @@ double BinomialCoeff( int n, int k )
         n7[] = { 1, 7, 21, 35, 35, 21, 7, 1 },
         n8[] = { 1, 8, 28, 56, 70, 56, 28, 8, 1 },
         n9[] = { 1, 9, 36, 84, 126, 126, 84, 36, 9, 1 };
+
     switch( n )
         {
-        case 0 : b = n0[k]; break;
-        case 1 : b = n1[k]; break;
+// under n circumstances n=0 or n=1 at this point
+        //case 0 : b = n0[k]; break;
+        //case 1 : b = n1[k]; break;
         case 2 : b = n2[k]; break;
         case 3 : b = n3[k]; break;
         case 4 : b = n4[k]; break;
