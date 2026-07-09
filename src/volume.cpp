@@ -78,7 +78,7 @@ int VOLUME::isSMIS(char *pathname)
 		return 0;
 	}
 
-        while( fgets(dum,1024,fp) != NULL )
+        while( fgets(dum,DEFAULT_STRING_LENGTH,fp) != NULL )
         {
                 sscanf(dum,"%s",key);
                 if( strcmp(key,":IM_TOTAL_SLICES")==0 )
@@ -157,7 +157,7 @@ void VOLUME::read_smis_header(char *pathname)
    fp=fopen(pathname,"r");
    if(fp==NULL) file_open_error(pathname);
    fseek(fp,np*2+512,0);
-   while( fgets(dum,1024,fp) != NULL )
+   while( fgets(dum,DEFAULT_STRING_LENGTH,fp) != NULL )
    {
                 sscanf(dum,"%s",key);
                 if( strcmp(key,":FOV")==0 )
@@ -296,7 +296,7 @@ void VOLUME::readsiemensvision(char *pathname)
 	char patientname2[26];    // variable - patient names
 	char dirname[128];        // directory where files are looked for
 	char filename[DEFAULT_STRING_LENGTH];       // variable - full path of files
-	char filenames[1024][512]; // names of the files that pass the test
+	char filenames[DEFAULT_STRING_LENGTH][512]; // names of the files that pass the test
 
 	double slicethickness;
 	double slicegapfactor;
@@ -503,7 +503,7 @@ np=nx*ny;
 		if(imagenumber>imagenumbermax) imagenumbermax=imagenumber;
 
 		imagenumbers[numberoffiles]=imagenumber;
-		snprintf(filenames[numberoffiles++],512,"%s",filename);
+		snprintf(filenames[numberoffiles++],DEFAULT_STRING_LENGTH,"%s",filename);
 
 	};
 
@@ -1068,7 +1068,7 @@ void VOLUME::read_ge(char *pathname)
 	char patientname2[26];    // variable - patient names
 	char dirname[128];        // directory where files are looked for
 	char filename[DEFAULT_STRING_LENGTH];       // variable - full path of files
-	char filenames[1024][512]; // names of the files that pass the test
+	char filenames[DEFAULT_STRING_LENGTH][512]; // names of the files that pass the test
 
 	double ddum;
 
@@ -1284,7 +1284,7 @@ void VOLUME::read_ge(char *pathname)
 
 		fclose(fp);
 
-		snprintf(filenames[numberoffiles++],512,"%s",filename);
+		snprintf(filenames[numberoffiles++],DEFAULT_STRING_LENGTH,"%s",filename);
 	};
 
 	// close the directory stream and free the structure associated with dp
@@ -1430,7 +1430,7 @@ void VOLUME::read_gelx(char *pathname)
 	char patientname2[26];    // variable - patient names
 	char dirname[128];        // directory where files are looked for
 	char filename[DEFAULT_STRING_LENGTH];       // variable - full path of files
-	char filenames[1024][512]; // names of the files that pass the test
+	char filenames[DEFAULT_STRING_LENGTH][512]; // names of the files that pass the test
 
 	double ddum;
 
@@ -1622,7 +1622,7 @@ void VOLUME::read_gelx(char *pathname)
 
 		fclose(fp);
 
-		snprintf(filenames[numberoffiles++],512,"%s",filename);
+		snprintf(filenames[numberoffiles++],DEFAULT_STRING_LENGTH,"%s",filename);
 	};
 
 	// close the directory stream and free the structure associated with dp
@@ -1814,8 +1814,8 @@ void VOLUME::read_dicom(char *pathname)
 
 int VOLUME::read_analyze(const char *pathname)
 {
-	char hdrfile[1024];
-	char imgfile[1024];
+	char hdrfile[DEFAULT_STRING_LENGTH];
+	char imgfile[DEFAULT_STRING_LENGTH];
 	FILE *fp;
 
 	struct dsr analyzehdr;
@@ -1883,8 +1883,8 @@ void VOLUME::get_analyze_file_names(const char *filename, char *basename_hdr, ch
 		cannot have .hdr or .img extensions. It must be the
 		base name alone. */   
       
-		snprintf(basename_hdr,sizeof(basename_hdr),"%s.hdr",filename);
-		snprintf(basename_img,sizeof(basename_img),"%s.img",filename);
+		snprintf(basename_hdr,DEFAULT_STRING_LENGTH,"%s.hdr",filename);
+		snprintf(basename_img,DEFAULT_STRING_LENGTH,"%s.img",filename);
 
 		return;
 	}
@@ -1893,8 +1893,8 @@ void VOLUME::get_analyze_file_names(const char *filename, char *basename_hdr, ch
 	{
 		/* filename is the .hdr file */
 
-		snprintf(basename_hdr,sizeof(basename_hdr),"%s",filename);
-		snprintf(basename_img,sizeof(basename_img),"%s",filename);
+		snprintf(basename_hdr,DEFAULT_STRING_LENGTH,"%s",filename);
+		snprintf(basename_img,DEFAULT_STRING_LENGTH,"%s",filename);
 		basename_img[n-3]='i'; basename_img[n-2]='m'; basename_img[n-1]='g';
 
 		return;
@@ -1904,16 +1904,16 @@ void VOLUME::get_analyze_file_names(const char *filename, char *basename_hdr, ch
 	{
 		/* filename is the .img file */
 
-		snprintf(basename_img,sizeof(basename_img),"%s",filename);
-		snprintf(basename_hdr,sizeof(basename_hdr),"%s",filename);
+		snprintf(basename_img,DEFAULT_STRING_LENGTH,"%s",filename);
+		snprintf(basename_hdr,DEFAULT_STRING_LENGTH,"%s",filename);
 		basename_hdr[n-3]='h'; basename_hdr[n-2]='d'; basename_hdr[n-1]='r';
 
 		return;
       	}
 
 	// filename is the basename
-	snprintf(basename_hdr,sizeof(basename_hdr),"%s.hdr",filename);
-	snprintf(basename_img,sizeof(basename_img),"%s.img",filename);
+	snprintf(basename_hdr,DEFAULT_STRING_LENGTH,"%s.hdr",filename);
+	snprintf(basename_img,DEFAULT_STRING_LENGTH,"%s.img",filename);
 
 	return;
 }

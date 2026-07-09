@@ -43,8 +43,8 @@ void get_analyze_file_names(const char *filename, char *basename_hdr, char *base
 		cannot have .hdr or .img extensions. It must be the
 		base name alone. */   
       
-		snprintf(basename_hdr,sizeof(basename_hdr),"%s.hdr",filename);
-		snprintf(basename_img,sizeof(basename_img),"%s.img",filename);
+		snprintf(basename_hdr,DEFAULT_STRING_LENGTH,"%s.hdr",filename);
+		snprintf(basename_img,DEFAULT_STRING_LENGTH,"%s.img",filename);
 
 		return;
 	}
@@ -53,8 +53,8 @@ void get_analyze_file_names(const char *filename, char *basename_hdr, char *base
 	{
 		/* filename is the .hdr file */
 
-		snprintf(basename_hdr,sizeof(basename_hdr),"%s",filename);
-		snprintf(basename_img,sizeof(basename_img),"%s",filename);
+		snprintf(basename_hdr,DEFAULT_STRING_LENGTH,"%s",filename);
+		snprintf(basename_img,DEFAULT_STRING_LENGTH,"%s",filename);
 		basename_img[n-3]='i'; basename_img[n-2]='m'; basename_img[n-1]='g';
 
 		return;
@@ -64,16 +64,16 @@ void get_analyze_file_names(const char *filename, char *basename_hdr, char *base
 	{
 		/* filename is the .img file */
 
-		snprintf(basename_img,sizeof(basename_img),"%s",filename);
-		snprintf(basename_hdr,sizeof(basename_hdr),"%s",filename);
+		snprintf(basename_img,DEFAULT_STRING_LENGTH,"%s",filename);
+		snprintf(basename_hdr,DEFAULT_STRING_LENGTH,"%s",filename);
 		basename_hdr[n-3]='h'; basename_hdr[n-2]='d'; basename_hdr[n-1]='r';
 
 		return;
      }
 
 	// filename is the basename
-	snprintf(basename_hdr,sizeof(basename_hdr),"%s.hdr",filename);
-	snprintf(basename_img,sizeof(basename_img),"%s.img",filename);
+	snprintf(basename_hdr,DEFAULT_STRING_LENGTH,"%s.hdr",filename);
+	snprintf(basename_img,DEFAULT_STRING_LENGTH,"%s.img",filename);
 
 	return;
 }

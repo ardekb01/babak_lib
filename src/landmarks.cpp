@@ -86,7 +86,7 @@ void makePPM(SHORTIM im, int *lm, const char *ppmfile)
 
    fclose(fp);
 
-   delete imgTemp;
+   free(imgTemp);
 }
 
 float detect_lm(SPH &searchsph, SPH &testsph, SHORTIM testim, int cntr[], SPH &refsph, int lm[])

@@ -853,13 +853,13 @@ float detectPC(float *PC, char *modelfile, short *volumeMSP_HR, char *PCregion, 
 
 	fclose(fp);
 
-	delete ccmap;
-	delete pc_template;
-	delete mean_pc_template;
-	delete pc_test_vec;
-	delete x;
-	delete y;
-	delete z;
+	free(ccmap);
+	free(pc_template);
+	free(mean_pc_template);
+	free(pc_test_vec);
+	free(x);
+	free(y);
+	free(z);
 
 	return(ccmax);
 }
@@ -1005,13 +1005,13 @@ float detectAC(float *AC, char *modelfile, short *volumeMSP_HR, char *ACregion, 
 	ijk2xyz(I2X, HR.nx, HR.ny, HR.nz, HR.dx, HR.dy, HR.dz);
    	multi(I2X,4,4, AC, 4, 1, AC);
 
-	delete ac_template;
-	delete mean_ac_template;
-	delete ac_test_vec;
-	delete ccmap;
-	delete x;
-	delete y;
-	delete z;
+	free(ac_template);
+	free(mean_ac_template);
+	free(ac_test_vec);
+	free(ccmap);
+	free(x);
+	free(y);
+	free(z);
 
 	return(ccmax);
 }
@@ -1241,10 +1241,10 @@ short *yRP, short *zRP, int opt_T2)
 
 	fclose(fp);
 
-	delete ccmap_LR;
-	delete rp_template;
-	delete mean_rp_template;
-	delete rp_test_vec;
+	free(ccmap_LR);
+	free(rp_template);
+	free(mean_rp_template);
+	free(rp_test_vec);
 }
 
 void defineTemplate(int r, int h, short *x, short *y, short *z)
@@ -1527,7 +1527,7 @@ float *AC, float *PC, float *RP, float *Tmsp, int opt_v, int opt_T2)
       mask_HR = resliceImage(maskOrig,Orig,HR,invT,LIN);
       free(invT);
 
-      delete maskOrig;
+      free(maskOrig);
    }
 
    RPregion = expandMask(mask_HR, HR, mtail.RPmean, searchradius[0]);
@@ -1629,10 +1629,10 @@ float *AC, float *PC, float *RP, float *Tmsp, int opt_v, int opt_T2)
          ACregion=ACregion2; PCregion=PCregion2;
       }
 
-      delete xRP; delete yRP; delete zRP;
-      delete xAC; delete yAC; delete zAC;
-      delete xPC; delete yPC; delete zPC;
-      delete mask_LR;
+      free(xRP); free(yRP); free(zRP);
+      free(xAC); free(yAC); free(zAC);
+      free(xPC); free(yPC); free(zPC);
+      free(mask_LR);
    }
 
    /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1759,18 +1759,18 @@ float *AC, float *PC, float *RP, float *Tmsp, int opt_v, int opt_T2)
 
    //////////MEMORY RELEASE ////////////////////////////////////////////////////////////////////////
 
-   delete ACregion1;
-   delete ACregion2;
-   delete PCregion1;
-   delete PCregion2;
-   delete RPregion;
+   free(ACregion1);
+   free(ACregion2);
+   free(PCregion1);
+   free(PCregion2);
+   free(RPregion);
 
-   delete volOrig;
+   free(volOrig);
 
-   delete volumeMSP_LR;
-   delete volumeMSP_HR;
+   free(volumeMSP_LR);
+   free(volumeMSP_HR);
 
-   delete mask_HR;
+   free(mask_HR);
 
    return(0);
 }
@@ -2370,7 +2370,7 @@ void computeTmsp(char *orientation, short *volOrig, DIM dim, float *Tmsp)
    // determine the MSP from the PIL orineted volume
    //cc=msp(volumePIL, nxPIL, nyPIL, nzPIL, dxPIL, dyPIL, dzPIL, &A, &B, &C);
    (void)msp(volumePIL, nxPIL, nyPIL, nzPIL, dxPIL, dyPIL, dzPIL, &A, &B, &C);
-   delete volumePIL;
+   free(volumePIL);
 
    // determine (a,b,c) from (A,B,C)
    dum=(float)sqrt( (double)(A*A + B*B + C*C) );
