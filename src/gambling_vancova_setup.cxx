@@ -296,10 +296,18 @@ char **read_idata(const char *dataFile, const char *dataTypeCode, const char *da
 	for(int i=0; i<nr; i++)
 	for(int j=0; j<nc; j++)
 	{
-		if( dataTypeCode[j]=='i' && dataMaskCode[j]=='1' )
-			fscanf(fp, "%s", idata[count++]);
-		else
-			fscanf(fp, "%s", s);
+	   if( dataTypeCode[j]=='i' && dataMaskCode[j]=='1' )
+           {
+              if ( fscanf(fp, "%s", idata[count++]) != 1) {
+                 fprintf(stderr, "Error: Failed to read idata from file.\n");
+              }
+           }
+	   else
+           {
+              if ( fscanf(fp, "%s", s) != 1) {
+                 fprintf(stderr, "Error: Failed to read s from file.\n");
+              }
+           }
 	}
 
 	fclose(fp);
@@ -348,10 +356,18 @@ double *read_ndata(const char *dataFile, const char *dataTypeCode, const char *d
 	for(int i=0; i<nr; i++)
 	for(int j=0; j<nc; j++)
 	{
-		if( dataTypeCode[j]=='n' && dataMaskCode[j]=='1' )
-			fscanf(fp, "%lf", &ndata[count++]);
-		else
-			fscanf(fp, "%s", s);
+           if( dataTypeCode[j]=='n' && dataMaskCode[j]=='1' )
+           {
+              if ( fscanf(fp, "%lf", &ndata[count++]) != 1) {
+                 fprintf(stderr, "Error: Failed to read ndata from file.\n");
+              }
+           }
+	   else
+           {
+              if ( fscanf(fp, "%s", s) != 1) {
+                 fprintf(stderr, "Error: Failed to read s from file.\n");
+              }
+           }
 	}
 
 	fclose(fp);
@@ -543,7 +559,12 @@ double *readContrast(const char *contrastFile, int nc, int p, const char *dataMa
 	fp = fopen(contrastFile,"r");
 	if(fp == NULL) file_open_error(contrastFile);
 
-	for(int i=0; i<nc; i++) fscanf(fp, "%lf", contrast+i); 
+	for(int i=0; i<nc; i++) 
+        {
+           if ( fscanf(fp, "%lf", contrast+i) != 1) {
+             fprintf(stderr, "Error: Failed to read contrast from file.\n");
+           }
+        }
 
 	fclose(fp);
 
@@ -930,7 +951,9 @@ int main(int argc, char **argv)
       {
          for(int j=0; j<npc; j++)
          {
-            fscanf(fp,"%f",&eigenvecs[i*npc + j]);
+            if ( fscanf(fp,"%f",&eigenvecs[i*npc + j]) != 1) {
+              fprintf(stderr, "Error: Failed to read eigenvecs from file.\n");
+            }
          }
       }
       fclose(fp);
@@ -953,15 +976,23 @@ int main(int argc, char **argv)
    fp = fopen(paramfile,"r");
    for(int i=0; i<nt; i++)
    {
-      fscanf(fp,"%f",&dum);
+      if ( fscanf(fp,"%f",&dum) != 1) {
+          fprintf(stderr, "Error: Failed to read dum from file.\n");
+      }
 
       for(int j=0; j<6; j++)
       {
-         fscanf(fp,"%f",&motion_params[i*6 + j]);
+         if ( fscanf(fp,"%f",&motion_params[i*6 + j]) != 1) {
+             fprintf(stderr, "Error: Failed to read motion_params from file.\n");
+         }
       }
 
-      fscanf(fp,"%f",&dum);
-      fscanf(fp,"%f",&dum);
+      if ( fscanf(fp,"%f",&dum) != 1) {
+          fprintf(stderr, "Error: Failed to read dum from file.\n");
+      }
+      if ( fscanf(fp,"%f",&dum) != 1) {
+          fprintf(stderr, "Error: Failed to read dum from file.\n");
+      }
    }
    fclose(fp);
 
@@ -987,7 +1018,9 @@ int main(int argc, char **argv)
    {
       for(int j=0; j<6; j++)
       {
-         fscanf(fp,"%f",&rw[i*6 + j]);
+         if ( fscanf(fp,"%f",&rw[i*6 + j]) != 1) {
+            fprintf(stderr, "Error: Failed to read rw from file.\n");
+         }
       }
    }
    fclose(fp);

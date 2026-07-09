@@ -81,12 +81,12 @@ int main(int argc, char **argv)
    nifti_1_header trg_hdr;
    int N;
 
-	FILE *fp;
+   FILE *fp;
 
-	// original target and object files stored by the 3dwarper program
-   char prefix[1024]; // output file prefix
+   // original target and object files stored by the 3dwarper program
+   char prefix[512]; // output file prefix
 
-	int Tnx=0,Tny=0,Tnz=0,Tnv=0;
+   int Tnx=0,Tny=0,Tnz=0,Tnv=0;
 
 	float Tdx=0.0,Tdy=0.0,Tdz=0.0;
 
@@ -293,7 +293,7 @@ int main(int argc, char **argv)
 
       fclose(fp);
 
-      delete sdum;
+      free(sdum);
    }
    else
    {
@@ -374,8 +374,7 @@ int main(int argc, char **argv)
       {
          nifti_1_header hdr;
          int nx2d, ny2d, nz2d;
-         int np2d, nv2d;
-         float dx2d, dy2d, dz2d;
+         int nv2d;
          float *Xw2d, *Yw2d, *Zw2d;
          short *sdum;
 
@@ -383,8 +382,17 @@ int main(int argc, char **argv)
 
          fp=fopen(w2dfile,"r");
          if(fp==NULL) file_open_error(w2dfile);
-         fread(&hdr,sizeof(nifti_1_header),1,fp);
-         fread(&extender, sizeof(nifti1_extender), 1, fp);
+
+         if( fread(&hdr,sizeof(nifti_1_header),1,fp) != 1 )
+         {
+            fprintf(stderr, "Error: Failed to read hdr from file.\n");
+         }
+
+         if( fread(&extender, sizeof(nifti1_extender), 1, fp) != 1 )
+         {
+            fprintf(stderr, "Error: Failed to read extender from file.\n");
+         }
+
          if(hdr.dim[0]<1 || hdr.dim[0]>7)
          {
             swapniftiheader(&hdr);
@@ -392,11 +400,7 @@ int main(int argc, char **argv)
          nx2d = hdr.dim[1];
          ny2d = hdr.dim[2];
          nz2d = hdr.dim[3];
-         dx2d = hdr.pixdim[1];
-         dy2d = hdr.pixdim[2];
-         dz2d = hdr.pixdim[3];
 
-         np2d = nx2d * ny2d;
          nv2d = nx2d * ny2d * nz2d;
 
          sdum = (short *)calloc(nv2d, sizeof(short));
@@ -405,16 +409,26 @@ int main(int argc, char **argv)
          Yw2d = (float *)calloc(nv2d ,sizeof(float));
          Zw2d = (float *)calloc(nv2d ,sizeof(float));
 
-         fread(sdum,sizeof(short),nv2d,fp);
+         if( fread(sdum,sizeof(short),nv2d,fp) != (size_t)nv2d )
+         {
+            fprintf(stderr, "Error: Failed to read sdum from file.\n");
+         }
+
          for(int i=0; i<nv2d; i++) Xw2d[i] = sdum[i]*hdr.scl_slope;
 
-         fread(sdum,sizeof(short),nv2d,fp);
+         if( fread(sdum,sizeof(short),nv2d,fp) != (size_t)nv2d )
+         {
+            fprintf(stderr, "Error: Failed to read sdum from file.\n");
+         }
          for(int i=0; i<nv2d; i++) Yw2d[i] = sdum[i]*hdr.scl_slope;
 
-         fread(sdum,sizeof(short),nv2d,fp);
+         if( fread(sdum,sizeof(short),nv2d,fp) != (size_t)nv2d )
+         {
+            fprintf(stderr, "Error: Failed to read sdum from file.\n");
+         }
          for(int i=0; i<nv2d; i++) Zw2d[i] = sdum[i]*hdr.scl_slope;
 
-         delete sdum;
+         free(sdum);
          fclose(fp);
 
          ///////////////////////////////////////////
@@ -746,7 +760,7 @@ float *Xwarp, float *Ywarp, float *Zwarp, float *T, float *Xw2d, float *Yw2d, fl
    float  x,y,z;   
    float  xx,yy,zz;   
    int q;
-   int np1,np2,np3;
+   int np1,np3;
    short *im2;
    float xc1, yc1, zc1;
    float xc2, yc2, zc2;
@@ -777,7 +791,6 @@ float *Xwarp, float *Ywarp, float *Zwarp, float *T, float *Xw2d, float *Yw2d, fl
 	}
 
 	np1=nx1*ny1;
-	np2=nx2*ny2;
 	np3=nx3*ny3;
 
 	im2=(short *)calloc(nx2*ny2*nz2,sizeof(short));
@@ -865,7 +878,7 @@ float *Xwarp, float *Ywarp, float *Zwarp, float *T, float *Xw2d, float *Yw2d, fl
   	float  x,y,z;   
   	float  xx,yy,zz;   
 	int q;
-	int np1,np2,np3;
+	int np1,np3;
 	float *im2;
 	float xc1, yc1, zc1;
 	float xc2, yc2, zc2;
@@ -880,7 +893,6 @@ float *Xwarp, float *Ywarp, float *Zwarp, float *T, float *Xw2d, float *Yw2d, fl
    dx3 = hdr3.pixdim[1]; dy3 = hdr3.pixdim[2]; dz3 = hdr3.pixdim[3];
 
 	np1=nx1*ny1;
-	np2=nx2*ny2;
 	np3=nx3*ny3;
 
 	im2=(float *)calloc(nx2*ny2*nz2,sizeof(float));
@@ -948,7 +960,7 @@ float *Xwarp, float *Ywarp, float *Zwarp, float *T, float *Xw2d, float *Yw2d, fl
    float  x,y,z;   
    float  xx,yy,zz;   
    int q;
-   int np1,np2,np3;
+   int np1,np3;
    unsigned char *im2;
    float xc1, yc1, zc1;
    float xc2, yc2, zc2;
@@ -963,7 +975,6 @@ float *Xwarp, float *Ywarp, float *Zwarp, float *T, float *Xw2d, float *Yw2d, fl
    dx3 = hdr3.pixdim[1]; dy3 = hdr3.pixdim[2]; dz3 = hdr3.pixdim[3];
 
 	np1=nx1*ny1;
-	np2=nx2*ny2;
 	np3=nx3*ny3;
 
 	im2=(uchar *)calloc(nx2*ny2*nz2,sizeof(unsigned char));

@@ -43,7 +43,6 @@ float *avg(int N, char **imagefile)
    nifti_1_header hdr;
 
    int nx, ny, nz;
-   float dx, dy, dz;
    int nv;
    int type;
    char *image;
@@ -54,7 +53,6 @@ float *avg(int N, char **imagefile)
    image = read_nifti_image(imagefile[0], &hdr);
    if(image==NULL) return(NULL);
    nx=hdr.dim[1]; ny=hdr.dim[2]; nz=hdr.dim[3];
-   dx=hdr.pixdim[1]; dy=hdr.pixdim[2]; dz=hdr.pixdim[3];
 
    nv = nx*ny*nz;
    avg_image = (float *)calloc(nv, sizeof(float));
@@ -203,7 +201,6 @@ float *avg4d(char *imagefile, int n)
 int checkDimension_avgImage(int N, char **imagefile, int *nx, int *ny, int *nz, float *dx, float *dy, float *dz)
 {
    nifti_1_header hdr;
-   short dataType;
 
    if(N==0) return(1);
 
@@ -216,7 +213,6 @@ int checkDimension_avgImage(int N, char **imagefile, int *nx, int *ny, int *nz, 
    *dx = hdr.pixdim[1];
    *dy = hdr.pixdim[2];
    *dz = hdr.pixdim[3];
-   dataType = hdr.datatype;
 
    for(int i=1; i<N; i++)
    {
