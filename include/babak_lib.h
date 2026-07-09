@@ -28,7 +28,7 @@ typedef double float8;
 #define YES 1
 #define NO 0
 #define ESMALL 1e-10
-#define DEFAULT_STRING_LENGTH 512
+#define DEFAULT_STRING_LENGTH 1024
 #define MAXIM 256 // maximum number of images allowed 
 
 #ifndef _TPS
