@@ -570,7 +570,7 @@ void affineLSE(char *msk, int nx, int ny, int nz, float dx, float dy, float dz, 
 
 	// Eq. (3.5) of tech. notes
 	invAFF = inv4(AFF);
-	delete AFF;
+	free(AFF);
 
 	///////////////////////////////////////////////////////////////////////////////
 	// This portion of code adjusts the warp field components according to Eq. (4)
@@ -606,7 +606,7 @@ void affineLSE(char *msk, int nx, int ny, int nz, float dx, float dy, float dz, 
 	// replace T with invAFF
 	for(int i=0; i<16; i++) T[i] = invAFF[i];
 
-	delete invAFF;
+	free(invAFF);
 }
 
 void affineLSE(short *msk, int nx, int ny, int nz, float dx, float dy, float dz, float *Xwarp, float *Ywarp, float *Zwarp, float *T)
@@ -739,7 +739,7 @@ void affineLSE(short *msk, int nx, int ny, int nz, float dx, float dy, float dz,
 
 	// Eq. (3.5) of tech. notes
 	invAFF = inv4(AFF);
-	delete AFF;
+	free(AFF);
 
 	///////////////////////////////////////////////////////////////////////////////
 	// This portion of code adjusts the warp field components according to Eq. (4)
@@ -776,7 +776,7 @@ void affineLSE(short *msk, int nx, int ny, int nz, float dx, float dy, float dz,
    for(int i=0; i<16; i++) T[i] = invAFF[i];
 
    free(invT);
-   delete invAFF;
+   free(invAFF);
 }
 
 float *affineLSE(char *msk, int nx, int ny, float dx, float dy, float *Xwarp, float *Ywarp)
@@ -1662,7 +1662,7 @@ void mask_and_save(const char *inputfile, const char *outputfile, short *mask, s
 		float *temp;
 		temp = smoothXYZ(image, nx, ny, nz, sdx, sdy, sdz);
 		for(int i=0; i<nv; i++) image[i]=(short)(temp[i]+0.5);
-		delete temp;
+		free(temp);
 	}
 
 	// The actual masking is done here.
@@ -1672,7 +1672,7 @@ void mask_and_save(const char *inputfile, const char *outputfile, short *mask, s
 	// save the masked image.
 	fwrite(masked_image,sizeof(short),nbv,fp); 
 
-	delete image;
+	free(image);
 
 	fclose(fp);
 }
@@ -1719,7 +1719,7 @@ void mask_and_save_nii(const char *inputfile, const char *outputfile, short *mas
       temp = smoothXYZ(image, im.nx(), im.ny(), im.nz(), sdx, sdy, sdz);
       for(int i=0; i<nv; i++) image[i]=(short)(temp[i]+0.5);
 
-      delete temp;
+      free(temp);
    }
 
    // The actual masking is done here.
@@ -1793,8 +1793,8 @@ void read_transpose_save(char *inputfile, char *outputfile, int nr, int v)
 	fclose(fpo);
 
 	// free memory
-	if(x!=NULL) delete x;	
-	if(X!=NULL) delete X;	
+	if(x!=NULL) free(x);	
+	if(X!=NULL) free(X);	
 }
 
 short *readMask(const char *filename, int *nx, int *ny, int *nz)

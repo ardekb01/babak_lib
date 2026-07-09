@@ -139,7 +139,7 @@ void mspPPM(SHORTIM im, int *ii, int *jj, int nl, const char *ppmfile)
 
   if(opt_ppm==NO) remove(ppmfile);
 
-  delete imgTemp;
+  free(imgTemp);
 }
 
 void convert_to_xyz(float *P, int n, SHORTIM im)
@@ -403,7 +403,7 @@ void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float
    int n; // number of landmarks
    float *LM;  // (3 x n) matrix of detected landmarks
    float *invT;
-   char filename[2048];
+   char filename[3*DEFAULT_STRING_LENGTH];
    SHORTIM subimPIL; 
    nifti_1_header PILbraincloud_hdr;
    // subfile without the directory structure and extension
@@ -463,7 +463,7 @@ void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float
       FILE *fp;
       float landmark[4];
       invT = inv4(TPIL0);
-      snprintf(filename,sizeof(filename),"%s/%s_orion.txt",imagedir,subfile_prefix);
+      snprintf(filename, 3*DEFAULT_STRING_LENGTH, "%s/%s_orion.txt",imagedir,subfile_prefix);
       fp=fopen(filename,"w");
       if(fp==NULL) file_open_error(filename);
       for(int i=0; i<n; i++)
@@ -488,7 +488,7 @@ void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float
    P =  (float *)calloc(3*n,sizeof(float));
    for(int i=0; i<3*n; i++) P[i]=LM[i];
 
-   delete subimPIL.v;
+   free(subimPIL.v);
    /////////////////////////////////////////////////////////
 
    // read Q
@@ -599,57 +599,27 @@ void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float
 
       if(opt_ppm || opt_png)
       {
-         snprintf(filename,sizeof(filename),"%s/%s_orion.ppm",imagedir, subfile_prefix);
+         snprintf(filename,3*DEFAULT_STRING_LENGTH,"%s/%s_orion.ppm",imagedir, subfile_prefix);
          mspPPM(subimPIL, lmx, lmy, n, filename);
       }
 
-      delete lmx;
-      delete lmy;
-      delete subimPIL.v;
+      free(lmx);
+      free(lmy);
+      free(subimPIL.v);
    }
 
   // save the PIL transformation in <subfile_prefix>_PIL.mrx
   if(SAVE_MRX_FLAG == 1)
   {
     FILE *fp;
-    snprintf(filename,sizeof(filename),"%s/%s_PIL.mrx",imagedir, subfile_prefix);
+    snprintf(filename,3*DEFAULT_STRING_LENGTH,"%s/%s_PIL.mrx",imagedir, subfile_prefix);
     fp=fopen(filename,"w");
     if(fp==NULL) file_open_error(filename);
     printMatrix(TPIL,4,4,"",fp);
     fclose(fp);
   }
 
-   {
-      //float ssd1=0.0;
-      //float ssd3=0.0;
-      float x[4], y[4];
-      
-      x[3]=y[3]=1.0;
-
-      for(int i=0; i<n; i++)
-      {
-         x[0] = Q[i] + Qavg[0];
-         x[1] = Q[i+n] + Qavg[1];
-         x[2] = Q[i+2*n] + Qavg[2];
-
-         y[0] = P[i]+Pavg[0];
-         y[1] = P[i+n]+Pavg[1];
-         y[2] = P[i+2*n]+Pavg[2];
-
-         //ssd1 += (x[0]-y[0])*(x[0]-y[0]); 
-         //ssd1 += (x[1]-y[1])*(x[1]-y[1]); 
-         //ssd1 += (x[2]-y[2])*(x[2]-y[2]); 
-
-         multi(TLM,4,4,y,4,1,y);
-         //ssd3 += (x[0]-y[0])*(x[0]-y[0]); 
-         //ssd3 += (x[1]-y[1])*(x[1]-y[1]); 
-         //ssd3 += (x[2]-y[2])*(x[2]-y[2]); 
-      }
-      //if(opt_v) printf("SSD (MSP + AC/PC transformation) = %f\n",ssd1);
-      //if(opt_v) printf("SSD (MSP + AC/PC + LM transformation) = %f\n",ssd3);
-   }
-
-   delete subim.v;
+   free(subim.v);
    free(P);
    free(Q);
 }

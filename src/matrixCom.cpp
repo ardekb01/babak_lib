@@ -1167,7 +1167,7 @@ void transpose_matrix(float *A, int N,  int M)
 
    for(int i=0;i<N*M;i++) A[i]=transA[i];
 
-   delete transA;
+   free(transA);
 }
 
 void transpose_matrix(float *A, int N,  int M, float *AT)

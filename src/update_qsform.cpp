@@ -42,7 +42,7 @@ void update_qsform(const char *imagefilename , float *matrix)
    FILE *fp;
    nifti_1_header hdr; // 348 bytes
    nifti1_extender ext; // 4 bytes
-   char *extension;
+   char *extension=NULL;
    int extension_size=0;
    char *data=NULL;
    int data_size=0;
@@ -129,12 +129,12 @@ void update_qsform(const char *imagefilename , float *matrix)
       if( extension_size > 0 )
       {
          fwrite(extension, 1, extension_size, fp);
-         delete extension;
+         free(extension);
       }
       if( data_size > 0 )
       {
          fwrite(data, 1, data_size, fp);
-         if(data != NULL) delete data;
+         if(data != NULL) free(data);
       }
    }
    fclose(fp);

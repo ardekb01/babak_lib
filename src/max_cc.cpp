@@ -350,30 +350,30 @@ int *N, int **Clabel, int **Size)
 {
 
    int n,np,nv;
-	int NEWLABEL;  // Generates the next chronological label that has not been used
-	int L;
+   int NEWLABEL;  // Generates the next chronological label that has not been used
+   int L;
 	
-	int **eqtable; // Label equivalence table
-	int M;	       
-	//int flag=0;
+   int *eqtable[2]; // Label equivalence table
+   int M;	       
+   //int flag=0;
 	
-	//float min;
-	///////////////////////////////////////////////////////////////////////////////
-	// 2-DIMENSIONAL CONNECTED COMPONENTS ON EACH SLICE SEPARATELY 
+   //float min;
+   ///////////////////////////////////////////////////////////////////////////////
+   // 2-DIMENSIONAL CONNECTED COMPONENTS ON EACH SLICE SEPARATELY 
 	
-	np=nx*ny;
-	nv=np*nz;
+   np=nx*ny;
+   nv=np*nz;
 
-   eqtable=(int **)calloc(2,sizeof(int));
+   //eqtable=(int **)calloc(2,sizeof(int));
    eqtable[0]=(int *)calloc(nx,sizeof(int));
    eqtable[1]=(int *)calloc(nx,sizeof(int));
 
-  	NEWLABEL=0; L=0; 
+   NEWLABEL=0; L=0; 
 
-	for(int  k=0; k<nz ;k++)
-	{
-		int l=k*np;	
-		// PROCESS FROM TOP TO DOWN 
+   for(int  k=0; k<nz ;k++)
+   {
+      int l=k*np;	
+      // PROCESS FROM TOP TO DOWN 
 		
 	  	for(int j=0 ; j<ny; j++)
 	    	{
@@ -468,12 +468,13 @@ int *N, int **Clabel, int **Size)
 		}	
 	}
 
-	free(eqtable);
+	free(eqtable[0]);
+	free(eqtable[1]);
 
 	////////////////////////////////////////////////////////////////////////////////////////////
 	// 3-DIMENSIONAL CONNECTED COMPONENTS      
 	
-        eqtable=(int **)calloc(2,sizeof(int));
+//        eqtable=(int **)calloc(2,sizeof(int));
         eqtable[0]=(int *)calloc(np,sizeof(int));
         eqtable[1]=(int *)calloc(np,sizeof(int));
 	
@@ -582,7 +583,8 @@ int *N, int **Clabel, int **Size)
 		}
 	}
 	
-	free(eqtable);
+	free(eqtable[0]);
+	free(eqtable[1]);
 
 	// At this point image 'label' has distinct labels for each component
 	
