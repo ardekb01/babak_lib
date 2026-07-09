@@ -303,7 +303,8 @@ float tpsU(float x, float y)
    return(result);
 }
 
-float *compute_L_inverse(float *x, float *y, int n)
+//float *compute_L_inverse(float *x, float *y, int n)
+float *compute_L_inverse(float *x, float *y, size_t n)
 {
    float *L;
    float *Li;
@@ -320,7 +321,7 @@ float *compute_L_inverse(float *x, float *y, int n)
 
    K = (float *)calloc(n*n, sizeof(float));
 
-   for(int i=0; i<n; i++)
+   for(int i=0; i<(int)n; i++)
    {
       for(int j=0; j<=i; j++)
       {
@@ -328,7 +329,7 @@ float *compute_L_inverse(float *x, float *y, int n)
       }
    }
 
-   for(int j=0; j<n; j++)
+   for(int j=0; j<(int)n; j++)
    {
       for(int i=0; i<j; i++)
       {
@@ -346,7 +347,7 @@ float *compute_L_inverse(float *x, float *y, int n)
 
    Ki = (float *)calloc(n*n, sizeof(float));
 
-   for(int i=0; i<n*n; i++) 
+   for(int i=0; i<(int)(n*n); i++) 
    {
       Ki[i]=K[i]; // copy K in Ki temporarily
    }
@@ -365,7 +366,7 @@ float *compute_L_inverse(float *x, float *y, int n)
 
    P = (float *)calloc(n*3, sizeof(float));
 
-   for(int i=0; i<n; i++)
+   for(int i=0; i<(int)n; i++)
    {
       P[3*i] = 1.0;
       P[3*i + 1] = x[i];
@@ -437,15 +438,15 @@ float *compute_L_inverse(float *x, float *y, int n)
    //printMatrix(C,n,n,"C:",NULL);  // for testing only
    //////////////////////////////////////////////////////
 
-   for(int i=0; i<n; i++)
-   for(int j=0; j<n; j++)
+   for(int i=0; i<(int)n; i++)
+   for(int j=0; j<(int)n; j++)
    {
       L[i*d + j] = K[i*n + j];
 
       Li[i*d + j] = Ki[i*n + j] - C[i*n + j];
    }
 
-   for(int i=0; i<n; i++)
+   for(int i=0; i<(int)n; i++)
    {
       L[i*d + n] = P[i*3];
       L[i*d + n + 1] = P[i*3 + 1];
@@ -456,7 +457,7 @@ float *compute_L_inverse(float *x, float *y, int n)
       Li[i*d + n + 2] = BAi[i*3 + 2];
    }
 
-   for(int j=0; j<n; j++)
+   for(int j=0; j<(int)n; j++)
    {
       L[n*d + j] = Pt[j];
       L[(n+1)*d + j] = Pt[n + j];
@@ -509,9 +510,17 @@ void read_landmarks(char *filename, int &n, float * &X, float * &Y)
    fp=fopen(filename,"r");
    for(int i=0; i<n; i++) 
    {
-      fscanf(fp,"%f", X+i);
-      fscanf(fp,"%f", Y+i);
-      fscanf(fp,"%f", &dum);
+      if( fscanf(fp,"%f", X+i) != 1) { 
+         fprintf(stderr, "Error: Failed to read X from file.\n");
+      }
+
+      if( fscanf(fp,"%f", Y+i) != 1) { 
+         fprintf(stderr, "Error: Failed to read X from file.\n");
+      }
+
+      if( fscanf(fp,"%f", &dum) != 1) { 
+         fprintf(stderr, "Error: Failed to read dum from file.\n");
+      }
    }
    fclose(fp);
 
@@ -586,6 +595,7 @@ int main(int argc, char **argv)
       {
          case 'h':
             print_help_and_exit();
+            break;
          case 'u':
             snprintf(oporient,sizeof(oporient),"%s",optarg);
             oporient[0]=(char)toupper((int)oporient[0]);
