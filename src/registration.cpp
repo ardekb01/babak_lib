@@ -5,6 +5,7 @@
 #include <math.h>
 #include <string.h>
 #include <babak_lib.h>
+#include <ctype.h>
 
 #define NBIN 256
 #define MCC     2048 /* maximum number of allowed 2D connected components */
@@ -208,58 +209,83 @@ static void findHistogram(short *im, int nv)
    }
 }
 
-// revised version
-int loadTransformation( char *filename, float *T)
+// Loads a 4x4 transformation matrix from a text file.
+// The file is expected to contain four lines of four floating-point numbers.
+// Lines beginning with '#' or blank lines are ignored.
+// If no filename is provided, returns the identity transformation.
+//
+// Returns:
+//    0 : success
+//    1 : error (invalid arguments, file error, or malformed file)
+int loadTransformation(const char *filename, float *T)
 {
    FILE *fp;
-   char line[1000];
-   char s[11];
+   char line[256];
    int i;
 
-   if(T==NULL)
+   // Verify that the output matrix pointer is valid.
+   if(T == NULL)
    {
       printf("Warning: Null pointer passed as argument to loadTransformation()\n");
-      return(1);
+      return 1;
    }
 
-   if( filename==NULL || filename[0]=='\0')
+   // If no filename is provided, return the identity transformation.
+   if(filename == NULL || filename[0] == '\0')
    {
-      for(int i=0; i<16; i++) T[i]=0.0;
-      T[0]=T[5]=T[10]=T[15]=1.0;
+      for(int i=0; i<16; i++)
+         T[i] = 0.0f;
 
-      return(1);
+      T[0] = T[5] = T[10] = T[15] = 1.0f;
+
+      return 0;
    }
 
-   strcpy(s,"0123456789");
+   // Open the transformation file.
+   fp = fopen(filename, "r");
 
-   fp=fopen(filename,"r");
-
-   if(fp==NULL)
+   if(fp == NULL)
    {
-      printf("Warning: Could not open %s passed as argument to loadTransformation()\n", filename);
-      return(1);
+      printf("Warning: Could not open %s passed as argument to loadTransformation()\n",
+             filename);
+      return 1;
    }
 
-   i=0;
-   while( fgets(line,1000,fp) != NULL  && i != 4 ) 
+   // Read up to four rows of the transformation matrix.
+   // Skip comments and blank lines.
+   i = 0;
+   while (i < 4 && fgets(line, sizeof(line), fp) != NULL)
    {
-      if(line[0]!='#' && line[0]!='\n' && strpbrk(line,s)!=NULL )
+      char *p = line;
+      while (isspace((unsigned char)*p))
+         ++p;
+
+      if (*p == '\0' || *p == '#')
+         continue;
+
+      float *row = &T[4*i];
+      if (sscanf(line, "%f %f %f %f",
+         &row[0], &row[1], &row[2], &row[3]) != 4)
       {
-         sscanf(line,"%f  %f  %f  %f\n",T+4*i+0,T+4*i+1,T+4*i+2,T+4*i+3);
-         i++;
+         fclose(fp);
+         printf("Warning: Invalid transformation matrix in %s\n", filename);
+         return 1;
       }
+      i++;
    }
+
    fclose(fp);
 
-   if(i!=4)
+   // Verify that all four rows were successfully read.
+   if(i != 4)
    {
-      printf("Warning: Could not read %s passed as argument to loadTransformation()\n", filename);
-      return(1);
+      printf("Warning: Could not read %s passed as argument to loadTransformation()\n",
+             filename);
+      return 1;
    }
 
-   return(0);
+   return 0;
 }
-
 int findThresholdLevel(short *image_in, int nv)
 {
 	int j;

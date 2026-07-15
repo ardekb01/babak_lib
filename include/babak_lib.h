@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "loadTransformation.h"
+
 #ifndef _PILTRANSFORM
 extern double searchradius[3]; // in units of mm
 extern int opt_CENTER_AC;
@@ -519,7 +521,6 @@ float4 az, float4 sx, float4 sy, float4 sz, int4 rX, int4 rY, int4 rZ, char *cod
 
 extern void cca(int2 *im, int4 nx, int4 ny, int4 nz);
 
-extern int4 loadTransformation( char *filename, float4 *T);
 extern int4 findThresholdLevel(int2 *image_in, int4 nv);
 extern float4 *findTransMatrix(int2 *trg, int4 Tnx, int4 Tny, int4 Tnz, float4 Tdx, float4 Tdy, float4 Tdz,
 int2 *obj, int4 Onx, int4 Ony, int4 Onz, float4 Odx, float4 Ody, float4 Odz);
