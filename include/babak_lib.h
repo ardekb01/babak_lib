@@ -13,6 +13,7 @@
 
 #include "loadTransformation.h"
 #include "getoption.h"
+#include "gaussian_kernel.h"
 
 #ifndef _PILTRANSFORM
 extern double searchradius[3]; // in units of mm
@@ -427,10 +428,6 @@ extern float4 *conv_sk(int2 *x,int4 sx,float4 *h,int4 sh);
 extern float4 *conv_sk(float4 *x,int4 sx,float4 *h,int4 sh);
 extern void conv_sk(float4 *x, float4 *y, int4 sx,float4 *h,int4 sh);
 extern void conv_sk_inplace(float4 *x, int4 sx, float4 *h, int4 sh);
-#endif
-
-#ifndef _gaussian_kernel
-extern float4 *gaussian_kernel(float4 sd, int4 *n);
 #endif
 
 #ifndef _hpsort
