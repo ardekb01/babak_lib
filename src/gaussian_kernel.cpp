@@ -5,20 +5,28 @@
 
    created: 25 June 1997
    revision: 26 June 1997 (BAA)
-             gaussian_kernel() modified to handle the case were the intput sd<=0 
+      gaussian_kernel() modified to handle the case where the input sd<=0
    revision: 3 August 2010 (BAA)
-             removed the third input parameter (v) for printing
+      removed the third input parameter (v) for printing
+   revision: 4 July 2026 (BAA)
+      modernized implementation with improved numerical robustness,
+      overflow checking, and documentation (with assistance from ChatGPT).
+      (BAA from 1997: "Assistance from who????")
 ***************************************************/
 
-#define _gaussian_kernel
+#include "gaussian_kernel.h"
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <limits.h>
 #include <math.h>
+#include <stdlib.h>
+
+// factor 2.57 was chosen to make the area under the Gaussian approx. 0.99
+// factor 1.65 would give an area of approx 0.90
+#define GAUSSIAN_TRUNCATION_SIGMA 2.57
 
 /**************************************************
 Inputs 
-   sd - standard deviation of the Gaussian IN UNITS OF PIXELS 
+   sd - standard deviation of the Gaussian IN UNITS OF PIXELS
 
 Outputs
    n - dimension of the returned array
@@ -28,66 +36,88 @@ Notes
    This function computes and returns an array of values proportional to:
    exp( -0.5*x^2/sd^2 ) ( x=0, 1, 2, ..., n-1 ).
 
-   Since Gaussian curves are symmetric, only the right-half of the curve 
-   (including 0) is computed and returned (n points).  The complete curve 
-   would have 2*n-1 points.  
+   Since Gaussian curves are symmetric, only the right-half of the curve
+   (including 0) is computed and returned (n points). The complete curve
+   would have 2*n-1 points.
 
-   The returned array is scaled such that the sum of all the coefficients 
+   The returned array is scaled such that the sum of all the coefficients
    (including the left-half of the curve) would be 1.
 
-   The dimension n is chosen such that the area under the Gaussian curve is 
-   at least 0.99 
+   The dimension n is chosen such that the area under the Gaussian curve is
+   at least 0.99.
+
+   The caller is responsible for freeing the returned array in 'h' using free().
 ***************************************************/
 
-float *gaussian_kernel(float sd, int *n)
+float *gaussian_kernel(const float sd, int *n)
 {
    float *h;  /* the array to be returned */
-   float var; /* constant variance */
-   float nf;  /* normalization factor */
+   double var; /* constant variance */
+   double nf;  /* normalization factor */
 
-   // sd cannot be negative
-   if(sd<=0.0)
+   if (n == NULL)
+      return NULL;
+
+   // Non-positive standard deviations produce a unit impulse kernel.
+   if (sd <= 0.0f)
    {
-      sd = 0.0;
-      *n=1;
-      h=(float *)calloc(*n,sizeof(float));
-      h[0]=1.0;
-      return(h);
+      *n = 1;
+
+      h = (float *)malloc(sizeof(float));
+
+      if (h == NULL)
+      {
+         *n = 0;
+         return NULL;
+      }
+
+      h[0] = 1.0f;
+
+      return h;
    }
 
-   var=sd*sd;
+   var = (double)sd * sd;
 
-   // factor 2.57 was chosen to make the area under the Gaussian at least 0.99 
-   // factor 1.65 would give an area of 0.90
-   *n=(int)ceilf(sd*2.57);
+   double size = ceil((double)sd * GAUSSIAN_TRUNCATION_SIGMA);
 
-   // ensure that n is not zero
-   if(*n==0) 
+   if (size < 1.0)
    {
-      *n=1;	
+      size = 1.0;
    }
 
-   h=(float *)calloc(*n,sizeof(float));
-   if(h==NULL) 
+   // avoids integer overflow if sd is very large
+   if (size > INT_MAX)
    {
-      return(NULL);
+      *n = 0;
+      return NULL;
    }
-  
-   nf=0.0;
-   for(int x=0; x<(*n); x++)
+
+   *n = (int)size;
+
+   h = (float *)malloc(*n * sizeof(float));
+
+   if (h == NULL)
    {
-      h[x] = expf(-0.5*x*x/var);
+      *n = 0;
+      return NULL;
+   }
+
+   nf = 0.0;
+
+   for (int x = 0; x < (*n); x++)
+   {
+      h[x] = (float)exp(-0.5 * x * x / var);
       nf += h[x];
    }
 
    /* add the values of the left-half of the Gaussian curve to nf */
-   nf = 2.0*nf - h[0];
+   nf = 2.0 * nf - h[0];
 
    /* normalize the Gaussian curve to 1 */
-   for(int x=0; x<(*n); x++)
+   for (int x = 0; x < (*n); x++)
    {
-      h[x] /= nf;
+      h[x] = (float)(h[x]/nf);
    }
 
-   return(h);
+   return h;
 }
