@@ -2,6 +2,7 @@
 // Copyright (C) 2024 Babak A. Ardekani, PhD - All Rights Reserved.
 ///////////////////////////////////////////////////////////////////////
 
+#include "getoption.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -9,19 +10,8 @@
 // Global variables
 ////////////////////////////////////////////////////////////////////////
 
-int optind = 1;
+int optInd = 1;
 const char *optArg = NULL;
-
-////////////////////////////////////////////////////////////////////////
-// Option structure
-////////////////////////////////////////////////////////////////////////
-
-struct CmdOption
-{
-   const char *name;
-   int has_arg;
-   int val;
-};
 
 ////////////////////////////////////////////////////////////////////////
 // getoption()
@@ -34,48 +24,55 @@ struct CmdOption
 //      -1             - no more options
 ////////////////////////////////////////////////////////////////////////
 
-int getoption(int argc, char **argv, const struct CmdOption *options)
+int getoption(int argc, char *const argv[], const struct CmdOption *options)
 {
-   int i;
+   size_t i;
 
-   // Guard against NULL options
-   if (options == NULL)
+   optArg = NULL;
+
+   if (argv == NULL || options == NULL)
       return '?';
 
-   for (int j = optind; j < argc; j++)
+   if (optInd >= argc || argv[optInd] == NULL)
+      return -1;
+
+   if (strcmp(argv[optInd], "--") == 0)
    {
-      /* Skip non-option arguments */
-      if (argv[j][0] != '-')
-         continue;
+      optInd++;
+      return -1;
+   }
 
-      optind = j + 1;
+   if (argv[optInd][0] != '-' || argv[optInd][1] == '\0')
+      return -1;
 
-      /* Search for the option in the option table */
-      for (i = 0; options[i].val != 0; i++)
+   for (i = 0; options[i].val != 0; i++)
+   {
+      if (options[i].name != NULL && strcmp(options[i].name, argv[optInd]) == 0)
       {
-         if (strcmp(options[i].name, argv[j]) != 0)
-            continue;
+         optInd++;
 
-         /* Option requires an argument */
          if (options[i].has_arg)
          {
-            if (optind >= argc)
+            if (optInd >= argc)
             {
-               fprintf(stderr,"\nOption %s requires an argument.\n\n",
-                      options[i].name);
+               fprintf(stderr,
+                       "Option %s requires an argument.\n",
+                       options[i].name);
                return '?';
             }
 
-            optArg = argv[optind++];
+            optArg = argv[optInd++];
          }
 
          return options[i].val;
       }
-
-      fprintf(stderr,"\nOption %s not recognized.\n\n", argv[j]);
-      return '?';
    }
 
-   /* No more options */
-   return -1;
+   fprintf(stderr,
+           "Option %s not recognized.\n",
+           argv[optInd]);
+
+   optInd++;
+
+   return '?';
 }

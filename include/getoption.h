@@ -1,7 +1,7 @@
 #ifndef GETOPTION_H
 #define GETOPTION_H
 
-extern int optind;
+extern int optInd;
 extern const char *optArg;
 
 struct CmdOption
@@ -11,6 +11,6 @@ struct CmdOption
     int val;
 };
 
-int getoption(int argc, char *argv[], const struct CmdOption *options);
+int getoption(int argc, char *const argv[], const struct CmdOption *options);
 
 #endif
