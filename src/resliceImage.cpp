@@ -1232,85 +1232,101 @@ int nx2, int ny2, int nz2, float dx2, float dy2, float dz2, float *T, float *xji
 }
 
 // warning: T will be altered.
-float *resliceImage(float *im1, int nx1, int ny1, int nz1, float dx1, float dy1, float dz1, 
-int nx2, int ny2, int nz2, float dx2, float dy2, float dz2, float *T)
+// re-indented using ChatGPT
+float *resliceImage(float *im1, int nx1, int ny1, int nz1,
+                    float dx1, float dy1, float dz1,
+                    int nx2, int ny2, int nz2,
+                    float dx2, float dy2, float dz2,
+                    float *T)
 {
-	float xc1,yc1,zc1; 
-	float xc2,yc2,zc2; 
-	float Ax,Bx;
-	float Ay,By;
-	float Az,Bz;
-  	float xx,yy,zz; /* translation parameters */
-  	float x,y,z;   
+   float xc1, yc1, zc1;
+   float xc2, yc2, zc2;
 
-	int i,j,k;     /* loop index */
+   float Ax, Bx;
+   float Ay, By;
+   float Az, Bz;
 
-	int q;
-	int np2,nv2;
-	int np1;
+   float xx, yy, zz; /* translation parameters */
+   float x, y, z;
 
-	float *im2;
+   int i, j, k; /* loop index */
 
-	np2=nx2*ny2;
-	nv2=np2*nz2;
+   int q;
+   int np2, nv2;
+   int np1;
 
-	im2=(float *)calloc(nv2,sizeof(float));
+   float *im2;
 
-	xc2=dx2*(nx2-1)/2.0;     /* +---+---+ */
-	yc2=dy2*(ny2-1)/2.0;
-	zc2=dz2*(nz2-1)/2.0;
+   np2 = nx2 * ny2;
+   nv2 = np2 * nz2;
 
-	np1=nx1*ny1;
+   im2 = (float *)calloc(nv2, sizeof(float));
 
-	xc1=dx1*(nx1-1)/2.0;      /* +---+---+ */
-	yc1=dy1*(ny1-1)/2.0;
-	zc1=dz1*(nz1-1)/2.0;
+   xc2 = dx2 * (nx2 - 1) / 2.0; /* +---+---+ */
+   yc2 = dy2 * (ny2 - 1) / 2.0;
+   zc2 = dz2 * (nz2 - 1) / 2.0;
 
-	T[0] /= dx1;
-	T[1] /= dx1;
-	T[2] /= dx1;
-	T[3] /= dx1;
-	T[3] += xc1/dx1;
+   np1 = nx1 * ny1;
 
-	T[4] /= dy1;
-	T[5] /= dy1;
-	T[6] /= dy1;
-	T[7] /= dy1;
-	T[7] += yc1/dy1;
+   xc1 = dx1 * (nx1 - 1) / 2.0; /* +---+---+ */
+   yc1 = dy1 * (ny1 - 1) / 2.0;
+   zc1 = dz1 * (nz1 - 1) / 2.0;
 
-	T[8]  /= dz1;
-	T[9]  /= dz1;
-	T[10] /= dz1;
-	T[11] /= dz1;
-	T[11] += zc1/dz1;
+   T[0] /= dx1;
+   T[1] /= dx1;
+   T[2] /= dx1;
+   T[3] /= dx1;
+   T[3] += xc1 / dx1;
 
-	q=0;
-	for(k=0;k<nz2;k++) 
-	{
-  		zz=k*dz2-zc2;
-	  	Bx=T[2]*zz+T[3];
-	  	By=T[6]*zz+T[7];
-		Bz=T[10]*zz+T[11];
-		for(j=0;j<ny2;j++) 
-		{
-     		yy=j*dy2-yc2;
-			Ax=T[1]*yy+Bx;
-			Ay=T[5]*yy+By;
-			Az=T[9]*yy+Bz;
+   T[4] /= dy1;
+   T[5] /= dy1;
+   T[6] /= dy1;
+   T[7] /= dy1;
+   T[7] += yc1 / dy1;
 
-  			for(i=0;i<nx2;i++) 
-			{
-        		xx=i*dx2-xc2;
+   T[8]  /= dz1;
+   T[9]  /= dz1;
+   T[10] /= dz1;
+   T[11] /= dz1;
+   T[11] += zc1 / dz1;
 
-           		x=T[0]*xx+Ax;
-	    	   	y=T[4]*xx+Ay;
-	    	   	z=T[8]*xx+Az;
+   q = 0;
 
-		    	im2[q]=linearInterpolator(x,y,z,im1,nx1,ny1,nz1,np1);
-				q++;
-			}
-		}
-	}
+   for (k = 0; k < nz2; k++)
+   {
+      zz = k * dz2 - zc2;
 
-	return( im2 );
+      Bx = T[2] * zz + T[3];
+      By = T[6] * zz + T[7];
+      Bz = T[10] * zz + T[11];
+
+      for (j = 0; j < ny2; j++)
+      {
+         yy = j * dy2 - yc2;
+
+         Ax = T[1] * yy + Bx;
+         Ay = T[5] * yy + By;
+         Az = T[9] * yy + Bz;
+
+         for (i = 0; i < nx2; i++)
+         {
+            xx = i * dx2 - xc2;
+
+            x = T[0] * xx + Ax;
+            y = T[4] * xx + Ay;
+            z = T[8] * xx + Az;
+
+            im2[q] = linearInterpolator(
+               x, y, z,
+               im1,
+               nx1, ny1, nz1,
+               np1
+            );
+
+            q++;
+         }
+      }
+   }
+
+   return im2;
 }
