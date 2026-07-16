@@ -663,6 +663,6 @@ int main(int argc, char **argv)
 
   save_nifti_image(opimagepath, opimage, &ophdr);
 
-  delete ipimage;
-  delete opimage;
+  free(ipimage);
+  free(opimage);
 }
