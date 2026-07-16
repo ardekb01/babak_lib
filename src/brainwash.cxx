@@ -43,7 +43,7 @@ DIM dim1, dim2, dim4, dim8;
 
 int opt;
 
-static struct option options[] =
+static struct CmdOption options[] =
 {
    {"-version", 0, 'V'},
    {"-Version", 0, 'V'},

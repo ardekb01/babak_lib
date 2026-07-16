@@ -105,7 +105,7 @@ float PCi;
 //////////////////////////////////////////////////////////////////////////////////////////////////
 int opt;
 
-static struct option options[] =
+static struct CmdOption options[] =
 {
   {"-i", 1,  'i'},
   {"-v", 0,  'v'},

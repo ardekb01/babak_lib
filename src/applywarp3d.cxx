@@ -37,7 +37,7 @@ int nx2, int ny2, int nz2, float dx2, float dy2, float dz2);
 //////////////////////////////////////////////////////////////////////////////////////////////////
 int opt;
 
-static struct option options[] =
+static struct CmdOption options[] =
 {
    {"-o", 1, 'o'},
    {"-nx", 1, 'x'},

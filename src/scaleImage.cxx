@@ -18,7 +18,7 @@
 
 int opt;
 
-static struct option options[] =
+static struct CmdOption options[] =
 {
   {"-version", 0, 'V'},
   {"-V", 0, 'V'},

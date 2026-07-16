@@ -1,61 +1,81 @@
 ///////////////////////////////////////////////////////////////////////
+// Copyright (C) 2024 Babak A. Ardekani, PhD - All Rights Reserved.
 ///////////////////////////////////////////////////////////////////////
-// Copyright (C) 2024 Babak A. Ardekani, PhD - All Rights Reserved.  //
-///////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////
-
-#define _getoption
 
 #include <stdio.h>
-#include <stdlib.h> 
 #include <string.h>
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-int optind=0;
-char *optarg;
+////////////////////////////////////////////////////////////////////////
+// Global variables
+////////////////////////////////////////////////////////////////////////
 
-struct option
+int optind = 1;
+char *optarg = NULL;
+
+////////////////////////////////////////////////////////////////////////
+// Option structure
+////////////////////////////////////////////////////////////////////////
+
+struct CmdOption
 {
-	char *name;
-	int has_arg;
-	int val;
+    const char *name;
+    int has_arg;
+    int val;
 };
-//////////////////////////////////////////////////////////////////////////////////////////////
 
-int getoption(int argc, char **argv, struct option *options)
+////////////////////////////////////////////////////////////////////////
+// getoption()
+//
+// Simple command-line option parser.
+//
+// Returns:
+//      option value   - recognized option
+//      '?'            - error
+//      -1             - no more options
+////////////////////////////////////////////////////////////////////////
+
+int getoption(int argc, char **argv, struct CmdOption *options)
 {
-	int i;
+   int i;
 
-	for(int j=optind; j<argc; j++)
-	if( argv[j][0] == '-' )					// here is an option
-	{
-		optind = j+1;
+   // Guard against NULL options
+   if (options == NULL)
+      return '?';
 
-		i=0;
-		while( options[i].val != 0 ) 		// find the option in options structure
-		{
-			if( strcmp(options[i].name , argv[j])==0 ) 
-			{	
-				if( options[i].has_arg && optind >= argc ) 
-				{ 
-					// option requires an argument but there are no more arguments left
-					printf("\nOption %s requires an argument.\n\n",options[i].name);
-					return('?');
-				}
+   for (int j = optind; j < argc; j++)
+   {
+      /* Skip non-option arguments */
+      if (argv[j][0] != '-')
+         continue;
 
-				if( options[i].has_arg && optind < argc ) { optarg = argv[optind++]; }
+      optind = j + 1;
 
-				return(options[i].val);
-			}
-			i++;
-		}
-		
-		printf("\nOption %s not recognized.\n\n",argv[j]);
-		return('?');
+      /* Search for the option in the option table */
+      for (i = 0; options[i].val != 0; i++)
+      {
+         if (strcmp(options[i].name, argv[j]) != 0)
+            continue;
 
-		break;
-	}
+         /* Option requires an argument */
+         if (options[i].has_arg)
+         {
+            if (optind >= argc)
+            {
+               printf("\nOption %s requires an argument.\n\n",
+                      options[i].name);
+               return '?';
+            }
 
-	// no more options to be processed
-	return(-1);
+            optarg = argv[optind++];
+         }
+
+         return options[i].val;
+      }
+
+      printf("\nOption %s not recognized.\n\n", argv[j]);
+      return '?';
+   }
+
+   /* No more options */
+   return -1;
 }

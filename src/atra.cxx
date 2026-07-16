@@ -35,7 +35,7 @@ int opt_nn=NO;
 
 int opt;
 
-static struct option options[] =
+static struct CmdOption options[] =
 {
    {"-nn",0,'e'},
    {"-orient",1,'O'},

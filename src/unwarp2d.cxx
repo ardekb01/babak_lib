@@ -24,7 +24,7 @@ extern short *resizeXY(short *image1, int nx1, int ny1, float dx1, float dy1, in
 //////////////////////////////////////////////////////////////////////////////////////////////////
 int opt;
 
-static struct option options[] =
+static struct CmdOption options[] =
 {
    {"-v", 0,  'v'},
    {"-sub", 1,  's'},

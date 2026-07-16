@@ -16,7 +16,7 @@
 
 int opt;
 
-static struct option options[] =
+static struct CmdOption options[] =
 {
    {"-from", 1, 'f'},
    {"-to", 1, 't'},

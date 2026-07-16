@@ -12,6 +12,7 @@
 #include <stdlib.h>
 
 #include "loadTransformation.h"
+#include "getoption.h"
 
 #ifndef _PILTRANSFORM
 extern double searchradius[3]; // in units of mm
@@ -717,21 +718,6 @@ int4 nx2, int4 ny2, int4 nz2, float4 dx2, float4 dy2, float4 dz2);
 float4 *resizeXY(float4 *image1, int4 nx1, int4 ny1, float4 dx1, float4 dy1, int4 nx2, int4 ny2, float4 dx2, float4 dy2);
 int2 *resizeXY(int2 *image1, int4 nx1, int4 ny1, float4 dx1, float4 dy1, int4 nx2, int4 ny2, float4 dx2, float4 dy2);
 //////////////////////////////////////////////////////////////////////////////
-
-#ifndef _getoption
-
-extern int4 optind;
-extern char *optarg;
-
-struct option
-{
-	const char *name;
-	int4 has_arg;
-	int4 val;
-};
-
-extern int4 getoption(int4 argc, char **argv, struct option *options);
-#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // The following functions are defined in analyzeio.c

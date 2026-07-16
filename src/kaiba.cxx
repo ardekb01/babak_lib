@@ -61,7 +61,7 @@ float alpha_param;
 
 /////////////////////////////////////////////////////////////////////////
 
-static struct option options[] =
+static struct CmdOption options[] =
 {
    {"-v",0,'v'},
    {"-F",0,'F'},

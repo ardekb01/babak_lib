@@ -16,7 +16,7 @@
 
 int opt;
 
-static struct option options[] =
+static struct CmdOption options[] =
 {
         {"-scale", 1, 'S'},
         {"-threshold", 1, 't'},

@@ -23,7 +23,7 @@ FILE *logFilePtr;
 
 int opt;
 
-static struct option options[] =
+static struct CmdOption options[] =
 {
 	{"-nt", 1, 't'}, //new
 	{"-i", 1, 'i'}, //new

@@ -26,7 +26,7 @@ int PILcloudthreshold=0;
 
 int opt;
 
-static struct option options[] =
+static struct CmdOption options[] =
 {
    {"-lm", 1, 'l'},
    {"-T", 1, 'T'},

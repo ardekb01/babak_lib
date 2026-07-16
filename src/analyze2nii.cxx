@@ -19,7 +19,7 @@
 
 int opt;
 
-static struct option options[] =
+static struct CmdOption options[] =
 {
 	{"-v",0,'v'},
 	{"--verbose",0,'v'},
