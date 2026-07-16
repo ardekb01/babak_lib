@@ -580,34 +580,34 @@ int main(int argc, char **argv)
             opt_I= YES;
             break;
          case 'r':
-            patch_r = atoi(optarg);
+            patch_r = atoi(optArg);
             break;
          case 'R':
-            search_R = atoi(optarg);
+            search_R = atoi(optArg);
             break;
          case 'a':
             opt_affine = YES;
             break;
          case '8':
-            iter8 = atoi(optarg);
+            iter8 = atoi(optArg);
             break;
          case '4':
-            iter4 = atoi(optarg);
+            iter4 = atoi(optArg);
             break;
          case '2':
-            iter2 = atoi(optarg);
+            iter2 = atoi(optArg);
             break;
          case '1':
-            iter1 = atoi(optarg);
+            iter1 = atoi(optArg);
             break;
          case 'T':
-            snprintf(affineTransformationFile,sizeof(affineTransformationFile),"%s",optarg);
+            snprintf(affineTransformationFile,sizeof(affineTransformationFile),"%s",optArg);
             break;
          case 'm':
-            snprintf(trglmfile,sizeof(trglmfile),"%s",optarg);
+            snprintf(trglmfile,sizeof(trglmfile),"%s",optArg);
             break;
          case 'M':
-            snprintf(sublmfile,sizeof(sublmfile),"%s",optarg);
+            snprintf(sublmfile,sizeof(sublmfile),"%s",optArg);
             break;
          case 'h':
             print_help_and_exit();
@@ -616,16 +616,16 @@ int main(int argc, char **argv)
             opt_v=YES;
             break;
          case 's':
-            snprintf(subjectImageFile,sizeof(subjectImageFile),"%s",optarg);
+            snprintf(subjectImageFile,sizeof(subjectImageFile),"%s",optArg);
             break;
          case 't':
-            snprintf(targetImageFile,sizeof(targetImageFile),"%s",optarg);
+            snprintf(targetImageFile,sizeof(targetImageFile),"%s",optArg);
             break;
          case 'u':
-            snprintf(warpfile,sizeof(warpfile),"%s",optarg);
+            snprintf(warpfile,sizeof(warpfile),"%s",optArg);
             break;
          case 'o':
-            snprintf(outputfile,sizeof(outputfile),"%s",optarg);
+            snprintf(outputfile,sizeof(outputfile),"%s",optArg);
             break;
          case 'c':
             opt_cubicspline=YES;

@@ -328,38 +328,38 @@ int main(int argc, char **argv)
             opt_v = YES;
             break;
          case 'F':
-            FWHM=atof(optarg);
+            FWHM=atof(optArg);
             break;
          case 'x':
-            nx2=atoi(optarg);
+            nx2=atoi(optArg);
             opt_nx = YES;
             break;
          case 'y':
-            ny2=atoi(optarg);
+            ny2=atoi(optArg);
             opt_ny = YES;
             break;
          case 'z':
-            nz2=atoi(optarg);
+            nz2=atoi(optArg);
             opt_nz = YES;
             break;
          case 'X':
-            dx2=atof(optarg);
+            dx2=atof(optArg);
             opt_dx = YES;
             break;
          case 'Y':
-            dy2=atof(optarg);
+            dy2=atof(optArg);
             opt_dy = YES;
             break;
          case 'Z':
-            dz2=atof(optarg);
+            dz2=atof(optArg);
             opt_dz = YES;
             break;
          case 'i':
-            snprintf(filename1,sizeof(filename1),"%s",optarg);
+            snprintf(filename1,sizeof(filename1),"%s",optArg);
             opt_i = YES;
             break;
          case 'o':
-            snprintf(filename2,sizeof(filename2),"%s",optarg);
+            snprintf(filename2,sizeof(filename2),"%s",optArg);
             opt_o = YES;
             break;
          case '?':

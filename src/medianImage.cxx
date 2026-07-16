@@ -358,7 +358,7 @@ int main(int argc, char **argv)
       switch (opt) 
       {
          case 'o':
-            snprintf(outputfile,sizeof(outputfile),"%s",optarg);
+            snprintf(outputfile,sizeof(outputfile),"%s",optArg);
             opt_o=YES;
             break;
          case 'h':

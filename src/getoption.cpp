@@ -10,7 +10,7 @@
 ////////////////////////////////////////////////////////////////////////
 
 int optind = 1;
-char *optarg = NULL;
+const char *optArg = NULL;
 
 ////////////////////////////////////////////////////////////////////////
 // Option structure
@@ -18,9 +18,9 @@ char *optarg = NULL;
 
 struct CmdOption
 {
-    const char *name;
-    int has_arg;
-    int val;
+   const char *name;
+   int has_arg;
+   int val;
 };
 
 ////////////////////////////////////////////////////////////////////////
@@ -34,7 +34,7 @@ struct CmdOption
 //      -1             - no more options
 ////////////////////////////////////////////////////////////////////////
 
-int getoption(int argc, char **argv, struct CmdOption *options)
+int getoption(int argc, char **argv, const struct CmdOption *options)
 {
    int i;
 
@@ -61,18 +61,18 @@ int getoption(int argc, char **argv, struct CmdOption *options)
          {
             if (optind >= argc)
             {
-               printf("\nOption %s requires an argument.\n\n",
+               fprintf(stderr,"\nOption %s requires an argument.\n\n",
                       options[i].name);
                return '?';
             }
 
-            optarg = argv[optind++];
+            optArg = argv[optind++];
          }
 
          return options[i].val;
       }
 
-      printf("\nOption %s not recognized.\n\n", argv[j]);
+      fprintf(stderr,"\nOption %s not recognized.\n\n", argv[j]);
       return '?';
    }
 

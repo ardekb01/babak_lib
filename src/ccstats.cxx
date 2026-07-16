@@ -363,15 +363,15 @@ int main(int argc, char **argv)
 	{
 		switch (opt) {
 			case 'd':
-				snprintf(dataFile,sizeof(dataFile),"%s",optarg);
+				snprintf(dataFile,sizeof(dataFile),"%s",optArg);
 				opt_d=YES;
 				break;
 			case 'c':
-				snprintf(ccFile,sizeof(ccFile),"%s",optarg);
+				snprintf(ccFile,sizeof(ccFile),"%s",optArg);
 				opt_c=YES;
 				break;
 			case 'o':
-				snprintf(prefix,sizeof(prefix),"%s",optarg);
+				snprintf(prefix,sizeof(prefix),"%s",optArg);
 				opt_o=YES;
 				break;
 			case '?':

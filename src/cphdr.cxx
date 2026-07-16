@@ -53,28 +53,28 @@ int main(int argc, char **argv)
       switch (opt) 
       {
          case 't':
-            snprintf(outputfile,sizeof(outputfile),"%s",optarg);
+            snprintf(outputfile,sizeof(outputfile),"%s",optArg);
             break;
          case 'f':
-            snprintf(inputfile,sizeof(inputfile),"%s",optarg);
+            snprintf(inputfile,sizeof(inputfile),"%s",optArg);
             break;
          case 'h':
             print_help_and_exit();
             break;
          case '4':
-            pixdim4 = atof(optarg);
+            pixdim4 = atof(optArg);
             opt_pixdim4=YES;
             break;
          case '5':
-            pixdim5 = atof(optarg);
+            pixdim5 = atof(optArg);
             opt_pixdim5=YES;
             break;
          case '6':
-            pixdim6 = atof(optarg);
+            pixdim6 = atof(optArg);
             opt_pixdim6=YES;
             break;
          case '7':
-            pixdim7 = atof(optarg);
+            pixdim7 = atof(optArg);
             opt_pixdim7=YES;
             break;
          case '?':

@@ -120,7 +120,7 @@ int main(int argc, char **argv)
             exit(0);
          case 'o':
             opt_o=YES;
-            snprintf(prefix,sizeof(prefix),"%s",optarg);
+            snprintf(prefix,sizeof(prefix),"%s",optArg);
             break;
 			case 'n':
 				opt_nn=YES;
@@ -129,37 +129,37 @@ int main(int argc, char **argv)
 				opt_secret=YES;
 				break;
 			case '1':
-				snprintf(warpfile,sizeof(warpfile),"%s",optarg);
+				snprintf(warpfile,sizeof(warpfile),"%s",optArg);
 				opt_w=YES;
 				break;
 			case '2':
-				snprintf(Tfile,sizeof(Tfile),"%s",optarg);
+				snprintf(Tfile,sizeof(Tfile),"%s",optArg);
 				opt_T=YES;
 				break;
 			case '3':
-				snprintf(w2dfile,sizeof(w2dfile),"%s",optarg);
+				snprintf(w2dfile,sizeof(w2dfile),"%s",optArg);
 				opt_w2d=YES;
 				break;
 			case '4':
 				opt_cubicspline=YES;
 				break;
 			case 'x':
-				Tnx=atoi(optarg);
+				Tnx=atoi(optArg);
 				break;
 			case 'y':
-				Tny=atoi(optarg);
+				Tny=atoi(optArg);
 				break;
 			case 'z':
-				Tnz=atoi(optarg);
+				Tnz=atoi(optArg);
 				break;
 			case 'X':
-				Tdx=atof(optarg);
+				Tdx=atof(optArg);
 				break;
 			case 'Y':
-				Tdy=atof(optarg);
+				Tdy=atof(optArg);
 				break;
 			case 'Z':
-				Tdz=atof(optarg);
+				Tdz=atof(optArg);
 				break;
 			case '?':
 				print_help_and_exit();

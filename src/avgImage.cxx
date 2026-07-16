@@ -396,14 +396,14 @@ int main(int argc, char **argv)
       switch (opt) 
       {
          case 't':
-            threshold = atof(optarg);
+            threshold = atof(optArg);
             opt_threshold=YES;
             break;
          case 'S':
-            scale = atof(optarg);
+            scale = atof(optArg);
             break;
          case 'o':
-            snprintf(outputfile,sizeof(outputfile),"%s",optarg);
+            snprintf(outputfile,sizeof(outputfile),"%s",optArg);
             opt_o=YES;
             break;
          case 'h':
@@ -416,7 +416,7 @@ int main(int argc, char **argv)
             opt_s=YES;
             break;
          case 'n':
-            n = atoi(optarg);
+            n = atoi(optArg);
             break;
          case '?':
             print_help_and_exit();

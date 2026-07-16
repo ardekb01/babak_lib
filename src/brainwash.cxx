@@ -1008,40 +1008,40 @@ int main(int argc, char **argv)
             printf("Version 2.0 (last modified: May 17, 2016)\n");
             exit(0);
          case 't':
-            threshold = atof(optarg);
+            threshold = atof(optArg);
             break;
          case 'r':
-            patch_r = atoi(optarg);
+            patch_r = atoi(optArg);
             break;
          case 'p':
             opt_ppm=YES;
             break;
          case 'R':
-            search_R = atoi(optarg);
+            search_R = atoi(optArg);
             break;
          case 'n':
-            natlas_used = atoi(optarg);
+            natlas_used = atoi(optArg);
             break;
          case '8':
-            iter8 = atoi(optarg);
+            iter8 = atoi(optArg);
             break;
          case '4':
-            iter4 = atoi(optarg);
+            iter4 = atoi(optArg);
             break;
          case '2':
-            iter2 = atoi(optarg);
+            iter2 = atoi(optArg);
             break;
          case '1':
-            iter1 = atoi(optarg);
+            iter1 = atoi(optArg);
             break;
          case 'l':
-            snprintf(atlaslistfile,sizeof(atlaslistfile),"%s",optarg);
+            snprintf(atlaslistfile,sizeof(atlaslistfile),"%s",optArg);
             break;
          case 'd':
-            snprintf(brainwashatlasdir,sizeof(brainwashatlasdir),"%s",optarg);
+            snprintf(brainwashatlasdir,sizeof(brainwashatlasdir),"%s",optArg);
             break;
          case 'M':
-            snprintf(subLMfile,sizeof(subLMfile),"%s",optarg);
+            snprintf(subLMfile,sizeof(subLMfile),"%s",optArg);
             break;
          case 'h':
             print_help_and_exit();
@@ -1050,7 +1050,7 @@ int main(int argc, char **argv)
             opt_v=YES;
             break;
          case 'i':
-            snprintf(subImageFile,sizeof(subImageFile),"%s",optarg);
+            snprintf(subImageFile,sizeof(subImageFile),"%s",optArg);
             break;
          case '?':
             print_help_and_exit();

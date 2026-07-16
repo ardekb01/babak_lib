@@ -62,21 +62,21 @@ int main(int argc, char **argv)
         opt_v=YES;
         break;
       case 'c':
-        ccthresh=atoi(optarg);
+        ccthresh=atoi(optArg);
         break;
       case 'i':
-        snprintf(inputfile,sizeof(inputfile),"%s",optarg);
+        snprintf(inputfile,sizeof(inputfile),"%s",optArg);
         break;
       case 'o':
-        snprintf(op_image_file,sizeof(op_image_file),"%s",optarg);
+        snprintf(op_image_file,sizeof(op_image_file),"%s",optArg);
         break;
       case '1':
         opt_t1=YES;
-        thresh1 = atof(optarg);
+        thresh1 = atof(optArg);
         break;
       case '2':
         opt_t2=YES;
-        thresh2 = atof(optarg);
+        thresh2 = atof(optArg);
         break;
       case '?':
         print_help_and_exit();

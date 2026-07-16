@@ -916,35 +916,35 @@ int main(int argc, char **argv)
             opt_nn=YES;
             break;
          case 'X':
-            output_dim.dx = atof(optarg);
+            output_dim.dx = atof(optArg);
             break;
          case 'Y':
-            output_dim.dy = atof(optarg);
+            output_dim.dy = atof(optArg);
             break;
          case 'Z':
-            output_dim.dz = atof(optarg);
+            output_dim.dz = atof(optArg);
             break;
          case 'x':
-            output_dim.nx = atoi(optarg);
+            output_dim.nx = atoi(optArg);
             break;
          case 'y':
-            output_dim.ny = atoi(optarg);
+            output_dim.ny = atoi(optArg);
             break;
          case 'd':
-            del = atoi(optarg);
+            del = atoi(optArg);
             break;
          case 'z':
-            output_dim.nz = atoi(optarg);
+            output_dim.nz = atoi(optArg);
             break;
          case 'm':
-            maxiter = atoi(optarg);
+            maxiter = atoi(optArg);
             if(maxiter<10 || maxiter>100) maxiter=MAXITER;
             break;
          case 'o':
-            strcpy(outputPrefix,optarg);
+            strcpy(outputPrefix,optArg);
             break;
          case 'i':
-            strcpy(imagelistfile,optarg);
+            strcpy(imagelistfile,optArg);
             break;
          case 'v':
             opt_v=YES;
@@ -959,18 +959,18 @@ int main(int argc, char **argv)
             opt_txt = NO;
             break;
          case 'O':
-            strcpy(outputOrientationCode,optarg);
+            strcpy(outputOrientationCode,optArg);
             break;
          case 'r':
-            patch_radius = atoi(optarg);
+            patch_radius = atoi(optArg);
             if(patch_radius<=0 || patch_radius>MAX_RADIUS) patch_radius=DEFAULT_PATCH_RADIUS;
             break;
          case 'R':
-            search_radius = atoi(optarg);
+            search_radius = atoi(optArg);
             if(search_radius<=0 || search_radius>MAX_RADIUS) search_radius=DEFAULT_SEARCH_RADIUS;
             break;
          case 't':
-            PILcloudthreshold = atoi(optarg);
+            PILcloudthreshold = atoi(optArg);
             if(PILcloudthreshold<0 || PILcloudthreshold>100) PILcloudthreshold=50;
             break;
          case 'h':

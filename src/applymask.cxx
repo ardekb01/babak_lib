@@ -109,13 +109,13 @@ int main(int argc, char **argv)
   {
     switch (opt) {
     case 'm':
-      snprintf(maskfile,sizeof(maskfile),"%s",optarg);
+      snprintf(maskfile,sizeof(maskfile),"%s",optArg);
       break;
     case 'i':
-      snprintf(inputfile,sizeof(inputfile),"%s",optarg);
+      snprintf(inputfile,sizeof(inputfile),"%s",optArg);
       break;
     case 'o':
-      snprintf(outputfile,sizeof(outputfile),"%s",optarg);
+      snprintf(outputfile,sizeof(outputfile),"%s",optArg);
       break;
     case 'v':
       opt_v=YES;

@@ -85,11 +85,11 @@ int main(int argc, char **argv)
         opt_f=YES;
         break;
       case 'p':
-        snprintf(prefix,sizeof(prefix),"%s",optarg);
+        snprintf(prefix,sizeof(prefix),"%s",optArg);
         opt_p=YES;
         break;
       case 'c':
-        scale = atof(optarg);
+        scale = atof(optArg);
         opt_scale=YES;
         break;
       case '?':

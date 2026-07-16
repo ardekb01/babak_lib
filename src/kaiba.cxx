@@ -1539,16 +1539,16 @@ int main(int argc, char **argv)
             opt_png=NO;
             break;
          case 'p':
-            strcpy(opprefix,optarg);
+            strcpy(opprefix,optArg);
             break;
          case 'l':
-            strcpy(lmfile,optarg);
+            strcpy(lmfile,optArg);
             break;
          case 'b':
-            strcpy(bfile,optarg);
+            strcpy(bfile,optArg);
             break;
          case 'a':
-            alpha_param = atof(optarg); 
+            alpha_param = atof(optArg); 
             break;
          case '?':
             print_help_and_exit();

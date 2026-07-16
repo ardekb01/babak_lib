@@ -95,31 +95,31 @@ int main(int argc, char **argv)
       switch (opt) 
       {
          case '1':
-            sub_dim.dx = atof(optarg);
+            sub_dim.dx = atof(optArg);
             break;
          case '2':
-            sub_dim.dy = atof(optarg);
+            sub_dim.dy = atof(optArg);
             break;
          case '3':
-            sub_dim.dz = atof(optarg);
+            sub_dim.dz = atof(optArg);
             break;
          case '4':
-            sub_dim.nx = atoi(optarg);
+            sub_dim.nx = atoi(optArg);
             break;
          case '5':
-            sub_dim.ny = atoi(optarg);
+            sub_dim.ny = atoi(optArg);
             break;
          case '6':
-            sub_dim.nz = atoi(optarg);
+            sub_dim.nz = atoi(optArg);
             break;
          case 'T':
-            snprintf(inputmatrixfile,sizeof(inputmatrixfile),"%s",optarg);
+            snprintf(inputmatrixfile,sizeof(inputmatrixfile),"%s",optArg);
             break;
          case 'i':
-            snprintf(inputlmfile,sizeof(inputlmfile),"%s",optarg);
+            snprintf(inputlmfile,sizeof(inputlmfile),"%s",optArg);
             break;
          case 'o':
-            snprintf(outputmatrixfile,sizeof(outputmatrixfile),"%s",optarg);
+            snprintf(outputmatrixfile,sizeof(outputmatrixfile),"%s",optArg);
             break;
          case 'v':
             opt_v=YES;

@@ -2692,24 +2692,24 @@ int main(int argc, char **argv)
         opt_automatic_fusion_threshold = YES;
         break;
       case 'n':
-        number_of_atlases_used=atoi(optarg);
+        number_of_atlases_used=atoi(optArg);
         if(number_of_atlases_used<=0) number_of_atlases_used=49;
         break;
       case 'i':
-        snprintf(ipimagepath,sizeof(ipimagepath),"%s",optarg);
+        snprintf(ipimagepath,sizeof(ipimagepath),"%s",optArg);
         break;
       case 'C':
         opt_cc=YES;
-        snprintf(ipimagepath,sizeof(ipimagepath),"%s",optarg);
+        snprintf(ipimagepath,sizeof(ipimagepath),"%s",optArg);
         break;
       case 't':
-        max_t  = atof(optarg);
+        max_t  = atof(optArg);
         break;
       case 'o':
-        snprintf(output_prefix,sizeof(output_prefix),"%s",optarg);
+        snprintf(output_prefix,sizeof(output_prefix),"%s",optArg);
         break;
       case 'c':
-        snprintf(csvfile,sizeof(csvfile),"%s",optarg);
+        snprintf(csvfile,sizeof(csvfile),"%s",optArg);
         break;
       case 'v':
         opt_v=YES;
@@ -2724,16 +2724,16 @@ int main(int argc, char **argv)
         opt_png=YES;
         break;
       case 'l':
-        strcpy(lmfile,optarg);
+        strcpy(lmfile,optArg);
         break;
       case 'a':
-        snprintf(atlas_filename,sizeof(atlas_filename),"%s",optarg);
+        snprintf(atlas_filename,sizeof(atlas_filename),"%s",optArg);
         break;
       case 'T':
-        snprintf(msp_transformation_file,sizeof(msp_transformation_file),"%s",optarg);
+        snprintf(msp_transformation_file,sizeof(msp_transformation_file),"%s",optArg);
         break;
       case 'L':
-        snprintf(preselected_atlases_file,sizeof(preselected_atlases_file),"%s",optarg);
+        snprintf(preselected_atlases_file,sizeof(preselected_atlases_file),"%s",optArg);
         break;
       case 'b':
         opt_box=YES;

@@ -31,13 +31,13 @@ int main(int argc, char **argv)
             opt_v=YES;
             break;
          case 'm':
-            snprintf(mdlfile,sizeof(mdlfile),"%s",optarg);
+            snprintf(mdlfile,sizeof(mdlfile),"%s",optArg);
             break;
          case 'i':
-            snprintf(subfile,sizeof(subfile),"%s",optarg);
+            snprintf(subfile,sizeof(subfile),"%s",optArg);
             break;
          case 'o':
-            snprintf(outputfile,sizeof(outputfile),"%s",optarg);
+            snprintf(outputfile,sizeof(outputfile),"%s",optArg);
             break;
          case '?':
             exit(0);

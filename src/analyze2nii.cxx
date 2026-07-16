@@ -136,7 +136,7 @@ int main(int argc, char **argv)
       switch (opt) 
       {
          case 'i':
-            snprintf(analyzefile,sizeof(analyzefile),"%s",optarg);
+            snprintf(analyzefile,sizeof(analyzefile),"%s",optArg);
             opt_i=YES;
             break;
          case 'D':
@@ -149,7 +149,7 @@ int main(int argc, char **argv)
             print_help_and_exit();
             break;
          case 'O':
-            snprintf(orientation,sizeof(orientation),"%s",optarg);
+            snprintf(orientation,sizeof(orientation),"%s",optArg);
             opt_orient=YES;
             break;
          case '?':

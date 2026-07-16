@@ -26,14 +26,14 @@ int main(int argc, char **argv)
    {
       switch (opt) {
          case 'n':
-            n = atoi(optarg);
+            n = atoi(optArg);
             if(n<2) n=2;
             break;
          case 'v':
             opt_v=YES;
             break;
          case 'i':
-            snprintf(imfile,sizeof(imfile),"%s",optarg);
+            snprintf(imfile,sizeof(imfile),"%s",optArg);
             break;
          case '?':
             exit(0);

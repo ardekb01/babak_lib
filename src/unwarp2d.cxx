@@ -127,36 +127,36 @@ int main(int argc, char **argv)
             opt_v=YES;
             break;
          case 'T':
-            snprintf(Tfile,sizeof(Tfile),"%s",optarg);
+            snprintf(Tfile,sizeof(Tfile),"%s",optArg);
             break;
          case 's':
-            snprintf(subfile,sizeof(subfile),"%s",optarg);
+            snprintf(subfile,sizeof(subfile),"%s",optArg);
             opt_sub=YES;
             break;
          case 't':
-            snprintf(trgfile,sizeof(trgfile),"%s",optarg);
+            snprintf(trgfile,sizeof(trgfile),"%s",optArg);
             opt_trg=YES;
             break;
          case 'o':
-            snprintf(outputfile,sizeof(outputfile),"%s",optarg);
+            snprintf(outputfile,sizeof(outputfile),"%s",optArg);
             break;
 			case 'S':
-				sd=atof(optarg);
+				sd=atof(optArg);
 				opt_sd=YES;
 				break;
 			case '5':
-				niter=atoi(optarg);
+				niter=atoi(optArg);
 				opt_iter=YES;
 				break;
 			case '6':
-				snprintf(warpfile,sizeof(warpfile),"%s",optarg);
+				snprintf(warpfile,sizeof(warpfile),"%s",optArg);
 				break;
 			case '7':
-				N=atoi(optarg);
+				N=atoi(optArg);
 				opt_w=YES;
 				break;
 			case '9':
-				window_width=atoi(optarg);
+				window_width=atoi(optArg);
 				opt_s=YES;
 				break;
 			case '?':

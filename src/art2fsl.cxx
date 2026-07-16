@@ -82,46 +82,46 @@ int main(int argc, char **argv)
       switch (opt) 
       {
          case '1':
-            sub_dim.dx = atof(optarg);
+            sub_dim.dx = atof(optArg);
             break;
          case '2':
-            sub_dim.dy = atof(optarg);
+            sub_dim.dy = atof(optArg);
             break;
          case '3':
-            sub_dim.dz = atof(optarg);
+            sub_dim.dz = atof(optArg);
             break;
          case '4':
-            sub_dim.nx = atoi(optarg);
+            sub_dim.nx = atoi(optArg);
             break;
          case '5':
-            sub_dim.ny = atoi(optarg);
+            sub_dim.ny = atoi(optArg);
             break;
          case '6':
-            sub_dim.nz = atoi(optarg);
+            sub_dim.nz = atoi(optArg);
             break;
          case 'X':
-            trg_dim.dx = atof(optarg);
+            trg_dim.dx = atof(optArg);
             break;
          case 'Y':
-            trg_dim.dy = atof(optarg);
+            trg_dim.dy = atof(optArg);
             break;
          case 'Z':
-            trg_dim.dz = atof(optarg);
+            trg_dim.dz = atof(optArg);
             break;
          case 'x':
-            trg_dim.nx = atoi(optarg);
+            trg_dim.nx = atoi(optArg);
             break;
          case 'y':
-            trg_dim.ny = atoi(optarg);
+            trg_dim.ny = atoi(optArg);
             break;
          case 'z':
-            trg_dim.nz = atoi(optarg);
+            trg_dim.nz = atoi(optArg);
             break;
          case 'i':
-            snprintf(inputmatrixfile,sizeof(inputmatrixfile),"%s",optarg);
+            snprintf(inputmatrixfile,sizeof(inputmatrixfile),"%s",optArg);
             break;
          case 'o':
-            snprintf(outputmatrixfile,sizeof(outputmatrixfile),"%s",optarg);
+            snprintf(outputmatrixfile,sizeof(outputmatrixfile),"%s",optArg);
             break;
          case 'v':
             opt_v=YES;

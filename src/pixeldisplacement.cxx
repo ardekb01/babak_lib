@@ -108,16 +108,16 @@ int main(int argc, char **argv)
     switch (opt) 
     {
       case 'T':
-        snprintf(transFile,sizeof(transFile),"%s",optarg);
+        snprintf(transFile,sizeof(transFile),"%s",optArg);
         break;
       case 'i':
-        strcpy(ipimfile,optarg);
+        strcpy(ipimfile,optArg);
         break;
       case 'v':
         opt_v=YES;
         break;
       case 'l':
-        strcpy(lmfile,optarg);
+        strcpy(lmfile,optArg);
         break;
       case '?':
         break;

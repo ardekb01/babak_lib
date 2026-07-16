@@ -982,19 +982,19 @@ int main(int argc, char **argv)
 	{
 		switch (opt) {
 			case 'x':
-				xi = atoi(optarg);
+				xi = atoi(optArg);
 				opt_x=YES;
 				break;
 			case 'y':
-				yi = atoi(optarg);
+				yi = atoi(optArg);
 				opt_y=YES;
 				break;
 			case 'z':
-				zi = atoi(optarg);
+				zi = atoi(optArg);
 				opt_z=YES;
 				break;
 			case 'F':
-				FWHM = atof(optarg);
+				FWHM = atof(optArg);
 				break;
 			case 'n':
 				opt_nozero=YES;
@@ -1003,27 +1003,27 @@ int main(int argc, char **argv)
 				opt_v=YES;
 				break;
 			case 'c':
-				snprintf(contrastFile,sizeof(contrastFile),"%s",optarg);
+				snprintf(contrastFile,sizeof(contrastFile),"%s",optArg);
 				opt_c=YES;
 				break;
 			case 'm':
-				snprintf(maskFile,sizeof(maskFile),"%s",optarg);
+				snprintf(maskFile,sizeof(maskFile),"%s",optArg);
 				opt_m=YES;
 				break;
 			case 'd':
-				snprintf(dataFile,sizeof(dataFile),"%s",optarg);
+				snprintf(dataFile,sizeof(dataFile),"%s",optArg);
 				opt_d=YES;
 				break;
 			case 'T':
-				snprintf(dataTypeCode,sizeof(dataTypeCode),"%s",optarg);
+				snprintf(dataTypeCode,sizeof(dataTypeCode),"%s",optArg);
 				opt_dataType=YES;
 				break;
 			case 'M':
-				snprintf(dataMaskCode,sizeof(dataMaskCode),"%s",optarg);
+				snprintf(dataMaskCode,sizeof(dataMaskCode),"%s",optArg);
 				opt_dataMask=YES;
 				break;
 			case 'o':
-				snprintf(prefix,sizeof(prefix),"%s",optarg);
+				snprintf(prefix,sizeof(prefix),"%s",optArg);
 				opt_o=YES;
 				break;
 			case '?':

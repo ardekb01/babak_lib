@@ -359,22 +359,22 @@ int main(int argc, char **argv)
             printf("acpcdetect v2.2 (April 2024)\n");
             exit(0);
          case 'x':
-            nx = atoi(optarg);
+            nx = atoi(optArg);
             break;
          case 'y':
-            ny = atoi(optarg);
+            ny = atoi(optArg);
             break;
          case 'z':
-            nz = atoi(optarg);
+            nz = atoi(optArg);
             break;
          case 'X':
-            dx = atof(optarg);
+            dx = atof(optArg);
             break;
          case 'Y':
-            dy = atof(optarg);
+            dy = atof(optArg);
             break;
          case 'Z':
-            dz = atof(optarg);
+            dz = atof(optArg);
             break;
 //         case 'T':
 //            opt_T2=YES;
@@ -383,19 +383,19 @@ int main(int argc, char **argv)
             opt_tiltcorrect=NO;
             break;
          case 'L':
-            snprintf(landmarksfilepath,sizeof(landmarksfilepath),"%s",optarg);
+            snprintf(landmarksfilepath,sizeof(landmarksfilepath),"%s",optArg);
             break;
          case 'i':
-            snprintf(ipimagepath,sizeof(ipimagepath),"%s",optarg);
+            snprintf(ipimagepath,sizeof(ipimagepath),"%s",optArg);
             break;
          case '0':
-            searchradius[0] = atof(optarg); // searchradius[0] is for VSPS
+            searchradius[0] = atof(optArg); // searchradius[0] is for VSPS
             break;
          case '1':
-            searchradius[1] = atof(optarg); // searchradius[1] is for AC
+            searchradius[1] = atof(optArg); // searchradius[1] is for AC
             break;
          case '2':
-            searchradius[2] = atof(optarg); // searchradius[2] is for PC
+            searchradius[2] = atof(optArg); // searchradius[2] is for PC
             break;
          case 'v':
             opt_v=YES;
@@ -404,19 +404,19 @@ int main(int argc, char **argv)
             print_help_and_exit();
             break;
          case 'O':
-            snprintf(iporient,sizeof(iporient),"%s",optarg);
+            snprintf(iporient,sizeof(iporient),"%s",optArg);
             iporient[0]=(char)toupper((int)iporient[0]);
             iporient[1]=(char)toupper((int)iporient[1]);
             iporient[2]=(char)toupper((int)iporient[2]);
             break;
          case 'u':
-            snprintf(oporient,sizeof(oporient),"%s",optarg);
+            snprintf(oporient,sizeof(oporient),"%s",optArg);
             oporient[0]=(char)toupper((int)oporient[0]);
             oporient[1]=(char)toupper((int)oporient[1]);
             oporient[2]=(char)toupper((int)oporient[2]);
             break;
 //         case 'm':
-//            snprintf(modelfile,sizeof(modelfile),"%s",optarg);
+//            snprintf(modelfile,sizeof(modelfile),"%s",optArg);
 //            break;
          case '?':
             print_help_and_exit();

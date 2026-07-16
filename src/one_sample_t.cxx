@@ -247,7 +247,7 @@ int main(int argc, char **argv)
       switch (opt) 
       {
          case 'o':
-            snprintf(prefix,sizeof(prefix),"%s",optarg);
+            snprintf(prefix,sizeof(prefix),"%s",optArg);
             opt_o=YES;
             break;
          case 'h':

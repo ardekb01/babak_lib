@@ -92,41 +92,41 @@ int main(int argc, char **argv)
 				opt_v=YES;
 				break;
 			case 'T':
-				snprintf(transFile,sizeof(transFile),"%s",optarg);
+				snprintf(transFile,sizeof(transFile),"%s",optArg);
 				opt_T=YES;
 				break;
 			case '1':
-				nx2=atoi(optarg);
+				nx2=atoi(optArg);
 				opt_nx=YES;
 				break;
 			case '2':
-				ny2=atoi(optarg);
+				ny2=atoi(optArg);
 				opt_ny=YES;
 				break;
 			case '3':
-				nz2=atoi(optarg);
+				nz2=atoi(optArg);
 				opt_nz=YES;
 				break;
 			case '4':
-				dx2=atof(optarg);
+				dx2=atof(optArg);
 				opt_dx=YES;
 				break;
 			case '5':
-				dy2=atof(optarg);
+				dy2=atof(optArg);
 				opt_dy=YES;
 				break;
 			case '6':
-				dz2=atof(optarg);
+				dz2=atof(optArg);
 				opt_dz=YES;
 				break;
 			case 'i':
-				snprintf(inputImageFile,sizeof(inputImageFile),"%s",optarg);
+				snprintf(inputImageFile,sizeof(inputImageFile),"%s",optArg);
 				break;
 			case 't':
-				snprintf(targetImageFile,sizeof(targetImageFile),"%s",optarg);
+				snprintf(targetImageFile,sizeof(targetImageFile),"%s",optArg);
 				break;
 			case 'o':
-				snprintf(outputImageFile,sizeof(outputImageFile),"%s",optarg);
+				snprintf(outputImageFile,sizeof(outputImageFile),"%s",optArg);
 				opt_o=YES;
 				break;
 			case '7':

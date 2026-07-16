@@ -597,43 +597,43 @@ int main(int argc, char **argv)
             print_help_and_exit();
             break;
          case 'u':
-            snprintf(oporient,sizeof(oporient),"%s",optarg);
+            snprintf(oporient,sizeof(oporient),"%s",optArg);
             oporient[0]=(char)toupper((int)oporient[0]);
             oporient[1]=(char)toupper((int)oporient[1]);
             oporient[2]=(char)toupper((int)oporient[2]);
             break;
          case 'x':
-            nx = atoi(optarg);
+            nx = atoi(optArg);
             break;
          case 'y':
-            ny = atoi(optarg);
+            ny = atoi(optArg);
             break;
          case 'z':
-            nz = atoi(optarg);
+            nz = atoi(optArg);
             break;
          case 'X':
-            dx = atof(optarg);
+            dx = atof(optArg);
             break;
          case 'Y':
-            dy = atof(optarg);
+            dy = atof(optArg);
             break;
          case 'Z':
-            dz = atof(optarg);
+            dz = atof(optArg);
             break;
          case 'v':
             opt_v=YES;
             break;
          case '1':
-            snprintf(atlas_landmarks,sizeof(atlas_landmarks),"%s",optarg);
+            snprintf(atlas_landmarks,sizeof(atlas_landmarks),"%s",optArg);
             break;
          case '2':
-            snprintf(subject_landmarks,sizeof(subject_landmarks),"%s",optarg);
+            snprintf(subject_landmarks,sizeof(subject_landmarks),"%s",optArg);
             break;
          case 'i':
-            snprintf(ipimagepath,sizeof(ipimagepath),"%s",optarg);
+            snprintf(ipimagepath,sizeof(ipimagepath),"%s",optArg);
             break;
          case 'T':
-            snprintf(transformation_matrix,sizeof(transformation_matrix),"%s",optarg);
+            snprintf(transformation_matrix,sizeof(transformation_matrix),"%s",optArg);
             break;
          case 'V':
             printf("TPS v1.0, March 20, 2023 release\n");
