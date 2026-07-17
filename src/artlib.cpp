@@ -1318,7 +1318,7 @@ short *thresholdImageOtsu(short *im, int nv, int *nbv)
 	msk = (short *)calloc(nv, sizeof(short));
 	if(msk==NULL) return(NULL);
 
-	setLowHigh(im, nv, &low, &high);
+	setLowHigh(im, nv, &low, &high, .05f);
 
 	h=findHistogram(im, nv, 256, low, high, &bw);
 	if(h==NULL) { free(msk); return(NULL); }
@@ -2244,7 +2244,7 @@ float msp(short *im_in, int nx, int ny, int nz, float dx, float dy, float dz, fl
    dim[0].dy=dy;
    dim[0].dz=dz;
 
-   setLowHigh(im_in,nv,&low,&high);
+   setLowHigh(im_in,nv,&low,&high,.05f);
 
    image[1]=image[2]=NULL;
 

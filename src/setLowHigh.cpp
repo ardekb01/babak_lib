@@ -1,8 +1,9 @@
+#include "setLowHigh.h"
+#include "minmax.h"
+
 #include <stdlib.h>
-#include <minmax.h>
-#include <babak_lib.h>
 
-void setLowHigh(short *image, int nv, int *low, int *high)
+void setLowHigh(short *image, int nv, int *low, int *high, float percent)
 {
    short min = 0;
    short max = 0;
@@ -15,66 +16,21 @@ void setLowHigh(short *image, int nv, int *low, int *high)
    int nmax;
    int n;
 
-   minmax(image, nv, min, max);
-
-   hsize = max - min + 1;
-
-   histogram = (int *)calloc(hsize, sizeof(int));
-
-   for(i = 0; i < nv; i++)
-   {
-      b = image[i] - min;
-
-      if(b >= 0 && b < hsize)
-         histogram[b]++;
-   }
-
-   nmax = (int)(0.0005 * nv);
-
-   n = 0;
-   for(i = 0; i < hsize; i++)
-   {
-      n += histogram[i];
-
-      if(n > nmax)
-         break;
-   }
-
-   *low = i + min;
-
-   n = 0;
-   for(i = 0; i < hsize; i++)
-   {
-      n += histogram[hsize - 1 - i];
-
-      if(n > nmax)
-         break;
-   }
-
-   *high = hsize - 1 - i + min;
-
-   free(histogram);
-}
-
-
-void setLowHigh(short *image, int nv, int *low, int *high, float4 percent)
-{
-   short min = 0;
-   short max = 0;
-
-   int *histogram;
-   int hsize;        /* histogram size */
-   int b;
-   int i;
-
-   int nmax;
-   int n;
+   if(image == NULL || nv <= 0)
+      return;
 
    minmax(image, nv, min, max);
 
    hsize = max - min + 1;
 
    histogram = (int *)calloc(hsize, sizeof(int));
+
+   if(histogram == NULL)
+   {
+      *low = min;
+      *high = max;
+      return;
+   }
 
    for(i = 0; i < nv; i++)
    {
@@ -111,13 +67,16 @@ void setLowHigh(short *image, int nv, int *low, int *high, float4 percent)
    free(histogram);
 }
 
-void setMX(short *image, short *msk, int nv, int &high, float4 alpha)
+void setMX(short *image, short *msk, int nv, int &high, float alpha)
 {
    short min = 0;
    short max = 0;
 
    int *histogram;
-   float4 nmax;
+   float nmax;
+
+   if(image == NULL || msk == NULL || nv <= 0)
+      return;
 
    /*
       Set everything outside the mask equal zero
@@ -147,6 +106,11 @@ void setMX(short *image, short *msk, int nv, int &high, float4 alpha)
    */
    histogram = (int *)calloc(max + 1, sizeof(int));
 
+   if(histogram == NULL)
+   {
+      high = max;
+      return;
+   }
 
    /*
       Fill the histogram.

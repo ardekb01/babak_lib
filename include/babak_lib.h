@@ -14,6 +14,7 @@
 #include "loadTransformation.h"
 #include "getoption.h"
 #include "gaussian_kernel.h"
+#include "setLowHigh.h"
 
 #ifndef _PILTRANSFORM
 extern double searchradius[3]; // in units of mm
@@ -287,13 +288,6 @@ void rodrigues_formula(float4 *R, float4 *w, float4 theta);
 void rodrigues_formula4x4(float4 *R, float4 *w, float4 theta);
 void se3_to_SE3(float4 *M, float4 *w, float4 *v, float4 theta);
 void SE3_to_se3(float4 *M, float4 *w, float4 *v, float4 &theta);
-
-////////////////////////////////////////////////////////////////////////////////
-//defined in setLowHigh.cxx
-void setLowHigh(int2 *image, int4 nv, int4 *low, int4 *high);	
-void setLowHigh(int2 *image, int4 nv, int4 *low, int4 *high, float4 percent);
-void setMX(int2 *image, int2 *msk, int4 nv, int4 &high, float4 percent);
-////////////////////////////////////////////////////////////////////////////////
 
 #ifndef _singular_value_decomposition
 extern int4 Singular_Value_Decomposition(float8* A, int4 nrows, int4 ncols, float8* U, 

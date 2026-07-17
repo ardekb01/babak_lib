@@ -955,7 +955,7 @@ void output_bounding_box_ppm(short *trg, const char *prefix)
       memory_allocation_error("B");
    }
 
-   setLowHigh(trg, NP, &min, &max);
+   setLowHigh(trg, NP, &min, &max, .05f);
 
    if(max==0) max=1; // to avoid division by zero
 

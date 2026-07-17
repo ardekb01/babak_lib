@@ -161,7 +161,7 @@ short *obj, int Onx, int Ony, int Onz, float Odx, float Ody, float Odz)
    IP.SS=(float *)calloc(IP.NCC,sizeof(float));
 
 	IP.data1=(unsigned char *)malloc(IP.nv1);
-	setLowHigh(obj, Onv, &OL, &OH);
+	setLowHigh(obj, Onv, &OL, &OH, .05f);
 	scale_short_minmax( obj, &(IP.data1), IP.nv1, OL, OH);
 	IP.max1=255;
 
@@ -220,7 +220,7 @@ int findThresholdLevel(short *image_in, int nv)
 	printf("\nAutomatic Thresholding ...\n");
 
 	// from the image header, find the lower and upper limits of the image grey levels
-	setLowHigh(image_in, nv, &low, &high);
+	setLowHigh(image_in, nv, &low, &high, .05f);
 
 	findHistogram(image_in,nv);
 
@@ -1762,7 +1762,7 @@ short *obj, int Onx, int Ony, int Onz, float Odx, float Ody, float Odz)
 	IP.SS=(float *)calloc(IP.NCC,sizeof(float));
 
 	IP.data1=(unsigned char *)malloc(IP.nv1);
-	setLowHigh(obj, Onv, &OL, &OH);
+	setLowHigh(obj, Onv, &OL, &OH, .05f);
 	scale_short_minmax( obj, &(IP.data1), IP.nv1, OL, OH);
 	IP.max1=255;
 
