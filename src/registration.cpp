@@ -30,8 +30,6 @@ static float XICOM[6];
 static int ncom;
 static float global_min;
 static float Pmin[6];
-//static float v1,v2,v3,v4;
-//static float w1,w2;
 static float (*obj_fnc)(short *KMI, float *P, struct im_params *IP);
 static int hist[NBIN];
 static int low,high;        /* range of pixel considered in histogram computation */
