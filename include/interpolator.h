@@ -34,7 +34,6 @@ template<class TYPE> float linearInterpolator(float x, float y, TYPE *array, int
    return(v1 * uu + v2 * u);
 }
 
-
 template<class TYPE> float linearInterpolator(float x, float y, float z,
                                               TYPE *array, int nx, int ny,
                                               int nz, int np)
@@ -107,7 +106,6 @@ template<class TYPE> float linearInterpolator(float x, float y, float z,
 
    return(0.0);
 }
-
 
 template<class TYPE> float nearestNeighbor(float x, float y, float z,
                                            TYPE *array, int nx, int ny,

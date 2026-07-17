@@ -508,7 +508,6 @@ extern float (*interpolator)(float4 x, float4 y, float4 z, int2 *array, int4 nx,
 extern float4 P[12];
 extern struct im_params IP;
 
-extern uchar linearInterpolatorUC(float4 x, float4 y, float4 z, uchar *array, int4 nx, int4 ny, int4 nz, int4 np);
 extern void scale_short_minmax(int2 *imagein, uchar **imageout, int4 np, int4 min,int4 max);
 
 extern void testCostFunc1(int2 *trg, int4 Tnx, int4 Tny, int4 Tnz, float4 Tdx, float4 Tdy, float4 Tdz,

@@ -6,6 +6,7 @@
 #include <string.h>
 #include <babak_lib.h>
 #include <ctype.h>
+#include "interpolator.h"
 
 #define NBIN 256
 #define MCC     2048 /* maximum number of allowed 2D connected components */
@@ -29,8 +30,8 @@ static float XICOM[6];
 static int ncom;
 static float global_min;
 static float Pmin[6];
-static float v1,v2,v3,v4;
-static float w1,w2;
+//static float v1,v2,v3,v4;
+//static float w1,w2;
 static float (*obj_fnc)(short *KMI, float *P, struct im_params *IP);
 static int hist[NBIN];
 static int low,high;        /* range of pixel considered in histogram computation */
@@ -43,7 +44,6 @@ static float minimize1D(short *KMI, float *X, int ndim, struct im_params *IP);
 static float Gradient_Descent(short *KMI, int	ndim, float ftol, struct im_params *IP);
 float *transformation(float x, float y, float z, float ax, float ay, 
 float az, float sx, float sy, float sz, int rX, int rY, int rZ, char *code);
-unsigned char linearInterpolatorUC(float x, float y, float z, unsigned char *array, int nx, int ny, int nz, int np);
 static float costFunction1(short *KMI, float *P, struct im_params *IP);
 static float newCostFunction(short *KMI, float *P, struct im_params *IP);
 //static float costFunction2(short *KMI, float *P, struct im_params *IP);
@@ -833,7 +833,7 @@ static float costFunction1(short *KMI, float *P, struct im_params *IP)
 	    	      	y=T[4]*xx+Ay;
 	    	      	z=T[8]*xx+Az;
 
-		        	VAL1=linearInterpolatorUC(x,y,z,IP->data1,IP->nx1,IP->ny1,IP->nz1,IP->np1);
+		        	VAL1=(unsigned char)linearInterpolator(x,y,z,IP->data1,IP->nx1,IP->ny1,IP->nz1,IP->np1);
 
 		        	if(VAL1>0) 
 					{
@@ -1148,58 +1148,6 @@ static float costFunction2(short *KMI, float *P, struct im_params *IP)
 	}
 }
 */
-
-unsigned char linearInterpolatorUC(float x, float y, float z, unsigned char *array, int nx, int ny, int nz, int np)
-{
-	int     i,j,k,n;
-	float   u,uu;
-	
-	i=(int)(x);
-	j=(int)(y);
-	k=(int)(z);
-
-	if(i<0 || i>(nx-2) || j<0 || j>(ny-2) )
-	{
-		return(0);
-	}
-
-	if( k>=0 && k<(nz-1) )
-	{
-		u = x - i; if(u<0.0) u=0.0;
-		uu = 1.0-u;
-
-		n=k*np + j*nx +i;
-		v1 = (float)(array[n])*uu + (float)(array[n+1])*u;
-		v2 = (float)(array[n+nx])*uu + (float)(array[n+nx+1])*u;
-		v3 = (float)(array[n+np])*uu + (float)(array[n+np+1])*u;
-		v4 = (float)(array[n+np+nx])*uu + (float)(array[n+np+nx+1])*u;
-
-		u = y - j; if(u<0.0) u=0.0;
-		uu = 1.0-u;
-		w1 = v1*uu + v2*u;
-		w2 = v3*uu + v4*u;
-
-		u = z - k; if(u<0.0) u=0.0;
-		return( (unsigned char)( w1*(1.0-u) + w2*u  + 0.5) );
-	}
-
-	if( k==(nz-1) )
-	{
-		u = x - i; if(u<0.0) u=0.0;
-		uu = 1.0-u;
-
-		n=k*np + j*nx +i;
-		v1 = (float)(array[n])*uu + (float)(array[n+1])*u;
-
-		n=k*np + (j+1)*nx +i;
-		v2 = (float)(array[n])*uu + (float)(array[n+1])*u;
-
-		u = y - j; if(u<0.0) u=0.0;
-		return( (unsigned char)( v1*(1.0-u) + v2*u  + 0.5) );
-	}
-
-	return(0);
-}
 
 /* nine parameter version */
 /* x,y,z translations in mm */ 
