@@ -30,8 +30,8 @@ void makePPM(SHORTIM im, int *lm, const char *ppmfile)
 
    imgTemp=(unsigned char *)calloc(nv,sizeof(unsigned char));
 
-   int low, high;
-   setLowHigh(im.v, nv, &low, &high, .05f);
+   int low=0, high=0;
+   setLowHigh(im.v, nv, low, high, .05f);
 
    for(int i=0;i<nv;i++)
    {

@@ -16,7 +16,7 @@ char *find_foreground_mask(short *im, int nv, int nb, int nclass, int niter, sho
 	double *fit;
 	short *label;
 	//FILE *fp;
-	int low,high,v;
+	int low=0,high=0,v;
 	int bw;
 	int T;
 	int nbv;
@@ -51,7 +51,7 @@ char *find_foreground_mask(short *im, int nv, int nb, int nclass, int niter, sho
 
 		for(int i=0; i<nv; i++) if(im[i]>0) im_mskd[k++]=im[i];
 
-		setLowHigh(im_mskd, nbv, &low, &high, 0.01);
+		setLowHigh(im_mskd, nbv, low, high, 0.01f);
 		hist=findHistogram(im_mskd, nbv, nb, low, high, &bw);
 
 		free(im_mskd);

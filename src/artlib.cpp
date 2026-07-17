@@ -1312,13 +1312,13 @@ char *expandMask(short *mask_HR, DIM HR, float *RPmean, double RPsr)
 short *thresholdImageOtsu(short *im, int nv, int *nbv)
 {
 	short *msk;
-	int low, high, bw, k, thresh;
+	int low=0, high=0, bw, k, thresh;
 	double *h=NULL;
 
 	msk = (short *)calloc(nv, sizeof(short));
 	if(msk==NULL) return(NULL);
 
-	setLowHigh(im, nv, &low, &high, .05f);
+	setLowHigh(im, nv, low, high, .05f);
 
 	h=findHistogram(im, nv, 256, low, high, &bw);
 	if(h==NULL) { free(msk); return(NULL); }
@@ -2228,7 +2228,7 @@ void findInitialNormalVector(short *image, DIM dim, float *A, float *B,float *C)
 // (A,B,C)=(a,b,c)/d  (Ax+By+Cz=1)  (ax+by+cz=d)
 float msp(short *im_in, int nx, int ny, int nz, float dx, float dy, float dz, float *A, float *B, float *C) 
 {
-   int low,high;
+   int low=0,high=0;
    int nv;
    DIM dim[3];
    short *image[3]; 
@@ -2244,7 +2244,7 @@ float msp(short *im_in, int nx, int ny, int nz, float dx, float dy, float dz, fl
    dim[0].dy=dy;
    dim[0].dz=dz;
 
-   setLowHigh(im_in,nv,&low,&high,.05f);
+   setLowHigh(im_in,nv,low,high,.05f);
 
    image[1]=image[2]=NULL;
 

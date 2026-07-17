@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 
-void setLowHigh(short *image, int nv, int *low, int *high, float percent)
+void setLowHigh(short *image, int nv, int &low, int &high, float percent)
 {
    short min = 0;
    short max = 0;
@@ -17,7 +17,11 @@ void setLowHigh(short *image, int nv, int *low, int *high, float percent)
    int n;
 
    if(image == NULL || nv <= 0)
+   {
+      low = 0;
+      high = 0;
       return;
+   }
 
    minmax(image, nv, min, max);
 
@@ -27,8 +31,8 @@ void setLowHigh(short *image, int nv, int *low, int *high, float percent)
 
    if(histogram == NULL)
    {
-      *low = min;
-      *high = max;
+      low = min;
+      high = max;
       return;
    }
 
@@ -51,7 +55,7 @@ void setLowHigh(short *image, int nv, int *low, int *high, float percent)
          break;
    }
 
-   *low = i + min;
+   low = i + min;
 
    n = 0;
    for(i = 0; i < hsize; i++)
@@ -62,7 +66,7 @@ void setLowHigh(short *image, int nv, int *low, int *high, float percent)
          break;
    }
 
-   *high = hsize - 1 - i + min;
+   high = hsize - 1 - i + min;
 
    free(histogram);
 }

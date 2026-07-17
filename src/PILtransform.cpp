@@ -58,8 +58,8 @@ void mspPPM(SHORTIM im, int *ii, int *jj, int nl, const char *ppmfile)
 
    imgTemp=(unsigned char *)calloc(im.nv,sizeof(unsigned char));
 
-   int low, high;
-   setLowHigh(im.v+kk*im.np, im.nx*im.ny, &low, &high, 1.0);
+   int low=0, high=0;
+   setLowHigh(im.v+kk*im.np, im.nx*im.ny, low, high, 1.0f);
 
    for(int i=0;i<im.nv;i++)
    {
