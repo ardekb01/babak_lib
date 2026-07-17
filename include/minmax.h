@@ -29,7 +29,7 @@ template<class TYPE> void arraymax(TYPE *array, int n, TYPE &max)
 //Input: 'array' of size 'n'
 //Ouputs: The minimum and maximum values of 'array' are returned 
 //in 'min' and 'max' variables.
-template<class TYPE> void minmax(TYPE *array, int n, TYPE &min, TYPE &max)
+template<class TYPE> void minmax(const TYPE *array, int n, TYPE &min, TYPE &max)
 {
    if(array==NULL) return;
 
