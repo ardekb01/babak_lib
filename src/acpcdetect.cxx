@@ -439,7 +439,11 @@ int main(int argc, char **argv)
   if( niftiFilename(ipimagename, ipimagepath)==0 ) { exit(1); }
 
   // determine input image directory
-  getDirectoryName(ipimagepath, ipimagedir, sizeof(ipimagedir));
+  if( getDirectoryName(ipimagepath, ipimagedir, sizeof(ipimagedir)) == 0)
+  {
+    fprintf(stderr,"getDirectoryName() error, aborting ...\n");
+    exit(0);
+  }
 
   // if input orientation is specified using -input-orient, make sure it's valid
   // -input-orient overrides the orientation inferred from the image header

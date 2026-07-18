@@ -385,7 +385,11 @@ float *AC, float *PC, float *RP, DIM HR, DIM Orig, short *volOrig, float *Tmsp)
    
    char dirname[DEFAULT_STRING_LENGTH]; // name of the directory only
    char fullpath[2048]; // directory + filename
-   getDirectoryName(imagefilename, dirname, sizeof(dirname));
+   if( getDirectoryName(imagefilename, dirname, sizeof(dirname)) == 0)
+   { 
+      fprintf(stderr,"getDirectoryName() error, aborting ...\n");
+      exit(0);
+   }
    niftiFilename(filename,imagefilename);
    snprintf(fullpath,sizeof(fullpath),"%s/%s_ACPC_sagittal.ppm",dirname,filename);
 
@@ -495,7 +499,11 @@ void saveACPClocation(const char *imagefilename, float *Tmsp, DIM Orig, float *A
 
    char dirname[DEFAULT_STRING_LENGTH]; // name of the directory only
    char fullpath[2048]; // directory + filename
-   getDirectoryName(imagefilename, dirname, sizeof(dirname));
+   if( getDirectoryName(imagefilename, dirname, sizeof(dirname)) == 0)
+   { 
+      fprintf(stderr,"getDirectoryName() error, aborting ...\n");
+      exit(0);
+   }
    niftiFilename(filename,imagefilename);
    snprintf(fullpath,sizeof(fullpath),"%s/%s_ACPC.txt",dirname, filename);
 
@@ -665,7 +673,11 @@ void updateTmsp(const char *imagefilename, float *Tmsp, float *RP, float *AC, fl
 
       char dirname[DEFAULT_STRING_LENGTH]; // name of the directory only
       char fullpath[3*DEFAULT_STRING_LENGTH]; // directory + filename
-      getDirectoryName(imagefilename, dirname, sizeof(dirname));
+      if( getDirectoryName(imagefilename, dirname, sizeof(dirname)) == 0)
+      {
+         fprintf(stderr,"getDirectoryName() error, aborting ...\n");
+         exit(0);
+      }
       niftiFilename(filename,imagefilename);
       snprintf(fullpath,sizeof(fullpath),"%s/%s_ACPC.txt",dirname, filename);
 

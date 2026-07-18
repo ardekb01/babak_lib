@@ -368,7 +368,11 @@ void atra(const char *imagelistfile, DIM output_dim, const char *outputOrientati
       {
          strcpy(imagefile[nim], temporaryFilename);
          if( niftiFilename(imagefileprefix[nim], imagefile[nim])==0 ) { exit(0); }
-         getDirectoryName(imagefile[nim], imagedir[nim], sizeof(imagedir[nim]));
+         if( getDirectoryName(imagefile[nim], imagedir[nim], sizeof(imagedir[nim])) == 0)
+         {
+            fprintf(stderr,"getDirectoryName() error, aborting ...\n");
+            exit(0);
+         }
          nim++;
       }
       else

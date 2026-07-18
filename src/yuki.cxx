@@ -2774,7 +2774,11 @@ int main(int argc, char **argv)
   }
 
   // determine input image directory
-  getDirectoryName(ipimagepath, ipimagedir, sizeof(ipimagedir));
+  if( getDirectoryName(ipimagepath, ipimagedir, sizeof(ipimagedir)) == 0)
+  {
+    fprintf(stderr,"getDirectoryName() error, aborting ...\n");
+    exit(0);
+  }
 
   if(opt_v)
   {
