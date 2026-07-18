@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stddef.h>
 
 // Returns 1 if filename has a .nii extension, 0 otherwise.
 // Correctly recognizes:

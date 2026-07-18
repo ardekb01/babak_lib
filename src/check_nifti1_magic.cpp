@@ -1,5 +1,6 @@
 #include "nifti1.h"
 #include <cstdio>
+#include <stddef.h>
 
 // Checks the NIFTI-1 magic string "n+1".
 bool check_nifti1_magic(const char *imagefilename)
