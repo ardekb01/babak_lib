@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 #include <math.h>
 #include <strings.h>
@@ -367,10 +366,10 @@ void atra(const char *imagelistfile, DIM output_dim, const char *outputOrientati
       if( check_nifti1_magic(temporaryFilename) == true ) 
       {
          strcpy(imagefile[nim], temporaryFilename);
-         if( get_nifti_filename(imagefileprefix[nim], imagefile[nim])==0 ) { exit(0); }
-         if( getDirectoryName(imagefile[nim], imagedir[nim], sizeof(imagedir[nim])) == 0)
+         if( get_nifti_filename(imagefileprefix[nim], imagefile[nim])==false ) { exit(0); }
+         if( get_directory_name(imagefile[nim], imagedir[nim], sizeof(imagedir[nim])) == 0)
          {
-            fprintf(stderr,"getDirectoryName() error, aborting ...\n");
+            fprintf(stderr,"get_directory_name() error, aborting ...\n");
             exit(0);
          }
          nim++;

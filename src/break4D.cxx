@@ -784,7 +784,7 @@ int main(int argc, char **argv)
       printf("4D NIFTI image file: %s\n",imagefile);
    }
 
-   if( get_nifti_filename(prefix, imagefile) == 0 ) exit(0);
+   if( get_nifti_filename(prefix, imagefile) == false ) exit(0);
    if(opt_v)
    {
       printf("Image prefix: %s\n",prefix);

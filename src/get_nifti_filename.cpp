@@ -7,7 +7,7 @@
 // Example: If path="/home/babak/images/test.nii", then filename="test".
 // Note that the extension is not included in the output filename
 // Returns 0 on failture and 1 on success
-int get_nifti_filename(char *filename, const char *path)
+bool get_nifti_filename(char *filename, const char *path)
 {
    int i;
    int len;	// length of the path string
@@ -17,12 +17,12 @@ int get_nifti_filename(char *filename, const char *path)
    if( check_nifti_file_extension(path) == false )
    {
       printf("%s does not have `.nii' extension\n",path);
-      return(0);
+      return false;
    }
 
    if( check_nifti1_magic(path) == false )
    {
-      return(0);
+      return false;
    }
 
    len=(int)strlen(path);
@@ -30,7 +30,7 @@ int get_nifti_filename(char *filename, const char *path)
    if(len<=0)
    {
       printf("Error: unexpected string length for the NIFTI image path, aborting ...\n");
-      return(0);
+      return false;
    }
 
    // finds the position of the first '/' character from right if any
@@ -56,13 +56,13 @@ int get_nifti_filename(char *filename, const char *path)
    if(len<=0)
    {
       printf("Error: unexpected string length for the NIFTI image filename, aborting ...\n");
-      return(0);
+      return false;
    }
 
    if( len>=2 && filename[len-2]=='g' && filename[len-1]=='z' )
    {
       printf("Sorry but this program currently does not handle gzipped images, aborting ...\n");
-      return(0);
+      return false;
    }
 
    // finds the position of the first '.' character from right if any
@@ -84,8 +84,8 @@ int get_nifti_filename(char *filename, const char *path)
    if(len<=0)
    {
       printf("Error: unexpected string length for the NIFTI image prefix, aborting ...\n");
-      return(0);
+      return false;
    }
 
-   return(1);
+   return true;
 }

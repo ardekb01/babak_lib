@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 // Copyright (C) 2024 Babak A. Ardekani, PhD - All Rights Reserved.  //
 ///////////////////////////////////////////////////////////////////////
@@ -2774,9 +2774,9 @@ int main(int argc, char **argv)
   }
 
   // determine input image directory
-  if( getDirectoryName(ipimagepath, ipimagedir, sizeof(ipimagedir)) == 0)
+  if( get_directory_name(ipimagepath, ipimagedir, sizeof(ipimagedir)) == 0)
   {
-    fprintf(stderr,"getDirectoryName() error, aborting ...\n");
+    fprintf(stderr,"get_directory_name() error, aborting ...\n");
     exit(0);
   }
 
@@ -2792,7 +2792,7 @@ int main(int argc, char **argv)
   /////////////////////////////////////////////////////////////////////////////////////////////
   if( output_prefix[0]=='\0')
   {
-    if( get_nifti_filename(output_prefix, ipimagepath)==0 ) { exit(1); }
+    if(get_nifti_filename(output_prefix, ipimagepath)==false ) { exit(1); }
   }
 
   if(opt_v)

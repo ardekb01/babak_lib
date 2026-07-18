@@ -15,7 +15,7 @@
 
    The function does not modify pathname.
 */
-int getDirectoryName(
+int get_directory_name(
    const char *pathname,
    char *dirname,
    size_t dirnameSize

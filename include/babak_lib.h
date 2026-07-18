@@ -14,7 +14,7 @@
 #include "getoption.h"
 #include "gaussian_kernel.h"
 #include "setLowHigh.h"
-#include "getDirectoryName.h"
+#include "get_directory_name.h"
 #include "check_nifti_file_extension.h"
 #include "check_nifti1_magic.h"
 #include "get_nifti_filename.h"

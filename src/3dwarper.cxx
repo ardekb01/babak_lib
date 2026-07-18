@@ -707,8 +707,8 @@ int main(int argc, char **argv)
    ////////////////////////////////////////////////////////////////////////////////////////////
 
    // extract subject and target filenames without path/suffix
-   if( get_nifti_filename(subprefix, subjectImageFile)==0 ) { exit(0); }
-   if( get_nifti_filename(trgprefix, targetImageFile)==0 ) { exit(0); }
+   if( get_nifti_filename(subprefix, subjectImageFile) == false) { exit(0); }
+   if( get_nifti_filename(trgprefix, targetImageFile) == false) { exit(0); }
 
    ////////////////////////////////////////////////////////////////////////////////////////////
    // read subject and target images
