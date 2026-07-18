@@ -390,7 +390,7 @@ float *AC, float *PC, float *RP, DIM HR, DIM Orig, short *volOrig, float *Tmsp)
       fprintf(stderr,"get_directory_name() error, aborting ...\n");
       exit(0);
    }
-   get_nifti_filename(filename,imagefilename);
+   get_nifti_filename(filename, sizeof(filename), imagefilename);
    snprintf(fullpath,sizeof(fullpath),"%s/%s_ACPC_sagittal.ppm",dirname,filename);
 
    if(opt_ppm || opt_png)
@@ -451,7 +451,7 @@ float *AC, float *PC, float *RP, DIM HR, DIM Orig, short *volOrig, float *Tmsp)
    brandImage(Rchannel, Gchannel, Bchannel, HR.nx, HR.ny, (int)(ac[0]+0.5), (int)(ac[1]+0.5), 4, 4, 0, 255, 0);
 
 
-   get_nifti_filename(filename,imagefilename);
+   get_nifti_filename(filename, sizeof(filename), imagefilename);
    snprintf(fullpath,sizeof(fullpath),"%s/%s_ACPC_axial.ppm",dirname,filename);
 
    if(opt_ppm || opt_png)
@@ -504,7 +504,7 @@ void saveACPClocation(const char *imagefilename, float *Tmsp, DIM Orig, float *A
       fprintf(stderr,"get_directory_name() error, aborting ...\n");
       exit(0);
    }
-   get_nifti_filename(filename,imagefilename);
+   get_nifti_filename(filename, sizeof(filename), imagefilename);
    snprintf(fullpath,sizeof(fullpath),"%s/%s_ACPC.txt",dirname, filename);
 
    if(opt_txt)
@@ -678,7 +678,7 @@ void updateTmsp(const char *imagefilename, float *Tmsp, float *RP, float *AC, fl
          fprintf(stderr,"get_directory_name() error, aborting ...\n");
          exit(0);
       }
-      get_nifti_filename(filename,imagefilename);
+      get_nifti_filename(filename, sizeof(filename), imagefilename);
       snprintf(fullpath,sizeof(fullpath),"%s/%s_ACPC.txt",dirname, filename);
 
       if(opt_txt)

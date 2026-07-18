@@ -411,7 +411,7 @@ void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float
    char imagedir[DEFAULT_STRING_LENGTH]; 
    char modelfile[DEFAULT_STRING_LENGTH]="";
 
-   if( get_nifti_filename(subfile_prefix, subfile) == false ) exit(0);
+   if( get_nifti_filename(subfile_prefix, sizeof(subfile_prefix), subfile) == false ) exit(0);
    if( get_directory_name(subfile, imagedir, sizeof(imagedir)) == false)
    { 
       fprintf(stderr,"get_directory_name() error, aborting ...\n");

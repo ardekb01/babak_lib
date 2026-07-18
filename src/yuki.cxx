@@ -2792,7 +2792,7 @@ int main(int argc, char **argv)
   /////////////////////////////////////////////////////////////////////////////////////////////
   if( output_prefix[0]=='\0')
   {
-    if(get_nifti_filename(output_prefix, ipimagepath)==false ) { exit(1); }
+    if(get_nifti_filename(output_prefix, sizeof(output_prefix), ipimagepath)==false ) { exit(1); }
   }
 
   if(opt_v)
