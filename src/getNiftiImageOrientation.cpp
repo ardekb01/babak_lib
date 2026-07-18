@@ -17,10 +17,10 @@ void getNiftiImageOrientation(const char *filename, char *orientation)
 
    orientation[0]='\0';
 
-   // ensure that the specified image has either a .hdr or a .nii extension
+   // ensure that the specified image has .nii extension
    if( !check_nifti_file_extension(filename) )
    {
-      errorMessage("The image filename must have a `.hdr' or `.nii' extension.");
+      errorMessage("The image filename must have `.nii' extension.");
    }
 
    fp = fopen(filename,"r");

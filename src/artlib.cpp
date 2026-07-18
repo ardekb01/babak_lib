@@ -1368,10 +1368,10 @@ float *AC, float *PC, float *RP, float *Tmsp, int opt_v, int opt_T2)
       errorMessage("No input image filename in detect_AC_PC_MSP().");
    }
 
-   // ensure that the specified image has either a .hdr or a .nii extension 
+   // ensure that the specified image has a .nii extension 
    if( !check_nifti_file_extension((const char *)imagefilename) )
    {
-      errorMessage("The image filename in detect_AC_PC_MSP() must have a `.hdr' or `.nii' extension.");
+      errorMessage("The image filename in detect_AC_PC_MSP() must have `.nii' extension.");
    }
 
    if(orientation[0]=='\0')

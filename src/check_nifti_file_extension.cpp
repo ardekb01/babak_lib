@@ -1,14 +1,12 @@
 #include <string.h>
 
-// Returns 1 if filename has a .hdr or .nii extension, 0 otherwise.
+// Returns 1 if filename has a .nii extension, 0 otherwise.
 // Correctly recognizes:
-//    image.hdr
 //    image.nii
 // Correctly rejects:
-//    image.hdr.gz
-//    image.nii.gz
-//    image.HDR
 //    image.NII
+//    image.nii.gz
+//    image.hdr
 int check_nifti_file_extension(const char *filename)
 {
    size_t filenameLength;
@@ -24,8 +22,7 @@ int check_nifti_file_extension(const char *filename)
 
    extension = filename + filenameLength - 4;
 
-   if(strcmp(extension, ".hdr") == 0 ||
-      strcmp(extension, ".nii") == 0)
+   if(strcmp(extension, ".nii") == 0)
    {
       return 1;
    }

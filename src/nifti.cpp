@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 // Copyright (C) 2024 Babak A. Ardekani, PhD - All Rights Reserved.  //
 ///////////////////////////////////////////////////////////////////////
@@ -645,10 +645,10 @@ void readOrientationFromFile(const char *filename, char *orientation)
    nifti_1_header hdr;
    int swapflg=0;
 
-   // ensure that the specified image has either a .hdr or a .nii extension
+   // ensure that the specified image has .nii extension
    if( !check_nifti_file_extension(filename) )
    {
-      errorMessage("Error: The image filename must have a `.hdr' or `.nii' extension.");
+      errorMessage("Error: The image filename must have `.nii' extension.");
    }
 
    orientation[0]='\0';
@@ -738,10 +738,10 @@ void readOrientationVectorsFromFile(const char *filename, float *xvec, float *yv
    nifti_1_header hdr;
    int swapflg=0;
 
-   // ensure that the specified image has either a .hdr or a .nii extension
+   // ensure that the specified image has .nii extension
    if( !check_nifti_file_extension(filename) )
    {
-      errorMessage("Error: The image filename must have a `.hdr' or `.nii' extension.");
+      errorMessage("Error: The image filename must have `.nii' extension.");
    }
 
    fp = fopen(filename,"r");
@@ -849,9 +849,10 @@ int niftiFilename(char *filename, const char *path)
    int len;	// length of the path string
    int pos;	// position of the filename
 
+   // ensure that the specified image has .nii extension
    if( !check_nifti_file_extension(path) )
    {
-      printf("%s does not have a `.hdr' or `.nii' extension\n",path);
+      printf("%s does not have `.nii' extension\n",path);
       return(0);
    }
 
@@ -934,10 +935,10 @@ short *readNiftiImage(const char *filename, DIM *dim, int flg)
    char *imgname;
    short *im=NULL;
 
-   // ensure that the specified image has either a .hdr or a .nii extension
+   // ensure that the specified image has either has .nii extension
    if( !check_nifti_file_extension(filename) )
    {
-      errorMessage("Error: The image filename must have a `.hdr' or `.nii' extension.");
+      errorMessage("Error: The image filename must have `.nii' extension.");
    }
 
    fp = fopen(filename,"r");
@@ -1100,10 +1101,10 @@ char *read_nifti_image(const char *filename, nifti_1_header *hdr)
    char *imgname;
    char *im=NULL;
 
-   // ensure that the specified image has either a .hdr or a .nii extension
+   // ensure that the specified image has .nii extension
    if( !check_nifti_file_extension(filename) )
    {
-      errorMessage("Error: The image filename must have a `.hdr' or `.nii' extension.");
+      errorMessage("Error: The image filename must have `.nii' extension.");
    }
 
    fp = fopen(filename,"r");
@@ -1231,10 +1232,10 @@ char *read_nifti_image(const char *filename, nifti_1_header *hdr)
    long voxeloffset;
 
 /*
-   // ensure that the specified image has either a .hdr or a .nii extension
+   // ensure that the specified image has either .nii extension
    if( !check_nifti_file_extension(filename) )
    {
-      printf("\nread_nifti_image(): %s does not have a `.hdr' or `.nii' extension.\n\n",filename);
+      printf("\nread_nifti_image(): %s does not have `.nii' extension.\n\n",filename);
       return(NULL);
    }
 */
