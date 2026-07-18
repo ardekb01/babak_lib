@@ -742,7 +742,7 @@ exit(0);
   if(iporient[2]=='L' || iporient[2]=='R') { nLR=ipdim.nz; dLR=ipdim.dz; }
 
   // determine input image filename without the .nii suffix
-  if( niftiFilename(ipimagename, ipimagepath)==0 ) { exit(1); }
+  if( get_nifti_filename(ipimagename, ipimagepath)==0 ) { exit(1); }
 
   // determine input image directory
   getDirectoryName(ipimagepath, ipimagedir);

@@ -853,8 +853,8 @@ void read_default_atlas_names(const char *brainwashatlasdir, int &natlas)
 
       snprintf(filename,sizeof(filename),"%s/%s",brainwashatlasdir,dir->d_name);
 
-      // then looks like a real NIFTI image since niftiFilename does some checks
-      if( niftiFilename(fileprefix, filename)==1 ) 
+      // then looks like a real NIFTI image since get_nifti_filename does some checks
+      if( get_nifti_filename(fileprefix, filename)==1 ) 
       {
          snprintf(atlasfilename[natlas],sizeof(atlasfilename[natlas]),"%s",fileprefix);
          natlas++; // increment natlas to indicate that one more atlas has been read 
@@ -886,8 +886,8 @@ void read_atlas_list(const char *atlaslistfile, int &natlas)
       if(strlen(filename) < 5 )
          continue;
 
-      // then looks like a real NIFTI image since niftiFilename does some checks
-      if( niftiFilename(fileprefix, filename)==1 ) 
+      // then looks like a real NIFTI image since get_nifti_filename does some checks
+      if( get_nifti_filename(fileprefix, filename)==1 ) 
       {
          snprintf(atlasfilename[natlas],sizeof(atlasfilename[natlas]),"%s",filename);
          natlas++; // increment natlas to indicate that one more atlas has been read 
@@ -1173,7 +1173,7 @@ int main(int argc, char **argv)
    } 
 
    // extract the subject filename without path/suffix
-   if( niftiFilename(subprefix, subImageFile)==0 ) { exit(0); }
+   if( get_nifti_filename(subprefix, subImageFile)==0 ) { exit(0); }
 
    // read the subject image
    sub = (int2 *)read_nifti_image(subImageFile, &subHdr);
@@ -1282,8 +1282,8 @@ int main(int argc, char **argv)
       snprintf(atlasmskpath,sizeof(atlasmskpath),"%s/%s_msk.nii",brainwashatlasdir,atlasfilename[a]);
 
       // extract the atlas filename without path/suffix
-      if( niftiFilename(atlprefix, atlasmskpath )==0 ) { exit(0); } // just for checking
-      if( niftiFilename(atlprefix, atlaspath )==0 ) { exit(0); }
+      if( get_nifti_filename(atlprefix, atlasmskpath )==0 ) { exit(0); } // just for checking
+      if( get_nifti_filename(atlprefix, atlaspath )==0 ) { exit(0); }
 
       // read the atlas image
       atl = (int2 *)read_nifti_image(atlaspath, &atlHdr);
@@ -1376,8 +1376,8 @@ int main(int argc, char **argv)
       snprintf(atlasmskpath,sizeof(atlasmskpath),"%s/%s_msk.nii",brainwashatlasdir,atlasfilename[a]);
 
       // extract the atlas filename without path/suffix
-      if( niftiFilename(atlprefix, atlasmskpath )==0 ) { exit(0); } // just for checking
-      if( niftiFilename(atlprefix, atlaspath )==0 ) { exit(0); }
+      if( get_nifti_filename(atlprefix, atlasmskpath )==0 ) { exit(0); } // just for checking
+      if( get_nifti_filename(atlprefix, atlaspath )==0 ) { exit(0); }
 
       // read the atlas image
       atl = (int2 *)read_nifti_image(atlaspath, &atlHdr);
@@ -1494,8 +1494,8 @@ exit(0);
       snprintf(atlasmskpath,sizeof(atlasmskpath),"%s/%s_msk.nii",brainwashatlasdir,atlasfilename[a]);
 
       // extract the atlas filename without path/suffix
-      if( niftiFilename(atlprefix, atlasmskpath )==0 ) { exit(0); } // just for checking
-      if( niftiFilename(atlprefix, atlaspath )==0 ) { exit(0); }
+      if( get_nifti_filename(atlprefix, atlasmskpath )==0 ) { exit(0); } // just for checking
+      if( get_nifti_filename(atlprefix, atlaspath )==0 ) { exit(0); }
 
       // read the atlas image
       atl = (int2 *)read_nifti_image(atlaspath, &atlHdr);

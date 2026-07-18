@@ -435,7 +435,7 @@ int main(int argc, char **argv)
   if(opt_v) printf("Input image: %s\n",ipimagepath);
 
   // determine input image filename without the .nii suffix
-  if( niftiFilename(ipimagename, ipimagepath)==0 ) { exit(1); }
+  if( get_nifti_filename(ipimagename, ipimagepath)==0 ) { exit(1); }
 
   // determine input image directory
   if( getDirectoryName(ipimagepath, ipimagedir, sizeof(ipimagedir)) == 0)

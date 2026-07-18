@@ -7,7 +7,6 @@
 #ifndef _babak_lib_h
 #define _babak_lib_h
 
-#include <nifti1.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -18,6 +17,8 @@
 #include "getDirectoryName.h"
 #include "check_nifti_file_extension.h"
 #include "check_nifti1_magic.h"
+#include "get_nifti_filename.h"
+#include "nifti1.h"
 
 #ifndef _PILTRANSFORM
 extern double searchradius[3]; // in units of mm
@@ -811,15 +812,11 @@ void save_nifti_image(const char *filename, uchar *im, nifti_1_header *hdr);
 void save_nifti_image(const char *filename, int2 *im, nifti_1_header *hdr);
 void save_nifti_image(const char *filename, float4 *im, nifti_1_header *hdr);
 void save_nifti_image(const char *filename, char *im, nifti_1_header *hdr);
-
 // returns the orientations vectors xvec, yvec, and zvec in NIFTI's RAS system
 void readOrientationVectorsFromFile(const char *filename, float4 *xvec, float4 *yvec, float4 *zvec);
-
-int4  niftiFilename(char *filename, const char *path);
 void swapniftiheader(nifti_1_header *hdr);
 int2 *readNiftiImage(const char *filename, DIM *dim, int4 flg);
 ///////////////////////////////////////////////////////////////
-
 
 #ifndef _utils
 
