@@ -1,6 +1,20 @@
 #include <stddef.h>
 #include <string.h>
 
+/*
+   Extract the directory portion of a pathname.
+
+   Returns:
+      1 on success
+      0 on failure
+
+   Examples:
+      "/home/user/file.txt" -> "/home/user"
+      "file.txt"            -> "."
+      "/"                   -> "/"
+
+   The function does not modify pathname.
+*/
 int getDirectoryName(
    const char *pathname,
    char *dirname,
@@ -11,10 +25,27 @@ int getDirectoryName(
    size_t i;
    size_t directoryLength;
 
-   if(pathname == NULL || dirname == NULL || dirnameSize == 0)
+   // Validate input arguments.
+   if(pathname == nullptr || dirname == nullptr || dirnameSize == 0)
       return 0;
 
    n = strlen(pathname);
+
+   // Handle the case pathname = "".
+   if(n == 0)
+      return 0;
+
+   // Handle the case pathname = "/".
+   if(n == 1 && pathname[0] == '/')
+   {
+      if(dirnameSize < 2)
+         return 0;
+
+      dirname[0] = '/';
+      dirname[1] = '\0';
+
+      return 1;
+   }
 
    for(i = n; i > 0; i--)
    {
@@ -22,6 +53,8 @@ int getDirectoryName(
          break;
    }
 
+   // If no directory separator is present, for example, when
+   // pathname = "file.nii", use the current directory.
    if(i == 0)
    {
       if(dirnameSize < 2)
@@ -35,7 +68,7 @@ int getDirectoryName(
 
    directoryLength = i - 1;
 
-   if(directoryLength + 1 > dirnameSize)
+   if(directoryLength >= dirnameSize)
       return 0;
 
    memcpy(dirname, pathname, directoryLength);
