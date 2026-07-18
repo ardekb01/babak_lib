@@ -5,8 +5,8 @@
    Extract the directory portion of a pathname.
 
    Returns:
-      1 on success
-      0 on failure
+      true on success
+      false on failure
 
    Examples:
       "/home/user/file.txt" -> "/home/user"
@@ -15,7 +15,7 @@
 
    The function does not modify pathname.
 */
-int get_directory_name(
+bool get_directory_name(
    const char *pathname,
    char *dirname,
    size_t dirnameSize
@@ -27,24 +27,24 @@ int get_directory_name(
 
    // Validate input arguments.
    if(pathname == nullptr || dirname == nullptr || dirnameSize == 0)
-      return 0;
+      return false;
 
    n = strlen(pathname);
 
    // Handle the case pathname = "".
    if(n == 0)
-      return 0;
+      return false;
 
    // Handle the case pathname = "/".
    if(n == 1 && pathname[0] == '/')
    {
       if(dirnameSize < 2)
-         return 0;
+         return false;
 
       dirname[0] = '/';
       dirname[1] = '\0';
 
-      return 1;
+      return true;
    }
 
    for(i = n; i > 0; i--)
@@ -58,22 +58,22 @@ int get_directory_name(
    if(i == 0)
    {
       if(dirnameSize < 2)
-         return 0;
+         return false;
 
       dirname[0] = '.';
       dirname[1] = '\0';
 
-      return 1;
+      return true;
    }
 
    directoryLength = i - 1;
 
    if(directoryLength >= dirnameSize)
-      return 0;
+      return false;
 
    memcpy(dirname, pathname, directoryLength);
 
    dirname[directoryLength] = '\0';
 
-   return 1;
+   return true;
 }
