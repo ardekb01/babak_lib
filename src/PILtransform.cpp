@@ -412,7 +412,7 @@ void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float
    char modelfile[DEFAULT_STRING_LENGTH]="";
 
    if( niftiFilename(subfile_prefix, subfile)==0 ) exit(0);
-   getDirectoryName(subfile, imagedir);
+   getDirectoryName(subfile, imagedir, sizeof(imagedir));
 
    getARTHOME();
 

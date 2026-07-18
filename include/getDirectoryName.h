@@ -1,6 +1,6 @@
 #ifndef GETDIRECTORYNAME_H
 #define GETDIRECTORYNAME_H
 
-void getDirectoryName(const char *pathname, char *dirname);
+int getDirectoryName(const char *pathname, char *dirname, size_t dirnameSize);
 
 #endif

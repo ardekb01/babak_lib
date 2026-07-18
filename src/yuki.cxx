@@ -2774,7 +2774,7 @@ int main(int argc, char **argv)
   }
 
   // determine input image directory
-  getDirectoryName(ipimagepath, ipimagedir);
+  getDirectoryName(ipimagepath, ipimagedir, sizeof(ipimagedir));
 
   if(opt_v)
   {

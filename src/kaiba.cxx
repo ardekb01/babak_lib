@@ -1353,7 +1353,7 @@ void compute_hi(char *imfile, char *roifile, float4 &parenchymasize, int &voisiz
    char filename[DEFAULT_STRING_LENGTH]=""; //baseline image prefix
 
    if( niftiFilename(roifileprefix, roifile)==0 ) exit(1);
-   getDirectoryName(roifile, roifiledir);
+   getDirectoryName(roifile, roifiledir, sizeof(roifiledir));
 
    if(opt_v)
    {
@@ -1712,7 +1712,7 @@ int main(int argc, char **argv)
       strcpy(imagefile[0], bfile);
       if( niftiFilename(imagefileprefix[0], imagefile[0])==0 ) { exit(0); }
       scalefactor[0]=1.0;
-      getDirectoryName(imagefile[0], imagedir[0]);
+      getDirectoryName(imagefile[0], imagedir[0], sizeof(imagedir[0]));
 
       if(opt_v) printf("Input image: %s\n", imagefile[0]);
    }
@@ -1741,7 +1741,7 @@ int main(int argc, char **argv)
          }
 
          if( niftiFilename(imagefileprefix[i], imagefile[i])==0 ) { exit(0); }
-         getDirectoryName(imagefile[i], imagedir[i]);
+         getDirectoryName(imagefile[i], imagedir[i], sizeof(imagedir[i]));
       }
       fclose(fp);
 
