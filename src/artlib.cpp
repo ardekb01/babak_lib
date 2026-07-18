@@ -39,7 +39,6 @@ static float value[4];
 static float vertexSum[3];
 static float VertexNew[3];
 
-void getDirectoryName(const char *pathname, char *dirname);
 void orig_ijk_to_pil_xyz(float *Tmsp, DIM orig_dim, float *AC, float *PC);
 void ACPCtransform(float *Tacpc, float *Tmsp, float *AC, float *PC, char flg);
 void brandImage(unsigned char *R, unsigned char *G, unsigned char *B, int nx, int ny, int sx, int sy, int L1, int L2, unsigned char Rvalue, unsigned char Gvalue, unsigned char Bvalue);
@@ -223,30 +222,6 @@ void sub2trg_rigid_body_transformation(float *sub2trg, const char *subfile, cons
    multi(trg_ijk2xyz, 4, 4, temp_mat, 4, 4, sub2trg);
 }
 ///////////////////////////////////////////////////////////////////////////////////
-
-void getDirectoryName(const char *pathname, char *dirname)
-{
-	int n;
-	int i;
-
-	n = (int)strlen(pathname);
-
-	for(i=n-1;i>=0;i--)
-	if( pathname[i] == '/') break;
-
-	if(i==-1)
-	{
-		dirname[0]='.';
-		dirname[1]='\0';
-	}
-	else
-	{
-		strncpy(dirname, pathname, i);
-		dirname[i]='\0';
-	}
-
-	return;
-}
 
 // The AC and PC points are passed to this routine in ijk coordinates of the original image.
 // The routine returns their location in xyz coordinates of a PIL transformed image.

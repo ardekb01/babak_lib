@@ -15,6 +15,7 @@
 #include "getoption.h"
 #include "gaussian_kernel.h"
 #include "setLowHigh.h"
+#include "getDirectoryName.h"
 
 #ifndef _PILTRANSFORM
 extern double searchradius[3]; // in units of mm
