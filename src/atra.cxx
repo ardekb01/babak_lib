@@ -312,7 +312,7 @@ void atra(const char *imagelistfile, DIM output_dim, const char *outputOrientati
    nim=0;
    while(fscanf(fp,"%s",temporaryFilename) != EOF ) 
    {
-      if( check_nifti1_magic(temporaryFilename) ) nim++;
+      if( check_nifti1_magic(temporaryFilename) == true ) nim++;
    }
    fclose(fp);
 
@@ -364,7 +364,7 @@ void atra(const char *imagelistfile, DIM output_dim, const char *outputOrientati
    nim=0;
    while(fscanf(fp,"%s",temporaryFilename) != EOF ) 
    {
-      if( check_nifti1_magic(temporaryFilename) ) 
+      if( check_nifti1_magic(temporaryFilename) == true ) 
       {
          strcpy(imagefile[nim], temporaryFilename);
          if( niftiFilename(imagefileprefix[nim], imagefile[nim])==0 ) { exit(0); }

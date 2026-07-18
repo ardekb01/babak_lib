@@ -789,7 +789,7 @@ int niftiFilename(char *filename, const char *path)
       return(0);
    }
 
-   if( check_nifti1_magic(path) == 0 )
+   if( check_nifti1_magic(path) == false )
    {
       return(0);
    }
