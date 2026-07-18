@@ -385,7 +385,7 @@ float *AC, float *PC, float *RP, DIM HR, DIM Orig, short *volOrig, float *Tmsp)
    
    char dirname[DEFAULT_STRING_LENGTH]; // name of the directory only
    char fullpath[2048]; // directory + filename
-   if( get_directory_name(imagefilename, dirname, sizeof(dirname)) == 0)
+   if( get_directory_name(imagefilename, dirname, sizeof(dirname)) == false)
    { 
       fprintf(stderr,"get_directory_name() error, aborting ...\n");
       exit(0);
@@ -499,7 +499,7 @@ void saveACPClocation(const char *imagefilename, float *Tmsp, DIM Orig, float *A
 
    char dirname[DEFAULT_STRING_LENGTH]; // name of the directory only
    char fullpath[2048]; // directory + filename
-   if( get_directory_name(imagefilename, dirname, sizeof(dirname)) == 0)
+   if( get_directory_name(imagefilename, dirname, sizeof(dirname)) == false)
    { 
       fprintf(stderr,"get_directory_name() error, aborting ...\n");
       exit(0);
@@ -673,7 +673,7 @@ void updateTmsp(const char *imagefilename, float *Tmsp, float *RP, float *AC, fl
 
       char dirname[DEFAULT_STRING_LENGTH]; // name of the directory only
       char fullpath[3*DEFAULT_STRING_LENGTH]; // directory + filename
-      if( get_directory_name(imagefilename, dirname, sizeof(dirname)) == 0)
+      if( get_directory_name(imagefilename, dirname, sizeof(dirname)) == false)
       {
          fprintf(stderr,"get_directory_name() error, aborting ...\n");
          exit(0);

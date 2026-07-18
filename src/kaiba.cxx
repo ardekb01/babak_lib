@@ -1353,7 +1353,7 @@ void compute_hi(char *imfile, char *roifile, float4 &parenchymasize, int &voisiz
    char filename[DEFAULT_STRING_LENGTH]=""; //baseline image prefix
 
    if(get_nifti_filename(roifileprefix, roifile) == false) exit(1);
-   if( get_directory_name(roifile, roifiledir, sizeof(roifiledir)) == 0)
+   if( get_directory_name(roifile, roifiledir, sizeof(roifiledir)) == false)
    {
       fprintf(stderr,"get_directory_name() error, aborting ...\n");
       exit(0);
@@ -1716,7 +1716,7 @@ int main(int argc, char **argv)
       strcpy(imagefile[0], bfile);
       if(get_nifti_filename(imagefileprefix[0], imagefile[0]) == false) { exit(0); }
       scalefactor[0]=1.0;
-      if( get_directory_name(imagefile[0], imagedir[0], sizeof(imagedir[0])) == 0)
+      if( get_directory_name(imagefile[0], imagedir[0], sizeof(imagedir[0])) == false)
       {
          fprintf(stderr,"get_directory_name() error, aborting ...\n");
          exit(0);
@@ -1749,7 +1749,7 @@ int main(int argc, char **argv)
          }
 
          if( get_nifti_filename(imagefileprefix[i], imagefile[i]) == false) { exit(0); }
-         if( get_directory_name(imagefile[i], imagedir[i], sizeof(imagedir[i])) == 0)
+         if( get_directory_name(imagefile[i], imagedir[i], sizeof(imagedir[i])) == false)
          {
             fprintf(stderr,"get_directory_name() error, aborting ...\n");
             exit(0);

@@ -438,7 +438,7 @@ int main(int argc, char **argv)
   if( get_nifti_filename(ipimagename, ipimagepath) == false ) { exit(1); }
 
   // determine input image directory
-  if( get_directory_name(ipimagepath, ipimagedir, sizeof(ipimagedir)) == 0)
+  if( get_directory_name(ipimagepath, ipimagedir, sizeof(ipimagedir)) == false)
   {
     fprintf(stderr,"get_directory_name() error, aborting ...\n");
     exit(0);
