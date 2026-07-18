@@ -18,7 +18,7 @@ void getNiftiImageOrientation(const char *filename, char *orientation)
    orientation[0]='\0';
 
    // ensure that the specified image has .nii extension
-   if( !check_nifti_file_extension(filename) )
+   if( check_nifti_file_extension(filename) == false )
    {
       errorMessage("The image filename must have `.nii' extension.");
    }

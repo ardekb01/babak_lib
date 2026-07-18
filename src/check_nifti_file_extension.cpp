@@ -7,25 +7,25 @@
 //    image.NII
 //    image.nii.gz
 //    image.hdr
-int check_nifti_file_extension(const char *filename)
+bool check_nifti_file_extension(const char *filename)
 {
    size_t filenameLength;
    const char *extension;
 
    if(filename == nullptr)
-      return 0;
+      return false;
 
    filenameLength = strlen(filename);
 
    if(filenameLength < 4)
-      return 0;
+      return false;
 
    extension = filename + filenameLength - 4;
 
    if(strcmp(extension, ".nii") == 0)
    {
-      return 1;
+      return true;
    }
 
-   return 0;
+   return false;
 }
