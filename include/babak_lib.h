@@ -17,6 +17,7 @@
 #include "setLowHigh.h"
 #include "getDirectoryName.h"
 #include "check_nifti_file_extension.h"
+#include "check_nifti1_magic.h"
 
 #ifndef _PILTRANSFORM
 extern double searchradius[3]; // in units of mm
@@ -797,8 +798,6 @@ extern void mat_trans_mat(float8 *A, int4 Ar, int4 Ac, float8 *B, int4 Bc, float
 
 ///////////////////////////////////////////////////////////////
 // The following functions are defined in nifti.cxx
-int4 not_magical_nifti(const char *imagefilename);
-int4 not_magical_nifti(const char *imagefilename, int verbose);
 char *read_nifti_image(const char *filename, nifti_1_header *hdr);
 int4 same_nifti_image_size(int4 N, char **imagefile, int4 *nx, int4 *ny, int4 *nz, float4 *dx, float4 *dy, float4 *dz);
 void read_nifti_image(const char *filename, uchar **im, nifti_1_header *hdr);

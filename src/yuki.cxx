@@ -2931,8 +2931,8 @@ int main(int argc, char **argv)
   /////////////////////////////////////////////////////////////////////////////////////////////
   if( ipimagepath[0] != '\0')
   {
-    // check to see if ipimagepath appears to be a NIFTI image
-    if( not_magical_nifti(ipimagepath) )
+    // check to see if ipimagepath appears to be a NIFTI-1 image
+    if( check_nifti1_magic(ipimagepath)==0 )
     {
       exit(0);
     }

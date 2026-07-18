@@ -4,11 +4,12 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
+#include "babak_lib.h"
+#include "minmax.h"
+#include "nifti1_io.h"
+
 #include <stdio.h>
 #include <string.h>
-#include <nifti1_io.h>
-#include <babak_lib.h>
-#include <minmax.h>
 
 //////////////////////////////////////////////////////////////////
 nifti_1_header read_NIFTI_hdr(const char *filename)
@@ -66,74 +67,6 @@ int read_NIFTI_hdr(const char *filename, nifti_1_header *hdr)
 
    return(1);
 }
-//////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////////////////////////
-int not_magical_nifti(const char *imagefilename)
-{
-   FILE *fp;
-   nifti_1_header hdr;
-
-   fp = fopen(imagefilename,"r");
-   
-   if(fp == NULL)
-   {
-      printf("not_magical_nifti(): could not open file %s\n", imagefilename);
-      return(1);
-   }
-
-   if( fread(&hdr, sizeof(hdr), 1, fp)!=1 )
-   {
-      printf("not_magical_nifti(): could not read the NIFTI header from %s\n", imagefilename);
-      fclose(fp);
-      return(1);
-   }
-
-   fclose(fp);
-
-   if( hdr.magic[0]!='n' || (hdr.magic[1]!='+' && hdr.magic[1]!='i') || hdr.magic[2]!='1' )
-   {
-      printf("hdr.magic = %s\n", hdr.magic);
-      printf("not_magical_nifti(): NIFTI file magic field is neither \"n+1\" nor \"ni1\"\n"); 
-      return(1);
-   }
-
-   return(0);
-}
-
-int not_magical_nifti(const char *imagefilename, int verbose)
-{
-   FILE *fp;
-   nifti_1_header hdr;
-
-   fp = fopen(imagefilename,"r");
-   
-   if(fp == NULL)
-   {
-      if(verbose) printf("not_magical_nifti(): could not open file %s\n", imagefilename);
-      return(1);
-   }
-
-   if( fread(&hdr, sizeof(hdr), 1, fp)!=1 )
-   {
-      if(verbose) printf("not_magical_nifti(): could not read the NIFTI header from %s\n", imagefilename);
-      fclose(fp);
-      return(1);
-   }
-
-   fclose(fp);
-
-   if( hdr.magic[0]!='n' || (hdr.magic[1]!='+' && hdr.magic[1]!='i') || hdr.magic[2]!='1' )
-   {
-      if(verbose) printf("hdr.magic = %s\n", hdr.magic);
-      if(verbose) printf("not_magical_nifti(): NIFTI file magic field is neither \"n+1\" nor \"ni1\"\n"); 
-      return(1);
-   }
-
-   return(0);
-}
-
-////////////////////////////////////////////////////////////////////////////////////
 
 void swapniftiheader(nifti_1_header *hdr)
 {
@@ -856,7 +789,7 @@ int niftiFilename(char *filename, const char *path)
       return(0);
    }
 
-   if( not_magical_nifti(path) )
+   if( check_nifti1_magic(path) == 0 )
    {
       return(0);
    }

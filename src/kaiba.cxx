@@ -1673,7 +1673,7 @@ int main(int argc, char **argv)
       exit(0);
    }
 
-   if( not_magical_nifti(bfile,0)==0 )  // a single image was specified using -i <image>.nii
+   if( check_nifti1_magic(bfile) )  // a single image was specified using -i <image>.nii
    {
       nim=1;
    }
@@ -1711,7 +1711,7 @@ int main(int argc, char **argv)
       imagedir[i][0]='\0';
    }
 
-   if( not_magical_nifti(bfile,0)==0 )  // a single image was specified using -i <image>.nii
+   if( check_nifti1_magic(bfile) )  // a single image was specified using -i <image>.nii
    {
       strcpy(imagefile[0], bfile);
       if( niftiFilename(imagefileprefix[0], imagefile[0])==0 ) { exit(0); }
@@ -1818,7 +1818,7 @@ int main(int argc, char **argv)
    // average input images after PIL transformation and store in aimpil
    /////////////////////////////////////////////////////////////////////////////////////
    //if(nim>1)
-   if( not_magical_nifti(bfile,0)==1 )  // uses the output from ATRA
+   if( check_nifti1_magic(bfile)==0 )  // uses the output from ATRA
    {
       float *sum;
       short *tmp;
