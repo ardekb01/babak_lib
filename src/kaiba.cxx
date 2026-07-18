@@ -101,6 +101,106 @@ void print_help_and_exit()
    exit(0);
 }
 
+// Note: image may be modified in-place.
+void setMX(short *image, short *msk, int nv, int &high, float alpha)
+{
+   short min = 0;
+   short max = 0;
+
+   // Clamp percent to a valid range.
+   if(alpha < 0.0f)
+      alpha = 0.0f;
+   else if(alpha > 1.0f)
+      alpha = 1.0f;
+
+   // Validate input arguments.
+   if(image == nullptr || msk == nullptr || nv <= 0)
+   {
+      high = 0;
+      return;
+   }
+
+   /*
+      Set everything outside the mask equal zero
+      and remove negative values if any from the image.
+   */
+   for(int i = 0; i < nv; i++)
+   {
+      if(msk[i] == 0)
+         image[i] = 0;
+
+      if(image[i] < 0)
+         image[i] = 0;
+   }
+
+
+   /*
+      Find the maximum of image[] within the mask.
+      Minimum is always zero.
+   */
+   minmax(image, nv, min, max);
+
+
+   /*
+      Allocate memory for histogram.
+      Histogram size allows indices:
+      histogram[0], histogram[1], ..., histogram[max].
+   */
+   int *histogram = (int *)calloc(max + 1, sizeof(int));
+
+   if(histogram == nullptr)
+   {
+      high = max;
+      return;
+   }
+
+   /*
+      Fill the histogram.
+   */
+   {
+      int b;
+
+      for(int i = 0; i < nv; i++)
+      {
+         b = image[i];
+
+         /* Extra precaution to ensure index is not out of range. */
+         if(b >= 0 && b <= max)
+            histogram[b]++;
+      }
+   }
+
+   /*
+      (nv - histogram[0]) should equal mask size.
+   */
+   int msksize = nv - histogram[0];
+
+   int nmax;
+   nmax = (int)(alpha * msksize + 0.5f);
+
+   /*
+      Find high intensity threshold.
+   */
+   {
+      int i;
+      int n;
+
+      n = 0;
+
+      for(i = 0; i <= max; i++)
+      {
+         n += histogram[max - i];
+
+         if(n > nmax)
+            break;
+      }
+
+      high = max - i;
+   }
+
+   free(histogram);
+}
+
 // this is worked out in my technical note notebook
 // compute 1/sqrt(2*var) * (integral from -inf to x) of exp[ (x-mu)^2/(2*var) ]
 float8 normalCDF(float8 x, float8 mu, float8 var)
@@ -113,7 +213,6 @@ float8 normalCDF(float8 x, float8 mu, float8 var)
 
    return( 0.5 + 0.5*erf ( (x-mu)/sqrt(2.0*var) ) );
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 float8 ssd_cost_function(float4 *T, DIM dimb, DIM dimf, float4 *sclbim, float4 *sclfim, int2 *bmsk, int2 *fmsk)
