@@ -16,6 +16,7 @@
 #include "gaussian_kernel.h"
 #include "setLowHigh.h"
 #include "getDirectoryName.h"
+#include "check_nifti_file_extension.h"
 
 #ifndef _PILTRANSFORM
 extern double searchradius[3]; // in units of mm
@@ -261,7 +262,6 @@ void findMSP(const char *filename, char *orient, const char *lmfile, float4 *Tms
 char directionCode(float4 x, float4 y, float4 z);
 void getNiftiImageOrientation(const char *filename, char *orientation);
 void getNiftiImageOrientation(nifti_1_header hdr, char *orientation);
-int4 checkNiftiFileExtension(const char *filename);
 int4 isOrientationCodeValid(const char *orientCode);
 void swap_model_file_hdr(model_file_hdr *hdr);
 void swap_model_file_tail(model_file_tail *tail);

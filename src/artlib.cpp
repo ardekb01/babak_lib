@@ -1369,7 +1369,7 @@ float *AC, float *PC, float *RP, float *Tmsp, int opt_v, int opt_T2)
    }
 
    // ensure that the specified image has either a .hdr or a .nii extension 
-   if( !checkNiftiFileExtension((const char *)imagefilename) )
+   if( !check_nifti_file_extension((const char *)imagefilename) )
    {
       errorMessage("The image filename in detect_AC_PC_MSP() must have a `.hdr' or `.nii' extension.");
    }

@@ -646,7 +646,7 @@ void readOrientationFromFile(const char *filename, char *orientation)
    int swapflg=0;
 
    // ensure that the specified image has either a .hdr or a .nii extension
-   if( !checkNiftiFileExtension(filename) )
+   if( !check_nifti_file_extension(filename) )
    {
       errorMessage("Error: The image filename must have a `.hdr' or `.nii' extension.");
    }
@@ -739,7 +739,7 @@ void readOrientationVectorsFromFile(const char *filename, float *xvec, float *yv
    int swapflg=0;
 
    // ensure that the specified image has either a .hdr or a .nii extension
-   if( !checkNiftiFileExtension(filename) )
+   if( !check_nifti_file_extension(filename) )
    {
       errorMessage("Error: The image filename must have a `.hdr' or `.nii' extension.");
    }
@@ -849,7 +849,7 @@ int niftiFilename(char *filename, const char *path)
    int len;	// length of the path string
    int pos;	// position of the filename
 
-   if( !checkNiftiFileExtension(path) )
+   if( !check_nifti_file_extension(path) )
    {
       printf("%s does not have a `.hdr' or `.nii' extension\n",path);
       return(0);
@@ -935,7 +935,7 @@ short *readNiftiImage(const char *filename, DIM *dim, int flg)
    short *im=NULL;
 
    // ensure that the specified image has either a .hdr or a .nii extension
-   if( !checkNiftiFileExtension(filename) )
+   if( !check_nifti_file_extension(filename) )
    {
       errorMessage("Error: The image filename must have a `.hdr' or `.nii' extension.");
    }
@@ -1101,7 +1101,7 @@ char *read_nifti_image(const char *filename, nifti_1_header *hdr)
    char *im=NULL;
 
    // ensure that the specified image has either a .hdr or a .nii extension
-   if( !checkNiftiFileExtension(filename) )
+   if( !check_nifti_file_extension(filename) )
    {
       errorMessage("Error: The image filename must have a `.hdr' or `.nii' extension.");
    }
@@ -1232,7 +1232,7 @@ char *read_nifti_image(const char *filename, nifti_1_header *hdr)
 
 /*
    // ensure that the specified image has either a .hdr or a .nii extension
-   if( !checkNiftiFileExtension(filename) )
+   if( !check_nifti_file_extension(filename) )
    {
       printf("\nread_nifti_image(): %s does not have a `.hdr' or `.nii' extension.\n\n",filename);
       return(NULL);

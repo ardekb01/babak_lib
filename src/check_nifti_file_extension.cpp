@@ -9,7 +9,7 @@
 //    image.nii.gz
 //    image.HDR
 //    image.NII
-int checkNiftiFileExtension(const char *filename)
+int check_nifti_file_extension(const char *filename)
 {
    size_t filenameLength;
    const char *extension;
