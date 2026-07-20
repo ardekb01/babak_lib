@@ -13,8 +13,14 @@ bool get_nifti_filename(char *filename,
                         const char *path)
 {
    int i;
-   int len;  // length of the path string
+   size_t pathsize;  // length of the path string
+   size_t len;
    int pos;  // position of the filename
+
+   if (filename == nullptr || path == nullptr || filenameSize == 0)
+   {
+      return false;
+   }
 
    // ensure that the specified image has .nii extension
    if (check_nifti_file_extension(path) == false)
@@ -28,9 +34,9 @@ bool get_nifti_filename(char *filename,
       return false;
    }
 
-   len = (int)strlen(path);
+   pathsize = (int)strlen(path);
 
-   if (len <= 0)
+   if (pathsize <= 0)
    {
       printf("Error: unexpected string length for the NIFTI image path, aborting ...\n");
       return false;
@@ -41,7 +47,7 @@ bool get_nifti_filename(char *filename,
    // Examples: path=/sss/yyy would give pos=5
    // path=sss would give pos=0
    // path=/x/ would give pos=3
-   i = len - 1;
+   i = pathsize - 1;
 
    while (i >= 0 && path[i] != '/')
    {
@@ -50,24 +56,25 @@ bool get_nifti_filename(char *filename,
 
    pos = i + 1;
 
+   if (strlen(path + pos) + 1 > filenameSize)
+   {
+      fprintf(stderr,"Error: output filename buffer is too small, aborting ...\n");
+      return false;
+   }
+
    // copy everything to the right of the first '/' character from right
    // into filename
-   // Examples: path=/sss/yyy would give filename=yyy  len=3
-   // path=sss would give filename=sss  len=3
-   // path=/x/ would give filename=""  len=0
-   strcpy(filename, path + pos);
+   // Examples: path=/sss/yyy would give filename=yyy  pathsize=3
+   // path=sss would give filename=sss  pathsize=3
+   // path=/x/ would give filename=""  pathsize=0
+   //strcpy(filename, path + pos);
+   memcpy(filename, path + pos, strlen(path + pos) + 1);
 
    len = (int)strlen(filename);
 
    if (len <= 0)
    {
       printf("Error: unexpected string length for the NIFTI image filename, aborting ...\n");
-      return false;
-   }
-
-   if (len >= 2 && filename[len - 2] == 'g' && filename[len - 1] == 'z')
-   {
-      printf("Sorry but this program currently does not handle gzipped images, aborting ...\n");
       return false;
    }
 
