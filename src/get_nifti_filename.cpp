@@ -1,107 +1,95 @@
 #include "check_nifti_file_extension.h"
-#include "check_nifti1_magic.h"
 
 #include <cstdio>
 #include <cstring>
 
-// extracts the "filename" from the full "path" string
-// Example: If path="/home/babak/images/test.nii", then filename="test".
-// Note that the extension is not included in the output filename
-// Returns 0 on failture and 1 on success
+// Extracts the filename from the full path string.
+//
+// Examples:
+//    "/home/babak/images/test.nii" -> "test"
+//    "test.nii"                    -> "test"
+//    "/home/babak/my.test.nii"     -> "my.test"
+//
+// The ".nii" extension is not included in the output filename.
+//
+// Returns false on failure and true on success.
 bool get_nifti_filename(char *filename,
                         size_t filenameSize,
                         const char *path)
 {
-   int i;
-   size_t pathsize;  // length of the path string
+   size_t i;
    size_t len;
-   int pos;  // position of the filename
+   size_t pos;
 
-   if (filename == nullptr || path == nullptr || filenameSize == 0)
+   // Validate input variables.
+   if (filename == nullptr)
    {
+      fprintf(stderr,
+              "Error: get_nifti_filename(): NULL pointer passed as filename.\n");
       return false;
    }
 
-   // ensure that the specified image has .nii extension
-   if (check_nifti_file_extension(path) == false)
+   if (path == nullptr)
    {
-      printf("%s does not have `.nii' extension\n", path);
+      fprintf(stderr,
+              "Error: get_nifti_filename(): NULL pointer passed as path.\n");
       return false;
    }
 
-   if (check_nifti1_magic(path) == false)
+   if (filenameSize == 0)
    {
+      fprintf(stderr,
+              "Error: get_nifti_filename(): 0 passed as filenameSize.\n");
       return false;
    }
 
-   pathsize = (int)strlen(path);
-
-   if (pathsize <= 0)
+   // Ensure that the specified image has a .nii extension.
+   if (!check_nifti_file_extension(path))
    {
-      printf("Error: unexpected string length for the NIFTI image path, aborting ...\n");
+      fprintf(stderr,
+              "%s does not have `.nii' extension.\n",
+              path);
       return false;
    }
 
-   // finds the position of the first '/' character from right if any
-   // returns 0 of no '/' charater is there
-   // Examples: path=/sss/yyy would give pos=5
-   // path=sss would give pos=0
-   // path=/x/ would give pos=3
-   i = pathsize - 1;
+   // Find the position of the basename, immediately after the last '/'.
+   i = strlen(path);
 
-   while (i >= 0 && path[i] != '/')
+   while (i > 0 && path[i - 1] != '/')
    {
       i--;
    }
 
-   pos = i + 1;
+   pos = i;
 
-   if (strlen(path + pos) + 1 > filenameSize)
+   // Determine the length of the filename, including its extension.
+   len = strlen(path + pos);
+
+   if (len + 1 > filenameSize)
    {
-      fprintf(stderr,"Error: output filename buffer is too small, aborting ...\n");
+      fprintf(stderr,
+              "Error: get_nifti_filename(): output \"filename\" buffer is too small.\n");
       return false;
    }
 
-   // copy everything to the right of the first '/' character from right
-   // into filename
-   // Examples: path=/sss/yyy would give filename=yyy  pathsize=3
-   // path=sss would give filename=sss  pathsize=3
-   // path=/x/ would give filename=""  pathsize=0
-   //strcpy(filename, path + pos);
-   memcpy(filename, path + pos, strlen(path + pos) + 1);
+   // Copy the basename, including the ".nii" extension.
+   strcpy(filename, path + pos);
 
-   len = (int)strlen(filename);
-
-   if (len <= 0)
+   // Remove the ".nii" extension.
+   if (len < 4)
    {
-      printf("Error: unexpected string length for the NIFTI image filename, aborting ...\n");
+      fprintf(stderr,
+              "Error: get_nifti_filename(): unexpected filename length.\n");
       return false;
    }
 
-   // finds the position of the first '.' character from right if any
-   // returns 0 of no '.' charater is there
-   // Examples: path=/sss.yyy would give pos=5
-   // path=sss would give pos=0
-   // path=/x. would give pos=3
-   i = len - 1;
+   filename[len - 4] = '\0';
 
-   while (i >= 0 && filename[i] != '.')
+   // Reject a filename consisting only of ".nii".
+   if (filename[0] == '\0')
    {
-      i--;
-   }
-
-   pos = i + 1;
-
-   if (pos > 0)
-   {
-      filename[pos - 1] = '\0';
-   }
-
-   len = (int)strlen(filename);
-
-   if (len <= 0)
-   {
-      printf("Error: unexpected string length for the NIFTI image prefix, aborting ...\n");
+      fprintf(stderr,
+              "Error: get_nifti_filename(): filename has zero length.\n");
       return false;
    }
 
