@@ -1384,7 +1384,7 @@ float *AC, float *PC, float *RP, float *Tmsp, int opt_v, int opt_T2)
       errorMessage("Image orientation cannot be determined in detect_AC_PC_MSP().");
    }
 
-   if ( isOrientationCodeValid(orientation) == 0)
+   if (valid_orientation_code(orientation) == false)
    {
       printf("\nInput image orientation: %s\n",orientation);
       errorMessage("Invalid orientation code in detect_AC_PC_MSP(). The code is not one of the 48 legal ones.");

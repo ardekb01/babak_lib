@@ -34,7 +34,7 @@ void findMSP(const char *filename, char *orient, const char *lmfile, float *Tmsp
       errorMessage("Image orientation could not be determined.");
    }
 
-   if ( isOrientationCodeValid(orient) == 0)
+   if (valid_orientation_code(orient) == false)
    {
       printf("\nImage orientation: %s\n",orient);
       errorMessage("Image orientation code is not one of the 48 legal ones.");

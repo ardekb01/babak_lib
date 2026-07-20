@@ -19,6 +19,7 @@
 #include "check_nifti1_magic.h"
 #include "get_nifti_basename.h"
 #include "nifti1.h"
+#include "valid_orientation_code.h"
 
 #ifndef _PILTRANSFORM
 extern double searchradius[3]; // in units of mm
@@ -264,7 +265,6 @@ void findMSP(const char *filename, char *orient, const char *lmfile, float4 *Tms
 char directionCode(float4 x, float4 y, float4 z);
 void getNiftiImageOrientation(const char *filename, char *orientation);
 void getNiftiImageOrientation(nifti_1_header hdr, char *orientation);
-int4 isOrientationCodeValid(const char *orientCode);
 void swap_model_file_hdr(model_file_hdr *hdr);
 void swap_model_file_tail(model_file_tail *tail);
 void new_PIL_transform(const char *subfile, const char *lmfile, char *orient, float4 *T, int SAVE_PIL_FLAG);

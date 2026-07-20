@@ -177,7 +177,7 @@ int main(int argc, char **argv)
       printf("\nInput image orientation: %s\n",orientation);
    }
 
-   if ( isOrientationCodeValid(orientation) == 0)
+   if (valid_orientation_code(orientation) == false)
    {
       errorMessage("Error: Invalid orientation code. The specified code is not one of the 48 legal ones.");
    }

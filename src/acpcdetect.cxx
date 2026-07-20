@@ -453,7 +453,7 @@ int main(int argc, char **argv)
 
   // If input orientation is specified using -input-orient, make sure it's valid
   // -input-orient overrides the orientation inferred from the image header
-  if(iporient[0]!='\0' && isOrientationCodeValid(iporient)==0)
+  if(iporient[0]!='\0' && valid_orientation_code(iporient) == false)
   {
     printf("%s is not a valid orientation code, aborting ...\n",iporient);
     exit(0);
@@ -511,7 +511,7 @@ int main(int argc, char **argv)
   // OPORIENT2PIL, Tijk2xyz, ophdr
 
   // if ouput orientation is specified using -oo option, make sure it's valid
-  if(isOrientationCodeValid(oporient)==0 )
+  if(valid_orientation_code(oporient)==false )
   {
     printf("%s is not a valid orientation code, aborting ...\n",oporient);
     exit(0);

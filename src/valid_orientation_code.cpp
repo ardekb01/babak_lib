@@ -7,13 +7,13 @@
 #include <string.h>
 #include <ctype.h>
 
-int isOrientationCodeValid(const char *orientCode)
+bool valid_orientation_code(const char *orientCode)
 {
    char code[4];
 
    if( strlen(orientCode) != 3)
    {
-      return(0);
+      return false;
    }
 
    strcpy(code, orientCode);
@@ -70,7 +70,7 @@ int isOrientationCodeValid(const char *orientCode)
    strcmp(code, "RIA") == 0 ||
    strcmp(code, "RSP") == 0 ||
    strcmp(code, "RSA") == 0) 
-      return(1);
+      return true;
 
-   return(0);
+   return false;
 }

@@ -997,7 +997,7 @@ int main(int argc, char **argv)
       exit(0);
    }
 
-   if( isOrientationCodeValid(outputOrientationCode)==0 )
+   if (valid_orientation_code(outputOrientationCode) == false)
    {
       printf("Sorry, %s is not a valid orientation code.\n",outputOrientationCode);
       exit(0);
