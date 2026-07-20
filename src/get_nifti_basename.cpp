@@ -19,7 +19,6 @@ bool get_nifti_basename(char *basename,
 {
    size_t i;
    size_t len;
-   size_t pos;
 
    // Validate input variables.
    if (basename == nullptr)
@@ -60,10 +59,8 @@ bool get_nifti_basename(char *basename,
       i--;
    }
 
-   pos = i;
-
-   // Determine the length of the basename, including its extension.
-   len = strlen(path + pos);
+   // Determine the length of the final path component, including its extension.
+   len = strlen(path + i);
 
    if (len + 1 > basenameSize)
    {
@@ -73,7 +70,7 @@ bool get_nifti_basename(char *basename,
    }
 
    // Copy the basename, including the ".nii" extension.
-   strcpy(basename, path + pos);
+   strcpy(basename, path + i);
 
    // Remove the ".nii" extension.
    if (len < 4)
