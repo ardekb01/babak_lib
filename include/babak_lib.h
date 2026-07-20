@@ -747,13 +747,6 @@ void write_analyze_image(const char *filename, int2 *im, int4 nx, int4 ny, int4 
 void write_analyze_image(const char *filename, float4 *im, int4 nx, int4 ny, int4 nz, float4 dx, float4 dy, float4 dz,int4 v); 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////////////////////////////
-// functions defined in swap.cxx
-extern void swap_float_array(float4 *x, int4 n);
-extern void swap_double_array(float8 *x, int4 n);
-extern void swap_int_array(int4 *x, int4 n);
-////////////////////////////////////////////////////////////////////////////////////////
-
 #ifndef _medianfilter
 extern void medianFilter(float4 *image1, int4 nx, int4 ny, int4 nz, int4 Wx, int4 Wy, int4 Wz);
 #endif

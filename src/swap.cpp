@@ -2,13 +2,70 @@
 #include <stdio.h>
 #include <babak_lib.h>
 
-// AB CD EF GH --> BA DC FE HG
-bool swapN(char *in, int N)
+// x[0] -> byte-reversed
+// x[1] -> byte-reversed
+// ...
+bool swap_int_array(int *x, size_t n)
+{
+   if (x == nullptr || n == 0)
+   {
+      return false;
+   }
+
+   for (size_t i = 0; i < n; i++)
+   {
+      if (!swapByteOrder((char *)(x + i), sizeof(int)))
+      {
+         return false;
+      }
+   }
+
+   return true;
+}
+
+bool swap_double_array(double *x, size_t n)
+{
+   if (x == nullptr || n == 0)
+   {
+      return false;
+   }
+
+   for (size_t i = 0; i < n; i++)
+   {
+      if (!swapByteOrder((char *)(x + i), sizeof(double)))
+      {
+         return false;
+      }
+   }
+
+   return true;
+}
+
+bool swap_float_array(float *x, size_t n)
+{
+   if (x == nullptr || n == 0)
+   {
+      return false;
+   }
+
+   for (size_t i = 0; i < n; i++)
+   {
+      if (!swapByteOrder((char *)(x + i), sizeof(float)))
+      {
+         return false;
+      }
+   }
+
+   return true;
+}
+
+// AB CD EF GH -> BA DC FE HG
+bool swapN(char *in, size_t N)
 {
    char dum[2];
 
    // N should be even and positive.
-   if (N <= 0 || N % 2 != 0)
+   if (N == 0 || N % 2 != 0)
    {
       return false;
    }
@@ -18,7 +75,7 @@ bool swapN(char *in, int N)
       return false;
    }
 
-   for (int i = 0; i < N / 2; i++)
+   for (size_t i = 0; i < N / 2; i++)
    {
       dum[0] = in[i * 2 + 1];
       dum[1] = in[i * 2];
@@ -30,17 +87,12 @@ bool swapN(char *in, int N)
    return true;
 }
 
-// [A B C D] --> [D C B A]
-bool swapByteOrder(char *in, int N)
+// [A B C D] -> [D C B A]
+bool swapByteOrder(char *in, size_t N)
 {
    char *dum;
 
-   if (N <= 0)
-   {
-      return false;
-   }
-
-   if (in == nullptr)
+   if (in == nullptr || N == 0)
    {
       return false;
    }
@@ -52,12 +104,12 @@ bool swapByteOrder(char *in, int N)
       return false;
    }
 
-   for (int i = 0; i < N; i++)
+   for (size_t i = 0; i < N; i++)
    {
       dum[i] = in[N - 1 - i];
    }
 
-   for (int i = 0; i < N; i++)
+   for (size_t i = 0; i < N; i++)
    {
       in[i] = dum[i];
    }
@@ -90,30 +142,6 @@ bool bigEndian()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-void swap_double_array( float8 *x, int4 n)
-{
-   for(int4 i=0; i<n; i++)
-   {    
-      swapByteOrder( (char *)(x+i), sizeof(float8) );
-   }
-}       
-
-void swap_float_array( float4 *x, int4 n)
-{
-   for(int4 i=0; i<n; i++)
-   {    
-      swapByteOrder( (char *)(x+i), sizeof(float4) );
-   }
-}       
-
-void swap_int_array( int4 *x, int4 n)
-{
-   for(int4 i=0; i<n; i++)
-   {    
-      swapByteOrder( (char *)(x+i), sizeof(int4) );
-   }
-}       
 
 void swap_model_file_hdr(model_file_hdr *hdr)
 {
