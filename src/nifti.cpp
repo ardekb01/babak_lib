@@ -5,6 +5,7 @@
 ///////////////////////////////////////////////////////////////////////
 
 #include "babak_lib.h"
+#include "swap.h"
 #include "minmax.h"
 #include "nifti1_io.h"
 

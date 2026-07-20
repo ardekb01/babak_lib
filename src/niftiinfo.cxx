@@ -6,9 +6,10 @@
 #include <string.h> // strcmp()
 #include <stdlib.h> // atoi()
 #include <math.h> // sqrt()
-#include <nifti1_io.h>
 
+#include "nifti1_io.h"
 #include "babak_lib.h"
+#include "swap.h"
 
 #define IMPLICIT_LITTLE_ENDIAN 0
 #define EXPLICIT_LITTLE_ENDIAN 1

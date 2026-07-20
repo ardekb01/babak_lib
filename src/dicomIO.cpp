@@ -21,7 +21,8 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
-#include <babak_lib.h>
+#include "babak_lib.h"
+#include "swap.h"
 
 #define IMPLICIT_LITTLE_ENDIAN 0
 #define EXPLICIT_LITTLE_ENDIAN 1

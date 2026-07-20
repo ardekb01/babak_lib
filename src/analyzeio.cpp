@@ -2,8 +2,9 @@
 #include <string.h>
 #include <stdio.h>
 #include <spm_analyze.h>
-#include <babak_lib.h>
-#include <minmax.h>
+#include "babak_lib.h"
+#include "swap.h"
+#include "minmax.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 

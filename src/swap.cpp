@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <babak_lib.h>
+#include "babak_lib.h"
+#include "swap.h"
 
 // x[0] -> byte-reversed
 // x[1] -> byte-reversed
@@ -140,8 +141,6 @@ bool bigEndian()
 
    return cp[1] == 1;
 }
-
-////////////////////////////////////////////////////////////////////////////////
 
 void swap_model_file_hdr(model_file_hdr *hdr)
 {

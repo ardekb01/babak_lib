@@ -7,5 +7,7 @@ bool swapN(char *in, size_t N);
 bool swap_float_array(float *x, size_t n);
 bool swap_double_array(double *x, size_t n);
 bool swap_int_array(int *x, size_t n); 
+void swap_model_file_hdr(model_file_hdr *hdr);
+void swap_model_file_tail(model_file_tail *tail);
 
 #endif

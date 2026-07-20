@@ -5,9 +5,10 @@
 ///////////////////////////////////////////////////////////////////////
 
 #include <stdio.h>
-#include <nifti1.h>
-#include <nifti1_io.h>
-#include <babak_lib.h>
+#include "nifti1.h"
+#include "nifti1_io.h"
+#include "babak_lib.h"
+#include "swap.h"
 
 void getNiftiImageOrientation(const char *filename, char *orientation)
 {

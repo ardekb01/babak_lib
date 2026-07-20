@@ -11,9 +11,10 @@
 #include <unistd.h>
 #include <volume.h>
 #include <spm_analyze.h>
-#include <babak_lib.h>
-#include <smooth.h>
-#include <minmax.h>
+#include "babak_lib.h"
+#include "swap.h"
+#include "smooth.h"
+#include "minmax.h"
 
 #define YES 1
 #define NO 0
