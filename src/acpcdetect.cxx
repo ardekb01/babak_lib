@@ -451,12 +451,13 @@ int main(int argc, char **argv)
   }
   if(opt_v) printf("Input image basename: %s\n",ipimagebasename);
 
-  // If input orientation is specified using -input-orient, make sure it's valid
-  // -input-orient overrides the orientation inferred from the image header
+  // If input orientation is specified using -input-orient, make sure it's valid.
+  // -input-orient overrides the orientation inferred from the image header.
   if(iporient[0]!='\0' && valid_orientation_code(iporient) == false)
   {
-    printf("%s is not a valid orientation code, aborting ...\n",iporient);
-    exit(0);
+    fprintf(stderr,
+            "\"%s\" is not a valid orientation code, aborting ...\n",iporient);
+    exit(1);
   }
 
   // If input orientation is not specified using -input-orient option, 
