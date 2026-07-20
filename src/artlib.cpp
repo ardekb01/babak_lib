@@ -728,7 +728,7 @@ float detectPC(float *PC, char *modelfile, short *volumeMSP_HR, char *PCregion, 
       printf("Failed to read \"mhdr\" variable.\n");
    }
 
-   if(bigEndian()) 
+   if (bigEndian() == true)
    {
       swap_model_file_hdr(&mhdr);
    }
@@ -780,7 +780,7 @@ float detectPC(float *PC, char *modelfile, short *volumeMSP_HR, char *PCregion, 
          printf("Failed to read \"pc_template\" variable.\n");
       }
 
-      if(bigEndian())
+      if (bigEndian() == true)
       {
          for(int j=0; j<mhdr.PCtemplatesize*mhdr.nangles; j++)
             swapByteOrder( (char *)(pc_template+i*mhdr.PCtemplatesize*mhdr.nangles+j), sizeof(float));
@@ -880,7 +880,7 @@ float detectAC(float *AC, char *modelfile, short *volumeMSP_HR, char *ACregion, 
       printf("Failed to read \"mhdr\" variable.\n");
    }
 
-   if(bigEndian()) 
+   if (bigEndian() == true)
    {
       swap_model_file_hdr(&mhdr);
    }
@@ -934,7 +934,7 @@ float detectAC(float *AC, char *modelfile, short *volumeMSP_HR, char *ACregion, 
 
       fseek(fp, sizeof(float)*mhdr.PCtemplatesize*mhdr.nangles, SEEK_CUR);
 
-      if(bigEndian())
+      if (bigEndian() == true)
       {
          for(int j=0; j<mhdr.ACtemplatesize*mhdr.nangles; j++)
             swapByteOrder( (char *)(ac_template+i*mhdr.ACtemplatesize*mhdr.nangles+j), sizeof(float));
@@ -1105,7 +1105,7 @@ short *yRP, short *zRP, int opt_T2)
       printf("Failed to read \"mhdr\" variable.\n");
    }
 
-   if(bigEndian()) 
+   if (bigEndian() == true)
    {
       swap_model_file_hdr(&mhdr);
    }
@@ -1142,7 +1142,7 @@ short *yRP, short *zRP, int opt_T2)
       fseek(fp, sizeof(float)*mhdr.ACtemplatesize*mhdr.nangles, SEEK_CUR);
       fseek(fp, sizeof(float)*mhdr.PCtemplatesize*mhdr.nangles, SEEK_CUR);
 
-      if(bigEndian())
+      if (bigEndian() == true)
       {
          for(int j=0; j<mhdr.RPtemplatesize*mhdr.nangles; j++)
             swapByteOrder( (char *)(rp_template+i*mhdr.RPtemplatesize*mhdr.nangles+j), sizeof(float));
@@ -1420,7 +1420,7 @@ float *AC, float *PC, float *RP, float *Tmsp, int opt_v, int opt_T2)
          printf("Failed to read \"mhdr\" variable.\n");
       }
 
-      if(bigEndian()) 
+      if (bigEndian() == true)
       {
          swap_model_file_hdr(&mhdr);
       }
@@ -1440,7 +1440,7 @@ float *AC, float *PC, float *RP, float *Tmsp, int opt_v, int opt_T2)
          printf("Failed to read \"mtail\" variable.\n");
       }
 
-      if(bigEndian()) 
+      if (bigEndian() == true)
       {
          swap_model_file_tail(&mtail);
       }

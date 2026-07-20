@@ -151,7 +151,8 @@ int readFileMetaInfo(const char *filename, DICOM_file_meta_info *file_meta_info,
          return(0);
       }
 
-      if( bigEndian() ) swapByteOrder( (char *)&GN, 2);
+      if( bigEndian() == true) 
+         swapByteOrder( (char *)&GN, 2);
 
       // we have reached the next group if GN is not 0x0002
       if( GN != 0x0002)
@@ -167,7 +168,8 @@ int readFileMetaInfo(const char *filename, DICOM_file_meta_info *file_meta_info,
          return(0);
       }
 
-      if( bigEndian() ) swapByteOrder( (char *)&EN, 2);
+      if( bigEndian() == true) 
+         swapByteOrder( (char *)&EN, 2);
 
       // read the VR 
       if(fread(VR, 1, 2, fp)!=2)
@@ -200,7 +202,8 @@ int readFileMetaInfo(const char *filename, DICOM_file_meta_info *file_meta_info,
             return(0);
          }
 
-         if( bigEndian() ) swapByteOrder( (char *)&VL4, 4);
+         if( bigEndian() == true) 
+            swapByteOrder( (char *)&VL4, 4);
 
          VL = VL4;
       }
@@ -213,7 +216,8 @@ int readFileMetaInfo(const char *filename, DICOM_file_meta_info *file_meta_info,
             return(0);
          }
 
-         if( bigEndian() ) swapByteOrder( (char *)&VL2, 2);
+         if( bigEndian() == true) 
+            swapByteOrder( (char *)&VL2, 2);
 
          VL = VL2;
       }
@@ -227,7 +231,8 @@ int readFileMetaInfo(const char *filename, DICOM_file_meta_info *file_meta_info,
             return(0);
          }
 
-         if( bigEndian() ) swapByteOrder( (char *)&group_length, 4);
+         if( bigEndian() == true) 
+            swapByteOrder( (char *)&group_length, 4);
         
          if(v)
          {
@@ -839,19 +844,19 @@ extern int readSeriesNumber(const char *file, int *seriesNumber, int np)
 		fseek(fp,b,SEEK_SET);
 
 		if( fread(&GN, 2, 1, fp) != 1)  { errorFlag=1; break; }
-		if( bigEndian() && transferSyntax!=EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&GN, 2);
-        if( !bigEndian() && transferSyntax==EXPLICIT_BIG_ENDIAN ) swapByteOrder( (char *)&GN, 2);
+		if( bigEndian()==true && transferSyntax!=EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&GN, 2);
+        if( bigEndian()==false && transferSyntax==EXPLICIT_BIG_ENDIAN ) swapByteOrder( (char *)&GN, 2);
 
 		if( fread(&EN, 2, 1, fp) != 1)  { errorFlag=1; break; }
-		if( bigEndian() && transferSyntax!=EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&EN, 2);
-        if( !bigEndian() && transferSyntax==EXPLICIT_BIG_ENDIAN ) swapByteOrder( (char *)&EN, 2);
+		if( bigEndian()==true && transferSyntax!=EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&EN, 2);
+        if( bigEndian()==false && transferSyntax==EXPLICIT_BIG_ENDIAN ) swapByteOrder( (char *)&EN, 2);
 
 		if(GN==0x0020 && EN==0x0011) 
 		{ 
 			if(transferSyntax==IMPLICIT_LITTLE_ENDIAN)
 			{
 				if( fread(&VL4, 4, 1, fp) != 1) { errorFlag=1; break; }
-				if( bigEndian() ) swapByteOrder( (char *)&VL4, 4);
+				if( bigEndian()==true ) swapByteOrder( (char *)&VL4, 4);
 
 				if(VL4>13) {errorFlag=1; break;}
 
@@ -864,8 +869,8 @@ extern int readSeriesNumber(const char *file, int *seriesNumber, int np)
 				VR[2]='\0';
 
 				if( fread(&VL2, 2, 1, fp) != 1) { errorFlag=1; break;}
-				if( bigEndian() && transferSyntax==EXPLICIT_LITTLE_ENDIAN) swapByteOrder( (char *)&VL2, 2);
-				if( !bigEndian() && transferSyntax==EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&VL2, 2);
+				if( bigEndian()==true && transferSyntax==EXPLICIT_LITTLE_ENDIAN) swapByteOrder( (char *)&VL2, 2);
+				if( bigEndian()==false && transferSyntax==EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&VL2, 2);
 
 				if(VL2>13) {errorFlag=1; break;}
 
@@ -924,19 +929,19 @@ int readImageNumber(const char *file, int *imageNumber, int np)
 		fseek(fp,b,SEEK_SET);
 
 		if( fread(&GN, 2, 1, fp) != 1)  { errorFlag=1; break; }
-		if( bigEndian() && transferSyntax!=EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&GN, 2);
-        if( !bigEndian() && transferSyntax==EXPLICIT_BIG_ENDIAN ) swapByteOrder( (char *)&GN, 2);
+		if( bigEndian()==true && transferSyntax!=EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&GN, 2);
+        if( bigEndian()==false && transferSyntax==EXPLICIT_BIG_ENDIAN ) swapByteOrder( (char *)&GN, 2);
 
 		if( fread(&EN, 2, 1, fp) != 1)  { errorFlag=1; break; }
-		if( bigEndian() && transferSyntax!=EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&EN, 2);
-        if( !bigEndian() && transferSyntax==EXPLICIT_BIG_ENDIAN ) swapByteOrder( (char *)&EN, 2);
+		if( bigEndian()==true && transferSyntax!=EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&EN, 2);
+        if( bigEndian()==false && transferSyntax==EXPLICIT_BIG_ENDIAN ) swapByteOrder( (char *)&EN, 2);
 
 		if(GN==0x0020 && EN==0x0013) 
 		{ 
 			if(transferSyntax==IMPLICIT_LITTLE_ENDIAN)
 			{
 				if( fread(&VL4, 4, 1, fp) != 1) { errorFlag=1; break; }
-				if( bigEndian() ) swapByteOrder( (char *)&VL4, 4);
+				if( bigEndian()==true ) swapByteOrder( (char *)&VL4, 4);
 
 				if(VL4>13) {errorFlag=1; break;}
 
@@ -949,8 +954,8 @@ int readImageNumber(const char *file, int *imageNumber, int np)
 				VR[2]='\0';
 
 				if( fread(&VL2, 2, 1, fp) != 1) { errorFlag=1; break;}
-				if( bigEndian() && transferSyntax==EXPLICIT_LITTLE_ENDIAN) swapByteOrder( (char *)&VL2, 2);
-				if( !bigEndian() && transferSyntax==EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&VL2, 2);
+				if( bigEndian()==true && transferSyntax==EXPLICIT_LITTLE_ENDIAN) swapByteOrder( (char *)&VL2, 2);
+				if( bigEndian()==false && transferSyntax==EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&VL2, 2);
 
 				if(VL2>13) {errorFlag=1; break;}
 
@@ -1042,12 +1047,12 @@ void readDicomInfo(const char *file, int np, dicominfo *info)
       fseek(fp,b,SEEK_SET);
 
       if( fread(&GN, 2, 1, fp) != 1)  { errorFlag=1; break; }
-      if( bigEndian() && transferSyntax!=EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&GN, 2);
-      if( !bigEndian() && transferSyntax==EXPLICIT_BIG_ENDIAN ) swapByteOrder( (char *)&GN, 2);
+      if( bigEndian()==true && transferSyntax!=EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&GN, 2);
+      if( bigEndian()==false && transferSyntax==EXPLICIT_BIG_ENDIAN ) swapByteOrder( (char *)&GN, 2);
 
       if( fread(&EN, 2, 1, fp) != 1)  { errorFlag=1; break; }
-      if( bigEndian() && transferSyntax!=EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&EN, 2);
-      if( !bigEndian() && transferSyntax==EXPLICIT_BIG_ENDIAN ) swapByteOrder( (char *)&EN, 2);
+      if( bigEndian()==true && transferSyntax!=EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&EN, 2);
+      if( bigEndian()==false && transferSyntax==EXPLICIT_BIG_ENDIAN ) swapByteOrder( (char *)&EN, 2);
 
       if(GN==0x0008 && EN==0x0020) 
       { 
@@ -1056,7 +1061,7 @@ void readDicomInfo(const char *file, int np, dicominfo *info)
          if(transferSyntax==IMPLICIT_LITTLE_ENDIAN)
          {
             if( fread(&VL4, 4, 1, fp) != 1) { errorFlag=1; continue; }
-            if( bigEndian() ) swapByteOrder( (char *)&VL4, 4);
+            if( bigEndian()==true ) swapByteOrder( (char *)&VL4, 4);
       
             if(VL4>10) {errorFlag=1; continue;}
       
@@ -1070,8 +1075,8 @@ void readDicomInfo(const char *file, int np, dicominfo *info)
             VR[2]='\0';
       
             if( fread(&VL2, 2, 1, fp) != 1) { errorFlag=1; continue;}
-            if( bigEndian() && transferSyntax==EXPLICIT_LITTLE_ENDIAN) swapByteOrder( (char *)&VL2, 2);
-			if( !bigEndian() && transferSyntax==EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&VL2, 2);
+            if( bigEndian()==true && transferSyntax==EXPLICIT_LITTLE_ENDIAN) swapByteOrder( (char *)&VL2, 2);
+			if( bigEndian()==false && transferSyntax==EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&VL2, 2);
       
             if(VL2>10) {errorFlag=1; continue;}
       
@@ -1087,7 +1092,7 @@ void readDicomInfo(const char *file, int np, dicominfo *info)
          if(transferSyntax==IMPLICIT_LITTLE_ENDIAN)
          {
             if( fread(&VL4, 4, 1, fp) != 1) { errorFlag=1; continue; }
-            if( bigEndian() ) swapByteOrder( (char *)&VL4, 4);
+            if( bigEndian()==true ) swapByteOrder( (char *)&VL4, 4);
       
             if(VL4>320) {errorFlag=1; continue;}
       
@@ -1101,8 +1106,8 @@ void readDicomInfo(const char *file, int np, dicominfo *info)
             VR[2]='\0';
       
             if( fread(&VL2, 2, 1, fp) != 1) { errorFlag=1; continue;}
-            if( bigEndian() && transferSyntax==EXPLICIT_LITTLE_ENDIAN) swapByteOrder( (char *)&VL2, 2);
-			if( !bigEndian() && transferSyntax==EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&VL2, 2);
+            if( bigEndian()==true && transferSyntax==EXPLICIT_LITTLE_ENDIAN) swapByteOrder( (char *)&VL2, 2);
+			if( bigEndian()==false && transferSyntax==EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&VL2, 2);
       
             if(VL2>320) {errorFlag=1; continue;}
       
@@ -1119,7 +1124,7 @@ void readDicomInfo(const char *file, int np, dicominfo *info)
          if(transferSyntax==IMPLICIT_LITTLE_ENDIAN)
          {
             if( fread(&VL4, 4, 1, fp) != 1) { errorFlag=1; continue; }
-            if( bigEndian() ) swapByteOrder( (char *)&VL4, 4);
+            if( bigEndian()==true ) swapByteOrder( (char *)&VL4, 4);
       
             if(VL4>64) {errorFlag=1; continue;}
       
@@ -1133,8 +1138,8 @@ void readDicomInfo(const char *file, int np, dicominfo *info)
             VR[2]='\0';
       
             if( fread(&VL2, 2, 1, fp) != 1) { errorFlag=1; continue;}
-            if( bigEndian() && transferSyntax==EXPLICIT_LITTLE_ENDIAN) swapByteOrder( (char *)&VL2, 2);
-			if( !bigEndian() && transferSyntax==EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&VL2, 2);
+            if( bigEndian()==true && transferSyntax==EXPLICIT_LITTLE_ENDIAN) swapByteOrder( (char *)&VL2, 2);
+			if( bigEndian()==false && transferSyntax==EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&VL2, 2);
       
             if(VL2>64) {errorFlag=1; continue;}
       
@@ -1150,7 +1155,7 @@ void readDicomInfo(const char *file, int np, dicominfo *info)
          if(transferSyntax==IMPLICIT_LITTLE_ENDIAN)
          {
             if( fread(&VL4, 4, 1, fp) != 1) { errorFlag=1; continue; }
-            if( bigEndian() ) swapByteOrder( (char *)&VL4, 4);
+            if( bigEndian()==true ) swapByteOrder( (char *)&VL4, 4);
       
             if(VL4>10) {errorFlag=1; continue;}
       
@@ -1164,8 +1169,8 @@ void readDicomInfo(const char *file, int np, dicominfo *info)
             VR[2]='\0';
       
             if( fread(&VL2, 2, 1, fp) != 1) { errorFlag=1; continue;}
-            if( bigEndian() && transferSyntax==EXPLICIT_LITTLE_ENDIAN) swapByteOrder( (char *)&VL2, 2);
-			if( !bigEndian() && transferSyntax==EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&VL2, 2);
+            if( bigEndian()==true && transferSyntax==EXPLICIT_LITTLE_ENDIAN) swapByteOrder( (char *)&VL2, 2);
+			if( bigEndian()==false && transferSyntax==EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&VL2, 2);
       
             if(VL2>10) {errorFlag=1; continue;}
       
@@ -1181,7 +1186,7 @@ void readDicomInfo(const char *file, int np, dicominfo *info)
          if(transferSyntax==IMPLICIT_LITTLE_ENDIAN)
          {
             if( fread(&VL4, 4, 1, fp) != 1) { errorFlag=1; continue; }
-            if( bigEndian() ) swapByteOrder( (char *)&VL4, 4);
+            if( bigEndian()==true ) swapByteOrder( (char *)&VL4, 4);
 
             if(VL4>16) {errorFlag=1; continue;}
 
@@ -1194,8 +1199,8 @@ void readDicomInfo(const char *file, int np, dicominfo *info)
             VR[2]='\0';
 
             if( fread(&VL2, 2, 1, fp) != 1) { errorFlag=1; continue;}
-            if( bigEndian() && transferSyntax==EXPLICIT_LITTLE_ENDIAN) swapByteOrder( (char *)&VL2, 2);
-			if( !bigEndian() && transferSyntax==EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&VL2, 2);
+            if( bigEndian()==true && transferSyntax==EXPLICIT_LITTLE_ENDIAN) swapByteOrder( (char *)&VL2, 2);
+	    if( bigEndian()==false && transferSyntax==EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&VL2, 2);
 
             if(VL2>16) {errorFlag=1; continue;}
 
@@ -1211,7 +1216,7 @@ void readDicomInfo(const char *file, int np, dicominfo *info)
          if(transferSyntax==IMPLICIT_LITTLE_ENDIAN)
          {
             if( fread(&VL4, 4, 1, fp) != 1) { errorFlag=1; continue; }
-            if( bigEndian() ) swapByteOrder( (char *)&VL4, 4);
+            if( bigEndian()==true ) swapByteOrder( (char *)&VL4, 4);
 
             if(VL4>16) {errorFlag=1; continue;}
 
@@ -1224,8 +1229,8 @@ void readDicomInfo(const char *file, int np, dicominfo *info)
             VR[2]='\0';
 
             if( fread(&VL2, 2, 1, fp) != 1) { errorFlag=1; continue;}
-            if( bigEndian() && transferSyntax==EXPLICIT_LITTLE_ENDIAN) swapByteOrder( (char *)&VL2, 2);
-			if( !bigEndian() && transferSyntax==EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&VL2, 2);
+            if( bigEndian()==true && transferSyntax==EXPLICIT_LITTLE_ENDIAN) swapByteOrder( (char *)&VL2, 2);
+			if( bigEndian()==false && transferSyntax==EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&VL2, 2);
 
             if(VL2>16) {errorFlag=1; continue;}
 
@@ -1239,7 +1244,7 @@ void readDicomInfo(const char *file, int np, dicominfo *info)
          if(transferSyntax==IMPLICIT_LITTLE_ENDIAN)
          {
             if( fread(&VL4, 4, 1, fp) != 1) { errorFlag=1; continue; }
-            if( bigEndian() ) swapByteOrder( (char *)&VL4, 4);
+            if( bigEndian()==true ) swapByteOrder( (char *)&VL4, 4);
 
             if(VL4>16) {errorFlag=1; continue;}
 
@@ -1252,8 +1257,8 @@ void readDicomInfo(const char *file, int np, dicominfo *info)
             VR[2]='\0';
 
             if( fread(&VL2, 2, 1, fp) != 1) { errorFlag=1; continue;}
-            if( bigEndian() && transferSyntax==EXPLICIT_LITTLE_ENDIAN) swapByteOrder( (char *)&VL2, 2);
-			if( !bigEndian() && transferSyntax==EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&VL2, 2);
+	    if( bigEndian()==true && transferSyntax==EXPLICIT_LITTLE_ENDIAN) swapByteOrder( (char *)&VL2, 2);
+			if( bigEndian()==false && transferSyntax==EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&VL2, 2);
 
             if(VL2>16) {errorFlag=1; continue;}
 
@@ -1267,7 +1272,7 @@ void readDicomInfo(const char *file, int np, dicominfo *info)
          if(transferSyntax==IMPLICIT_LITTLE_ENDIAN)
          {
             if( fread(&VL4, 4, 1, fp) != 1) { errorFlag=1; continue; }
-            if( bigEndian() ) swapByteOrder( (char *)&VL4, 4);
+            if( bigEndian()==true ) swapByteOrder( (char *)&VL4, 4);
 
             if(VL4>16) {errorFlag=1; continue;}
 
@@ -1280,8 +1285,8 @@ void readDicomInfo(const char *file, int np, dicominfo *info)
             VR[2]='\0';
 
             if( fread(&VL2, 2, 1, fp) != 1) { errorFlag=1; continue;}
-            if( bigEndian() && transferSyntax==EXPLICIT_LITTLE_ENDIAN) swapByteOrder( (char *)&VL2, 2);
-			if( !bigEndian() && transferSyntax==EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&VL2, 2);
+            if( bigEndian()==true && transferSyntax==EXPLICIT_LITTLE_ENDIAN) swapByteOrder( (char *)&VL2, 2);
+			if( bigEndian()==false && transferSyntax==EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&VL2, 2);
 
             if(VL2>16) {errorFlag=1; continue;}
 
@@ -1295,7 +1300,7 @@ void readDicomInfo(const char *file, int np, dicominfo *info)
          if(transferSyntax==IMPLICIT_LITTLE_ENDIAN)
          {
             if( fread(&VL4, 4, 1, fp) != 1) { errorFlag=1; continue; }
-            if( bigEndian() ) swapByteOrder( (char *)&VL4, 4);
+            if( bigEndian()==true ) swapByteOrder( (char *)&VL4, 4);
 
             if(VL4>16) {errorFlag=1; continue;}
 
@@ -1308,8 +1313,8 @@ void readDicomInfo(const char *file, int np, dicominfo *info)
             VR[2]='\0';
 
             if( fread(&VL2, 2, 1, fp) != 1) { errorFlag=1; continue;}
-            if( bigEndian() && transferSyntax==EXPLICIT_LITTLE_ENDIAN) swapByteOrder( (char *)&VL2, 2);
-			if( !bigEndian() && transferSyntax==EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&VL2, 2);
+            if( bigEndian()==true && transferSyntax==EXPLICIT_LITTLE_ENDIAN) swapByteOrder( (char *)&VL2, 2);
+			if( bigEndian()==false && transferSyntax==EXPLICIT_BIG_ENDIAN) swapByteOrder( (char *)&VL2, 2);
 
             if(VL2>16) {errorFlag=1; continue;}
 
@@ -1325,7 +1330,7 @@ void readDicomInfo(const char *file, int np, dicominfo *info)
          if(transferSyntax==IMPLICIT_LITTLE_ENDIAN)
          {
             if( fread(&VL4, 4, 1, fp) != 1) { errorFlag=1; continue; }
-            if( bigEndian() ) swapByteOrder( (char *)&VL4, 4);
+            if( bigEndian()==true ) swapByteOrder( (char *)&VL4, 4);
 
             if(VL4>12) {errorFlag=1; continue;}
 

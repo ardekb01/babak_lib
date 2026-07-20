@@ -20,6 +20,7 @@
 #include "get_nifti_basename.h"
 #include "nifti1.h"
 #include "valid_orientation_code.h"
+#include "swap.h"
 
 #ifndef _PILTRANSFORM
 extern double searchradius[3]; // in units of mm
@@ -748,7 +749,6 @@ void write_analyze_image(const char *filename, float4 *im, int4 nx, int4 ny, int
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // functions defined in swap.cxx
-extern int4 bigEndian();
 extern void swapByteOrder(char *in, int4 N);
 extern void swapN(char *in, int4 N);
 extern void swap_float_array(float4 *x, int4 n);

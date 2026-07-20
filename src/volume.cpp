@@ -146,7 +146,7 @@ void VOLUME::read_smis_header(char *pathname)
         if( fread(&ny,sizeof(int),1,fp) != 1 ) {};
         fclose(fp);
 
-        if(bigEndian())
+        if ( bigEndian() == true )
         {
                 swapByteOrder( (char *)&nx, sizeof(int));
                 swapByteOrder( (char *)&ny, sizeof(int));
@@ -190,19 +190,19 @@ void VOLUME::read_vision_header(char *pathname)
 
 	fseek(fp, 5000, SEEK_SET);
 	if( fread(&dx, sizeof(double), 1, fp) != 1 ) {};
-	if( !bigEndian() ) swapByteOrder((char *)&dx, sizeof(double) );
+	if( bigEndian() == false ) swapByteOrder((char *)&dx, sizeof(double) );
 
 	fseek(fp, 5008, SEEK_SET);
 	if( fread(&dy, sizeof(double), 1, fp) != 1) {};
-	if( !bigEndian() ) swapByteOrder((char *)&dy, sizeof(double) );
+	if( bigEndian() == false ) swapByteOrder((char *)&dy, sizeof(double) );
 
 	fseek(fp, 3744, SEEK_SET);
 	if( fread(&FOVrow, sizeof(double), 1, fp) != 1) {};
-	if( !bigEndian() ) swapByteOrder((char *)&FOVrow, sizeof(double) );
+	if( bigEndian() == false ) swapByteOrder((char *)&FOVrow, sizeof(double) );
 
 	fseek(fp, 3752, SEEK_SET);
 	if( fread(&FOVcol, sizeof(double), 1, fp) != 1) {};
-	if( !bigEndian() ) swapByteOrder((char *)&FOVcol, sizeof(double) );
+	if( bigEndian() == false ) swapByteOrder((char *)&FOVcol, sizeof(double) );
 
 	nx = (int)(FOVrow/dx + 0.5);
 	ny = (int)(FOVcol/dy + 0.5);
@@ -210,11 +210,11 @@ void VOLUME::read_vision_header(char *pathname)
 
 	fseek(fp, 1544, SEEK_SET);
 	if( fread(&slicethickness, sizeof(double), 1, fp) != 1) {};
-	if( !bigEndian() ) swapByteOrder((char *)&slicethickness, sizeof(double) );
+	if( bigEndian() == false ) swapByteOrder((char *)&slicethickness, sizeof(double) );
  
 	fseek(fp, 4136, SEEK_SET);
 	if( fread(&slicegapfactor, sizeof(double), 1, fp) != 1) {};
-	if( !bigEndian() ) swapByteOrder((char *)&slicegapfactor, sizeof(double) );
+	if( bigEndian() == false ) swapByteOrder((char *)&slicegapfactor, sizeof(double) );
         
 	// Ensure that the slice gap factor is a reasonable number
 	if(slicegapfactor<0.0 || slicegapfactor>10000.0)
@@ -224,7 +224,7 @@ void VOLUME::read_vision_header(char *pathname)
 
 	fseek(fp, 3212, SEEK_SET);
 	if( fread(&image_number,sizeof(int),1,fp) != 1) {};
-	if( !bigEndian() ) swapByteOrder((char *)&image_number, sizeof(int) );
+	if( bigEndian() == false ) swapByteOrder((char *)&image_number, sizeof(int) );
 
 	fclose(fp);
 }
@@ -248,7 +248,7 @@ void VOLUME::read_smis_image(char *pathname)
 	if( fread(data,sizeof(short),np,fp) != (size_t)np ) {};
         fclose(fp);
 
-	if(bigEndian()) swapN( (char *)data, np*2);
+	if( bigEndian() == true ) swapN( (char *)data, np*2);
 }
 
 void VOLUME::read_vision_image(char *pathname)
@@ -269,7 +269,7 @@ void VOLUME::read_vision_image(char *pathname)
 
 	fseek(fp, 6144, SEEK_SET);
 	if( fread(data, sizeof(short), np, fp) != (size_t)np ) {};
-	if( !bigEndian() ) swapN((char *)(data), np*2);
+	if( bigEndian() == false ) swapN((char *)(data), np*2);
 
 	fclose(fp);
 }
@@ -348,19 +348,19 @@ np=nx*ny;
 
 	fseek(fp, 5000, SEEK_SET);
 	if( fread(&dx, sizeof(double), 1, fp) != 1) {};
-	if( !bigEndian() ) swapByteOrder((char *)&dx, sizeof(double) );
+	if( bigEndian() == false ) swapByteOrder((char *)&dx, sizeof(double) );
 
 	fseek(fp, 5008, SEEK_SET);
 	if( fread(&dy, sizeof(double), 1, fp) != 1) {};
-	if( !bigEndian() ) swapByteOrder((char *)&dy, sizeof(double) );
+	if( bigEndian() == false ) swapByteOrder((char *)&dy, sizeof(double) );
 
 	fseek(fp, 3744, SEEK_SET);
 	if( fread(&FOVrow, sizeof(double), 1, fp) != 1 ) {};
-	if( !bigEndian() ) swapByteOrder((char *)&FOVrow, sizeof(double) );
+	if( bigEndian() == false ) swapByteOrder((char *)&FOVrow, sizeof(double) );
 
 	fseek(fp, 3752, SEEK_SET);
 	if( fread(&FOVcol, sizeof(double), 1, fp) != 1 ) {};
-	if( !bigEndian() ) swapByteOrder((char *)&FOVcol, sizeof(double) );
+	if( bigEndian() == false ) swapByteOrder((char *)&FOVcol, sizeof(double) );
 
 	nx = (int)(FOVrow/dx + 0.5);
 	ny = (int)(FOVcol/dy + 0.5);
@@ -368,11 +368,11 @@ np=nx*ny;
 
 	fseek(fp, 1544, SEEK_SET);
 	if( fread(&slicethickness, sizeof(double), 1, fp) != 1) {};
-	if( !bigEndian() ) swapByteOrder((char *)&slicethickness, sizeof(double) );
+	if( bigEndian() == false ) swapByteOrder((char *)&slicethickness, sizeof(double) );
         
 	fseek(fp, 4136, SEEK_SET);
 	if( fread(&slicegapfactor, sizeof(double), 1, fp) != 1) {};
-	if( !bigEndian() ) swapByteOrder((char *)&slicegapfactor, sizeof(double) );
+	if( bigEndian() == false ) swapByteOrder((char *)&slicegapfactor, sizeof(double) );
 
 	// Ensure that the slice gap factor is a reasonable number
 	if(slicegapfactor<0.0 || slicegapfactor>10000.0)
@@ -392,22 +392,22 @@ np=nx*ny;
 
 	fseek(fp, 3200, SEEK_SET);
 	if( fread(&studynumber,sizeof(int),1,fp) != 1) {};
-	if( !bigEndian() ) swapByteOrder((char *)&studynumber, sizeof(int) );
+	if( bigEndian() == false ) swapByteOrder((char *)&studynumber, sizeof(int) );
 	printf("Study Number: %d\n",studynumber);
 
 	fseek(fp, 3212, SEEK_SET);
 	if( fread(&imagenumber,sizeof(int),1,fp) != 1) {};
-	if( !bigEndian() ) swapByteOrder((char *)&imagenumber, sizeof(int) );
+	if( bigEndian() == false ) swapByteOrder((char *)&imagenumber, sizeof(int) );
 	imagenumbermin=imagenumber;
 	imagenumbermax=imagenumber;
 
 	fseek(fp, 1568, SEEK_SET);
 	if( fread(&echotime, sizeof(double), 1, fp) != 1) {};
-	if( !bigEndian() ) swapByteOrder((char *)&echotime, sizeof(double) );
+	if( bigEndian() == false ) swapByteOrder((char *)&echotime, sizeof(double) );
 
 	fseek(fp, 3792, SEEK_SET);
 	if( fread(normalvec, sizeof(double), 3, fp) != 3) {};
-	if( !bigEndian() ) 
+	if( bigEndian() == false ) 
 	{
 		swapByteOrder((char *)&normalvec[0], sizeof(double) );
 		swapByteOrder((char *)&normalvec[1], sizeof(double) );
@@ -416,7 +416,7 @@ np=nx*ny;
 
 	fseek(fp, 3832, SEEK_SET);
 	if( fread(rowvec, sizeof(double), 3, fp) != 3) {};
-	if( !bigEndian() ) 
+	if( bigEndian() == false ) 
 	{
 		swapByteOrder((char *)&rowvec[0], sizeof(double) );
 		swapByteOrder((char *)&rowvec[1], sizeof(double) );
@@ -425,7 +425,7 @@ np=nx*ny;
 
 	fseek(fp, 3856, SEEK_SET);
 	if( fread(columnvec, sizeof(double), 3, fp) != 3) {};
-	if( !bigEndian() ) 
+	if( bigEndian() == false ) 
 	{
 		swapByteOrder((char *)&columnvec[0], sizeof(double) );
 		swapByteOrder((char *)&columnvec[1], sizeof(double) );
@@ -482,15 +482,15 @@ np=nx*ny;
 		        
 		fseek(fp, 3200, SEEK_SET);
 		if( fread(&studynumber2,sizeof(int),1,fp) != 1) {};
-		if( !bigEndian() ) swapByteOrder((char *)&studynumber2, sizeof(int) );
+		if( bigEndian() == false ) swapByteOrder((char *)&studynumber2, sizeof(int) );
 
 		fseek(fp, 3212, SEEK_SET);
 		if( fread(&imagenumber,sizeof(int),1,fp) != 1) {};
-		if( !bigEndian() ) swapByteOrder((char *)&imagenumber, sizeof(int) );
+		if( bigEndian() == false ) swapByteOrder((char *)&imagenumber, sizeof(int) );
 
 		fseek(fp, 1568, SEEK_SET);
 		if( fread(&echotime2, sizeof(double), 1, fp) != 1) {};
-		if( !bigEndian() ) swapByteOrder((char *)&echotime2, sizeof(double) );
+		if( bigEndian() == false ) swapByteOrder((char *)&echotime2, sizeof(double) );
 
 		fclose(fp);
 
@@ -527,7 +527,7 @@ np=nx*ny;
 		{
 			fseek(fp, 3768, SEEK_SET);
 			if( fread(centervec, sizeof(double), 3, fp) != 3) {};
-			if( !bigEndian() ) 
+			if( bigEndian() == false ) 
 			{
 				swapByteOrder((char *)&centervec[0], sizeof(double) );
 				swapByteOrder((char *)&centervec[1], sizeof(double) );
@@ -537,7 +537,7 @@ np=nx*ny;
 
 		fseek(fp, 6144, SEEK_SET);
 		if( fread(data+imagenumber*np, sizeof(short), np, fp) != (size_t)np) {};
-		if( !bigEndian() ) swapN((char *)(data+imagenumber*np), np*2);
+		if( bigEndian() == false ) swapN((char *)(data+imagenumber*np), np*2);
 
 		fclose(fp);
 
@@ -618,19 +618,19 @@ int VOLUME::readsiemensvision(int N, char **filename)
 
 	fseek(fp, 5000, SEEK_SET);
 	if( fread(&dx, sizeof(double), 1, fp) != 1) {};
-	if( !bigEndian() ) swapByteOrder((char *)&dx, sizeof(double) );
+	if( bigEndian() == false) swapByteOrder((char *)&dx, sizeof(double) );
 
 	fseek(fp, 5008, SEEK_SET);
 	if( fread(&dy, sizeof(double), 1, fp) != 1) {};
-	if( !bigEndian() ) swapByteOrder((char *)&dy, sizeof(double) );
+	if( bigEndian() == false ) swapByteOrder((char *)&dy, sizeof(double) );
 
 	fseek(fp, 3744, SEEK_SET);
 	if( fread(&FOVrow, sizeof(double), 1, fp) != 1) {};
-	if( !bigEndian() ) swapByteOrder((char *)&FOVrow, sizeof(double) );
+	if( bigEndian() == false ) swapByteOrder((char *)&FOVrow, sizeof(double) );
 
 	fseek(fp, 3752, SEEK_SET);
 	if( fread(&FOVcol, sizeof(double), 1, fp) != 1) {};
-	if( !bigEndian() ) swapByteOrder((char *)&FOVcol, sizeof(double) );
+	if( bigEndian() == false ) swapByteOrder((char *)&FOVcol, sizeof(double) );
 
 	nx = (int)(FOVrow/dx + 0.5);
 	ny = (int)(FOVcol/dy + 0.5);
@@ -638,11 +638,11 @@ int VOLUME::readsiemensvision(int N, char **filename)
 
 	fseek(fp, 1544, SEEK_SET);
 	if( fread(&slicethickness, sizeof(double), 1, fp) != 1) {};
-	if( !bigEndian() ) swapByteOrder((char *)&slicethickness, sizeof(double) );
+	if( bigEndian() == false ) swapByteOrder((char *)&slicethickness, sizeof(double) );
         
 	fseek(fp, 4136, SEEK_SET);
 	if( fread(&slicegapfactor, sizeof(double), 1, fp) != 1) {};
-	if( !bigEndian() ) swapByteOrder((char *)&slicegapfactor, sizeof(double) );
+	if( bigEndian() == false ) swapByteOrder((char *)&slicegapfactor, sizeof(double) );
 
 	// Ensure that the slice gap factor is a reasonable number
 	if(slicegapfactor<0.0 || slicegapfactor>10000.0) slicegapfactor=0.0;
@@ -661,22 +661,22 @@ int VOLUME::readsiemensvision(int N, char **filename)
 
 	fseek(fp, 3200, SEEK_SET);
 	if( fread(&studynumber,sizeof(int),1,fp) != 1) {};
-	if( !bigEndian() ) swapByteOrder((char *)&studynumber, sizeof(int) );
+	if( bigEndian() == false ) swapByteOrder((char *)&studynumber, sizeof(int) );
 	printf("Study Number: %d\n",studynumber);
 
 	fseek(fp, 3212, SEEK_SET);
 	if( fread(&imagenumber,sizeof(int),1,fp) != 1) {};
-	if( !bigEndian() ) swapByteOrder((char *)&imagenumber, sizeof(int) );
+	if( bigEndian() == false ) swapByteOrder((char *)&imagenumber, sizeof(int) );
 	imagenumbermin=imagenumber;
 	imagenumbermax=imagenumber;
 
 	fseek(fp, 1568, SEEK_SET);
 	if( fread(&echotime, sizeof(double), 1, fp) != 1) {};
-	if( !bigEndian() ) swapByteOrder((char *)&echotime, sizeof(double) );
+	if( bigEndian() == false ) swapByteOrder((char *)&echotime, sizeof(double) );
 
 	fseek(fp, 3792, SEEK_SET);
 	if( fread(normalvec, sizeof(double), 3, fp) != 3) {};
-	if( !bigEndian() ) 
+	if( bigEndian() == false) 
 	{
 		swapByteOrder((char *)&normalvec[0], sizeof(double) );
 		swapByteOrder((char *)&normalvec[1], sizeof(double) );
@@ -685,7 +685,7 @@ int VOLUME::readsiemensvision(int N, char **filename)
 
 	fseek(fp, 3832, SEEK_SET);
 	if( fread(rowvec, sizeof(double), 3, fp) != 3) {};
-	if( !bigEndian() ) 
+	if( bigEndian() == false ) 
 	{
 		swapByteOrder((char *)&rowvec[0], sizeof(double) );
 		swapByteOrder((char *)&rowvec[1], sizeof(double) );
@@ -694,7 +694,7 @@ int VOLUME::readsiemensvision(int N, char **filename)
 
 	fseek(fp, 3856, SEEK_SET);
 	if( fread(columnvec, sizeof(double), 3, fp) != 3) {};
-	if( !bigEndian() ) 
+	if( bigEndian() == false ) 
 	{
 		swapByteOrder((char *)&columnvec[0], sizeof(double) );
 		swapByteOrder((char *)&columnvec[1], sizeof(double) );
@@ -720,15 +720,15 @@ int VOLUME::readsiemensvision(int N, char **filename)
 		        
 		fseek(fp, 3200, SEEK_SET);
 		if( fread(&studynumber2,sizeof(int),1,fp) != 1) {};
-		if( !bigEndian() ) swapByteOrder((char *)&studynumber2, sizeof(int) );
+		if( bigEndian() == false ) swapByteOrder((char *)&studynumber2, sizeof(int) );
 
 		fseek(fp, 3212, SEEK_SET);
 		if( fread(&imagenumber,sizeof(int),1,fp) != 1) {};
-		if( !bigEndian() ) swapByteOrder((char *)&imagenumber, sizeof(int) );
+		if( bigEndian() == false ) swapByteOrder((char *)&imagenumber, sizeof(int) );
 
 		fseek(fp, 1568, SEEK_SET);
 		if( fread(&echotime2, sizeof(double), 1, fp) != 1) {};
-		if( !bigEndian() ) swapByteOrder((char *)&echotime2, sizeof(double) );
+		if( bigEndian() == false ) swapByteOrder((char *)&echotime2, sizeof(double) );
 
 		fclose(fp);
 
@@ -779,7 +779,7 @@ int VOLUME::readsiemensvision(int N, char **filename)
 
 		fseek(fp, 3212, SEEK_SET);
 		if( fread(&imagenumber,sizeof(int),1,fp) != 1) {};
-		if( !bigEndian() ) swapByteOrder((char *)&imagenumber, sizeof(int) );
+		if( bigEndian() == false ) swapByteOrder((char *)&imagenumber, sizeof(int) );
 
 		imagenumber -=  imagenumbermin;
 
@@ -787,7 +787,7 @@ int VOLUME::readsiemensvision(int N, char **filename)
 		{
 	        fseek(fp, 3768, SEEK_SET);
         	if( fread(centervec, sizeof(double), 3, fp) != 3) {};
-			if( !bigEndian() ) 
+			if( bigEndian() == false ) 
 			{
 				swapByteOrder((char *)&centervec[0], sizeof(double) );
 				swapByteOrder((char *)&centervec[1], sizeof(double) );
@@ -797,7 +797,7 @@ int VOLUME::readsiemensvision(int N, char **filename)
 
 		fseek(fp, 6144, SEEK_SET);
 		if( fread(data+imagenumber*np, sizeof(short), np, fp) != (size_t)np) {};
-		if( !bigEndian() ) swapN((char *)(data+imagenumber*np), np*2);
+		if( bigEndian() == false ) swapN((char *)(data+imagenumber*np), np*2);
 
 		fclose(fp);
 
@@ -833,17 +833,17 @@ void VOLUME::readmosaic(char *pathname)
 
 	fseek(fp, 5000, SEEK_SET);
 	if( fread(&dx, sizeof(double), 1, fp) != 1) {};
-	if( !bigEndian() ) swapByteOrder((char *)&dx, sizeof(double) );
+	if( bigEndian() == false ) swapByteOrder((char *)&dx, sizeof(double) );
 
 	fseek(fp, 3744, SEEK_SET);
 	if( fread(&FOVrow, sizeof(double), 1, fp) != 1) {};
-	if( !bigEndian() ) swapByteOrder((char *)&FOVrow, sizeof(double) );
+	if( bigEndian() == false ) swapByteOrder((char *)&FOVrow, sizeof(double) );
 
 	W = (int)(FOVrow/dx + 0.5);
 
 	fseek(fp, 2864, SEEK_SET);
 	if( fread(&nx, sizeof(int), 1, fp) != 1) {} 
-	if( !bigEndian() ) swapByteOrder((char *)&nx, sizeof(int) );
+	if( bigEndian() == false ) swapByteOrder((char *)&nx, sizeof(int) );
 	ny=nx;
 	np=nx*ny;
 	nix=W/nx;
@@ -851,7 +851,7 @@ void VOLUME::readmosaic(char *pathname)
 
 	fseek(fp, 3752, SEEK_SET);
 	if( fread(&FOVcol, sizeof(double), 1, fp) != 1) {};
-	if( !bigEndian() ) swapByteOrder((char *)&FOVcol, sizeof(double) );
+	if( bigEndian() == false ) swapByteOrder((char *)&FOVcol, sizeof(double) );
 
 	// dx and dy may be read directly from locations 5000 and 5008 
 	// However, for MOSAIC format they contain FOVrow/512 and FOVcol/512
@@ -861,15 +861,15 @@ void VOLUME::readmosaic(char *pathname)
 
 	fseek(fp, 1544, SEEK_SET);
 	if( fread(&slicethickness, sizeof(double), 1, fp) != 1) {};
-	if( !bigEndian() ) swapByteOrder((char *)&slicethickness, sizeof(double) );
+	if( bigEndian() == false ) swapByteOrder((char *)&slicethickness, sizeof(double) );
 
 	fseek(fp, 4136, SEEK_SET);
 	if( fread(&slicegapfactor, sizeof(double), 1, fp) != 1) {};
-	if( !bigEndian() ) swapByteOrder((char *)&slicegapfactor, sizeof(double) );
+	if( bigEndian() == false ) swapByteOrder((char *)&slicegapfactor, sizeof(double) );
 
 	fseek(fp, 3768, SEEK_SET);
 	if( fread(centervec, sizeof(double), 3, fp) != 3) {};
-	if( !bigEndian() ) 
+	if( bigEndian() == false ) 
 	{
 		swapByteOrder((char *)&centervec[0], sizeof(double) );
 		swapByteOrder((char *)&centervec[1], sizeof(double) );
@@ -878,7 +878,7 @@ void VOLUME::readmosaic(char *pathname)
 
 	fseek(fp, 3792, SEEK_SET);
 	if( fread(normalvec, sizeof(double), 3, fp) != 3) {};
-	if( !bigEndian() ) 
+	if( bigEndian() == false ) 
 	{
 		swapByteOrder((char *)&normalvec[0], sizeof(double) );
 		swapByteOrder((char *)&normalvec[1], sizeof(double) );
@@ -887,7 +887,7 @@ void VOLUME::readmosaic(char *pathname)
 
 	fseek(fp, 3832, SEEK_SET);
 	if( fread(rowvec, sizeof(double), 3, fp) != 3) {};
-	if( !bigEndian() ) 
+	if( bigEndian() == false ) 
 	{
 		swapByteOrder((char *)&rowvec[0], sizeof(double) );
 		swapByteOrder((char *)&rowvec[1], sizeof(double) );
@@ -896,7 +896,7 @@ void VOLUME::readmosaic(char *pathname)
 
 	fseek(fp, 3856, SEEK_SET);
 	if( fread(columnvec, sizeof(double), 3, fp) != 3) {};
-	if( !bigEndian() ) 
+	if( bigEndian() == false ) 
 	{
 		swapByteOrder((char *)&columnvec[0], sizeof(double) );
 		swapByteOrder((char *)&columnvec[1], sizeof(double) );
@@ -912,7 +912,7 @@ void VOLUME::readmosaic(char *pathname)
 	mosaic=(short *)calloc(W*W,sizeof(short));
 	fseek(fp, 6144, SEEK_SET);
 	if( fread(mosaic, sizeof(short), W*W, fp) != (size_t)W*W) {};
-	if( !bigEndian() ) swapN((char *)mosaic, 512*512*2);
+	if( bigEndian() == false ) swapN((char *)mosaic, 512*512*2);
 
 	fclose(fp);
 
@@ -1121,38 +1121,38 @@ void VOLUME::read_ge(char *pathname)
 
 	fseek(fp,4,0);
 	if( fread(&hdr_size,sizeof(int),1,fp) != 1) {};
-	if(!bigEndian() ) swapByteOrder( (char *)&hdr_size, sizeof(int));
+	if(bigEndian() == false ) swapByteOrder( (char *)&hdr_size, sizeof(int));
 
 	fseek(fp,148,0);
 	if( fread(&im_hdr_offset,sizeof(int),1,fp) != 1) {};
-	if(!bigEndian() ) swapByteOrder( (char *)&im_hdr_offset, sizeof(int));
+	if(bigEndian() == false ) swapByteOrder( (char *)&im_hdr_offset, sizeof(int));
 	
 	fseek(fp,132,0);
 	if( fread(&exam_hdr_offset,sizeof(int),1,fp) != 1) {};
-	if(!bigEndian() ) swapByteOrder( (char *)&exam_hdr_offset, sizeof(int));
+	if(bigEndian() == false ) swapByteOrder( (char *)&exam_hdr_offset, sizeof(int));
 	
 	fseek(fp,140,0);
 	if( fread(&series_hdr_offset,sizeof(int),1,fp) != 1) {};
-	if(!bigEndian() ) swapByteOrder( (char *)&series_hdr_offset, sizeof(int));
+	if(bigEndian() == false ) swapByteOrder( (char *)&series_hdr_offset, sizeof(int));
 
 	fseek(fp,im_hdr_offset+50,0);
 	if( fread(&fdum,sizeof(float),1,fp) != 1) {};
-	if(!bigEndian() ) swapByteOrder( (char *)&fdum, sizeof(float));
+	if(bigEndian() == false ) swapByteOrder( (char *)&fdum, sizeof(float));
 	dx = fdum;
 
 	fseek(fp,im_hdr_offset+54,0);
 	if( fread(&fdum,sizeof(float),1,fp) != 1) {};
-	if(!bigEndian() ) swapByteOrder( (char *)&fdum, sizeof(float));
+	if(bigEndian() == false ) swapByteOrder( (char *)&fdum, sizeof(float));
 	dy = fdum;
 
 	fseek(fp,im_hdr_offset+30,0);
 	if( fread(&sdum,sizeof(short),1,fp) != 1) {};
-	if(!bigEndian() ) swapByteOrder( (char *)&sdum, sizeof(short));
+	if(bigEndian() == false ) swapByteOrder( (char *)&sdum, sizeof(short));
 	nx = sdum;
 
 	fseek(fp,im_hdr_offset+32,0);
 	if( fread(&sdum,sizeof(short),1,fp) != 1) {};
-	if(!bigEndian() ) swapByteOrder( (char *)&sdum, sizeof(short));
+	if(bigEndian() == false ) swapByteOrder( (char *)&sdum, sizeof(short));
 	ny = sdum;
 
 	np = nx*ny;
@@ -1169,17 +1169,17 @@ void VOLUME::read_ge(char *pathname)
 
 	fseek(fp,im_hdr_offset+202,0);
 	if( fread(&echotime, sizeof(int), 1, fp) != 1) {};
-	if( !bigEndian() ) swapByteOrder((char *)&echotime, sizeof(int) );
+	if( bigEndian() == false) swapByteOrder((char *)&echotime, sizeof(int) );
 	printf("Echo time=%d (microseconds)\n",echotime);
 
 	fseek(fp, series_hdr_offset+10, 0);
 	if( fread(&seriesnumber,sizeof(short),1,fp) != 1) {};
-	if( !bigEndian() ) swapByteOrder((char *)&seriesnumber, sizeof(short) );
+	if( bigEndian() == false ) swapByteOrder((char *)&seriesnumber, sizeof(short) );
 	printf("Series number: %d\n",seriesnumber);
 
 	fseek(fp,im_hdr_offset+154,0);
 	if( fread(TLHC,sizeof(float),3,fp) != 3) {};
-	if(!bigEndian() ) 
+	if(bigEndian() == false ) 
 	{
 		swapByteOrder( (char *)&TLHC[0], sizeof(float));
 		swapByteOrder( (char *)&TLHC[1], sizeof(float));
@@ -1189,7 +1189,7 @@ void VOLUME::read_ge(char *pathname)
 
 	fseek(fp,im_hdr_offset+166,0);
 	if( fread(TRHC,sizeof(float),3,fp) != 3) {};
-	if(!bigEndian() ) 
+	if(bigEndian() == false ) 
 	{
 		swapByteOrder( (char *)&TRHC[0], sizeof(float));
 		swapByteOrder( (char *)&TRHC[1], sizeof(float));
@@ -1199,7 +1199,7 @@ void VOLUME::read_ge(char *pathname)
 
 	fseek(fp,im_hdr_offset+178,0);
 	if( fread(BRHC,sizeof(float),3,fp) != 3) {};
-	if(!bigEndian() ) 
+	if(bigEndian() == false ) 
 	{
 		swapByteOrder( (char *)&BRHC[0], sizeof(float));
 		swapByteOrder( (char *)&BRHC[1], sizeof(float));
@@ -1272,13 +1272,13 @@ void VOLUME::read_ge(char *pathname)
 
 		fseek(fp, series_hdr_offset+10, 0);
 		if( fread(&seriesnumber2,sizeof(short),1,fp) != 1) {};
-		if( !bigEndian() ) swapByteOrder((char *)&seriesnumber2, sizeof(short) );
+		if( bigEndian() == false ) swapByteOrder((char *)&seriesnumber2, sizeof(short) );
 
 		if( seriesnumber != seriesnumber2 ) continue;
 
 		fseek(fp,im_hdr_offset+202,0);
 		if( fread(&echotime2, sizeof(int), 1, fp) != 1) {};
-		if( !bigEndian() ) swapByteOrder((char *)&echotime2, sizeof(int) );
+		if( bigEndian() == false ) swapByteOrder((char *)&echotime2, sizeof(int) );
 
 		if( echotime != echotime2 )  continue;
 
@@ -1303,7 +1303,7 @@ void VOLUME::read_ge(char *pathname)
 
 		fseek(fp, hdr_size, SEEK_SET);
 		if( fread(data+i*np, sizeof(short), np, fp) != (size_t)np) {};
-		if( !bigEndian() ) swapN((char *)(data+i*np), np*2);
+		if( bigEndian() == false ) swapN((char *)(data+i*np), np*2);
 
 		fclose(fp);
 
@@ -1318,7 +1318,7 @@ void VOLUME::read_ge(char *pathname)
 
 			fseek(fp,im_hdr_offset+130,0);
 			if( fread(cntr,sizeof(float),3,fp) != 3) {};
-			if(!bigEndian() )
+			if(bigEndian() == false )
 			{
 				swapByteOrder( (char *)&cntr[0], sizeof(float));
 				swapByteOrder( (char *)&cntr[1], sizeof(float));
@@ -1332,7 +1332,7 @@ void VOLUME::read_ge(char *pathname)
 
 			fseek(fp,im_hdr_offset+26,0);
 			if( fread(&fdum,sizeof(float),1,fp) != 1) {};
-			if(!bigEndian() ) swapByteOrder( (char *)&fdum, sizeof(float));
+			if(bigEndian() == false ) swapByteOrder( (char *)&fdum, sizeof(float));
 			dz = fdum;
 			fclose(fp);
 
@@ -1357,7 +1357,7 @@ void VOLUME::read_ge(char *pathname)
 
 				fseek(fp,im_hdr_offset+130,0);
 				if( fread(Ca,sizeof(float),3,fp) != 3) {};
-				if(!bigEndian() )
+				if(bigEndian() == false )
 				{
 					swapByteOrder( (char *)&Ca[0], sizeof(float));
 					swapByteOrder( (char *)&Ca[1], sizeof(float));
@@ -1379,7 +1379,7 @@ void VOLUME::read_ge(char *pathname)
 
 				fseek(fp,im_hdr_offset+130,0);
 				if( fread(Cb,sizeof(float),3,fp) != 3) {};
-				if(!bigEndian() )
+				if(bigEndian() == false )
 				{
 					swapByteOrder( (char *)&Cb[0], sizeof(float));
 					swapByteOrder( (char *)&Cb[1], sizeof(float));
@@ -1483,19 +1483,19 @@ void VOLUME::read_gelx(char *pathname)
 	if( fread(&image_hdr, sizeof(MRIMAGEDATATYPE), 1, fp) != 1) {};
 
 	fdum = image_hdr.pixsize_X;
-	if(!bigEndian() ) swapByteOrder( (char *)&fdum, sizeof(float));
+	if(bigEndian() == false ) swapByteOrder( (char *)&fdum, sizeof(float));
 	dx = fdum;
 
 	fdum = image_hdr.pixsize_Y;
-	if(!bigEndian() ) swapByteOrder( (char *)&fdum, sizeof(float));
+	if(bigEndian() == false ) swapByteOrder( (char *)&fdum, sizeof(float));
 	dy = fdum;
 
 	sdum = image_hdr.imatrix_X;
-	if(!bigEndian() ) swapByteOrder( (char *)&sdum, sizeof(short));
+	if(bigEndian() == false ) swapByteOrder( (char *)&sdum, sizeof(short));
 	nx = sdum;
 
 	sdum = image_hdr.imatrix_Y;
-	if(!bigEndian() ) swapByteOrder( (char *)&sdum, sizeof(short));
+	if(bigEndian() == false ) swapByteOrder( (char *)&sdum, sizeof(short));
 	ny = sdum;
 
 	np = nx*ny;
@@ -1507,17 +1507,17 @@ void VOLUME::read_gelx(char *pathname)
 	printf("Patient Name: %s\n",patientname);
 
 	echotime = image_hdr.te;
-	if( !bigEndian() ) swapByteOrder((char *)&echotime, sizeof(int) );
+	if( bigEndian() == false ) swapByteOrder((char *)&echotime, sizeof(int) );
 	printf("Echo time=%d (microseconds)\n",echotime);
 
 	seriesnumber=series_hdr.se_no;
-	if( !bigEndian() ) swapByteOrder((char *)&seriesnumber, sizeof(short) );
+	if( bigEndian() == false ) swapByteOrder((char *)&seriesnumber, sizeof(short) );
 	printf("Series number: %d\n",seriesnumber);
 
 	TLHC[0] = image_hdr.tlhc_R;
 	TLHC[1] = image_hdr.tlhc_A;
 	TLHC[2] = image_hdr.tlhc_S;
-	if(!bigEndian() ) 
+	if(bigEndian() == false ) 
 	{
 		swapByteOrder( (char *)&TLHC[0], sizeof(float));
 		swapByteOrder( (char *)&TLHC[1], sizeof(float));
@@ -1528,7 +1528,7 @@ void VOLUME::read_gelx(char *pathname)
 	TRHC[0] = image_hdr.trhc_R;
 	TRHC[1] = image_hdr.trhc_A;
 	TRHC[2] = image_hdr.trhc_S;
-	if(!bigEndian() ) 
+	if(bigEndian() == false) 
 	{
 		swapByteOrder( (char *)&TRHC[0], sizeof(float));
 		swapByteOrder( (char *)&TRHC[1], sizeof(float));
@@ -1539,7 +1539,7 @@ void VOLUME::read_gelx(char *pathname)
 	BRHC[0] = image_hdr.brhc_R;
 	BRHC[1] = image_hdr.brhc_A;
 	BRHC[2] = image_hdr.brhc_S;
-	if(!bigEndian() ) 
+	if(bigEndian() == false ) 
 	{
 		swapByteOrder( (char *)&BRHC[0], sizeof(float));
 		swapByteOrder( (char *)&BRHC[1], sizeof(float));
@@ -1613,11 +1613,11 @@ void VOLUME::read_gelx(char *pathname)
 		if( strcmp(patientname, patientname2) != 0 ) { fclose(fp); continue; }
 
 		seriesnumber2=series_hdr.se_no;
-		if( !bigEndian() ) swapByteOrder((char *)&seriesnumber2, sizeof(short) );
+		if( bigEndian() == false ) swapByteOrder((char *)&seriesnumber2, sizeof(short) );
 		if( seriesnumber != seriesnumber2 ) { fclose(fp); continue; }
 
 		echotime2 = image_hdr.te;
-		if( !bigEndian() ) swapByteOrder((char *)&echotime2, sizeof(int) );
+		if( bigEndian() == false ) swapByteOrder((char *)&echotime2, sizeof(int) );
 		if( echotime != echotime2 )  { fclose(fp); continue; }
 
 		fclose(fp);
@@ -1650,13 +1650,13 @@ void VOLUME::read_gelx(char *pathname)
                 if( fread(&pix_hdr, sizeof(PixHdr), 1, fp) != 1) {};
 
                 hdr_size=pix_hdr.img_hdr_length;
-		if( !bigEndian() ) swapByteOrder( (char *)&hdr_size, sizeof(int));
+		if( bigEndian() == false ) swapByteOrder( (char *)&hdr_size, sizeof(int));
 		hdr_size = hdr_size + sizeof(SUITEDATATYPE) + sizeof(EXAMDATATYPE) + sizeof(SERIESDATATYPE)
                 + sizeof(MRIMAGEDATATYPE);
 
 		fseek(fp, hdr_size, SEEK_SET);
 		if( fread(data+i*np, sizeof(short), np, fp) != (size_t)np ) {};
-		if( !bigEndian() ) swapN((char *)(data+i*np), np*2);
+		if( bigEndian() == false ) swapN((char *)(data+i*np), np*2);
 
 		fclose(fp);
 
@@ -1681,7 +1681,7 @@ void VOLUME::read_gelx(char *pathname)
 		cntr[1]=image_hdr.ctr_A;
 		cntr[2]=image_hdr.ctr_S;
 
-		if(!bigEndian() )
+		if(bigEndian() == false )
 		{
 			swapByteOrder( (char *)&cntr[0], sizeof(float));
 			swapByteOrder( (char *)&cntr[1], sizeof(float));
@@ -1694,7 +1694,8 @@ void VOLUME::read_gelx(char *pathname)
 		centervec[2]=cntr[2];
 
 		fdum=image_hdr.slthick;
-		if(!bigEndian() ) swapByteOrder( (char *)&fdum, sizeof(float));
+		if(bigEndian() == false ) 
+                   swapByteOrder( (char *)&fdum, sizeof(float));
 		dz = fdum;
 		fclose(fp);
 
@@ -1729,7 +1730,7 @@ void VOLUME::read_gelx(char *pathname)
 				Ca[0]=image_hdr.ctr_R;
 				Ca[1]=image_hdr.ctr_A;
 				Ca[2]=image_hdr.ctr_S;
-				if(!bigEndian() )
+		                if(bigEndian() == false ) 
 				{
 					swapByteOrder( (char *)&Ca[0], sizeof(float));
 					swapByteOrder( (char *)&Ca[1], sizeof(float));
@@ -1760,7 +1761,7 @@ void VOLUME::read_gelx(char *pathname)
 				Cb[0]=image_hdr.ctr_R;
 				Cb[1]=image_hdr.ctr_A;
 				Cb[2]=image_hdr.ctr_S;
-				if(!bigEndian() )
+		                if(bigEndian() == false ) 
 				{
 					swapByteOrder( (char *)&Cb[0], sizeof(float));
 					swapByteOrder( (char *)&Cb[1], sizeof(float));

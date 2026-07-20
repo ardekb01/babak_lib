@@ -2,6 +2,28 @@
 #include <stdio.h>
 #include <babak_lib.h>
 
+// Returns true if the computer is big-endian (e.g., SUN).
+// Returns false if the computer is little-endian (e.g., IBM PC).
+bool bigEndian()
+{
+   short s;
+   unsigned char *cp;
+
+   // We will set s = 1. If the computer is big-endian, the first byte
+   // in s will be 0 and the second byte will be 1. Therefore, this
+   // function returns true if the second byte is 1.
+
+   s = 1;
+
+   cp = (unsigned char *)(&s);
+
+   // For s = 1:
+   // Big-endian:    bytes are 00 01 -> cp[1] == 1 -> true.
+   // Little-endian: bytes are 01 00 -> cp[1] == 0 -> false.
+
+   return cp[1] == 1;
+}
+
 void swapByteOrder(char *in, int4 N)
 {
    char *dum;
@@ -39,21 +61,6 @@ void swapByteOrder(char *in, int4 N)
    free(dum);
 }       
 ////////////////////////////////////////////////////////////////////////////////
-
-// Returns 1 if the computer is bigEndian (e.g., SUN) and 0 if it is Little Endian (e.g., IBM PC)
-int4 bigEndian()
-{
-	int2 s;
-	char *cp;
-
-	// We will set s=1. If the computer is Big Endian, the first byte in s will be
-	// 0 and the second byte will be 1.  So this function returns the second byte.
-
-	s=1;
-
-	cp=(char *)(&s);
-	return( (int4)cp[1] );
-}  
 
 void swapN(char *in, int4 N)
 {
