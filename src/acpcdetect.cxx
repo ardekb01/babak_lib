@@ -308,9 +308,9 @@ int main(int argc, char **argv)
   char optransformationpath[1024]="";
   char landmarksfilepath[512]="";
 //  char modelfile[1024]="";
-  char ipimagepath[1024]="";
-  char ipimagename[512]="";
-  char ipimagedir[512]="";  // important to initialize to ""
+  char ipimagepath[1024]=""; // input image full path (E.g., /usr/home/myimage.nii)
+  char ipimagebasename[512]=""; // input image basename (E.g., myimage)
+  char ipimagedir[512]="";  // input image directory (E.g., /use/home). Important to initialize to "".
   char opimagepath[1024]="";
   char iporient[4]="";
   char oporient[4]="RAS"; // default output orientation is RAS
@@ -423,28 +423,35 @@ int main(int argc, char **argv)
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  // This block of code sets: ipimagepath, ipimagename, ipimagedir
+  // This block of code sets: ipimagepath, ipimagebasename, ipimagedir
   // iporient, ipimage, iphdr, ipdim, nPA, nIS, nLR, dPA, dIS, dLR 
   // IPORIENT2PIL, PIL2IPORIENT
 
   if( ipimagepath[0]=='\0' )
   {
     printf("Please specify an input image using: -i <inputimage.nii>\n");
-    exit(0);
+    exit(1);
   }
   if(opt_v) printf("Input image: %s\n",ipimagepath);
 
-  // determine input image filename without the .nii suffix
-  if( get_nifti_basename(ipimagename, sizeof(ipimagename), ipimagepath) == false ) { exit(1); }
-
-  // determine input image directory
-  if( get_directory_name(ipimagepath, ipimagedir, sizeof(ipimagedir)) == false)
+  // Determine the input image directory.
+  if( get_directory_name(ipimagepath, ipimagedir, sizeof(ipimagedir)) == false )
   {
-    fprintf(stderr,"get_directory_name() error, aborting ...\n");
-    exit(0);
+    fprintf(stderr,
+            "Error: Could not determine the input image directory, aborting ...\n");
+    exit(1);
   }
+  if(opt_v) printf("Input image directory: %s\n",ipimagedir);
 
-  // if input orientation is specified using -input-orient, make sure it's valid
+  // Determine input image basename (i.e., without the .nii suffix).
+  if( get_nifti_basename(ipimagebasename, sizeof(ipimagebasename), ipimagepath) == false ) { 
+    fprintf(stderr,
+            "Error: Could not determine the input image basename, aborting ...\n");
+    exit(1); 
+  }
+  if(opt_v) printf("Input image basename: %s\n",ipimagebasename);
+
+  // If input orientation is specified using -input-orient, make sure it's valid
   // -input-orient overrides the orientation inferred from the image header
   if(iporient[0]!='\0' && isOrientationCodeValid(iporient)==0)
   {
@@ -531,7 +538,7 @@ int main(int argc, char **argv)
   opdim.np=opdim.nx*opdim.ny; 
   opdim.nv=opdim.np*opdim.nz; 
 
-  snprintf(opimagepath,sizeof(opimagepath),"%s/%s_%s.nii",ipimagedir,ipimagename,oporient);
+  snprintf(opimagepath,sizeof(opimagepath),"%s/%s_%s.nii",ipimagedir,ipimagebasename,oporient);
 
   if(opt_v) 
   {
@@ -597,7 +604,7 @@ int main(int argc, char **argv)
   {
     float Tout_FSL[16];
 
-    snprintf(optransformationpath,sizeof(optransformationpath),"%s/%s.mrx",ipimagedir,ipimagename);
+    snprintf(optransformationpath,sizeof(optransformationpath),"%s/%s.mrx",ipimagedir,ipimagebasename);
     if(opt_v) printf("Output transformation matrix: %s\n",optransformationpath);
 
     fp = fopen(optransformationpath,"w");
@@ -606,7 +613,7 @@ int main(int argc, char **argv)
     fclose(fp);
 
     art_to_fsl(Tout, Tout_FSL, ipdim, opdim);
-    snprintf(optransformationpath,sizeof(optransformationpath),"%s/%s_FSL.mat",ipimagedir,ipimagename);
+    snprintf(optransformationpath,sizeof(optransformationpath),"%s/%s_FSL.mat",ipimagedir,ipimagebasename);
     if(opt_v) printf("Output transformation matrix (FSL format): %s\n",optransformationpath);
     fp=fopen(optransformationpath,"w");
     if(fp==NULL) file_open_error(optransformationpath);
