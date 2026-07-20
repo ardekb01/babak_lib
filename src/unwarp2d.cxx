@@ -56,8 +56,6 @@ int opt_s=NO;
 void print_help_and_exit();
 void check_W_permission(char *file);
 void setDimensions(struct dsr hdr, int *nx, int *ny, int *nz, float *dx, float *dy, float *dz);
-void swapN(char *in, int N);
-void swapByteOrder(char *in, int N);
 
 int main(int argc, char **argv)
 {

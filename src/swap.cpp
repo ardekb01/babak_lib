@@ -2,6 +2,71 @@
 #include <stdio.h>
 #include <babak_lib.h>
 
+// AB CD EF GH --> BA DC FE HG
+bool swapN(char *in, int N)
+{
+   char dum[2];
+
+   // N should be even and positive.
+   if (N <= 0 || N % 2 != 0)
+   {
+      return false;
+   }
+
+   if (in == nullptr)
+   {
+      return false;
+   }
+
+   for (int i = 0; i < N / 2; i++)
+   {
+      dum[0] = in[i * 2 + 1];
+      dum[1] = in[i * 2];
+
+      in[i * 2] = dum[0];
+      in[i * 2 + 1] = dum[1];
+   }
+
+   return true;
+}
+
+// [A B C D] --> [D C B A]
+bool swapByteOrder(char *in, int N)
+{
+   char *dum;
+
+   if (N <= 0)
+   {
+      return false;
+   }
+
+   if (in == nullptr)
+   {
+      return false;
+   }
+
+   dum = (char *)malloc(N);
+
+   if (dum == nullptr)
+   {
+      return false;
+   }
+
+   for (int i = 0; i < N; i++)
+   {
+      dum[i] = in[N - 1 - i];
+   }
+
+   for (int i = 0; i < N; i++)
+   {
+      in[i] = dum[i];
+   }
+
+   free(dum);
+
+   return true;
+}
+
 // Returns true if the computer is big-endian (e.g., SUN).
 // Returns false if the computer is little-endian (e.g., IBM PC).
 bool bigEndian()
@@ -24,57 +89,7 @@ bool bigEndian()
    return cp[1] == 1;
 }
 
-void swapByteOrder(char *in, int4 N)
-{
-   char *dum;
-
-   if(N<=0)
-   {
-      printf("\n\nWarning swapByteOrder(): Non-positive array dimension argument.\n\n");
-      return;
-   }
-
-   if(in==NULL)
-   {
-      printf("\n\nWarning swapByteOrder(): NULL array argument.\n\n");
-      return;
-   }
-
-   dum = (char *)malloc(N);
-
-   if(dum==NULL)
-   {
-      printf("\n\nWarning swapByteOrder(): Memory allocation failure.\n\n");
-      return;
-   }
-
-   for( int4 i=0; i<N; i++)
-   {
-      dum[i]=in[N-1-i];
-   }
-
-   for( int4 i=0; i<N; i++)
-   {
-      in[i]=dum[i];
-   }
-
-   free(dum);
-}       
 ////////////////////////////////////////////////////////////////////////////////
-
-void swapN(char *in, int4 N)
-{
-	char dum[2]; 
-
-	for(int4 i=0; i<N/2; i++)
-	{    
-		dum[0]=in[i*2+1];
-		dum[1]=in[i*2];
-        
-		in[i*2]=dum[0];
-		in[i*2+1]=dum[1];
-	}
-}       
 
 void swap_double_array( float8 *x, int4 n)
 {

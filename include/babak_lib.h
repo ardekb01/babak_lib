@@ -749,8 +749,6 @@ void write_analyze_image(const char *filename, float4 *im, int4 nx, int4 ny, int
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // functions defined in swap.cxx
-extern void swapByteOrder(char *in, int4 N);
-extern void swapN(char *in, int4 N);
 extern void swap_float_array(float4 *x, int4 n);
 extern void swap_double_array(float8 *x, int4 n);
 extern void swap_int_array(int4 *x, int4 n);
