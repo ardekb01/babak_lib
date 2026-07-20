@@ -5,8 +5,8 @@ CC = g++
 INC = -I../include
 LIBS =  -L../lib -lbabak -lniftiio -lznz -lm -lz -lc -llapack -lblas
 
-all: getDirectoryName_test
+all: get_directory_name_test
 
 # compilation of executables
-getDirectoryName_test: getDirectoryName_test.cxx
-	$(CC) $(CFLAGS) -o getDirectoryName_test getDirectoryName_test.cxx $(INC) $(LIBS)
+get_directory_name_test: .get_directory_name_test.cxx
+	$(CC) $(CFLAGS) -o gget_directory_name_test get_directory_name_test.cxx $(INC) $(LIBS)
