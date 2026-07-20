@@ -857,10 +857,10 @@ void symmetric_registration(SHORTIM &aimpil, const char *bfile, const char *ffil
       printf("Follow-up image: %s\n",ffile);
    }
 
-   // Note: get_nifti_filename does a few extra checks to ensure that the file has either
+   // Note: get_nifti_basename does a few extra checks to ensure that the file has either
    // .hdr or .nii extension, the magic field in the header is set correctly, 
    // the file can be opened and a header can be read.
-   if(get_nifti_filename(bprefix, sizeof(bprefix), bfile) == false)
+   if(get_nifti_basename(bprefix, sizeof(bprefix), bfile) == false)
    {
       exit(0);
    }
@@ -870,7 +870,7 @@ void symmetric_registration(SHORTIM &aimpil, const char *bfile, const char *ffil
       printf("Baseline image prefix: %s\n",bprefix);
    }
 
-   if(get_nifti_filename(fprefix, sizeof(fprefix), ffile) == false)
+   if(get_nifti_basename(fprefix, sizeof(fprefix), ffile) == false)
    {
       exit(0);
    }
@@ -1352,7 +1352,7 @@ void compute_hi(char *imfile, char *roifile, float4 &parenchymasize, int &voisiz
    char roifiledir[DEFAULT_STRING_LENGTH]=""; //baseline image prefix
    char filename[DEFAULT_STRING_LENGTH]=""; //baseline image prefix
 
-   if(get_nifti_filename(roifileprefix, sizeof(roifileprefix), roifile) == false) exit(1);
+   if(get_nifti_basename(roifileprefix, sizeof(roifileprefix), roifile) == false) exit(1);
    if( get_directory_name(roifile, roifiledir, sizeof(roifiledir)) == false)
    {
       fprintf(stderr,"get_directory_name() error, aborting ...\n");
@@ -1714,7 +1714,7 @@ int main(int argc, char **argv)
    if( check_nifti1_magic(bfile)  == true )  // a single image was specified using -i <image>.nii
    {
       strcpy(imagefile[0], bfile);
-      if(get_nifti_filename(imagefileprefix[0], sizeof(imagefileprefix[0]), imagefile[0]) == false) { exit(0); }
+      if(get_nifti_basename(imagefileprefix[0], sizeof(imagefileprefix[0]), imagefile[0]) == false) { exit(0); }
       scalefactor[0]=1.0;
       if( get_directory_name(imagefile[0], imagedir[0], sizeof(imagedir[0])) == false)
       {
@@ -1748,7 +1748,7 @@ int main(int argc, char **argv)
             fprintf(stderr, "Error: Failed to read mrxfile from file.\n");
          }
 
-         if( get_nifti_filename(imagefileprefix[i], sizeof(imagefileprefix[i]), imagefile[i]) == false) { exit(0); }
+         if( get_nifti_basename(imagefileprefix[i], sizeof(imagefileprefix[i]), imagefile[i]) == false) { exit(0); }
          if( get_directory_name(imagefile[i], imagedir[i], sizeof(imagedir[i])) == false)
          {
             fprintf(stderr,"get_directory_name() error, aborting ...\n");

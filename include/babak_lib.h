@@ -17,7 +17,7 @@
 #include "get_directory_name.h"
 #include "check_nifti_file_extension.h"
 #include "check_nifti1_magic.h"
-#include "get_nifti_filename.h"
+#include "get_nifti_basename.h"
 #include "nifti1.h"
 
 #ifndef _PILTRANSFORM

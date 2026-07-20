@@ -3,18 +3,18 @@
 #include <cstdio>
 #include <cstring>
 
-// Extracts the filename from the full path string.
+// Extracts the basename from the full path string.
 //
 // Examples:
 //    "/home/babak/images/test.nii" -> "test"
 //    "test.nii"                    -> "test"
 //    "/home/babak/my.test.nii"     -> "my.test"
 //
-// The ".nii" extension is not included in the output filename.
+// The ".nii" extension is not included in the output basename.
 //
 // Returns false on failure and true on success.
-bool get_nifti_filename(char *filename,
-                        size_t filenameSize,
+bool get_nifti_basename(char *basename,
+                        size_t basenameSize,
                         const char *path)
 {
    size_t i;
@@ -22,24 +22,24 @@ bool get_nifti_filename(char *filename,
    size_t pos;
 
    // Validate input variables.
-   if (filename == nullptr)
+   if (basename == nullptr)
    {
       fprintf(stderr,
-              "Error: get_nifti_filename(): NULL pointer passed as filename.\n");
+              "Error: get_nifti_basename(): NULL pointer passed as basename.\n");
       return false;
    }
 
    if (path == nullptr)
    {
       fprintf(stderr,
-              "Error: get_nifti_filename(): NULL pointer passed as path.\n");
+              "Error: get_nifti_basename(): NULL pointer passed as path.\n");
       return false;
    }
 
-   if (filenameSize == 0)
+   if (basenameSize == 0)
    {
       fprintf(stderr,
-              "Error: get_nifti_filename(): 0 passed as filenameSize.\n");
+              "Error: get_nifti_basename(): 0 passed as basenameSize.\n");
       return false;
    }
 
@@ -62,34 +62,34 @@ bool get_nifti_filename(char *filename,
 
    pos = i;
 
-   // Determine the length of the filename, including its extension.
+   // Determine the length of the basename, including its extension.
    len = strlen(path + pos);
 
-   if (len + 1 > filenameSize)
+   if (len + 1 > basenameSize)
    {
       fprintf(stderr,
-              "Error: get_nifti_filename(): output \"filename\" buffer is too small.\n");
+              "Error: get_nifti_basename(): output \"basename\" buffer is too small.\n");
       return false;
    }
 
    // Copy the basename, including the ".nii" extension.
-   strcpy(filename, path + pos);
+   strcpy(basename, path + pos);
 
    // Remove the ".nii" extension.
    if (len < 4)
    {
       fprintf(stderr,
-              "Error: get_nifti_filename(): unexpected filename length.\n");
+              "Error: get_nifti_basename(): unexpected basename length.\n");
       return false;
    }
 
-   filename[len - 4] = '\0';
+   basename[len - 4] = '\0';
 
-   // Reject a filename consisting only of ".nii".
-   if (filename[0] == '\0')
+   // Reject a basename consisting only of ".nii".
+   if (basename[0] == '\0')
    {
       fprintf(stderr,
-              "Error: get_nifti_filename(): filename has zero length.\n");
+              "Error: get_nifti_basename(): basename has zero length.\n");
       return false;
    }
 

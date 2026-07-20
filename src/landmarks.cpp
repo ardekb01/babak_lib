@@ -130,7 +130,7 @@ float *detect_landmarks(const char *subfile, const char *mdlfile, int &nl, char 
    //float ccmax;
    float *P;
 
-   if( get_nifti_filename(prefix, sizeof(prefix), subfile) == false )
+   if( get_nifti_basename(prefix, sizeof(prefix), subfile) == false )
    {
       exit(0);
    }
