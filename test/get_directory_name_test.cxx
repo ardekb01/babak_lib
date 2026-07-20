@@ -10,7 +10,7 @@ int main()
    int exit_st=0;
    
    snprintf(pathname, sizeof(pathname), "%s", "/usr/home/file.nii");
-   getDirectoryName(pathname, dirname, sizeof(dirname));
+   get_directory_name(pathname, dirname, sizeof(dirname));
    printf("pathname = \"%s\"  dirname = \"%s\"", pathname,dirname);
    if (strcmp(dirname, "/usr/home") == 0) {
       printf("   (PASSED)\n");
@@ -20,7 +20,7 @@ int main()
    }
 
    snprintf(pathname, sizeof(pathname), "%s", "./home/file.nii");
-   getDirectoryName(pathname, dirname, sizeof(dirname));
+   get_directory_name(pathname, dirname, sizeof(dirname));
    printf("pathname = \"%s\"  dirname = \"%s\"", pathname,dirname);
    if (strcmp(dirname, "./home") == 0) {
       printf("   (PASSED)\n");
@@ -30,7 +30,7 @@ int main()
    }
 
    snprintf(pathname, sizeof(pathname), "%s", "file.nii");
-   getDirectoryName(pathname, dirname, sizeof(dirname));
+   get_directory_name(pathname, dirname, sizeof(dirname));
    printf("pathname = \"%s\"  dirname = \"%s\"", pathname,dirname);
    if (strcmp(dirname, ".") == 0) {
       printf("   (PASSED)\n");
@@ -41,7 +41,7 @@ int main()
 
    snprintf(pathname, sizeof(pathname), "%s", "file.nii");
    snprintf(pathname, sizeof(pathname), "%s", "/");
-   getDirectoryName(pathname, dirname, sizeof(dirname));
+   get_directory_name(pathname, dirname, sizeof(dirname));
    printf("pathname = \"%s\"  dirname = \"%s\"", pathname,dirname);
    if (strcmp(dirname, "/") == 0) {
       printf("   (PASSED)\n");
@@ -51,7 +51,7 @@ int main()
    }
 
    snprintf(pathname, sizeof(pathname), "%s", "/usr/home/");
-   getDirectoryName(pathname, dirname, sizeof(dirname));
+   get_directory_name(pathname, dirname, sizeof(dirname));
    printf("pathname = \"%s\"  dirname = \"%s\"", pathname,dirname);
    if (strcmp(dirname, "/usr/home") == 0) {
       printf("   (PASSED)\n");
