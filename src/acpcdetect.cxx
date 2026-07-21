@@ -544,30 +544,40 @@ int main(int argc, char **argv)
   ///////////////////////////////////////////////////////////////////////////////////////
   // This block of code sets: oporient, opdim, opimagepath, PIL2OPORIENT
   // OPORIENT2PIL, Tijk2xyz, ophdr
+  ///////////////////////////////////////////////////////////////////////////////////////
 
   // if ouput orientation is specified using -oo option, make sure it's valid
-  if(valid_orientation_code(oporient)==false )
+  if( !valid_orientation_code(oporient) )
   {
-    printf("%s is not a valid orientation code, aborting ...\n",oporient);
-    exit(0);
+    fprintf(stderr,
+            "%s is not a valid orientation code, aborting ...\n",
+            oporient);
+    exit(1);
   }
 
   // setting opdim
   if(oporient[0]=='P' || oporient[0]=='A') { opdim.nx=nPA; opdim.dx=dPA; }
   if(oporient[0]=='I' || oporient[0]=='S') { opdim.nx=nIS; opdim.dx=dIS; }
   if(oporient[0]=='L' || oporient[0]=='R') { opdim.nx=nLR; opdim.dx=dLR; }
+
   if(oporient[1]=='P' || oporient[1]=='A') { opdim.ny=nPA; opdim.dy=dPA; }
   if(oporient[1]=='I' || oporient[1]=='S') { opdim.ny=nIS; opdim.dy=dIS; }
   if(oporient[1]=='L' || oporient[1]=='R') { opdim.ny=nLR; opdim.dy=dLR; }
+
   if(oporient[2]=='P' || oporient[2]=='A') { opdim.nz=nPA; opdim.dz=dPA; }
   if(oporient[2]=='I' || oporient[2]=='S') { opdim.nz=nIS; opdim.dz=dIS; }
   if(oporient[2]=='L' || oporient[2]=='R') { opdim.nz=nLR; opdim.dz=dLR; }
+
+  // If any of these variables is specified at the command line,
+  // they override the ones that are automatically set based in the
+  // dimensions of the input image.
   if(nx > 0) opdim.nx=nx; 
   if(ny > 0) opdim.ny=ny; 
   if(nz > 0) opdim.nz=nz;
   if(dx > 0.0) opdim.dx=dx; 
   if(dy > 0.0) opdim.dy=dy; 
   if(dz > 0.0) opdim.dz=dz;
+
   opdim.nt=1; 
   opdim.dt=0.0; 
   opdim.np=opdim.nx*opdim.ny; 
