@@ -9,8 +9,9 @@
 #include "volume.h"
 #include <ctype.h>
 
-#include <nifti1_io.h>
+#include "nifti1_io.h"
 #include "babak_lib.h"
+#include "swap.h"
 
 #define YES 1
 #define NO 0

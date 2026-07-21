@@ -799,7 +799,6 @@ void save_nifti_image(const char *filename, float4 *im, nifti_1_header *hdr);
 void save_nifti_image(const char *filename, char *im, nifti_1_header *hdr);
 // returns the orientations vectors xvec, yvec, and zvec in NIFTI's RAS system
 void readOrientationVectorsFromFile(const char *filename, float4 *xvec, float4 *yvec, float4 *zvec);
-void swapniftiheader(nifti_1_header *hdr);
 int2 *readNiftiImage(const char *filename, DIM *dim, int4 flg);
 ///////////////////////////////////////////////////////////////
 

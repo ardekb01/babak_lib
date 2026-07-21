@@ -16,11 +16,12 @@
 #include <volume.h>
 #include <spm_analyze.h>
 #include <nifti1_io.h>
-#include <babak_lib.h>
-#include <smooth.h>
-#include <minmax.h>
-#include <stats.h>
-#include <interpolator.h>
+#include "babak_lib.h"
+#include "smooth.h"
+#include "minmax.h"
+#include "stats.h"
+#include "interpolator.h"
+#include "swap.h"
 
 #define YES 1
 #define NO 0

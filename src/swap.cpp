@@ -170,3 +170,61 @@ void swap_model_file_tail(model_file_tail *tail)
    swapByteOrder( (char *)(&tail->RPmean[0]), sizeof(float4));
    swapByteOrder( (char *)(&tail->RPmean[1]), sizeof(float4));
 }
+
+void swapniftiheader(nifti_1_header *hdr)
+{
+   swapByteOrder( (char *)&(hdr->sizeof_hdr), sizeof(int));
+
+   swapByteOrder( (char *)&(hdr->extents), sizeof(int));
+   swapByteOrder( (char *)&(hdr->session_error), sizeof(short));
+
+   for(int i=0; i<8; i++)
+   {
+      swapByteOrder( (char *)&(hdr->dim[i]), sizeof(short));
+   }
+
+   swapByteOrder( (char *)&(hdr->intent_p1), sizeof(float));
+   swapByteOrder( (char *)&(hdr->intent_p2), sizeof(float));
+   swapByteOrder( (char *)&(hdr->intent_p3), sizeof(float));
+
+   swapByteOrder( (char *)&(hdr->intent_code), sizeof(short));
+   swapByteOrder( (char *)&(hdr->datatype), sizeof(short));
+   swapByteOrder( (char *)&(hdr->bitpix), sizeof(short));
+   swapByteOrder( (char *)&(hdr->slice_start), sizeof(short));
+
+   for(int i=0; i<8; i++)
+   {
+      swapByteOrder( (char *)&(hdr->pixdim[i]), sizeof(float));
+   }
+
+   swapByteOrder( (char *)&(hdr->vox_offset), sizeof(float));
+   swapByteOrder( (char *)&(hdr->scl_slope), sizeof(float));
+   swapByteOrder( (char *)&(hdr->scl_inter), sizeof(float));
+
+   swapByteOrder( (char *)&(hdr->slice_end), sizeof(short));
+
+   swapByteOrder( (char *)&(hdr->cal_max), sizeof(float));
+   swapByteOrder( (char *)&(hdr->cal_min), sizeof(float));
+   swapByteOrder( (char *)&(hdr->slice_duration), sizeof(float));
+   swapByteOrder( (char *)&(hdr->toffset), sizeof(float));
+
+   swapByteOrder( (char *)&(hdr->glmax), sizeof(int));
+   swapByteOrder( (char *)&(hdr->glmin), sizeof(int));
+
+   swapByteOrder( (char *)&(hdr->qform_code), sizeof(short));
+   swapByteOrder( (char *)&(hdr->sform_code), sizeof(short));
+
+   swapByteOrder( (char *)&(hdr->quatern_b), sizeof(float));
+   swapByteOrder( (char *)&(hdr->quatern_c), sizeof(float));
+   swapByteOrder( (char *)&(hdr->quatern_d), sizeof(float));
+   swapByteOrder( (char *)&(hdr->qoffset_x), sizeof(float));
+   swapByteOrder( (char *)&(hdr->qoffset_y), sizeof(float));
+   swapByteOrder( (char *)&(hdr->qoffset_z), sizeof(float));
+
+   for(int i=0; i<4; i++)
+   {
+      swapByteOrder( (char *)&(hdr->srow_x[i]), sizeof(float));
+      swapByteOrder( (char *)&(hdr->srow_y[i]), sizeof(float));
+      swapByteOrder( (char *)&(hdr->srow_z[i]), sizeof(float));
+   }
+}

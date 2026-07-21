@@ -9,8 +9,9 @@
 #include <unistd.h>
 #include <volume.h>
 #include <spm_analyze.h>
-#include <babak_lib.h>
-#include <interpolator.h>
+#include "babak_lib.h"
+#include "swap.h"
+#include "interpolator.h"
 
 #define YES 1
 #define NO 0
