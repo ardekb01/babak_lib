@@ -16,6 +16,7 @@
 #include <interpolator.h>
 #include <minmax.h>
 #include "read_nifti_image.h"
+#include "set_dim.h"
 
 #define NBIN 256
 

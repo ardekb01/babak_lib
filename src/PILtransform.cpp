@@ -13,6 +13,7 @@
 #include <landmarks.h>
 #include <stats.h>
 #include "read_nifti_image.h"
+#include "set_dim.h"
 
 double searchradius[3]={50.0, 15.0, 15.0}; // in units of mm
 int opt_CENTER_AC=NO;

@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 // Copyright (C) 2024 Babak A. Ardekani, PhD - All Rights Reserved.  //
 ///////////////////////////////////////////////////////////////////////
@@ -251,14 +251,6 @@ void memory_allocation_error(const char *variablename);
 void file_open_error(const char *filename);
 void errorMessage(const char *message);
 
-void set_dim(nifti_1_header &hdr, DIM dim);
-void set_dim(DIM &dim, int4 nx, int4 ny, int4 nz, float4 dx, float4 dy, float4 dz);
-void set_dim(DIM &dim, nifti_1_header hdr);
-void set_dim(DIM &dim, nifti_1_header *hdr);
-void set_dim(SHORTIM &im, nifti_1_header hdr);
-void set_dim(SHORTIM &im, DIM dim);
-void set_dim(DIM &dim, SHORTIM im);
-void set_dim(SHORTIM &im, SHORTIM sourceim);
 void findMSP(const char *filename, char *orient, const char *lmfile, float4 *Tmsp, int4 verbose, DIM &dim);
 // Input: (x,y,z) a vector defined in RAS system
 // Output: One of six charaters {R,L,A,P,S,I}

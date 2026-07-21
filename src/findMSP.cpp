@@ -2,6 +2,7 @@
 #include "babak_lib.h"
 #include "getNiftiImageOrientation.h"
 #include "read_nifti_image.h"
+#include "set_dim.h"
 
 // Inputs:
 // filename: NIFTI image filename on which the MSP is to be detected
