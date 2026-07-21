@@ -497,15 +497,19 @@ int main(int argc, char **argv)
   if(opt_v) printf("Input image orientation: %s\n",iporient);
 
   ipimage = (short  *)read_nifti_image(ipimagepath, &iphdr);
-  if(ipimage==NULL)
+  if (ipimage == NULL)
   {
-    printf("Error reading %s, aborting ...\n", ipimagepath);
+    fprintf(stderr, 
+            "Error reading %s, aborting ...\n",
+            ipimagepath);
     exit(1);
   }
 
-  if( iphdr.datatype != DT_SIGNED_SHORT && iphdr.datatype != DT_UINT16)
+  if( iphdr.datatype != DT_SIGNED_SHORT && iphdr.datatype != DT_UINT16 )
   {
-    printf("This program can only handle short and unsigned short data types, aborting ...\n");
+    printf("\nSorry, but this program can only handle NIFTI-1 images of type \"short\"\n" 
+           "or \"unsigned short\". Please convert you original image to one of these\n"
+           "data types and try again.\n\n");
     exit(0);
   }
 
