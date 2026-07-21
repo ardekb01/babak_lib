@@ -1,30 +1,64 @@
 #include <math.h>
 
-/* 
- This function determines the general direction of a vector (x,y,z) defined in RAS system.
- Possible directions are: Right, Left, Anterior, Posterior, Superior, or Inferior.
- Input: (x,y,z) a vector defined in RAS system
- Output: One of six charaters {R,L,A,P,S,I}
+/*
+   This function determines the general direction of a vector (x, y, z)
+   defined in the RAS system.
+
+   Possible directions are:
+      Right, Left, Anterior, Posterior, Superior, or Inferior.
+
+   Input:
+      (x, y, z) - A vector defined in the RAS system.
+
+   Output:
+      One of six characters: {R, L, A, P, S, I}.
+
+   If two or more components have equal maximum magnitudes,
+   the priority is x, then y, then z.
 */
-char directionCode(float x, float y, float z) 
+
+char directionCode(float x, float y, float z)
 {
-   float lxl, lyl, lzl; // absolute values of x, y, and z
+   float absX;
+   float absY;
+   float absZ;
 
-   lxl = fabsf(x);
-   lyl = fabsf(y);
-   lzl = fabsf(z);
+   // Absolute values of x, y, and z.
+   absX = fabsf(x);
+   absY = fabsf(y);
+   absZ = fabsf(z);
 
-   if( lxl>lyl && lxl>lzl)
+   if (absX >= absY && absX >= absZ)
    {
-      if(x>0.0) return('R'); else return('L');
+      if (x > 0.0f)
+      {
+         return 'R';
+      }
+      else
+      {
+         return 'L';
+      }
    }
-   else if( lyl>lxl && lyl>lzl)
+   else if (absY >= absX && absY >= absZ)
    {
-      if(y>0.0) return('A'); else return('P');
+      if (y > 0.0f)
+      {
+         return 'A';
+      }
+      else
+      {
+         return 'P';
+      }
    }
-   else 
+   else
    {
-      if(z>0.0) return('S'); else return('I');
+      if (z > 0.0f)
+      {
+         return 'S';
+      }
+      else
+      {
+         return 'I';
+      }
    }
 }
-
