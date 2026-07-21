@@ -484,6 +484,13 @@ int main(int argc, char **argv)
   if(iporient[0]=='\0')
   {
     getNiftiImageOrientation(ipimagepath, iporient);
+
+    if(valid_orientation_code(iporient) == false)
+    {
+      fprintf(stderr,
+              "Unable to determine input image orientation, aborting ...\n");
+      exit(1);
+     }
   }
 
   if(opt_v) printf("Input image orientation: %s\n",iporient);
