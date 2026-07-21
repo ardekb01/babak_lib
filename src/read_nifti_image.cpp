@@ -1,191 +1,198 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <climits>
+#include <math.h>
+#include <stdint.h>
+
 #include "babak_lib.h"
 #include "nifti1.h"
 #include "swap.h"
-#include "minmax.h"
 
 char *read_nifti_image(const char *filename, nifti_1_header *hdr)
 {
    FILE *fp;
-   int swapflg=0;
-   int datasize;
-   char *imgname;
-   char *im=NULL;
+   int swapflg = 0;
+   size_t datasize = 1;
+   char *im = NULL;
    long voxeloffset;
+   size_t nv = 1;
+   float value;
 
-/*
-   // ensure that the specified image has either .nii extension
-   if( check_nifti_file_extension(filename) == false )
+   // Validate input arguments.
+   if (filename == nullptr || hdr == nullptr)
+      return nullptr;
+
+   // Ensure that the file has '.nii' extension.
+   if (!check_nifti_file_extension(filename))
+      return nullptr;
+
+   // Ensure that the file has the correct NIFTI-1 'magic' code.
+   if (!check_nifti1_magic(filename))
+      return nullptr;
+
+   fp = fopen(filename, "rb");
+
+   if (fp == nullptr)
+      return nullptr;
+
+   if (fread(hdr, sizeof(nifti_1_header), 1, fp) != 1)
    {
-      printf("\nread_nifti_image(): %s does not have `.nii' extension.\n\n",filename);
-      return(NULL);
-   }
-*/
-
-   fp = fopen(filename,"r");
-
-   if(fp==NULL)
-   {
-      printf("\nread_nifti_image(): Opening %s for reading failed.\n\n",filename);
-      return(NULL);
-   }
-
-   if( fread(hdr, sizeof(nifti_1_header), 1, fp) != 1 )
-   {
-      printf("\nread_nifti_image(): Reading %s failed.\n\n",filename);
-      return(NULL);
+      fclose(fp);
+      return nullptr;
    }
 
    fclose(fp);
 
-   if( hdr->magic[0]!='n' ||  (hdr->magic[1]!='+' && hdr->magic[1]!='i') ||  hdr->magic[2]!='1')
+   // If dim[0] is outside the range [1,7], then the header information
+   // needs to be byte swapped appropriately.
+   if (hdr->dim[0] < 1 || hdr->dim[0] > 7)
    {
-      printf("\nread_nifti_image(): %s does not have the NIFTI magic.\n\n",filename);
-      return(NULL);
-   }
-
-   // if dim[0] is outside range 1..7, then the header information
-   // needs to be byte swapped appropriately
-   if(hdr->dim[0]<1 || hdr->dim[0]>7) 
-   {
-      swapflg=1;
+      swapflg = 1;
       swapniftiheader(hdr);
    }
 
+   if (!isfinite(hdr->vox_offset) ||
+       hdr->vox_offset < 0.0f ||
+       hdr->vox_offset > 2147483647.0f)
    {
-      int L;
-
-      L = strlen(filename);
-
-      imgname = (char *)calloc(L+1, 1);
-
-      strcpy(imgname, filename);
-
-      if(imgname[L-3]=='h' && imgname[L-2]=='d' && imgname[L-1]=='r')
-      {
-         imgname[L-3]='i';
-         imgname[L-2]='m';
-         imgname[L-1]='g';
-
-         voxeloffset = 0;
-      }
-      else
-      {
-         voxeloffset = (long)hdr->vox_offset;
-      }
+      return nullptr;
    }
 
-   fp = fopen(imgname,"r");
+   voxeloffset = (long)hdr->vox_offset;
 
-   if(fp==NULL)
+   float slope = hdr->scl_slope;
+   float inter = hdr->scl_inter;
+
+   if (slope == 0.0f)
    {
-      printf("\nread_nifti_image(): Opening %s for reading failed.\n\n",imgname);
-      free(imgname);
-      return(NULL);
+      slope = 1.0f;
+      inter = 0.0f;
    }
 
-   if( fseek(fp, voxeloffset, SEEK_SET) != 0 )
+   if (hdr->dim[0] < 1 || hdr->dim[0] > 7)
+      return nullptr;
+
+   if (hdr->bitpix <= 0 || hdr->bitpix % 8 != 0)
+      return nullptr;
+
+   for (int i = 1; i <= hdr->dim[0]; i++)
    {
-      printf("\nread_nifti_image(): Reading %s failed.\n\n",imgname);
+      if (hdr->dim[i] <= 0)
+         return nullptr;
+
+      if (nv > SIZE_MAX / (size_t)hdr->dim[i])
+         return nullptr;
+
+      nv *= (size_t)hdr->dim[i];
+   }
+
+   size_t bytesPerVoxel = (size_t)hdr->bitpix / 8;
+
+   if (nv > SIZE_MAX / bytesPerVoxel)
+      return nullptr;
+
+   datasize = nv * bytesPerVoxel;
+
+   fp = fopen(filename, "rb");
+
+   if (fp == nullptr)
+      return nullptr;
+
+   if (fseek(fp, voxeloffset, SEEK_SET) != 0)
+   {
       fclose(fp);
-      free(imgname);
-      return(NULL);
+      return nullptr;
    }
 
-   datasize = 1;
-   for(int i=1; i<=hdr->dim[0]; i++)
-   {
-      datasize *= hdr->dim[i];
-   }
-   datasize *= (hdr->bitpix/8);
+   im = (char *)calloc(datasize, 1);
 
-   im = (char *)calloc(datasize, sizeof(char));
-   if(im==NULL)
+   if (im == nullptr)
    {
-      printf("\nread_nifti_image(): Memory allocation problem.\n\n");
       fclose(fp);
-      free(imgname);
-      return(NULL);
+      return nullptr;
    }
 
-   if( (int)fread(im, 1, datasize, fp) != datasize )
+   if ( fread(im, 1, datasize, fp) != datasize )
    {
-      printf("\nread_nifti_image(): Reading %s failed.\n\n",imgname);
       free(im);
       fclose(fp);
-      free(imgname);
-      return(NULL);
+      return nullptr;
    }
 
    fclose(fp);
 
-   if(swapflg)
+   // If necessary swap bytes of the image data. 
+   if (swapflg)
    {
-      if( hdr->datatype == DT_SIGNED_SHORT || hdr->datatype == DT_UINT16) 
-      { 
+      if (hdr->datatype == DT_SIGNED_SHORT ||
+          hdr->datatype == DT_UINT16)
+      {
          swapN(im, datasize);
       }
 
-      if( hdr->datatype == DT_FLOAT ) 
-      { 
-         swap_float_array( (float *)im, datasize/sizeof(float));
+      if (hdr->datatype == DT_FLOAT)
+      {
+         swap_float_array(
+            (float *)im,
+            datasize / sizeof(float)
+         );
       }
 
-      if( hdr->datatype == DT_DOUBLE) 
-      { 
-         swap_double_array( (float8 *)im, datasize/sizeof(float8));
+      if (hdr->datatype == DT_DOUBLE)
+      {
+         swap_double_array(
+            (double *)im,
+            datasize / sizeof(double)
+         );
       }
 
-      if( hdr->datatype == DT_SIGNED_INT ) 
-      { 
-         swap_int_array( (int *)im, datasize/sizeof(int));
+      if (hdr->datatype == DT_SIGNED_INT)
+      {
+         swap_int_array(
+            (int *)im,
+            datasize / sizeof(int)
+         );
       }
    }
 
-  int nv=1;
-  for(int i=1; i<=hdr->dim[0]; i++)
-  {
-    nv *= hdr->dim[i];
-  }
+   if (hdr->datatype == DT_SIGNED_SHORT)
+   {
+      short *tmp;
 
+      tmp = (short *)im;
 
-  float *floatim;
-  float max=0.0;
-  floatim = (float *)calloc(nv, sizeof(float));
+      for (size_t i = 0; i < nv; i++)
+      {
+         value = roundf( tmp[i] * slope + inter );
 
-  if( hdr->datatype == DT_SIGNED_SHORT) 
-  {
-    short *tmp;
-    tmp = (short *)im;
+         if (value < SHRT_MIN)
+            value = SHRT_MIN;
 
-    for(int i=0; i<nv; i++)
-      floatim[i] = tmp[i]*hdr->scl_slope + hdr->scl_inter + .5;    
+         if (value > SHRT_MAX)
+            value = SHRT_MAX;
 
-    arraymax(floatim, nv, max);
-    if(max>32767) for(int i=0; i<nv; i++) floatim[i] *= (32767/max);    
+         tmp[i] = (short)value;
+      }
+   }
+   else if (hdr->datatype == DT_UINT16)
+   {
+      unsigned short *tmp;
 
-    for(int i=0; i<nv; i++)
-      tmp[i] = (short)(floatim[i]);    
-  }
+      tmp = (unsigned short *)im;
 
-  if( hdr->datatype == DT_UINT16) 
-  {
-    unsigned short *tmp;
-    tmp = (unsigned short *)im;
+      for (size_t i = 0; i < nv; i++)
+      {
+         value = roundf( tmp[i] * slope + inter );
 
-    for(int i=0; i<nv; i++)
-      floatim[i] = tmp[i]*hdr->scl_slope + hdr->scl_inter + .5;    
+         if (value < 0.0f)
+            value = 0.0f;
 
-    arraymax(floatim, nv, max);
-    if(max>32767) for(int i=0; i<nv; i++) floatim[i] *= (32767/max);    
+         if (value > USHRT_MAX)
+            value = USHRT_MAX;
 
-    for(int i=0; i<nv; i++)
-      tmp[i] = (unsigned short)(floatim[i]);    
-  }
+         tmp[i] = (unsigned short)value; 
+      }
+   }
 
-  free(imgname);
-  free(floatim);
-  return(im);
+   return(im);
 }
