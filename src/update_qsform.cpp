@@ -9,7 +9,8 @@
 #include <ctype.h>
 #include <nifti1_io.h>
 #include <niftiimage.h>
-#include <babak_lib.h>
+#include "babak_lib.h"
+#include "swap.h"
 
 #define _update_qsform
 
