@@ -69,51 +69,78 @@ bool getNiftiImageOrientation(const char *filename, char *orientation)
       orientation[0] = directionCode(R.m[0][0],R.m[1][0],R.m[2][0]);
       orientation[1] = directionCode(R.m[0][1],R.m[1][1],R.m[2][1]);
       orientation[2] = directionCode(R.m[0][2],R.m[1][2],R.m[2][2]);
-      orientation[3] = '\0';
    }
    else
    {
       orientation[0] = directionCode(hdr.srow_x[0],hdr.srow_y[0],hdr.srow_z[0]);
       orientation[1] = directionCode(hdr.srow_x[1],hdr.srow_y[1],hdr.srow_z[1]);
       orientation[2] = directionCode(hdr.srow_x[2],hdr.srow_y[2],hdr.srow_z[2]);
-      orientation[3] = '\0';
    }
+   orientation[3]='\0';
 
    return true;
 }
 
-bool getNiftiImageOrientation(nifti_1_header hdr, char *orientation)
+bool getNiftiImageOrientation(nifti_1_header hdr,
+                              char *orientation)
 {
-   if(orientation == nullptr)
+   if (orientation == nullptr)
+   {
       return false;
+   }
 
-   orientation[0]='\0';
+   orientation[0] = '\0';
 
-   if(hdr.qform_code == 0 && hdr.sform_code == 0) 
+   if (hdr.qform_code == 0 && hdr.sform_code == 0)
    {
       // The header does not contain orientation information.
       return false;
    }
 
-   if(hdr.qform_code > 0 )
+   if (hdr.qform_code > 0)
    {
       mat44 R;
 
-      R = nifti_quatern_to_mat44(hdr.quatern_b, hdr.quatern_c, hdr.quatern_d, hdr.qoffset_x, hdr.qoffset_y, 
-      hdr.qoffset_z, hdr.pixdim[1], hdr.pixdim[2], hdr.pixdim[3], hdr.pixdim[0]);
+      R = nifti_quatern_to_mat44(hdr.quatern_b,
+                                 hdr.quatern_c,
+                                 hdr.quatern_d,
+                                 hdr.qoffset_x,
+                                 hdr.qoffset_y,
+                                 hdr.qoffset_z,
+                                 hdr.pixdim[1],
+                                 hdr.pixdim[2],
+                                 hdr.pixdim[3],
+                                 hdr.pixdim[0]);
 
-      orientation[0] = directionCode(R.m[0][0],R.m[1][0],R.m[2][0]);
-      orientation[1] = directionCode(R.m[0][1],R.m[1][1],R.m[2][1]);
-      orientation[2] = directionCode(R.m[0][2],R.m[1][2],R.m[2][2]);
-      orientation[3] = '\0';
+      orientation[0] = directionCode(R.m[0][0],
+                                     R.m[1][0],
+                                     R.m[2][0]);
+
+      orientation[1] = directionCode(R.m[0][1],
+                                     R.m[1][1],
+                                     R.m[2][1]);
+
+      orientation[2] = directionCode(R.m[0][2],
+                                     R.m[1][2],
+                                     R.m[2][2]);
+
    }
    else
    {
-      orientation[0] = directionCode(hdr.srow_x[0],hdr.srow_y[0],hdr.srow_z[0]);
-      orientation[1] = directionCode(hdr.srow_x[1],hdr.srow_y[1],hdr.srow_z[1]);
-      orientation[2] = directionCode(hdr.srow_x[2],hdr.srow_y[2],hdr.srow_z[2]);
-      orientation[3] = '\0';
+      orientation[0] = directionCode(hdr.srow_x[0],
+                                     hdr.srow_y[0],
+                                     hdr.srow_z[0]);
+
+      orientation[1] = directionCode(hdr.srow_x[1],
+                                     hdr.srow_y[1],
+                                     hdr.srow_z[1]);
+
+      orientation[2] = directionCode(hdr.srow_x[2],
+                                     hdr.srow_y[2],
+                                     hdr.srow_z[2]);
+
    }
+   orientation[3]='\0';
 
    return true;
 }
