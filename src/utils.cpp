@@ -18,6 +18,7 @@
 #include <niftiimage.h>
 #include <babak_lib.h>
 #include <smooth.h>
+#include "read_nifti_image.h"
 
 void art_to_fsl(float *Mart, float *Mfsl, DIM sub_dim, DIM trg_dim);
 void fsl_to_art(float *Mfsl, float *Mart, DIM sub_dim, DIM trg_dim, int subflg, int trgflg);

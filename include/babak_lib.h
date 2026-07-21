@@ -784,7 +784,6 @@ extern void mat_trans_mat(float8 *A, int4 Ar, int4 Ac, float8 *B, int4 Bc, float
 
 ///////////////////////////////////////////////////////////////
 // The following functions are defined in nifti.cxx
-char *read_nifti_image(const char *filename, nifti_1_header *hdr);
 int4 same_nifti_image_size(int4 N, char **imagefile, int4 *nx, int4 *ny, int4 *nz, float4 *dx, float4 *dy, float4 *dz);
 void read_nifti_image(const char *filename, uchar **im, nifti_1_header *hdr);
 void read_nifti_image(const char *filename, int2 **im, nifti_1_header *hdr);

@@ -12,6 +12,7 @@
 #include <spm_analyze.h>
 #include <babak_lib.h>
 #include <f2c.h>
+#include "read_nifti_image.h"
 
 #define YES 1
 #define NO 0

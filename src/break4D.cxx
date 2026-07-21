@@ -14,8 +14,9 @@
 #include <f2c.h>
 #include "babak_lib.h"
 #include "niftiimage.h"
-#include <minmax.h>
-#include <stats.h>
+#include "read_nifti_image.h"
+#include "minmax.h"
+#include "stats.h"
 
 #define YES 1
 #define NO 0

@@ -13,6 +13,9 @@ all: libbabak.a brainwash 3dwarper acpcdetect applywarp3d scaleImage avgImage on
 
 # because of functions in matrixops, linking the libbabak will possibly require lapack libs.
 
+read_nifti_image.o: read_nifti_image.cpp
+	$(CC) $(CFLAGS) -c $(INC) read_nifti_image.cpp
+
 get_nifti_basename.o: get_nifti_basename.cpp
 	$(CC) $(CFLAGS) -c $(INC) get_nifti_basename.cpp
 
@@ -187,8 +190,8 @@ getARTHOME.o: getARTHOME.cpp
 update_qsform.o: update_qsform.cpp
 	$(CC) $(CFLAGS)  -c $(INC) update_qsform.cpp
 
-libbabak.a: get_nifti_basename.o check_nifti1_magic.o get_directory_name.o loadTransformation.o leastSquaresAffineTrans.o hist1D_plot.o set_dim.o findMSP.o singular_value_decomposition.o DKI.o artlib.o volume.o binomial.o smooth.o niftiimage.o utils.o nifti.o errorMessage.o maskOps.o EMFIT.o max_cc.o statistics.o ginverse.o permutation.o hpsort.o random.o dicomIO.o nkiIO.o subsets.o analyzeio.o getoption.o swap.o fileinfo.o histogram.o resize.o gaussian_kernel.o convolution.o resliceImage.o matrixCom.o registration.o legendre.o cubicspline.o medianfilter.o directionCode.o check_nifti_file_extension.o getNiftiImageOrientation.o valid_orientation_code.o PILtransform.o reorientVolume.o rotate.o setLowHigh.o compute_cm.o standardize.o sph.o matrixops.o landmarks.o getARTHOME.o update_qsform.o
-	ar -ru ../lib/libbabak.a get_nifti_basename.o check_nifti1_magic.o get_directory_name.o loadTransformation.o leastSquaresAffineTrans.o hist1D_plot.o set_dim.o findMSP.o singular_value_decomposition.o DKI.o artlib.o volume.o binomial.o smooth.o niftiimage.o utils.o nifti.o errorMessage.o maskOps.o EMFIT.o max_cc.o statistics.o ginverse.o permutation.o hpsort.o random.o dicomIO.o nkiIO.o subsets.o analyzeio.o getoption.o swap.o fileinfo.o histogram.o resize.o gaussian_kernel.o convolution.o resliceImage.o matrixCom.o registration.o legendre.o cubicspline.o medianfilter.o directionCode.o check_nifti_file_extension.o getNiftiImageOrientation.o valid_orientation_code.o PILtransform.o reorientVolume.o rotate.o setLowHigh.o compute_cm.o standardize.o sph.o matrixops.o landmarks.o getARTHOME.o update_qsform.o
+libbabak.a: read_nifti_image.o get_nifti_basename.o check_nifti1_magic.o get_directory_name.o loadTransformation.o leastSquaresAffineTrans.o hist1D_plot.o set_dim.o findMSP.o singular_value_decomposition.o DKI.o artlib.o volume.o binomial.o smooth.o niftiimage.o utils.o nifti.o errorMessage.o maskOps.o EMFIT.o max_cc.o statistics.o ginverse.o permutation.o hpsort.o random.o dicomIO.o nkiIO.o subsets.o analyzeio.o getoption.o swap.o fileinfo.o histogram.o resize.o gaussian_kernel.o convolution.o resliceImage.o matrixCom.o registration.o legendre.o cubicspline.o medianfilter.o directionCode.o check_nifti_file_extension.o getNiftiImageOrientation.o valid_orientation_code.o PILtransform.o reorientVolume.o rotate.o setLowHigh.o compute_cm.o standardize.o sph.o matrixops.o landmarks.o getARTHOME.o update_qsform.o
+	ar -ru ../lib/libbabak.a read_nifti_image.o get_nifti_basename.o check_nifti1_magic.o get_directory_name.o loadTransformation.o leastSquaresAffineTrans.o hist1D_plot.o set_dim.o findMSP.o singular_value_decomposition.o DKI.o artlib.o volume.o binomial.o smooth.o niftiimage.o utils.o nifti.o errorMessage.o maskOps.o EMFIT.o max_cc.o statistics.o ginverse.o permutation.o hpsort.o random.o dicomIO.o nkiIO.o subsets.o analyzeio.o getoption.o swap.o fileinfo.o histogram.o resize.o gaussian_kernel.o convolution.o resliceImage.o matrixCom.o registration.o legendre.o cubicspline.o medianfilter.o directionCode.o check_nifti_file_extension.o getNiftiImageOrientation.o valid_orientation_code.o PILtransform.o reorientVolume.o rotate.o setLowHigh.o compute_cm.o standardize.o sph.o matrixops.o landmarks.o getARTHOME.o update_qsform.o
 
 clean: 
 	rm -f *.o

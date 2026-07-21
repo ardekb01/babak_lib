@@ -15,6 +15,7 @@
 #include "swap.h"
 #include "smooth.h"
 #include "minmax.h"
+#include "read_nifti_image.h"
 
 #define YES 1
 #define NO 0

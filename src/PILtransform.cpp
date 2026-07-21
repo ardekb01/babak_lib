@@ -6,12 +6,13 @@
 
 #define _PILTRANSFORM
 
-#include <babak_lib.h>
-#include <sph.h>
+#include <string.h>
 #include <ctype.h>
+#include "babak_lib.h"
+#include "sph.h"
 #include <landmarks.h>
 #include <stats.h>
-#include <string.h>
+#include "read_nifti_image.h"
 
 double searchradius[3]={50.0, 15.0, 15.0}; // in units of mm
 int opt_CENTER_AC=NO;

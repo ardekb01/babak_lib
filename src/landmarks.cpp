@@ -1,9 +1,10 @@
-#include <babak_lib.h>
-#include <sph.h>
-#include <stats.h>
-#include <nifti1.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "babak_lib.h"
+#include "sph.h"
+#include "stats.h"
+#include "nifti1.h"
+#include "read_nifti_image.h"
 
 extern void read_nifti_image(const char *filename, unsigned char **im, nifti_1_header *hdr);
 extern void read_nifti_image(const char *filename, short **im, nifti_1_header *hdr);

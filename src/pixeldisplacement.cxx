@@ -15,6 +15,7 @@
 #include <minmax.h>
 #include <ctype.h>
 #include <stats.h>
+#include "read_nifti_image.h"
 
 #define YES 1
 #define NO 0

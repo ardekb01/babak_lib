@@ -22,6 +22,7 @@
 #include "stats.h"
 #include "interpolator.h"
 #include "swap.h"
+#include "read_nifti_image.h"
 
 #define YES 1
 #define NO 0

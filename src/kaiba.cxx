@@ -15,6 +15,7 @@
 #include <landmarks.h>
 #include <interpolator.h>
 #include <minmax.h>
+#include "read_nifti_image.h"
 
 #define NBIN 256
 
