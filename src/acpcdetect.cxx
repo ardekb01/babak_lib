@@ -1,7 +1,5 @@
 ///////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////
-// Copyright (C) 2024 Babak A. Ardekani, PhD - All Rights Reserved.  //
-///////////////////////////////////////////////////////////////////////
+// Copyright (C) 2024 Babak A. Ardekani, PhD - All Rights Reserved.  
 ///////////////////////////////////////////////////////////////////////
 
 #include <stdio.h>
@@ -20,6 +18,7 @@
 #include "minmax.h"
 #include "read_nifti_image.h"
 #include "set_dim.h"
+#include "PILtransform.h"
 
 #define YES 1
 #define NO 0
@@ -425,10 +424,11 @@ int main(int argc, char **argv)
       }
   }
 
-  //////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////
   // This block of code sets: ipimagepath, ipimagebasename, ipimagedir
   // iporient, ipimage, iphdr, ipdim, nPA, nIS, nLR, dPA, dIS, dLR 
   // IPORIENT2PIL, PIL2IPORIENT
+  ///////////////////////////////////////////////////////////////////////
 
   if( ipimagepath[0]=='\0' )
   {
@@ -528,9 +528,11 @@ int main(int argc, char **argv)
   if(iporient[0]=='P' || iporient[0]=='A') { nPA=ipdim.nx; dPA=ipdim.dx; }
   if(iporient[0]=='I' || iporient[0]=='S') { nIS=ipdim.nx; dIS=ipdim.dx; }
   if(iporient[0]=='L' || iporient[0]=='R') { nLR=ipdim.nx; dLR=ipdim.dx; }
+
   if(iporient[1]=='P' || iporient[1]=='A') { nPA=ipdim.ny; dPA=ipdim.dy; }
   if(iporient[1]=='I' || iporient[1]=='S') { nIS=ipdim.ny; dIS=ipdim.dy; }
   if(iporient[1]=='L' || iporient[1]=='R') { nLR=ipdim.ny; dLR=ipdim.dy; }
+
   if(iporient[2]=='P' || iporient[2]=='A') { nPA=ipdim.nz; dPA=ipdim.dz; }
   if(iporient[2]=='I' || iporient[2]=='S') { nIS=ipdim.nz; dIS=ipdim.dz; }
   if(iporient[2]=='L' || iporient[2]=='R') { nLR=ipdim.nz; dLR=ipdim.dz; }

@@ -23,6 +23,7 @@
 #include "interpolator.h"
 #include "swap.h"
 #include "read_nifti_image.h"
+#include "PILtransform.h"
 
 #define YES 1
 #define NO 0

@@ -1,13 +1,10 @@
 ///////////////////////////////////////////////////////////////////////
+// Copyright (C) 2024 Babak A. Ardekani, PhD - All Rights Reserved.
 ///////////////////////////////////////////////////////////////////////
-// Copyright (C) 2024 Babak A. Ardekani, PhD - All Rights Reserved.  //
-///////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////
-
-#define _PILTRANSFORM
+#define _PILTRANSFORM 
 
 #include <string.h>
-#include <ctype.h>
+#include <cctype>
 #include "babak_lib.h"
 #include "sph.h"
 #include <landmarks.h>
@@ -17,6 +14,87 @@
 
 double searchradius[3]={50.0, 15.0, 15.0}; // in units of mm
 int opt_CENTER_AC=NO;
+
+// Matrices of type T are called "signed permutation matrices"
+// A permutation matrix is one in which there is exactly one 1 in 
+// each row and column.  In a signed permutation matrix the non-zero
+// entries can be 1 or -1.
+// Amazing algorithm. Don't remember how I did it.
+bool PILtransform(const char *orientCode, float *T)
+{
+   if (orientCode == nullptr || T == nullptr)
+      return false;
+
+   if (!valid_orientation_code(orientCode))
+      return false;
+
+   for (int i = 0; i < 16; i++)
+      T[i] = 0.0f;
+
+   T[15] = 1.0f;
+
+   for (int j = 0; j < 3; j++)
+   {
+      char c = (char)toupper(
+         (unsigned char)orientCode[j]
+      );
+
+      // Set the jth column of T.
+      if (c == 'P')
+         T[j] = 1.0f;
+      else if (c == 'A')
+         T[j] = -1.0f;
+      else if (c == 'I')
+         T[4 + j] = 1.0f;
+      else if (c == 'S')
+         T[4 + j] = -1.0f;
+      else if (c == 'L')
+         T[8 + j] = 1.0f;
+      else if (c == 'R')
+         T[8 + j] = -1.0f;
+   }
+
+   return true;
+}
+
+bool inversePILtransform(const char *orientCode, float *T)
+{
+   if (orientCode == nullptr || T == nullptr)
+      return false;
+
+   if (!valid_orientation_code(orientCode))
+      return false;
+
+   // Initialize T to zero and set the homogeneous coordinate.
+   for (int i = 0; i < 16; i++)
+      T[i] = 0.0f;
+
+   T[15] = 1.0f;
+
+   for (int i = 0; i < 3; i++)
+   {
+      // Read the ith element of the output orientation code.
+      char c = (char)toupper(
+         (unsigned char)orientCode[i]
+      );
+
+      // Set the ith row of T.
+      if (c == 'P')
+         T[4 * i] = 1.0f;
+      else if (c == 'A')
+         T[4 * i] = -1.0f;
+      else if (c == 'I')
+         T[4 * i + 1] = 1.0f;
+      else if (c == 'S')
+         T[4 * i + 1] = -1.0f;
+      else if (c == 'L')
+         T[4 * i + 2] = 1.0f;
+      else if (c == 'R')
+         T[4 * i + 2] = -1.0f;
+   }
+
+   return true;
+}
 
 void transform_P(float *P, int nl, float *T)
 {
@@ -683,60 +761,3 @@ void standard_PIL_transformation(const char *imfile, const char *lmfile, char *o
    return;
 }
 
-// Matrices of type T are called "signed permutation matrices"
-// A permutation matrix is one in which there is exactly one 1 in 
-// each row and column.  In a signed permutation matrix the non-zero
-// entries can be 1 or -1.
-void PILtransform(const char *inputOrientCode, float *T)
-{
-   char c;
-
-   // Initialize T
-   for(int i=0; i<15; i++) T[i]=0.0;
-   T[15]=1.0;
-
-   for(int j=0; j<3; j++)
-   {
-      // read the jth element of the inputOrientCode vector
-      c = inputOrientCode[j];		
-
-      c=toupper(c);	// convert c to upper case
-
-      // set the jth column of the T
-      if( c=='P' )		T[j]   =  1.0;
-      else if( c=='A' )	T[j]   = -1.0;
-      else if( c=='I' )	T[4+j] =  1.0;
-      else if( c=='S' )	T[4+j] = -1.0;
-      else if( c=='L' )	T[8+j] =  1.0;
-      else if( c=='R' )	T[8+j] = -1.0;
-   }
-
-   return;
-}
-
-void inversePILtransform(const char *outputOrientCode, float *T)
-{
-   char c;
-
-   // Initialize T
-   for(int i=0; i<16; i++) T[i]=0.0;
-   T[15]=1.0;
-
-   for(int i=0; i<3; i++)
-   {
-      // read the ith element of the outputOrientCode vector
-      c = outputOrientCode[i];		
-   
-      c=toupper(c);	// convert c to upper case
-
-      // set the ith row of the T
-      if( c=='P' )		T[4*i] 		=  1.0;
-      else if( c=='A' )	T[4*i] 		= -1.0;
-      else if( c=='I' )	T[4*i + 1]	=  1.0;
-      else if( c=='S' )	T[4*i + 1]	= -1.0;
-      else if( c=='L' )	T[4*i + 2]	=  1.0;
-      else if( c=='R' )	T[4*i + 2]	= -1.0;
-   }
-
-   return;
-}

@@ -259,8 +259,6 @@ void standard_PIL_transformation(const char *imfile, const char *lmfile, char *o
 void convert_to_xyz(float *P, int n, SHORTIM im);
 void Procrustes(float *Q, float *Qavg, int n, float *P, float *Pavg, float *TLM);
 void Procrustes(float *Q, int n, float *P, float *TLM);
-void PILtransform(const char *orientCode, float4 *orientMat);
-void inversePILtransform(const char *orientCode, float4 *orientMat);
 int2 *reorientVolume(int2 *v1, int4 nx1, int4 ny1, int4 nz1, float4 dx1, float4 dy1, float4 dz1, float4 *orientMat,
 int4 &nx2, int4 &ny2, int4 &nz2, float4 &dx2, float4 &dy2, float4 &dz2);
 int2 *reorientVolume(int2 *input_image, nifti_1_header oldhdr, const char *neworient, nifti_1_header &newhdr, 
