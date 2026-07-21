@@ -262,8 +262,6 @@ void set_dim(SHORTIM &im, SHORTIM sourceim);
 void findMSP(const char *filename, char *orient, const char *lmfile, float4 *Tmsp, int4 verbose, DIM &dim);
 // Input: (x,y,z) a vector defined in RAS system
 // Output: One of six charaters {R,L,A,P,S,I}
-void getNiftiImageOrientation(const char *filename, char *orientation);
-void getNiftiImageOrientation(nifti_1_header hdr, char *orientation);
 void new_PIL_transform(const char *subfile, const char *lmfile, char *orient, float4 *T, int SAVE_PIL_FLAG);
 void standard_PIL_transformation(const char *imfile, const char *lmfile, char *orient, int4 verbose, float4 *TPIL);
 void convert_to_xyz(float *P, int n, SHORTIM im);

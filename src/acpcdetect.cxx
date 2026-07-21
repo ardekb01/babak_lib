@@ -15,8 +15,9 @@
 #include <ctype.h>
 #include <nifti1_io.h>
 #include <niftiimage.h>
-#include <babak_lib.h>
-#include <minmax.h>
+#include "babak_lib.h"
+#include "getNiftiImageOrientation.h"
+#include "minmax.h"
 
 #define YES 1
 #define NO 0
@@ -433,6 +434,24 @@ int main(int argc, char **argv)
     exit(1);
   }
   if(opt_v) printf("Input image: %s\n",ipimagepath);
+
+  // Ensure that the specified image has extension ".nii".
+  if( check_nifti_file_extension(ipimagepath) == false )
+  {
+    fprintf(stderr,
+            "Input image \"%s\" does not have a \".nii\" extension. Aborting ...\n",
+            ipimagepath);
+    exit(1);
+  }
+
+  // Ensure that the specified image has extension ".nii".
+  if( check_nifti1_magic(ipimagepath) == false )
+  {
+    fprintf(stderr,
+            "\"%s\" does not appear to be a NIFTI-1 image. Aborting ...\n",
+            ipimagepath);
+    exit(1);
+  }
 
   // Determine the input image directory.
   if( get_directory_name(ipimagepath, ipimagedir, sizeof(ipimagedir)) == false )

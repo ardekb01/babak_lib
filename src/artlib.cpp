@@ -10,6 +10,7 @@
 #include <ctype.h>
 #include <string.h>
 #include "babak_lib.h"
+#include "getNiftiImageOrientation.h"
 #include "swap.h"
 #include "minmax.h"
 #include "stats.h"

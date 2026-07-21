@@ -1,5 +1,6 @@
-#include <babak_lib.h>
 #include <math.h>
+#include "babak_lib.h"
+#include "getNiftiImageOrientation.h"
 
 // Inputs:
 // filename: NIFTI image filename on which the MSP is to be detected

@@ -9,50 +9,33 @@
 #include "swap.h"
 #include "directionCode.h"
 
-void getNiftiImageOrientation(const char *filename, char *orientation)
+bool getNiftiImageOrientation(const char *filename, char *orientation)
 {
    FILE *fp;
    nifti_1_header hdr;
-   int swapflg=0;
+
+   if( filename == nullptr || orientation == nullptr)
+      return false;
 
    orientation[0]='\0';
 
-   // ensure that the specified image has .nii extension
-   if( check_nifti_file_extension(filename) == false )
-   {
-      errorMessage("The image filename must have `.nii' extension.");
-   }
-
    fp = fopen(filename,"r");
 
-   if(fp==NULL)
+   if(fp == nullptr)
    {
-      file_open_error(filename);
+      return false;
    }
 
    if( fread(&hdr, sizeof(nifti_1_header), 1, fp) != 1 )
    {
-      errorMessage("I have trouble reading the specified image file.");
+      return false;
    }
 
    fclose(fp);
 
-   // looks like ANALYZE 7.5, cannot determine orientation
-   if( hdr.magic[0]!='n' ||  (hdr.magic[1]!='+' && hdr.magic[1]!='i') ||  hdr.magic[2]!='1')
-   {
-      printf("\nWarning: Could not determine %s image orientation ...\n",filename);
-      return;
-   }
-
    // if dim[0] is outside range 1..7, then the header information
    // needs to be byte swapped appropriately
    if(hdr.dim[0]<1 || hdr.dim[0]>7) 
-   {
-      swapflg=1;
-   }
-
-   // Here I am only byte swapping the header fields relevant for determining the image orientation
-   if(swapflg)
    {
       swapByteOrder( (char *)&(hdr.qform_code), sizeof(short));
       swapByteOrder( (char *)&(hdr.sform_code), sizeof(short));
@@ -72,9 +55,8 @@ void getNiftiImageOrientation(const char *filename, char *orientation)
 
    if(hdr.qform_code == 0 && hdr.sform_code == 0) 
    {
-      printf("\nWarning: Could not determine %s image orientation ...\n",filename);
-      printf("\nWarning: The header of this \"NIFTI\" file does not contain orientation information.\n");
-      return;
+      // It is not possible to determine image orientation
+      return false;
    }
 
    if(hdr.qform_code > 0 )
@@ -97,18 +79,20 @@ void getNiftiImageOrientation(const char *filename, char *orientation)
       orientation[3] = '\0';
    }
 
-   return;
+   return true;
 }
 
-void getNiftiImageOrientation(nifti_1_header hdr, char *orientation)
+bool getNiftiImageOrientation(nifti_1_header hdr, char *orientation)
 {
+   if(orientation == nullptr)
+      return false;
+
    orientation[0]='\0';
 
    if(hdr.qform_code == 0 && hdr.sform_code == 0) 
    {
-      printf("\nWarning: Could not determine image orientation ...\n");
-      printf("\nWarning: \"NIFTI\" header does not contain orientation information.\n");
-      return;
+      // The header does not contain orientation information.
+      return false;
    }
 
    if(hdr.qform_code > 0 )
@@ -131,5 +115,5 @@ void getNiftiImageOrientation(nifti_1_header hdr, char *orientation)
       orientation[3] = '\0';
    }
 
-   return;
+   return true;
 }
