@@ -1987,58 +1987,6 @@ short *readDataMatrixShort_nifti(char **imageList, int n, int p, short *mask)
 	return(X);
 }
 
-void ijk2xyz(float *T, int nx, int ny, int nz, float dx, float dy, float dz)
-{
-	T[0] =dx;	T[1] =0.0; 	T[2] =0.0; 	T[3] =-dx*(nx-1.0)/2.0;
-	T[4] =0.0; 	T[5] =dy; 	T[6] =0.0; 	T[7] =-dy*(ny-1.0)/2.0;
-	T[8] =0.0; 	T[9] =0.0; 	T[10]=dz; 	T[11]=-dz*(nz-1.0)/2.0;
-	T[12]=0.0; 	T[13]=0.0; 	T[14]=0.0; 	T[15]=1.0;
-
-	return;
-}
-
-void ijk2xyz(float *T, DIM dim)
-{
-	T[0] =dim.dx;	T[1] =0.0; 	T[2] =0.0; 	T[3] =-dim.dx*(dim.nx-1.0)/2.0;
-	T[4] =0.0; 	T[5] =dim.dy; 	T[6] =0.0; 	T[7] =-dim.dy*(dim.ny-1.0)/2.0;
-	T[8] =0.0; 	T[9] =0.0; 	T[10]=dim.dz; 	T[11]=-dim.dz*(dim.nz-1.0)/2.0;
-	T[12]=0.0; 	T[13]=0.0; 	T[14]=0.0; 	T[15]=1.0;
-
-	return;
-}
-
-void xyz2ijk(float *T, int nx, int ny, int nz, float dx, float dy, float dz)
-{
-	if(dx==0.0 || dy==0.0 || dz==0.0)
-	{
-		printf("\nWarning: zero voxel dimensions encountered!\n\n");
-		return;
-	}
-
-	T[0] =1.0/dx;  	T[1] =0.0; 	T[2] =0.0; 	T[3] =(nx-1.0)/2.0;
-	T[4] =0.0; 	T[5] =1.0/dy;  	T[6] =0.0; 	T[7] =(ny-1.0)/2.0;
-	T[8] =0.0; 	T[9] =0.0; 	T[10]=1.0/dz; 	T[11]=(nz-1.0)/2.0;
-	T[12]=0.0; 	T[13]=0.0; 	T[14]=0.0; 	T[15]=1.0;
-
-	return;
-}
-
-void xyz2ijk(float *T, DIM dim)
-{
-	if(dim.dx==0.0 || dim.dy==0.0 || dim.dz==0.0)
-	{
-		printf("\nWarning: zero voxel dimensions encountered!\n\n");
-		return;
-	}
-
-	T[0] =1.0/dim.dx;  	T[1] =0.0; 	T[2] =0.0; 	T[3] =(dim.nx-1.0)/2.0;
-	T[4] =0.0; 	T[5] =1.0/dim.dy;  	T[6] =0.0; 	T[7] =(dim.ny-1.0)/2.0;
-	T[8] =0.0; 	T[9] =0.0; 	T[10]=1.0/dim.dz; 	T[11]=(dim.nz-1.0)/2.0;
-	T[12]=0.0; 	T[13]=0.0; 	T[14]=0.0; 	T[15]=1.0;
-
-	return;
-}
-
 void orientationCodeConverter(int integerCode, char *stringCode)
 {
 	switch(integerCode)

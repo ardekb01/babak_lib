@@ -16,6 +16,7 @@
 #include "read_nifti_image.h"
 #include "set_dim.h"
 #include "PILtransform.h"
+#include "ijk2xyz.h"
 
 #define YES 1
 #define NO 0

@@ -18,6 +18,7 @@
 #include "nifti1_io.h"
 #include "read_nifti_image.h"
 #include "PILtransform.h"
+#include "ijk2xyz.h"
 
 #define _artlib
 

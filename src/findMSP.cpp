@@ -4,6 +4,7 @@
 #include "read_nifti_image.h"
 #include "set_dim.h"
 #include "PILtransform.h"
+#include "ijk2xyz.h"
 
 // Inputs:
 // filename: NIFTI image filename on which the MSP is to be detected

@@ -818,10 +818,6 @@ extern void remove_space(char *inp);
 extern void orientationCodeConverter(int4 integerCode, char *stringCode);
 extern int4 orientationCodeOK(char *stringCode);
 
-extern void ijk2xyz(float4 *T, DIM dim);
-extern void ijk2xyz(float4 *T, int4 nx, int4 ny, int4 nz, float4 dx, float4 dy, float4 dz);
-extern void xyz2ijk(float4 *T, int4 nx, int4 ny, int4 nz, float4 dx, float4 dy, float4 dz);
-extern void xyz2ijk(float4 *T, DIM dim);
 extern void saveMatrix(float4 *A, int4 n, int4 m, char *filename);
 extern void saveMatrix(int2 *A, int4 n, int4 m, char *filename);
 extern float4 *readMatrix(int4 *n, int4 *m, char *filename);
