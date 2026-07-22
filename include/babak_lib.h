@@ -256,7 +256,6 @@ void findMSP(const char *filename, char *orient, const char *lmfile, float4 *Tms
 // Output: One of six charaters {R,L,A,P,S,I}
 void new_PIL_transform(const char *subfile, const char *lmfile, char *orient, float4 *T, int SAVE_PIL_FLAG);
 void standard_PIL_transformation(const char *imfile, const char *lmfile, char *orient, int4 verbose, float4 *TPIL);
-void convert_to_xyz(float *P, int n, SHORTIM im);
 void Procrustes(float *Q, float *Qavg, int n, float *P, float *Pavg, float *TLM);
 void Procrustes(float *Q, int n, float *P, float *TLM);
 int2 *reorientVolume(int2 *v1, int4 nx1, int4 ny1, int4 nz1, float4 dx1, float4 dy1, float4 dz1, float4 *orientMat,

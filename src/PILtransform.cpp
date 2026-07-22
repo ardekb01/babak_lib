@@ -223,56 +223,6 @@ void mspPPM(SHORTIM im, int *ii, int *jj, int nl, const char *ppmfile)
   free(imgTemp);
 }
 
-void convert_to_xyz(float *P, int n, SHORTIM im)
-{
-   /////////////////////////////////////////////////////////
-   // convert P from (i,j,k) to (x,y,z) coordinates
-   float T[16];
-   float dum[4]={0.0,0.0,0.0,1.0};
-
-   DIM dim;
-   set_dim(dim,im);
-   ijk2xyz(T, dim);
-
-   for(int i=0; i<n; i++)
-   {
-      // note that P is (3 x n)
-      dum[0]=P[0*n + i]; 
-      dum[1]=P[1*n + i]; 
-      dum[2]=P[2*n + i];
-      dum[3]=1.0;
-      multi(T,4,4,dum,4,1,dum);
-      P[0*n + i]=dum[0]; 
-      P[1*n + i]=dum[1]; 
-      P[2*n + i]=dum[2];
-   }
-}
-
-void convert_to_ijk(float *P, int n, SHORTIM im)
-{
-   /////////////////////////////////////////////////////////
-   // convert P from (i,j,k) to (x,y,z) coordinates
-   float T[16];
-   float dum[4]={0.0,0.0,0.0,1.0};
-
-   DIM dim;
-   set_dim(dim,im);
-   xyz2ijk(T, dim);
-
-   for(int i=0; i<n; i++)
-   {
-      // note that P is (3 x n)
-      dum[0]=P[0*n + i]; 
-      dum[1]=P[1*n + i]; 
-      dum[2]=P[2*n + i];
-      dum[3]=1.0;
-      multi(T,4,4,dum,4,1,dum);
-      P[0*n + i]=dum[0]; 
-      P[1*n + i]=dum[1]; 
-      P[2*n + i]=dum[2];
-   }
-}
-
 // matches P2=(x2,y2) as closely as possible to P1=(x1,y1) 
 void point_match(float *x1, float *y1, float *x2, float *y2, int N, float *T)
 {

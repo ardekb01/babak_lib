@@ -1,4 +1,104 @@
 #include "babak_lib.h"
+#include "set_dim.h"
+#include "ijk2xyz.h"
+
+// Convert P from (x, y, z) to (i, j, k) coordinates.
+// P is a 3 x n matrix. Each column is a point in the
+// (x, y, z) coordinate system. Each point is converted
+// in place to the (i, j, k) coordinate system.
+// Core operation: P -> point -> matrix multiplication -> result -> P
+bool convert_to_ijk(float *P, int n, SHORTIM im)
+{
+   // Validate P.
+   if (P == nullptr)
+   {
+      return false;
+   }
+
+   // Validate n.
+   if (n <= 0)
+   {
+      return false;
+   }
+
+   float T[16];
+   float point[4];
+   float result[4];
+   DIM dim;
+
+   set_dim(dim, im);
+
+   if (!xyz2ijk(T, dim))
+   {
+      return false;
+   }
+
+   for (int i = 0; i < n; i++)
+   {
+      // Note that P is a 3 x n matrix.
+      point[0] = P[i];
+      point[1] = P[n + i];
+      point[2] = P[2 * n + i];
+      point[3] = 1.0f;
+
+      multi(T, 4, 4, point, 4, 1, result);
+
+      P[i]         = result[0];
+      P[n + i]     = result[1];
+      P[2 * n + i] = result[2];
+   }
+
+   return true;
+}
+
+// Convert P from (i, j, k) to (x, y, z) coordinates.
+// P is a 3 x n matrix. Each column is a point in the
+// (i, j, k) coordinate system. Each point is converted
+// in-place to the (x, y, z) coordinate system.
+// Core operation: P -> point -> matrix multiplication -> result -> P
+bool convert_to_xyz(float *P, int n, SHORTIM im)
+{
+   // Validate P.
+   if (P == nullptr)
+   {
+      return false;
+   }
+
+   // Validate n.
+   if (n <= 0)
+   {
+      return false;
+   }
+
+   float T[16];
+   float point[4];
+   float result[4];
+   DIM dim;
+
+   set_dim(dim, im);
+
+   if (!ijk2xyz(T, dim))
+   {
+      return false;
+   }
+
+   for (int i = 0; i < n; i++)
+   {
+      // Note that P is a 3 x n matrix.
+      point[0] = P[i];
+      point[1] = P[n + i];
+      point[2] = P[2 * n + i];
+      point[3] = 1.0f;
+
+      multi(T, 4, 4, point, 4, 1, result);
+
+      P[i] = result[0];
+      P[n + i] = result[1];
+      P[2 * n + i] = result[2];
+   }
+
+   return true;
+}
 
 bool xyz2ijk(float *T,
              int nx,
