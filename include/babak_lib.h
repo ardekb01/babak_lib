@@ -316,7 +316,6 @@ extern char opt_PC; // if YES PC will be detected automatically
 extern char opt_RP; // if YES RP will be detected automatically
 extern char opt_MSP; // if YES MSP will be detected automatically
 extern void sub2trg_rigid_body_transformation(float4 *sub2trg, const char *subfile, const char *trgfile);
-extern void getDirectoryName(const char *pathname, char *dirname);
 extern void forwardTCSAP(float4 *xvec, float4 *yvec, float4 *zvec, float4 *TLHC, float4 *angle, float4 *translation, DIM dim);
 extern void backwardTCSAP(float4 *xvec, float4 *yvec, float4 *angle);
 extern void orig_ijk_to_pil_xyz(float4 *Tmsp, DIM orig_dim, float4 *AC, float4 *PC);

@@ -14,7 +14,7 @@
 #include <dirent.h>
 #include <volume.h>
 #include <spm_analyze.h>
-#include <babak_lib.h>
+#include "babak_lib.h"
 #include <sph.h>
 #include <smooth.h>
 #include <minmax.h>

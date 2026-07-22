@@ -309,7 +309,7 @@ int main(int argc, char **argv)
   nifti_1_header iphdr, ophdr; // 348 bytes
 //  int opt_T2=NO;
   char optransformationpath[1024]="";
-  char landmarksfile[512]="";
+  char lmfile[512]="";
 //  char modelfile[1024]="";
   char ipimagepath[1024]=""; // input image full path (E.g., /usr/home/myimage.nii)
   char ipimagebasename[512]=""; // input image basename (E.g., myimage)
@@ -385,7 +385,7 @@ int main(int argc, char **argv)
             opt_tiltcorrect=NO;
             break;
          case 'L':
-            snprintf(landmarksfile,sizeof(landmarksfile),"%s",optArg);
+            snprintf(lmfile,sizeof(lmfile),"%s",optArg);
             break;
          case 'i':
             snprintf(ipimagepath,sizeof(ipimagepath),"%s",optArg);
@@ -629,19 +629,19 @@ int main(int argc, char **argv)
   if(searchradius[1]<=0.0 || searchradius[1]>100.0) searchradius[1]=15.0;
   if(searchradius[2]<=0.0 || searchradius[2]>100.0) searchradius[2]=15.0;
 
-  if(opt_v && landmarksfile[0]!='\0') 
+  if(opt_v && lmfile[0]!='\0') 
   {
-    printf("Manually specified landmarks: %s\n",landmarksfile);
+    printf("Manually specified landmarks: %s\n",lmfile);
   }
 
   // find TPIL which transforms the input image in iporient to tilt-corrected PIL
   if(opt_standard)
   {
-    standard_PIL_transformation(ipimagepath, landmarksfile, iporient, 0, TPIL);
+    standard_PIL_transformation(ipimagepath, lmfile, iporient, 0, TPIL);
   }
   else
   {
-    new_PIL_transform(ipimagepath, landmarksfile, iporient, TPIL, 0);
+    new_PIL_transform(ipimagepath, lmfile, iporient, TPIL, 0);
   }
 
   //Tout transforms points from the input iporient to tilt-corrected oporient 
