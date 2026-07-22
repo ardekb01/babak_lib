@@ -97,25 +97,6 @@ bool inversePILtransform(const char *orientCode, float *T)
    return true;
 }
 
-void transform_P(float *P, int nl, float *T)
-{
-   float dum[4];
-
-   for(int i=0; i<nl; i++)
-   {
-      dum[0]=P[0*nl + i];
-      dum[1]=P[1*nl + i];
-      dum[2]=P[2*nl + i];
-      dum[3]=1.0;
-      multi(T,4,4,dum,4,1,dum);
-      P[0*nl + i]=dum[0];
-      P[1*nl + i]=dum[1];
-      P[2*nl + i]=dum[2];
-   }
-
-   return;
-}
-
 // This function makes a ppm file from the MSP and displays 'nl' detected landmarks.
 //im: the input image 
 //lmx and lmy: are pointers to nl size arrays including the (x,y) for the nl landmarks
