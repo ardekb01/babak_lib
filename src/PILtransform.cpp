@@ -13,7 +13,7 @@
 #include "set_dim.h"
 #include "ijk2xyz.h"
 
-double searchradius[3]={50.0, 15.0, 15.0}; // in units of mm
+double searchradius[3]; // in units of mm
 int opt_CENTER_AC=NO;
 
 // Matrices of type T are called "signed permutation matrices"

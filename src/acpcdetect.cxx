@@ -425,11 +425,11 @@ int main(int argc, char **argv)
       }
   }
 
-  ///////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////
   // This block of code sets: ipimagepath, ipimagebasename, ipimagedir
   // iporient, ipimage, iphdr, ipdim, nPA, nIS, nLR, dPA, dIS, dLR 
   // IPORIENT2PIL, PIL2IPORIENT
-  ///////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////
 
   if( ipimagepath[0]=='\0' )
   {
@@ -605,6 +605,8 @@ int main(int argc, char **argv)
   // (i,j,k) -> (x,y,z) in oporient
   ijk2xyz(Tijk2xyz, opdim);
 
+  // What about the direction information in ophdr?  It can't be the same as iphdr!
+  // Make sure this is taken care of later.
   ophdr = iphdr;
   ophdr.pixdim[1]=opdim.dx; 
   ophdr.pixdim[2]=opdim.dy; 
@@ -621,6 +623,7 @@ int main(int argc, char **argv)
 
   //////////////////////////////////////////////////////////////////////////////
   // set TPIL and Tout
+  //////////////////////////////////////////////////////////////////////////////
   
   if(searchradius[0]<=0.0 || searchradius[0]>200.0) searchradius[0]=50.0;
   if(searchradius[1]<=0.0 || searchradius[1]>100.0) searchradius[1]=15.0;
