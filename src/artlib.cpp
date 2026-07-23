@@ -260,7 +260,7 @@ void ACPCtransform(float *Tacpc, float *Tmsp, float *AC, float *PC, char flg)
    normalizeVector(ACPC,2);
 
    // determine the rotation vector necessary to align the AC-PC vector to the +x axis
-   rotate(R, ACPC[0], -ACPC[1], 0.0, 0.0, 1.0);
+   rotationMatrix(R, ACPC[0], -ACPC[1], 0.0, 0.0, 1.0);
    multi(R, 4,4, Tmsp, 4, 4, Tacpc);
 
    multi(R, 4, 4,  PC, 4,  1, pc);
@@ -416,7 +416,7 @@ float *AC, float *PC, float *RP, DIM HR, DIM Orig, short *volOrig, float *Tmsp)
    normalizeVector(ACPC,2);
 
    // determine the rotation vector necessary to align the AC-PC vector to the +x axis
-   rotate(R, ACPC[0], -ACPC[1], 0.0, 0.0, 1.0);
+   rotationMatrix(R, ACPC[0], -ACPC[1], 0.0, 0.0, 1.0);
 
    multi(R, 4, 4,  PC, 4,  1, pc);
    multi(R, 4, 4,  AC, 4,  1, ac);
@@ -598,7 +598,7 @@ void compute_Tmsp_from_MSP_parameters(const char *orientation, float *Tmsp, floa
    alpha = (float)acos((double)nPIL[2]);
 
    // ensures that MSP in PIL is parallel to the x-y plane
-   rotate(R, alpha, nPIL[1], -nPIL[0], 0.0);
+   rotationMatrix(R, alpha, nPIL[1], -nPIL[0], 0.0);
 
    // Tmsp=R*T*TPIL transforms the volOrig to MSP aligned PIL
    multi(T, 4, 4,  TPIL, 4,  4, Tmsp);
@@ -638,7 +638,7 @@ void updateTmsp(const char *imagefilename, float *Tmsp, float *RP, float *AC, fl
    cosalpha = ACPC_zx[0] / ACPC_zx_length;
    sinalpha = ACPC_zx[2] / ACPC_zx_length;
 
-   rotate(R, cosalpha, sinalpha, 0.0, 1.0, 0.0);
+   rotationMatrix(R, cosalpha, sinalpha, 0.0, 1.0, 0.0);
 
    // Note: when rotation R is applied to the AC and PC vectors, their y-coordinates do not
    // change, since the rotation is about the y-axis.
@@ -2396,7 +2396,7 @@ void computeTmsp(char *orientation, short *volOrig, DIM dim, float *Tmsp)
    dum = (float)acos((double)c);
 
    // ensures that MSP on volumePIL is parallel to the x-y plane
-   rotate(R, dum, B, -A, 0.0);
+   rotationMatrix(R, dum, B, -A, 0.0);
 
    // Tmsp=R*T*TPIL transforms the volOrig to MSP aligned PIL
    multi(T, 4, 4,  TPIL, 4,  4, Tmsp);

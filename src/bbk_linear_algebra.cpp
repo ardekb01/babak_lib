@@ -78,7 +78,7 @@ bool vectorNorm(const float *x, int n, double &norm)
 
 // Uses Rodrigues' formula to produce a 4x4 transformation matrix for rotating
 // a point by an angle alpha about the (x, y, z) axis.
-bool rotate(float *R,
+bool rotationMatrix(float *R,
             float cosAlpha,
             float sinAlpha,
             float x,
@@ -121,7 +121,7 @@ bool rotate(float *R,
 
 // Uses Rodrigues' formula to produce a 4x4 transformation matrix for rotating
 // a point by an angle alpha about the (x, y, z) axis.
-bool rotate(float *R, float alpha, float x, float y, float z)
+bool rotationMatrix(float *R, float alpha, float x, float y, float z)
 {
    if (!set_to_I(R, 4))
       return false;

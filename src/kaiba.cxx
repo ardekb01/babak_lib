@@ -2032,7 +2032,7 @@ int main(int argc, char **argv)
     // axis would be aligned with the x-axis
     if(UT[0]>1.0) UT[0]=1.0; // just in case to prevent acos from getting into trouble
     alpha = (float)acos((double)UT[0]);
-    rotate(tmpT, alpha, 0, UT[2], -UT[1]);
+    rotationMatrix(tmpT, alpha, 0, UT[2], -UT[1]);
     multi(tmpT, 4, 4, T, 4, 4, T);
 
     set_dim(PILbraincloud_hdr,opdim);
@@ -2097,7 +2097,7 @@ int main(int argc, char **argv)
     // axis would be aligned with the x-axis
     if(UT[0]>1.0) UT[0]=1.0; // just in case to prevent acos from getting into trouble
     alpha = (float)acos((double)UT[0]);
-    rotate(tmpT, alpha, 0, UT[2], -UT[1]);
+    rotationMatrix(tmpT, alpha, 0, UT[2], -UT[1]);
     multi(tmpT, 4, 4, T, 4, 4, T);
 
     set_dim(PILbraincloud_hdr,opdim);

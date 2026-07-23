@@ -8,6 +8,7 @@
 #include "reorientVolume.h"
 #include "matrixCom.h"
 #include "rotate.h"
+#include "bbk_linear_algebra.h"
 
 // Inputs:
 // filename: NIFTI-1 image filename on which the MSP is to be detected
@@ -168,7 +169,7 @@ bool findMSP(const char *filename, char *orient, const char *lmfile, float *Tmsp
       theta = (float)acos((double)c);
 
       // ensures that MSP is parallel to the x-y plane
-      rotate(tmpT, theta, nrml[1], -nrml[0], 0.0);
+      rotationMatrix(tmpT, theta, nrml[1], -nrml[0], 0.0);
       multi(tmpT, 4, 4,  Tmsp, 4,  4, Tmsp);
    }
    else
@@ -180,7 +181,7 @@ bool findMSP(const char *filename, char *orient, const char *lmfile, float *Tmsp
       theta = (float)acos((double)c);
 
       // ensures that MSP is parallel to the x-y plane
-      rotate(tmpT, theta, -nrml[1], nrml[0], 0.0);
+      rotationMatrix(tmpT, theta, -nrml[1], nrml[0], 0.0);
       multi(tmpT, 4, 4,  Tmsp, 4,  4, Tmsp);
    }
 

@@ -201,6 +201,7 @@ libbabak.a: bbk_linear_algebra.o ijk2xyz.o read_nifti_image.o get_nifti_basename
 
 clean: 
 	rm -f *.o
+	rm -f ../lib/libbabak.a
 
 # compilation of executables
 PILtransform: PILtransform.cxx

@@ -263,7 +263,7 @@ void standardize(float4 *x, int4 n);
 void standardize(float *x, float *mask, int n);
 void irodrigues_formula(float4 *R, float4 *w, float4 &theta);
 void rodrigues_formula(float4 *R, float4 *w, float4 theta);
-void rodrigues_formula4x4(float4 *R, float4 *w, float4 theta);
+//void rodrigues_formula4x4(float4 *R, float4 *w, float4 theta);
 void se3_to_SE3(float4 *M, float4 *w, float4 *v, float4 theta);
 void SE3_to_se3(float4 *M, float4 *w, float4 *v, float4 &theta);
 
