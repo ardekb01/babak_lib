@@ -18,6 +18,7 @@
 #include "PILtransform.h"
 #include "ijk2xyz.h"
 #include "reorientVolume.h"
+#include "matrixCom.h"
 
 #define _artlib
 

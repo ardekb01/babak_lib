@@ -6,6 +6,7 @@
 #include "PILtransform.h"
 #include "ijk2xyz.h"
 #include "reorientVolume.h"
+#include "matrixCom.h"
 
 // Inputs:
 // filename: NIFTI-1 image filename on which the MSP is to be detected

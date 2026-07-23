@@ -542,7 +542,6 @@ extern void crossProduct(float4 *a, float4 *b, float4 *c);
 
 extern void copyVector(float4 *v1, float4 *v2, int4 n);
 extern void subtractVector(float4 *v1, float4 *v2, int4 n);
-void normalizeVector(float4 *x, int4 n, float8 *norm);
 
 extern int4 centerMatrixRow(float4 *X, int4 N, int4 P, float4 *avg);
 extern int4 centerMatrixRow(float4 *X, int4 N, int4 P);
@@ -567,8 +566,6 @@ extern int4 ssdRow(float4 *X, int4 N, int4 P, float4 *avg, float4 *ssd);
 // compute the Euclidian distance between two vectors r0 and r1
 extern float8 euclideandistance(float4 *r0, float4 *r1, int4 n);
 extern float8 xtAx(float4 *A, float8 *x, int4 p);
-extern float8 vectorNorm(float4 *x, int4 n);
-extern void normalizeVector(float4 *x, int4 n);
 extern void transpose_matrix(float4 *A, int4 N,  int4 M);
 extern void transpose_matrix(float4 *A, int4 N,  int4 M, float4 *AT);
 /* computes the transpose of the NxM matrix A */

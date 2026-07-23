@@ -1,7 +1,5 @@
 ///////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////
-// Copyright (C) 2024 Babak A. Ardekani, PhD - All Rights Reserved.  //
-///////////////////////////////////////////////////////////////////////
+// Copyright (C) 2024 Babak A. Ardekani, PhD - All Rights Reserved.
 ///////////////////////////////////////////////////////////////////////
 
 #include <stdlib.h>
@@ -9,8 +7,61 @@
 #include <math.h>
 #include <babak_lib.h>
 #include <assert.h>
+#include "matrixCom.h"
 
 #define _matrixCom
+
+// Normalize x in-place, that is: ||x||=1.0
+bool normalizeVector(float *x, int n)
+{
+   double norm = 0.0;
+
+   if (x == nullptr)
+   {
+      return false;
+   }
+
+   if (n <= 0)
+   {
+      return false;
+   }
+
+   if (!vectorNorm(x, n, norm))
+   {
+      return false;
+   }
+
+   if (norm == 0.0)
+   {
+      return false;
+   }
+
+   for (int i = 0; i < n; i++)
+   {
+      x[i] = static_cast<float>(x[i] / norm);
+   }
+
+   return true;
+}
+
+bool vectorNorm(const float *x, int n, double &norm)
+{
+   norm = 0.0;
+
+   if (x == nullptr || n <= 0)
+   {
+      return false;
+   }
+
+   for (int i = 0; i < n; i++)
+   {
+      norm += x[i] * x[i];
+   }
+
+   norm = sqrt(norm);
+
+   return true;
+}
 
 void s3adjoint(double *A, double *ADJ);
 void s3adjoint(float *A, float *ADJ);
@@ -19,7 +70,6 @@ void subtractRowAvg(float *X, int N, int P, float *X0);
 
 void copyVector(float *v1, float *v2, int n);
 void subtractVector(float *v1, float *v2, int n);
-void normalizeVector(float *x, int n, double *norm);
 
 int centerMatrixRow(float *X, int N, int P, float *avg);
 int centerMatrixRow(float *X, int N, int P);
@@ -451,70 +501,6 @@ double xtAx(float *A, double *x, int p)
 void multi(float *A,int iA,int jA,float *B,int iB,int jB,float *C);
 void multi(double *A,int iA,int jA,double *B,int iB,int jB,double *C);
 /*****************************************************************************/
-
-double vectorNorm(float *x, int n)
-{
-   double norm=0.0;
-
-   if(x==NULL)
-   {
-      printf("\n\nWarning: NULL array passed to vectorNorm() function.\n\n");
-      return(0.0);
-   }
-
-   if( n<=0 )
-   {
-      printf("\n\nWarning: Non-positive array dimension argument passed to vectorNorm() function.\n\n");
-      return(0.0);
-   }
-
-   for(int i=0; i<n; i++)
-      norm += x[i]*x[i];
-
-   norm = sqrt(norm);
-
-   return(norm);
-}
-
-void normalizeVector(float *x, int n)
-{
-   double norm=0.0;
-
-   if(x==NULL)
-   {
-      printf("\n\nWarning: NULL array passed to normalizeVector() function.\n\n");
-      return;
-   }
-
-   if( n<=0 )
-   {
-      printf("\n\nWarning: Non-positive array dimension argument passed to normalizeVector() function.\n\n");
-      return;
-   }
-
-   norm=vectorNorm(x, n);
-
-   if( norm == 0.0) return;
-
-   for(int i=0; i<n; i++)
-   {
-      x[i] = (float)(x[i]/norm);
-   }
-
-   return;
-}
-
-void normalizeVector(float *x, int n, double *norm)
-{
-		*norm=vectorNorm(x, n);
-
-        if( *norm == 0.0) return;
-
-        for(int i=0; i<n; i++)
-                x[i] = (float)( x[i] / (*norm) );
-
-        return;
-}
 
 ///////////////////////////////////////////////////////////////
 float normalize(float *s, int n)

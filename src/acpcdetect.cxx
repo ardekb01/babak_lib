@@ -20,6 +20,7 @@
 #include "set_dim.h"
 #include "PILtransform.h"
 #include "ijk2xyz.h"
+#include "matrixCom.h"
 
 #define YES 1
 #define NO 0
