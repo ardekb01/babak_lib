@@ -249,7 +249,7 @@ void memory_allocation_error(const char *variablename);
 void file_open_error(const char *filename);
 void errorMessage(const char *message);
 
-void findMSP(const char *filename, char *orient, const char *lmfile, float4 *Tmsp, int4 verbose, DIM &dim);
+bool findMSP(const char *filename, char *orient, const char *lmfile, float4 *Tmsp, int4 verbose, DIM &dim);
 // Input: (x,y,z) a vector defined in RAS system
 // Output: One of six charaters {R,L,A,P,S,I}
 void new_PIL_transform(const char *subfile, const char *lmfile, char *orient, float4 *T, int SAVE_PIL_FLAG);

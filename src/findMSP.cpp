@@ -8,14 +8,14 @@
 #include "reorientVolume.h"
 
 // Inputs:
-// filename: NIFTI image filename on which the MSP is to be detected
+// filename: NIFTI-1 image filename on which the MSP is to be detected
 // orient: if not "" overrides the orientation code in filename
 // verbose: flags verbose mode
 // Outputs:
 // Tmsp: 4x4 matrix, rigid-body transformation takes the original image to PIL space without AC-PC alignment, that is, only the
 // MSP of the original image is transformed to the x-y plane with x pointing posteriorly, y pointing inferiorly, and z pointing
 // to the left.  However, the x axis is not necessarily aligned with the AC-PC line.
-void findMSP(const char *filename, char *orient, const char *lmfile, float *Tmsp, int verbose, DIM &dim)
+bool findMSP(const char *filename, char *orient, const char *lmfile, float *Tmsp, int verbose, DIM &dim)
 {
    float A, B, C; // parameters in Ax+By+Cz=1 in the original image space
    float tmpT[16]; // temporary matrix container 
@@ -25,47 +25,26 @@ void findMSP(const char *filename, char *orient, const char *lmfile, float *Tmsp
    float d; // shortest distance from original to the plane
    nifti_1_header hdr;  // image NIFTI header
 
-   ///////////////////////////////////////////////////////////////////////////////////////////////
-   // determine the orientation code 
-   ///////////////////////////////////////////////////////////////////////////////////////////////
-   
+   if( filename == nullptr )
+      return false;
+
    // if orient is not provided at the input, determine the orientation from the input image file
-   if(orient[0]=='\0')
+   if(orient[0] == '\0')
    {
-      getNiftiImageOrientation(filename, orient);
+      if( !getNiftiImageOrientation(filename, orient) )
+         return false;
    }
 
-   if(orient[0]=='\0')
+   if ( !valid_orientation_code(orient) )
    {
-      errorMessage("Image orientation could not be determined.");
+      return false;
    }
 
-   if (valid_orientation_code(orient) == false)
-   {
-      printf("\nImage orientation: %s\n",orient);
-      errorMessage("Image orientation code is not one of the 48 legal ones.");
-   }
-
-   if(verbose)
-   {
-      printf("Image orientation: %s\n",orient);
-   }
-
-   ///////////////////////////////////////////////////////////////////////////////////////////////
-   // read image 
-   ///////////////////////////////////////////////////////////////////////////////////////////////
    im = (short *)read_nifti_image(filename, &hdr);
 
-   if(im==NULL)
+   if(im == NULL)
    {
-      printf("Error reading %s, aborting ...\n", filename);
-      exit(1);
-   }
-
-   if(verbose)
-   {
-      printf("Image matrix size = %d x %d x %d (voxels)\n", hdr.dim[1], hdr.dim[2], hdr.dim[3]);
-      printf("Image voxel size = %8.6f x %8.6f x %8.6f (mm^3)\n", hdr.pixdim[1], hdr.pixdim[2], hdr.pixdim[3]);
+      return false;
    }
 
    set_dim(dim, hdr);
@@ -77,7 +56,7 @@ void findMSP(const char *filename, char *orient, const char *lmfile, float *Tmsp
    // At this point, Tmsp only makes the orientation PIL without MSP alignment
    PILtransform(orient, Tmsp);
 
-   if( lmfile[0]=='\0')
+   if( lmfile[0] == '\0')
    {
       float cc; // a variable to store correlation coefficient values
       short *imPIL; // original volume after reorientation to PIL
@@ -89,7 +68,7 @@ void findMSP(const char *filename, char *orient, const char *lmfile, float *Tmsp
       Tmsp,nxPIL,nyPIL,nzPIL,dxPIL,dyPIL,dzPIL);
 
       cc=msp(imPIL,nxPIL,nyPIL,nzPIL,dxPIL,dyPIL,dzPIL,&A,&B,&C);
-      delete imPIL;
+      free(imPIL);
 
       // normalize (A,B,C)
       L=sqrtf(A*A+B*B+C*C);
@@ -219,13 +198,7 @@ void findMSP(const char *filename, char *orient, const char *lmfile, float *Tmsp
       printf("Estimated mid-sagittal plane: (%7.3fx) + (%7.3fy) + (%7.3fz) = 1\n", A,B,C);
    }
 
-//{
-//FILE *fp;
-//fp = fopen("tt.mrx","w");
-//printMatrix(Tmsp, 4, 4, "ART acpcdetect tilt correction matrix:", fp);
-//fclose(fp);
-//}
+   free(im);
 
-   ///////////////////////////////////////////////////////////////////////////////////////////////
-   delete im;
+   return true;
 }
