@@ -1,4 +1,4 @@
-#include <math.h>
+#include <cmath>
 #include "babak_linear_algebra.h"
 
 // Sets the n x n matrix A equal to the identity matrix.
@@ -75,3 +75,43 @@ bool vectorNorm(const float *x, int n, double &norm)
 
    return true;
 }
+
+// Uses the Rodrigues formula to produces a 4x4 transformation matrix for rotating 
+// a point by an angle alpha about the (x,y,z) axis.
+bool rotate(float *R, float alpha, float x, float y, float z)
+{
+   if (!set_to_I(R, 4))
+      return false;
+
+   if (x == 0.0f && y == 0.0f && z == 0.0f)
+   {
+      return false;
+   }
+
+   double cosAlpha = std::cos((double)alpha);
+   double sinAlpha = std::sin((double)alpha);
+
+   // Compute the Euclidean norm of the rotation axis.
+   double norm = std::hypot(std::hypot((double)x, (double)y),
+                            (double)z);
+
+   // Find the unit vector (ax, ay, az) in the direction of (x, y, z). 
+   double ax = (double)x / norm;
+   double ay = (double)y / norm;
+   double az = (double)z / norm;
+
+   R[0] = (float)(cosAlpha + ax * ax * (1.0 - cosAlpha));
+   R[1] = (float)(ax * ay - cosAlpha * ax * ay - sinAlpha * az);
+   R[2] = (float)(ax * az - cosAlpha * ax * az + sinAlpha * ay);
+
+   R[4] = (float)(ay * ax - cosAlpha * ay * ax + sinAlpha * az);
+   R[5] = (float)(cosAlpha + ay * ay * (1.0 - cosAlpha));
+   R[6] = (float)(ay * az - cosAlpha * ay * az - sinAlpha * ax);
+
+   R[8] = (float)(az * ax - cosAlpha * az * ax - sinAlpha * ay);
+   R[9] = (float)(az * ay - cosAlpha * az * ay + sinAlpha * ax);
+   R[10] = (float)(cosAlpha + az * az * (1.0 - cosAlpha));
+
+   return true;
+}
+
