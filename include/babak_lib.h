@@ -256,10 +256,6 @@ void new_PIL_transform(const char *subfile, const char *lmfile, char *orient, fl
 void standard_PIL_transformation(const char *imfile, const char *lmfile, char *orient, int4 verbose, float4 *TPIL);
 void Procrustes(float *Q, float *Qavg, int n, float *P, float *Pavg, float *TLM);
 void Procrustes(float *Q, int n, float *P, float *TLM);
-int2 *reorientVolume(int2 *v1, int4 nx1, int4 ny1, int4 nz1, float4 dx1, float4 dy1, float4 dz1, float4 *orientMat,
-int4 &nx2, int4 &ny2, int4 &nz2, float4 &dx2, float4 &dy2, float4 &dz2);
-int2 *reorientVolume(int2 *input_image, nifti_1_header oldhdr, const char *neworient, nifti_1_header &newhdr, 
-float4 *T_oldorient_to_neworient);
 void rotate(float4 *T, float4 alpha, float4 x, float4 y, float4 z);
 float4 *rotate(float4 alpha, float4 x, float4 y, float4 z);
 void rotate(float4 *T, float4 CosAlpha, float4 SinAlpha, float4 x, float4 y, float4 z);
