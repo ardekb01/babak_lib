@@ -230,7 +230,7 @@ void Procrustes(float *Q, float *Qavg, int n, float *P, float *Pavg, float *TLM)
 
       // if(opt_v) printf("det(R) = %f\n", det3(R));
 
-      if( det3(R) < 0.0 ) 
+      if( det3x3(R) < 0.0 ) 
       {  
          // if(opt_v) printf("Negative determinant (reflection) detected\n");
          V[2] *= -1.0; 
@@ -293,7 +293,7 @@ void Procrustes(float *Q, int n, float *P, float *TLM)
 
       //if(opt_v) printf("det(R) = %f\n", det3(R));
 
-      if( det3(R) < 0.0 ) 
+      if( det3x3(R) < 0.0 ) 
       {  
          //if(opt_v) printf("Negative determinant (reflection) detected\n");
          V[2] *= -1.0; 

@@ -157,3 +157,24 @@ bool rotationMatrix(float *R, float alpha, float x, float y, float z)
 
    return true;
 }
+
+// Computes the determinant of a 3×3 matrix stored in row-major order.
+float det3x3(const float *A)
+{
+   return A[0] * A[4] * A[8] +
+          A[1] * A[5] * A[6] +
+          A[2] * A[3] * A[7] -
+          A[2] * A[4] * A[6] -
+          A[0] * A[5] * A[7] -
+          A[1] * A[3] * A[8];
+}
+
+double det3x3(const double *A)
+{
+   return A[0] * A[4] * A[8] +
+          A[1] * A[5] * A[6] +
+          A[2] * A[3] * A[7] -
+          A[2] * A[4] * A[6] -
+          A[0] * A[5] * A[7] -
+          A[1] * A[3] * A[8];
+}

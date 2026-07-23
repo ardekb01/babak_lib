@@ -12,4 +12,7 @@ bool rotationMatrix(float *R,
             float y,
             float z);
 
+float det3x3(const float *A);
+double det3x3(const double *A);
+
 #endif
