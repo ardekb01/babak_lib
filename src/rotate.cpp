@@ -265,45 +265,6 @@ void rodrigues_formula4x4(float *R, float *w, float theta)
    return;
 }
 
-
-float *rotate(float alpha, float x, float y, float z)
-{
-   float cosAlpha,sinAlpha;
-   float dum;
-   float ax,ay,az;
-   float *T;
-
-   T=(float *)calloc(16,sizeof(float));
-   T[15]=1.0;
-   
-   if(x==0.0 && y==0.0 && z==0.0)
-   {
-      T[0]=T[5]=T[10]=1.0;    
-      return(T);
-   }
-
-   cosAlpha=(float)cos((double)alpha);
-   sinAlpha=(float)sin((double)alpha);
-
-   /* find the unit vector (ax,ay,az) in the direction of (x,y,z) */
-   dum=(float)sqrt((double)x*x+y*y+z*z);
-   ax=x/dum; ay=y/dum; az=z/dum;
-   
-   T[0] = ax*ax + cosAlpha - cosAlpha*ax*ax; 
-   T[1] = ax*ay - cosAlpha*ax*ay - sinAlpha*az; 
-   T[2] = ax*az - cosAlpha*ax*az + sinAlpha*ay; 
-
-   T[4] = ay*ax - cosAlpha*ay*ax + sinAlpha*az; 
-   T[5] = ay*ay + cosAlpha - cosAlpha*ay*ay; 
-   T[6] = ay*az - cosAlpha*ay*az - sinAlpha*ax; 
-
-   T[8]  = az*ax - cosAlpha*az*ax - sinAlpha*ay; 
-   T[9]  = az*ay - cosAlpha*az*ay + sinAlpha*ax; 
-   T[10] = az*az + cosAlpha - cosAlpha*az*az; 
-
-   return(T);
-}
-
 void rotate(float *R, float cosAlpha, float sinAlpha, float x, float y, float z)
 {
    float dum;
