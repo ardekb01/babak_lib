@@ -11,58 +11,6 @@
 
 #define _matrixCom
 
-// Normalize x in-place, that is: ||x||=1.0
-bool normalizeVector(float *x, int n)
-{
-   double norm = 0.0;
-
-   if (x == nullptr)
-   {
-      return false;
-   }
-
-   if (n <= 0)
-   {
-      return false;
-   }
-
-   if (!vectorNorm(x, n, norm))
-   {
-      return false;
-   }
-
-   if (norm == 0.0)
-   {
-      return false;
-   }
-
-   for (int i = 0; i < n; i++)
-   {
-      x[i] = static_cast<float>(x[i] / norm);
-   }
-
-   return true;
-}
-
-bool vectorNorm(const float *x, int n, double &norm)
-{
-   norm = 0.0;
-
-   if (x == nullptr || n <= 0)
-   {
-      return false;
-   }
-
-   for (int i = 0; i < n; i++)
-   {
-      norm += x[i] * x[i];
-   }
-
-   norm = sqrt(norm);
-
-   return true;
-}
-
 void s3adjoint(double *A, double *ADJ);
 void s3adjoint(float *A, float *ADJ);
 

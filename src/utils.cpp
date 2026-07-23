@@ -155,22 +155,6 @@ void fsl_to_art(float *Mfsl, float *Mart, DIM sub_dim, DIM trg_dim, int subflg, 
 
 //////////////////////////////////////////////////////////////////////////////////
 
-// Set the nxn matrix A equal to the identity matrix
-void set_to_I( float *A, int n)
-{
-   for(int i=0; i<n*n; i++) 
-   {
-      A[i]=0.0;
-   }
-
-   for(int i=0; i<n; i++)
-   {
-      A[n*i + i] = 1.0;
-   }
-}
-
-//////////////////////////////////////////////////////////////////////////////////
-
 int ccsize(short *im, int nv)
 {
    int count=0;

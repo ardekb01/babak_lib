@@ -1,15 +1,57 @@
 #include <math.h>
 #include <stdlib.h>
-#include <babak_lib.h>
+#include "babak_lib.h"
+#include "babak_linear_algebra.h"
 
-void SE3_to_se3(float4 *M, float4 *w, float4 *v, float4 &theta)
+// Produces a 4x4 transformation matrix for rotating a point by an angle
+// alpha about the (x,y,z) axis.
+bool rotate(float *R, float alpha, float x, float y, float z)
 {
-   float4 A[9];
-   float4 R[9];
-   float4 wh[9];
-   float4 wwT[9];
-   float4 *invA;
-   float4 d[3];
+   float CosAlpha, SinAlpha;
+   float dum;
+   float ax, ay, az;
+
+   if (!set_to_I(R, 4))
+      return false;
+
+   if (x == 0.0 && y == 0.0 && z == 0.0)
+   {
+      return false;
+   }
+
+   CosAlpha = (float)cos((float8)alpha);
+   SinAlpha = (float)sin((float8)alpha);
+
+   /* Find the unit vector (ax, ay, az) in the direction of (x, y, z). */
+   dum = (float)sqrt((float8)x * x + y * y + z * z);
+
+   ax = x / dum;
+   ay = y / dum;
+   az = z / dum;
+
+   R[0] = ax * ax + CosAlpha - CosAlpha * ax * ax;
+   R[1] = ax * ay - CosAlpha * ax * ay - SinAlpha * az;
+   R[2] = ax * az - CosAlpha * ax * az + SinAlpha * ay;
+
+   R[4] = ay * ax - CosAlpha * ay * ax + SinAlpha * az;
+   R[5] = ay * ay + CosAlpha - CosAlpha * ay * ay;
+   R[6] = ay * az - CosAlpha * ay * az - SinAlpha * ax;
+
+   R[8] = az * ax - CosAlpha * az * ax - SinAlpha * ay;
+   R[9] = az * ay - CosAlpha * az * ay + SinAlpha * ax;
+   R[10] = az * az + CosAlpha - CosAlpha * az * az;
+
+   return true;
+}
+
+void SE3_to_se3(float *M, float *w, float *v, float &theta)
+{
+   float A[9];
+   float R[9];
+   float wh[9];
+   float wwT[9];
+   float *invA;
+   float d[3];
 
    R[0] = M[0]; 
    R[1] = M[1]; 
@@ -68,12 +110,12 @@ void SE3_to_se3(float4 *M, float4 *w, float4 *v, float4 &theta)
 // w: input 3x1 unit vector  (rotation is about this direction)
 // v: input 3x1 vector (translation parallel to w will be w^T*v*theta)
 // theta: rotation angle in radians
-void se3_to_SE3(float4 *M, float4 *w, float4 *v, float4 theta)
+void se3_to_SE3(float *M, float *w, float *v, float theta)
 {
-   float4 R[9];
-   float4 wxv[3];
-   float4 wTv;
-   float4 Rwxv[3];
+   float R[9];
+   float wxv[3];
+   float wTv;
+   float Rwxv[3];
 
    // set the last row of M
    M[12] = 0.0;
@@ -116,11 +158,11 @@ void se3_to_SE3(float4 *M, float4 *w, float4 *v, float4 theta)
    return;
 }
 
-void irodrigues_formula(float4 *R, float4 *w, float4 &theta)
+void irodrigues_formula(float *R, float *w, float &theta)
 {
-   float4 tr; // trace of R
-   float4 ctheta; // cos(theta)
-   float4 sthetax2;  // 2 x sin(theta)
+   float tr; // trace of R
+   float ctheta; // cos(theta)
+   float sthetax2;  // 2 x sin(theta)
 
    tr = R[0] + R[4] + R[8];
    
@@ -149,10 +191,10 @@ void irodrigues_formula(float4 *R, float4 *w, float4 &theta)
 // R: 3x3 output rotation matrix
 // w: 3x1 unit vector
 // theta: angle in radians
-void rodrigues_formula(float4 *R, float4 *w, float4 theta)
+void rodrigues_formula(float *R, float *w, float theta)
 {
-   float4 ctheta, stheta, vtheta;
-   float4 wn; // L2 norm of w
+   float ctheta, stheta, vtheta;
+   float wn; // L2 norm of w
 
    // ensure w is a unit vector
    wn = sqrtf(w[0]*w[0] + w[1]*w[1] + w[2]*w[2]);
@@ -200,10 +242,10 @@ void rodrigues_formula(float4 *R, float4 *w, float4 theta)
 // R: 4x4 output homogenious rotation matrix
 // w: 3x1 unit vector
 // theta: angle in radians
-void rodrigues_formula4x4(float4 *R, float4 *w, float4 theta)
+void rodrigues_formula4x4(float *R, float *w, float theta)
 {
-   float4 ctheta, stheta, vtheta;
-   float4 wn; // L2 norm of w
+   float ctheta, stheta, vtheta;
+   float wn; // L2 norm of w
 
    // ensure w is a unit vector
    wn = sqrtf(w[0]*w[0] + w[1]*w[1] + w[2]*w[2]);
@@ -264,52 +306,15 @@ void rodrigues_formula4x4(float4 *R, float4 *w, float4 theta)
    return;
 }
 
-/* produces a 4x4 transformation matrix for rotating a point by an angle
-alpha about the (x,y,z) axis. */
-void rotate(float4 *R, float4 alpha, float4 x, float4 y, float4 z)
+
+float *rotate(float alpha, float x, float y, float z)
 {
-   float4 CosAlpha,SinAlpha;
-   float4 dum;
-   float4 ax,ay,az;
+   float CosAlpha,SinAlpha;
+   float dum;
+   float ax,ay,az;
+   float *T;
 
-   R[0]=R[5]=R[10]=R[15]=1.0;
-   R[1]=R[2]=R[3]=0.0;
-   R[4]=R[6]=R[7]=0.0;
-   R[8]=R[9]=R[11]=0.0;
-   R[12]=R[13]=R[14]=0.0;
-   
-   if(x==0.0 && y==0.0 && z==0.0) return;
-
-   CosAlpha=(float4)cos((float8)alpha);
-   SinAlpha=(float4)sin((float8)alpha);
-
-   /* find the unit vector (ax,ay,az) in the direction of (x,y,z) */
-   dum=(float4)sqrt((float8)x*x+y*y+z*z);
-   ax=x/dum; ay=y/dum; az=z/dum;
-      
-   R[0] = ax*ax + CosAlpha - CosAlpha*ax*ax; 
-   R[1] = ax*ay - CosAlpha*ax*ay - SinAlpha*az; 
-   R[2] = ax*az - CosAlpha*ax*az + SinAlpha*ay; 
-   
-   R[4] = ay*ax - CosAlpha*ay*ax + SinAlpha*az; 
-   R[5] = ay*ay + CosAlpha - CosAlpha*ay*ay; 
-   R[6] = ay*az - CosAlpha*ay*az - SinAlpha*ax; 
-   
-   R[8]  = az*ax - CosAlpha*az*ax - SinAlpha*ay; 
-   R[9]  = az*ay - CosAlpha*az*ay + SinAlpha*ax; 
-   R[10] = az*az + CosAlpha - CosAlpha*az*az; 
-   
-   return;
-}
-
-float4 *rotate(float4 alpha, float4 x, float4 y, float4 z)
-{
-   float4 CosAlpha,SinAlpha;
-   float4 dum;
-   float4 ax,ay,az;
-   float4 *T;
-
-   T=(float4 *)calloc(16,sizeof(float4));
+   T=(float *)calloc(16,sizeof(float));
    T[15]=1.0;
    
    if(x==0.0 && y==0.0 && z==0.0)
@@ -318,11 +323,11 @@ float4 *rotate(float4 alpha, float4 x, float4 y, float4 z)
       return(T);
    }
 
-   CosAlpha=(float4)cos((float8)alpha);
-   SinAlpha=(float4)sin((float8)alpha);
+   CosAlpha=(float)cos((float8)alpha);
+   SinAlpha=(float)sin((float8)alpha);
 
    /* find the unit vector (ax,ay,az) in the direction of (x,y,z) */
-   dum=(float4)sqrt((float8)x*x+y*y+z*z);
+   dum=(float)sqrt((float8)x*x+y*y+z*z);
    ax=x/dum; ay=y/dum; az=z/dum;
    
    T[0] = ax*ax + CosAlpha - CosAlpha*ax*ax; 
@@ -340,10 +345,10 @@ float4 *rotate(float4 alpha, float4 x, float4 y, float4 z)
    return(T);
 }
 
-void rotate(float4 *R, float4 CosAlpha, float4 SinAlpha, float4 x, float4 y, float4 z)
+void rotate(float *R, float CosAlpha, float SinAlpha, float x, float y, float z)
 {
-   float4 dum;
-   float4 ax,ay,az;
+   float dum;
+   float ax,ay,az;
 
    R[0]=R[5]=R[10]=R[15]=1.0;
    R[1]=R[2]=R[3]=0.0;
@@ -354,7 +359,7 @@ void rotate(float4 *R, float4 CosAlpha, float4 SinAlpha, float4 x, float4 y, flo
    if(x==0.0 && y==0.0 && z==0.0) return;
    
    /* find the unit vector (ax,ay,az) in the direction of (x,y,z) */
-   dum=(float4)sqrt((float8)x*x+y*y+z*z);
+   dum=(float)sqrt((float8)x*x+y*y+z*z);
    ax=x/dum; ay=y/dum; az=z/dum;
       
    R[0] = ax*ax + CosAlpha - CosAlpha*ax*ax; 

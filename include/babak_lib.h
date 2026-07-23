@@ -256,7 +256,7 @@ void new_PIL_transform(const char *subfile, const char *lmfile, char *orient, fl
 void standard_PIL_transformation(const char *imfile, const char *lmfile, char *orient, int4 verbose, float4 *TPIL);
 void Procrustes(float *Q, float *Qavg, int n, float *P, float *Pavg, float *TLM);
 void Procrustes(float *Q, int n, float *P, float *TLM);
-void rotate(float4 *T, float4 alpha, float4 x, float4 y, float4 z);
+//void rotate(float4 *T, float4 alpha, float4 x, float4 y, float4 z);
 float4 *rotate(float4 alpha, float4 x, float4 y, float4 z);
 void rotate(float4 *T, float4 CosAlpha, float4 SinAlpha, float4 x, float4 y, float4 z);
 void compute_cm(int2 *image, int4 nx, int4 ny, int4 nz, float4 dx, float4 dy, float4 dz, float4 *x, float4 *y, float4 *z);
@@ -786,9 +786,6 @@ extern int hand_system(char *code);
 
 extern void art_to_fsl(float *Mart, float *Mfsl, DIM sub_dim, DIM trg_dim);
 extern void fsl_to_art(float *Mfsl, float *Mart, DIM sub_dim, DIM trg_dim, int subflg, int trgflg);
-
-// Set the nxn matrix A equal to the identity matrix
-extern void set_to_I( float4 *A, int4 n);
 
 extern void sobel_edge_x(int2 *in, float4 *out, int4 nx, int4 ny);
 extern void sobel_edge_y(int2 *in, float4 *out, int4 nx, int4 ny);

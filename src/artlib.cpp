@@ -19,6 +19,7 @@
 #include "ijk2xyz.h"
 #include "reorientVolume.h"
 #include "matrixCom.h"
+#include "rotate.h"
 
 #define _artlib
 
