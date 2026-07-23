@@ -11,7 +11,7 @@
 #include <sys/resource.h>
 #include <volume.h>
 #include <spm_analyze.h>
-#include <babak_lib.h>
+#include "babak_lib.h"
 #include <sph.h>
 #include <smooth.h>
 #include <minmax.h>
@@ -19,7 +19,7 @@
 #include <stats.h>
 #include "read_nifti_image.h"
 #include "set_dim.h"
-#include "babak_linear_algebra.h"
+#include "bbk_linear_algebra.h"
 
 #define YES 1
 #define NO 0

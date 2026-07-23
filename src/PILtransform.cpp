@@ -12,7 +12,7 @@
 #include "read_nifti_image.h"
 #include "set_dim.h"
 #include "ijk2xyz.h"
-#include "babak_linear_algebra.h"
+#include "bbk_linear_algebra.h"
 
 double searchradius[3]; // in units of mm
 int opt_CENTER_AC=NO;

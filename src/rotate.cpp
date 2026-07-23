@@ -1,7 +1,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include "babak_lib.h"
-#include "babak_linear_algebra.h"
+#include "bbk_linear_algebra.h"
 
 void SE3_to_se3(float *M, float *w, float *v, float &theta)
 {

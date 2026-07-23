@@ -7,7 +7,7 @@
 #include <babak_lib.h>
 #include <ctype.h>
 #include "interpolator.h"
-#include "babak_linear_algebra.h"
+#include "bbk_linear_algebra.h"
 
 #define NBIN 256
 #define MCC     2048 /* maximum number of allowed 2D connected components */

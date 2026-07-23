@@ -1,5 +1,5 @@
 #include <cmath>
-#include "babak_linear_algebra.h"
+#include "bbk_linear_algebra.h"
 
 // Sets the n x n matrix A equal to the identity matrix.
 bool set_to_I(float *A, int n)
