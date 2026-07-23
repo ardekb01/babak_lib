@@ -76,8 +76,51 @@ bool vectorNorm(const float *x, int n, double &norm)
    return true;
 }
 
-// Uses the Rodrigues formula to produces a 4x4 transformation matrix for rotating 
-// a point by an angle alpha about the (x,y,z) axis.
+// Uses Rodrigues' formula to produce a 4x4 transformation matrix for rotating
+// a point by an angle alpha about the (x, y, z) axis.
+bool rotate(float *R,
+            float cosAlpha,
+            float sinAlpha,
+            float x,
+            float y,
+            float z)
+{
+   if (!set_to_I(R, 4))
+   {
+      return false;
+   }
+
+   if (x == 0.0f && y == 0.0f && z == 0.0f)
+   {
+      return false;
+   }
+
+   // Compute the Euclidean norm of the rotation axis.
+   double norm = std::hypot(std::hypot((double)x, (double)y),
+                            (double)z);
+
+   // Find the unit vector (ax, ay, az) in the direction of (x, y, z).
+   double ax = (double)x / norm;
+   double ay = (double)y / norm;
+   double az = (double)z / norm;
+
+   R[0] = (float)(ax * ax + cosAlpha - cosAlpha * ax * ax);
+   R[1] = (float)(ax * ay - cosAlpha * ax * ay - sinAlpha * az);
+   R[2] = (float)(ax * az - cosAlpha * ax * az + sinAlpha * ay);
+
+   R[4] = (float)(ay * ax - cosAlpha * ay * ax + sinAlpha * az);
+   R[5] = (float)(ay * ay + cosAlpha - cosAlpha * ay * ay);
+   R[6] = (float)(ay * az - cosAlpha * ay * az - sinAlpha * ax);
+
+   R[8] = (float)(az * ax - cosAlpha * az * ax - sinAlpha * ay);
+   R[9] = (float)(az * ay - cosAlpha * az * ay + sinAlpha * ax);
+   R[10] = (float)(az * az + cosAlpha - cosAlpha * az * az);
+
+   return true;
+}
+
+// Uses Rodrigues' formula to produce a 4x4 transformation matrix for rotating
+// a point by an angle alpha about the (x, y, z) axis.
 bool rotate(float *R, float alpha, float x, float y, float z)
 {
    if (!set_to_I(R, 4))
@@ -95,7 +138,7 @@ bool rotate(float *R, float alpha, float x, float y, float z)
    double norm = std::hypot(std::hypot((double)x, (double)y),
                             (double)z);
 
-   // Find the unit vector (ax, ay, az) in the direction of (x, y, z). 
+   // Find the unit vector (ax, ay, az) in the direction of (x, y, z).
    double ax = (double)x / norm;
    double ay = (double)y / norm;
    double az = (double)z / norm;
@@ -114,4 +157,3 @@ bool rotate(float *R, float alpha, float x, float y, float z)
 
    return true;
 }
-

@@ -256,7 +256,6 @@ void new_PIL_transform(const char *subfile, const char *lmfile, char *orient, fl
 void standard_PIL_transformation(const char *imfile, const char *lmfile, char *orient, int4 verbose, float4 *TPIL);
 void Procrustes(float *Q, float *Qavg, int n, float *P, float *Pavg, float *TLM);
 void Procrustes(float *Q, int n, float *P, float *TLM);
-void rotate(float4 *T, float4 CosAlpha, float4 SinAlpha, float4 x, float4 y, float4 z);
 void compute_cm(int2 *image, int4 nx, int4 ny, int4 nz, float4 dx, float4 dy, float4 dz, float4 *x, float4 *y, float4 *z);
 void compute_cm(short *image, DIM dim, float *cm);
 void compute_cov(short *image, DIM dim, float *cm, double *I);

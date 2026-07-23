@@ -20,6 +20,7 @@
 #include "reorientVolume.h"
 #include "matrixCom.h"
 #include "rotate.h"
+#include "babak_linear_algebra.h"
 
 #define _artlib
 

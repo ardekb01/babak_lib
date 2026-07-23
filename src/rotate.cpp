@@ -264,35 +264,3 @@ void rodrigues_formula4x4(float *R, float *w, float theta)
 
    return;
 }
-
-void rotate(float *R, float cosAlpha, float sinAlpha, float x, float y, float z)
-{
-   float dum;
-   float ax,ay,az;
-
-   R[0]=R[5]=R[10]=R[15]=1.0;
-   R[1]=R[2]=R[3]=0.0;
-   R[4]=R[6]=R[7]=0.0;
-   R[8]=R[9]=R[11]=0.0;
-   R[12]=R[13]=R[14]=0.0;
-      
-   if(x==0.0 && y==0.0 && z==0.0) return;
-   
-   /* find the unit vector (ax,ay,az) in the direction of (x,y,z) */
-   dum=(float)sqrt((double)x*x+y*y+z*z);
-   ax=x/dum; ay=y/dum; az=z/dum;
-      
-   R[0] = ax*ax + cosAlpha - cosAlpha*ax*ax; 
-   R[1] = ax*ay - cosAlpha*ax*ay - sinAlpha*az; 
-   R[2] = ax*az - cosAlpha*ax*az + sinAlpha*ay; 
-   
-   R[4] = ay*ax - cosAlpha*ay*ax + sinAlpha*az; 
-   R[5] = ay*ay + cosAlpha - cosAlpha*ay*ay; 
-   R[6] = ay*az - cosAlpha*ay*az - sinAlpha*ax; 
-   
-   R[8]  = az*ax - cosAlpha*az*ax - sinAlpha*ay; 
-   R[9]  = az*ay - cosAlpha*az*ay + sinAlpha*ax; 
-   R[10] = az*az + cosAlpha - cosAlpha*az*az; 
-   
-   return;
-}
