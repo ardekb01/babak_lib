@@ -178,3 +178,117 @@ double det3x3(const double *A)
           A[0] * A[5] * A[7] -
           A[1] * A[3] * A[8];
 }
+
+// Computes the determinant of a 4×4 matrix stored in row-major order.
+float det4x4(const float *A)
+{
+   float det = 0.0f;
+   float B[9];
+
+   B[0] = A[5];
+   B[1] = A[6];
+   B[2] = A[7];
+   B[3] = A[9];
+   B[4] = A[10];
+   B[5] = A[11];
+   B[6] = A[13];
+   B[7] = A[14];
+   B[8] = A[15];
+
+   det += A[0] * det3x3(B);
+
+   B[0] = A[4];
+   B[1] = A[6];
+   B[2] = A[7];
+   B[3] = A[8];
+   B[4] = A[10];
+   B[5] = A[11];
+   B[6] = A[12];
+   B[7] = A[14];
+   B[8] = A[15];
+
+   det -= A[1] * det3x3(B);
+
+   B[0] = A[4];
+   B[1] = A[5];
+   B[2] = A[7];
+   B[3] = A[8];
+   B[4] = A[9];
+   B[5] = A[11];
+   B[6] = A[12];
+   B[7] = A[13];
+   B[8] = A[15];
+
+   det += A[2] * det3x3(B);
+
+   B[0] = A[4];
+   B[1] = A[5];
+   B[2] = A[6];
+   B[3] = A[8];
+   B[4] = A[9];
+   B[5] = A[10];
+   B[6] = A[12];
+   B[7] = A[13];
+   B[8] = A[14];
+
+   det -= A[3] * det3x3(B);
+
+   return det;
+}
+
+// Computes the determinant of a 4×4 matrix stored in row-major order.
+double det4x4(const double *A)
+{
+   double det = 0.0;
+   double B[9];
+
+   B[0] = A[5];
+   B[1] = A[6];
+   B[2] = A[7];
+   B[3] = A[9];
+   B[4] = A[10];
+   B[5] = A[11];
+   B[6] = A[13];
+   B[7] = A[14];
+   B[8] = A[15];
+
+   det += A[0] * det3x3(B);
+
+   B[0] = A[4];
+   B[1] = A[6];
+   B[2] = A[7];
+   B[3] = A[8];
+   B[4] = A[10];
+   B[5] = A[11];
+   B[6] = A[12];
+   B[7] = A[14];
+   B[8] = A[15];
+
+   det -= A[1] * det3x3(B);
+
+   B[0] = A[4];
+   B[1] = A[5];
+   B[2] = A[7];
+   B[3] = A[8];
+   B[4] = A[9];
+   B[5] = A[11];
+   B[6] = A[12];
+   B[7] = A[13];
+   B[8] = A[15];
+
+   det += A[2] * det3x3(B);
+
+   B[0] = A[4];
+   B[1] = A[5];
+   B[2] = A[6];
+   B[3] = A[8];
+   B[4] = A[9];
+   B[5] = A[10];
+   B[6] = A[12];
+   B[7] = A[13];
+   B[8] = A[14];
+
+   det -= A[3] * det3x3(B);
+
+   return det;
+}

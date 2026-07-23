@@ -38,10 +38,6 @@ float *trans(float *A, int N,  int M);
 double *trans(double *A, int N,  int M);
 /*****************************************************************************/
 
-/* computes the determinant of the 4x4 matrix A */
-float det4(float *A);
-double det4(double *A);
-
 /* computes the inverse of the 4x4 matrix A */
 float *inv4(float *A);
 double *inv4(double *A);
@@ -999,74 +995,6 @@ void s3eigenval(float *A, float *L)
 }
 ///////////////////////////////////////////////////////////////
 
-float det4(float *A)
-{
-   float det;
-   float B[9];   
-   
-   det=0.0;
-
-   B[0]=A[5]; B[1]=A[6]; B[2]=A[7]; 
-   B[3]=A[9]; B[4]=A[10]; B[5]=A[11]; 
-   B[6]=A[13]; B[7]=A[14]; B[8]=A[15]; 
- 
-   det += A[0]*det3x3(B);
-   
-   B[0]=A[4]; B[1]=A[6]; B[2]=A[7]; 
-   B[3]=A[8]; B[4]=A[10]; B[5]=A[11]; 
-   B[6]=A[12]; B[7]=A[14]; B[8]=A[15]; 
-   
-   det -= A[1]*det3x3(B);
-
-   B[0]=A[4]; B[1]=A[5]; B[2]=A[7]; 
-   B[3]=A[8]; B[4]=A[9]; B[5]=A[11]; 
-   B[6]=A[12]; B[7]=A[13]; B[8]=A[15]; 
-   
-   det += A[2]*det3x3(B);
-
-   B[0]=A[4]; B[1]=A[5]; B[2]=A[6]; 
-   B[3]=A[8]; B[4]=A[9]; B[5]=A[10]; 
-   B[6]=A[12]; B[7]=A[13]; B[8]=A[14]; 
-   
-   det -= A[3]*det3x3(B);
-
-   return(det);
-}
-
-double det4(double *A)
-{
-   double det;
-   double B[9];   
-   
-   det=0.0;
-
-   B[0]=A[5]; B[1]=A[6]; B[2]=A[7]; 
-   B[3]=A[9]; B[4]=A[10]; B[5]=A[11]; 
-   B[6]=A[13]; B[7]=A[14]; B[8]=A[15]; 
- 
-   det += A[0]*det3x3(B);
-   
-   B[0]=A[4]; B[1]=A[6]; B[2]=A[7]; 
-   B[3]=A[8]; B[4]=A[10]; B[5]=A[11]; 
-   B[6]=A[12]; B[7]=A[14]; B[8]=A[15]; 
-   
-   det -= A[1]*det3x3(B);
-
-   B[0]=A[4]; B[1]=A[5]; B[2]=A[7]; 
-   B[3]=A[8]; B[4]=A[9]; B[5]=A[11]; 
-   B[6]=A[12]; B[7]=A[13]; B[8]=A[15]; 
-   
-   det += A[2]*det3x3(B);
-
-   B[0]=A[4]; B[1]=A[5]; B[2]=A[6]; 
-   B[3]=A[8]; B[4]=A[9]; B[5]=A[10]; 
-   B[6]=A[12]; B[7]=A[13]; B[8]=A[14]; 
-   
-   det -= A[3]*det3x3(B);
-
-   return(det);
-}
-
 void transpose_matrix(float *A, int N,  int M)
 {
    float *transA;
@@ -1220,7 +1148,7 @@ float *inv4(float *A)
 
    transC=trans(C,4,4);
 
-   detA=det4(A);
+   detA=det4x4(A);
 
    if(detA!=0.0)
    {
@@ -1570,7 +1498,7 @@ double *inv4(double *A)
 
    transC=trans(C,4,4);
 
-   detA=det4(A);
+   detA=det4x4(A);
 
    if(detA!=0.0)
    {
