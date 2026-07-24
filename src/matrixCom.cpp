@@ -41,8 +41,6 @@ double *trans(double *A, int N,  int M);
 /* computes the inverse of the 4x4 matrix A */
 float *inv4(float *A);
 double *inv4(double *A);
-double *inv3(double *A);
-float *inv3(float *A);
 
 //////////////////////////////////////////////////////////////////
 
@@ -1276,64 +1274,6 @@ void multi(float *A, int iA, int jA,  double *B, int iB,  int jB,  double *C)
 		C[i*jB+j]=D[i*jB+j];
 
 	free(D);
-}
-
-double *inv3(double *A)
-{
-   double *invA;
-   double CT[9];
-   double detA;
-
-   invA=(double *)calloc(9,sizeof(double));
-
-   CT[0] = A[4]*A[8] - A[5]*A[7];
-   CT[1] = A[2]*A[7] - A[1]*A[8];
-   CT[2] = A[1]*A[5] - A[2]*A[4];
-   CT[3] = A[5]*A[6] - A[3]*A[8];
-   CT[4] = A[0]*A[8] - A[2]*A[6];
-   CT[5] = A[2]*A[3] - A[0]*A[5];
-   CT[6] = A[3]*A[7] - A[4]*A[6];
-   CT[7] = A[1]*A[6] - A[0]*A[7];
-   CT[8] = A[0]*A[4] - A[1]*A[3];
-
-   detA=det3x3(A);
-
-   if(detA!=0.0)
-   {
-      for(int i=0; i<9; i++)  
-         invA[i]=CT[i]/detA;
-   }
-
-   return(invA);
-}
-
-float *inv3(float *A)
-{
-   float *invA;
-   float CT[9];
-   float detA;
-
-   invA=(float *)calloc(9,sizeof(float));
-
-   CT[0] = A[4]*A[8] - A[5]*A[7];
-   CT[1] = A[2]*A[7] - A[1]*A[8];
-   CT[2] = A[1]*A[5] - A[2]*A[4];
-   CT[3] = A[5]*A[6] - A[3]*A[8];
-   CT[4] = A[0]*A[8] - A[2]*A[6];
-   CT[5] = A[2]*A[3] - A[0]*A[5];
-   CT[6] = A[3]*A[7] - A[4]*A[6];
-   CT[7] = A[1]*A[6] - A[0]*A[7];
-   CT[8] = A[0]*A[4] - A[1]*A[3];
-
-   detA=det3x3(A);
-
-   if(detA!=0.0)
-   {
-      for(int i=0; i<9; i++)  
-      invA[i]=CT[i]/detA;
-   }
-
-   return(invA);
 }
 
 double *inv4(double *A)

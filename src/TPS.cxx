@@ -14,6 +14,7 @@
 #include <babak_lib.h>
 #include <minmax.h>
 #include <interpolator.h>
+#include "bbk_linear_algebra.h"
 
 #define YES 1
 #define NO 0
@@ -404,7 +405,7 @@ float *compute_L_inverse(float *x, float *y, size_t n)
    A = (float *)calloc(3*3, sizeof(float));
 
    multi(Pt,3,n,B,n,3,A); // compute PtKiP=transpose(P)inverse(K)*P 
-   Ai = inv3(A);
+   Ai = inv3x3(A);
 
    //printMatrix(A,3,3,"A:",NULL);  // for testing only
    //printMatrix(Ai,3,3,"Ai:",NULL);  // for testing only

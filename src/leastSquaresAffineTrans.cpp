@@ -1,4 +1,5 @@
-#include <babak_lib.h>
+#include "babak_lib.h"
+#include "bbk_linear_algebra.h"
 
 void leastSquaresAffineTrans(float4 *P, float4 *Q, int4 n, float4 *A)
 {
@@ -21,7 +22,7 @@ void leastSquaresAffineTrans(float4 *P, float4 *Q, int4 n, float4 *A)
 
    mat_mat_trans(P,3,n,P,3,PPT);
    mat_mat_trans(Q,3,n,P,3,QPT);
-   iPPT = inv3(PPT);
+   iPPT = inv3x3(PPT);
 
    // computes QP'*(PP')^-1
    multi(QPT,3,3,iPPT,3,3,a);

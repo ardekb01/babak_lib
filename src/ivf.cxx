@@ -9,8 +9,9 @@
 #include <unistd.h>
 #include <volume.h>
 #include <spm_analyze.h>
-#include <babak_lib.h>
-#include <minmax.h>
+#include "babak_lib.h"
+#include "bbk_linear_algebra.h"
+#include "minmax.h"
 
 #define YES 1
 #define NO 0
@@ -209,7 +210,7 @@ void approximate_affine(int nx, int ny, int nz, float dx, float dy, float dz, fl
 	/////////////////////////////////////////////////////////////////////////////////
 	// estimate A according to Eq. (2) of the technical notes.
 	/////////////////////////////////////////////////////////////////////////////////
-	invRR = inv3(RR);
+	invRR = inv3x3(RR);
 	multi(SR,3,3,invRR,3,3,A);
 	free(invRR);
 	/////////////////////////////////////////////////////////////////////////////////
