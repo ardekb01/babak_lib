@@ -44,8 +44,6 @@ double *inv4(double *A);
 double *inv3(double *A);
 float *inv3(float *A);
 void inv3(float *A, float *invA);
-float *inv2(float *A);
-double *inv2(double *A);
 
 //////////////////////////////////////////////////////////////////
 
@@ -1361,47 +1359,6 @@ void inv3(float *A, float *invA)
       for(int i=0; i<9; i++)  
          invA[i]=CT[i]/detA;
    }
-}
-
-// inverse is computed as the transpose of the cofactors divided by the determinant
-float *inv2(float *A)
-{
-	float *invA;
-	float detA;
-
-	invA=(float *)calloc(4,sizeof(float));
-
-	detA=A[0]*A[3]-A[1]*A[2];
-
-	if(detA!=0.0)
-	{
-		invA[0] = A[3]/detA;
-		invA[1] = -A[1]/detA;
-		invA[2] = -A[2]/detA;
-		invA[3] = A[0]/detA;
-	}
-
-   	return(invA);
-}
-
-double *inv2(double *A)
-{
-	double *invA;
-	double detA;
-
-	invA=(double *)calloc(4,sizeof(double));
-
-	detA=A[0]*A[3]-A[1]*A[2];
-
-	if(detA!=0.0)
-	{
-		invA[0] = A[3]/detA;
-		invA[1] = -A[1]/detA;
-		invA[2] = -A[2]/detA;
-		invA[3] = A[0]/detA;
-	}
-
-   	return(invA);
 }
 
 double *inv4(double *A)

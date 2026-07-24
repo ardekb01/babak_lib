@@ -1,4 +1,5 @@
 #include <cmath>
+#include <cstdlib>
 #include "bbk_linear_algebra.h"
 
 // Sets the n x n matrix A equal to the identity matrix.
@@ -291,4 +292,69 @@ double det4x4(const double *A)
    det -= A[3] * det3x3(B);
 
    return det;
+}
+
+// Computes the inverse of a 2×2 matrix stored in row-major order.
+// Returns a newly allocated matrix, or nullptr if A is null, singular,
+// or memory allocation fails.
+// Caller is responsible for freeing the memory in the returned matrix
+// using free().
+float *inv2x2(const float *A)
+{
+   if (A == nullptr)
+   {
+      return nullptr;
+   }
+
+   float detA = A[0] * A[3] -
+                A[1] * A[2];
+
+   if (fabsf(detA) < BBKTOL)
+   {
+      return nullptr;
+   }
+
+   float *invA = (float *)calloc(4, sizeof(float));
+
+   if (invA == nullptr)
+   {
+      return nullptr;
+   }
+
+   invA[0] = A[3] / detA;
+   invA[1] = -A[1] / detA;
+   invA[2] = -A[2] / detA;
+   invA[3] = A[0] / detA;
+
+   return invA;
+}
+
+double *inv2x2(const double *A)
+{
+   if (A == nullptr)
+   {
+      return nullptr;
+   }
+
+   double detA = A[0] * A[3] -
+                A[1] * A[2];
+
+   if (fabs(detA) < BBKTOL)
+   {
+      return nullptr;
+   }
+
+   double *invA = (double *)calloc(4, sizeof(double));
+
+   if (invA == nullptr)
+   {
+      return nullptr;
+   }
+
+   invA[0] = A[3] / detA;
+   invA[1] = -A[1] / detA;
+   invA[2] = -A[2] / detA;
+   invA[3] = A[0] / detA;
+
+   return invA;
 }
