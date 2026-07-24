@@ -43,7 +43,6 @@ float *inv4(float *A);
 double *inv4(double *A);
 double *inv3(double *A);
 float *inv3(float *A);
-void inv3(float *A, float *invA);
 
 //////////////////////////////////////////////////////////////////
 
@@ -1335,30 +1334,6 @@ float *inv3(float *A)
    }
 
    return(invA);
-}
-
-void inv3(float *A, float *invA)
-{
-   float CT[9];
-   float detA;
-
-   CT[0] = A[4]*A[8] - A[5]*A[7];
-   CT[1] = A[2]*A[7] - A[1]*A[8];
-   CT[2] = A[1]*A[5] - A[2]*A[4];
-   CT[3] = A[5]*A[6] - A[3]*A[8];
-   CT[4] = A[0]*A[8] - A[2]*A[6];
-   CT[5] = A[2]*A[3] - A[0]*A[5];
-   CT[6] = A[3]*A[7] - A[4]*A[6];
-   CT[7] = A[1]*A[6] - A[0]*A[7];
-   CT[8] = A[0]*A[4] - A[1]*A[3];
-
-   detA=det3x3(A);
-
-   if(detA!=0.0)
-   {
-      for(int i=0; i<9; i++)  
-         invA[i]=CT[i]/detA;
-   }
 }
 
 double *inv4(double *A)
