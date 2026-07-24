@@ -23,7 +23,7 @@ double det4x4(const double *A);
 float *inv2x2(const float *A);
 double *inv2x2(const double *A);
 
-float *inv3x3(float *A);
-double *inv3x3(double *A);
+float *inv3x3(const float *A);
+double *inv3x3(const double *A);
 
 #endif

@@ -586,8 +586,6 @@ extern float8 s3det(float8 *A);
 extern float4 s3det(float4 *A);
 void ds3det(float8 *A, float8 *B);
 void ds3det(float4 *A, float4 *B);
-//extern float8 *inv3(float8 *A);
-//extern float4 *inv3(float4 *A);
 extern float4 *inv4(float4 *A);
 extern float8 *inv4(float8 *A);
 extern void multi(float4 *A,int4 iA,int4 jA,float4 *B,int4 iB,int4 jB,float4 *C);

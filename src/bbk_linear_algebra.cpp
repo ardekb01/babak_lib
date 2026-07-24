@@ -359,61 +359,90 @@ double *inv2x2(const double *A)
    return invA;
 }
 
-double *inv3x3(double *A)
+// Computes the inverse of a 3×3 matrix stored in row-major order.
+// Returns a newly allocated matrix, or nullptr if A is null, singular,
+// or memory allocation fails.
+float *inv3x3(const float *A)
 {
-   double *invA;
-   double CT[9];
-   double detA;
-
-   invA=(double *)calloc(9,sizeof(double));
-
-   CT[0] = A[4]*A[8] - A[5]*A[7];
-   CT[1] = A[2]*A[7] - A[1]*A[8];
-   CT[2] = A[1]*A[5] - A[2]*A[4];
-   CT[3] = A[5]*A[6] - A[3]*A[8];
-   CT[4] = A[0]*A[8] - A[2]*A[6];
-   CT[5] = A[2]*A[3] - A[0]*A[5];
-   CT[6] = A[3]*A[7] - A[4]*A[6];
-   CT[7] = A[1]*A[6] - A[0]*A[7];
-   CT[8] = A[0]*A[4] - A[1]*A[3];
-
-   detA=det3x3(A);
-
-   if(detA!=0.0)
+   if (A == nullptr)
    {
-      for(int i=0; i<9; i++)  
-         invA[i]=CT[i]/detA;
+      return nullptr;
    }
 
-   return(invA);
-}
+   float detA = det3x3(A);
 
-float *inv3x3(float *A)
-{
-   float *invA;
-   float CT[9];
-   float detA;
-
-   invA=(float *)calloc(9,sizeof(float));
-
-   CT[0] = A[4]*A[8] - A[5]*A[7];
-   CT[1] = A[2]*A[7] - A[1]*A[8];
-   CT[2] = A[1]*A[5] - A[2]*A[4];
-   CT[3] = A[5]*A[6] - A[3]*A[8];
-   CT[4] = A[0]*A[8] - A[2]*A[6];
-   CT[5] = A[2]*A[3] - A[0]*A[5];
-   CT[6] = A[3]*A[7] - A[4]*A[6];
-   CT[7] = A[1]*A[6] - A[0]*A[7];
-   CT[8] = A[0]*A[4] - A[1]*A[3];
-
-   detA=det3x3(A);
-
-   if(detA!=0.0)
+   if (fabsf(detA) < BBKTOL)
    {
-      for(int i=0; i<9; i++)  
-      invA[i]=CT[i]/detA;
+      return nullptr;
    }
 
-   return(invA);
+   float *invA = (float *)calloc(9, sizeof(float));
+
+   if (invA == nullptr)
+   {
+      return nullptr;
+   }
+
+   invA[0] = A[4] * A[8] - A[5] * A[7];
+   invA[1] = A[2] * A[7] - A[1] * A[8];
+   invA[2] = A[1] * A[5] - A[2] * A[4];
+
+   invA[3] = A[5] * A[6] - A[3] * A[8];
+   invA[4] = A[0] * A[8] - A[2] * A[6];
+   invA[5] = A[2] * A[3] - A[0] * A[5];
+
+   invA[6] = A[3] * A[7] - A[4] * A[6];
+   invA[7] = A[1] * A[6] - A[0] * A[7];
+   invA[8] = A[0] * A[4] - A[1] * A[3];
+
+   for (int i = 0; i < 9; i++)
+   {
+      invA[i] /= detA;
+   }
+
+   return invA;
 }
 
+// Computes the inverse of a 3×3 matrix stored in row-major order.
+// Returns a newly allocated matrix, or nullptr if A is null, singular,
+// or memory allocation fails.
+double *inv3x3(const double *A)
+{
+   if (A == nullptr)
+   {
+      return nullptr;
+   }
+
+   double detA = det3x3(A);
+
+   if (fabs(detA) < BBKTOL)
+   {
+      return nullptr;
+   }
+
+   double *invA = (double *)calloc(9, sizeof(double));
+
+   if (invA == nullptr)
+   {
+      return nullptr;
+   }
+
+   invA[0] = A[4] * A[8] - A[5] * A[7];
+   invA[1] = A[2] * A[7] - A[1] * A[8];
+   invA[2] = A[1] * A[5] - A[2] * A[4];
+
+   invA[3] = A[5] * A[6] - A[3] * A[8];
+   invA[4] = A[0] * A[8] - A[2] * A[6];
+   invA[5] = A[2] * A[3] - A[0] * A[5];
+
+   invA[6] = A[3] * A[7] - A[4] * A[6];
+   invA[7] = A[1] * A[6] - A[0] * A[7];
+   invA[8] = A[0] * A[4] - A[1] * A[3];
+
+   for (int i = 0; i < 9; i++)
+   {
+      invA[i] /= detA;
+   }
+
+   return invA;
+}
