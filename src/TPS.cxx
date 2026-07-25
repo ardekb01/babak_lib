@@ -374,7 +374,7 @@ float *compute_L_inverse(float *x, float *y, size_t n)
       P[3*i + 2] = y[i];
    }
 
-   Pt = trans(P, n, 3);
+   Pt = transpose(P, n, 3);
 
    //printMatrix(P,n,3,"P:",NULL);  // for testing only
    //printMatrix(Pt,3,n,"Pt:",NULL);  // for testing only
@@ -389,7 +389,7 @@ float *compute_L_inverse(float *x, float *y, size_t n)
    B = (float *)calloc(n*3, sizeof(float));
 
    multi(Ki,n,n,P,n,3,B); // compute B=inverse(K)*P 
-   Bt = trans(B, n, 3);
+   Bt = transpose(B, n, 3);
 
    //printMatrix(B,n,3,"B:",NULL);  // for testing only
    //printMatrix(Bt,3,n,"Bt:",NULL);  // for testing only
@@ -422,7 +422,7 @@ float *compute_L_inverse(float *x, float *y, size_t n)
 
    BAi = (float *)calloc(n*3, sizeof(float));
    multi(B,n,3,Ai,3,3,BAi);
-   AiBt = trans(BAi, n, 3);
+   AiBt = transpose(BAi, n, 3);
 
    //printMatrix(BAi,n,3,"BAi:",NULL);  // for testing only
    //printMatrix(AiBt,3,n,"AiBt:",NULL);  // for testing only

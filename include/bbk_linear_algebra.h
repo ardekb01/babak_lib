@@ -38,4 +38,7 @@ bool transpose_matrix(const float *A,
                       int nCols,
                       float *transA);
 
+float *transpose(float *A, int N,  int M);
+double *transpose(double *A, int N,  int M);
+
 #endif

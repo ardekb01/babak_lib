@@ -28,12 +28,6 @@ int avgRow(double *X, int N, int P, double *avg);
 int varRow(float *X, int N, int P, float *avg, float *var);
 int varRow(double *X, int N, int P, double *avg, double *var);
 
-/*****************************************************************************/
-/* computes the transpose of the NxM matrix A */
-float *trans(float *A, int N,  int M);
-double *trans(double *A, int N,  int M);
-/*****************************************************************************/
-
 /* computes the inverse of the 4x4 matrix A */
 float *inv4(float *A);
 double *inv4(double *A);
@@ -984,37 +978,6 @@ void s3eigenval(float *A, float *L)
 
    return;
 }
-///////////////////////////////////////////////////////////////
-
-float *trans(float *A, int N,  int M)
-{
-   int i,j;
-
-   float *transA;
-
-   transA=(float *)calloc(N*M,sizeof(float));
-
-   for(i=0;i<N;i++)
-   for(j=0;j<M;j++)
-      transA[j*N+i]=A[i*M+j];
-
-   return(transA);
-}
-
-double *trans(double *A, int N,  int M)
-{
-   int i,j;
-
-   double *transA;
-
-   transA=(double *)calloc(N*M,sizeof(double));
-
-   for(i=0;i<N;i++)
-   for(j=0;j<M;j++)
-      transA[j*N+i]=A[i*M+j];
-
-   return(transA);
-}
 
 // Note: A is preserved
 float *inv4(float *A)
@@ -1109,7 +1072,7 @@ float *inv4(float *A)
    B[6]=A[8]; B[7]=A[9]; B[8]=A[10];
    C[15]=det3x3(B);
 
-   transC=trans(C,4,4);
+   transC=transpose(C,4,4);
 
    detA=det4x4(A);
 
@@ -1336,7 +1299,7 @@ double *inv4(double *A)
    B[6]=A[8]; B[7]=A[9]; B[8]=A[10];
    C[15]=det3x3(B);
 
-   transC=trans(C,4,4);
+   transC=transpose(C,4,4);
 
    detA=det4x4(A);
 

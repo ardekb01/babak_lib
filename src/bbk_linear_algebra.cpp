@@ -510,3 +510,34 @@ bool transpose_matrix(const float *A,
 
    return true;
 }
+
+float *transpose(float *A, int N,  int M)
+{
+   int i,j;
+
+   float *transA;
+
+   transA=(float *)calloc(N*M,sizeof(float));
+
+   for(i=0;i<N;i++)
+   for(j=0;j<M;j++)
+      transA[j*N+i]=A[i*M+j];
+
+   return(transA);
+}
+
+double *transpose(double *A, int N,  int M)
+{
+   int i,j;
+
+   double *transA;
+
+   transA=(double *)calloc(N*M,sizeof(double));
+
+   for(i=0;i<N;i++)
+   for(j=0;j<M;j++)
+      transA[j*N+i]=A[i*M+j];
+
+   return(transA);
+}
+

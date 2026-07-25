@@ -562,9 +562,6 @@ extern int4 ssdRow(float4 *X, int4 N, int4 P, float4 *avg, float4 *ssd);
 // compute the Euclidian distance between two vectors r0 and r1
 extern float8 euclideandistance(float4 *r0, float4 *r1, int4 n);
 extern float8 xtAx(float4 *A, float8 *x, int4 p);
-extern float *trans(float *A, int N,  int M);
-extern double *trans(double *A, int N,  int M);
-
 extern float4 normalize(float4 *s, int4 n);
 extern float8 normalize(float8 *s, int4 n);
 
