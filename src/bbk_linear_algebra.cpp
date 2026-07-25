@@ -483,3 +483,30 @@ bool transpose_matrix(float *A, int nRows, int nCols)
 
    return true;
 }
+
+// Transposes an (nRows × nCols) matrix stored in row-major order.
+// The result is stored in transA and has dimensions (nCols × nRows).
+bool transpose_matrix(const float *A,
+                      int nRows,
+                      int nCols,
+                      float *transA)
+{
+   if (A == nullptr ||
+       transA == nullptr ||
+       nRows <= 0 ||
+       nCols <= 0)
+   {
+      return false;
+   }
+
+   for (int i = 0; i < nRows; i++)
+   {
+      for (int j = 0; j < nCols; j++)
+      {
+         transA[j * nRows + i] =
+            A[i * nCols + j];
+      }
+   }
+
+   return true;
+}

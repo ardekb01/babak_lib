@@ -17,6 +17,7 @@
 #include "set_dim.h"
 #include "PILtransform.h"
 #include "ijk2xyz.h"
+#include "bbk_linear_algebra.h"
 
 #define YES 1
 #define NO 0

@@ -31,4 +31,11 @@ double *inv3x3(const double *A);
 // After the operation, the matrix has dimensions (nCols × nRows).
 bool transpose_matrix(float *A, int nRows, int nCols);
 
+// Transposes an (nRows × nCols) matrix stored in row-major order.
+// The result is stored in transA and has dimensions (nCols × nRows).
+bool transpose_matrix(const float *A,
+                      int nRows,
+                      int nCols,
+                      float *transA);
+
 #endif

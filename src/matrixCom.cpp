@@ -986,19 +986,6 @@ void s3eigenval(float *A, float *L)
 }
 ///////////////////////////////////////////////////////////////
 
-void transpose_matrix(float *A, int N,  int M, float *AT)
-{
-   for(int i=0;i<N;i++)
-   {
-      for(int j=0;j<M;j++)
-      {
-         AT[j*N+i]=A[i*M+j];
-      }
-   }
-
-   return;
-}
-
 float *trans(float *A, int N,  int M)
 {
    int i,j;
