@@ -511,33 +511,68 @@ bool transpose_matrix(const float *A,
    return true;
 }
 
-float *transpose(float *A, int N,  int M)
+// Returns a newly allocated transpose of an (nRows × nCols) matrix
+// stored in row-major order. The returned matrix has dimensions
+// (nCols × nRows). The caller is responsible for freeing the memory.
+float *transpose(const float *A, int nRows, int nCols)
 {
-   int i,j;
+   if (A == nullptr ||
+       nRows <= 0 ||
+       nCols <= 0)
+   {
+      return nullptr;
+   }
 
-   float *transA;
+   size_t nElements = (size_t)nRows * nCols;
 
-   transA=(float *)calloc(N*M,sizeof(float));
+   float *transA = (float *)malloc(nElements * sizeof(float));
 
-   for(i=0;i<N;i++)
-   for(j=0;j<M;j++)
-      transA[j*N+i]=A[i*M+j];
+   if (transA == nullptr)
+   {
+      return nullptr;
+   }
 
-   return(transA);
+   for (int i = 0; i < nRows; i++)
+   {
+      for (int j = 0; j < nCols; j++)
+      {
+         transA[j * nRows + i] =
+            A[i * nCols + j];
+      }
+   }
+
+   return transA;
 }
 
-double *transpose(double *A, int N,  int M)
+// Returns a newly allocated transpose of an (nRows × nCols) matrix
+// stored in row-major order. The returned matrix has dimensions
+// (nCols × nRows). The caller is responsible for freeing the memory.
+double *transpose(const double *A, int nRows, int nCols)
 {
-   int i,j;
+   if (A == nullptr ||
+       nRows <= 0 ||
+       nCols <= 0)
+   {
+      return nullptr;
+   }
 
-   double *transA;
+   size_t nElements = (size_t)nRows * nCols;
 
-   transA=(double *)calloc(N*M,sizeof(double));
+   double *transA = (double *)malloc(nElements * sizeof(double));
 
-   for(i=0;i<N;i++)
-   for(j=0;j<M;j++)
-      transA[j*N+i]=A[i*M+j];
+   if (transA == nullptr)
+   {
+      return nullptr;
+   }
 
-   return(transA);
+   for (int i = 0; i < nRows; i++)
+   {
+      for (int j = 0; j < nCols; j++)
+      {
+         transA[j * nRows + i] =
+            A[i * nCols + j];
+      }
+   }
+
+   return transA;
 }
-

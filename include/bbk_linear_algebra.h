@@ -38,7 +38,10 @@ bool transpose_matrix(const float *A,
                       int nCols,
                       float *transA);
 
-float *transpose(float *A, int N,  int M);
-double *transpose(double *A, int N,  int M);
+// Returns a newly allocated transpose of an (nRows × nCols) matrix
+// stored in row-major order. The returned matrix has dimensions
+// (nCols × nRows). The caller is responsible for freeing the memory.
+float *transpose(const float *A, int nRows, int nCols);
+double *transpose(const double *A, int nRows, int nCols);
 
 #endif
