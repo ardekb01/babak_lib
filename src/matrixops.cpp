@@ -6,7 +6,8 @@
 #include <f2c.h>
 #include <clapack.h>
 
-#include <babak_lib.h>
+#include "babak_lib.h"
+#include "bbk_linear_algebra.h"
 
 void solveATxEqB(float *A, int nr, int nc, float *B);
 

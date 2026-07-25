@@ -562,7 +562,6 @@ extern int4 ssdRow(float4 *X, int4 N, int4 P, float4 *avg, float4 *ssd);
 // compute the Euclidian distance between two vectors r0 and r1
 extern float8 euclideandistance(float4 *r0, float4 *r1, int4 n);
 extern float8 xtAx(float4 *A, float8 *x, int4 p);
-extern void transpose_matrix(float4 *A, int4 N,  int4 M);
 extern void transpose_matrix(float4 *A, int4 N,  int4 M, float4 *AT);
 /* computes the transpose of the NxM matrix A */
 extern float *trans(float *A, int N,  int M);

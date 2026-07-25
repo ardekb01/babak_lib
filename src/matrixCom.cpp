@@ -28,10 +28,6 @@ int avgRow(double *X, int N, int P, double *avg);
 int varRow(float *X, int N, int P, float *avg, float *var);
 int varRow(double *X, int N, int P, double *avg, double *var);
 
-
-void transpose_matrix(float *A, int N,  int M);
-void transpose_matrix(float *A, int N,  int M, float *AT);
-
 /*****************************************************************************/
 /* computes the transpose of the NxM matrix A */
 float *trans(float *A, int N,  int M);
@@ -989,21 +985,6 @@ void s3eigenval(float *A, float *L)
    return;
 }
 ///////////////////////////////////////////////////////////////
-
-void transpose_matrix(float *A, int N,  int M)
-{
-   float *transA;
-
-   transA=(float *)calloc(N*M,sizeof(float));
-
-   for(int i=0;i<N;i++)
-   for(int j=0;j<M;j++)
-      transA[j*N+i]=A[i*M+j];
-
-   for(int i=0;i<N*M;i++) A[i]=transA[i];
-
-   free(transA);
-}
 
 void transpose_matrix(float *A, int N,  int M, float *AT)
 {

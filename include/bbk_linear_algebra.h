@@ -26,4 +26,9 @@ double *inv2x2(const double *A);
 float *inv3x3(const float *A);
 double *inv3x3(const double *A);
 
+// Transposes an (nRows × nCols) matrix stored in row-major order.
+// The matrix is transposed in place using temporary storage.
+// After the operation, the matrix has dimensions (nCols × nRows).
+bool transpose_matrix(float *A, int nRows, int nCols);
+
 #endif

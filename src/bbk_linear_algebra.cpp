@@ -446,3 +446,40 @@ double *inv3x3(const double *A)
 
    return invA;
 }
+
+// Transposes an (nRows × nCols) matrix stored in row-major order.
+// The matrix is transposed in place using temporary storage.
+// After the operation, the matrix has dimensions (nCols × nRows).
+bool transpose_matrix(float *A, int nRows, int nCols)
+{
+   if (A == nullptr || nRows <= 0 || nCols <= 0)
+   {
+      return false;
+   }
+
+   size_t nElements = (size_t)nRows * nCols;
+
+   float *transA = (float *)malloc(nElements * sizeof(float));
+
+   if (transA == nullptr)
+   {
+      return false;
+   }
+
+   for (int i = 0; i < nRows; i++)
+   {
+      for (int j = 0; j < nCols; j++)
+      {
+         transA[j * nRows + i] = A[i * nCols + j];
+      }
+   }
+
+   for (size_t i = 0; i < nElements; i++)
+   {
+      A[i] = transA[i];
+   }
+
+   free(transA);
+
+   return true;
+}
