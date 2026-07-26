@@ -448,7 +448,7 @@ double *inv3x3(const double *A)
 }
 
 // Transposes an (nRows × nCols) matrix stored in row-major order.
-// The matrix is transposed in place using temporary storage.
+// The matrix is transposed in-place using temporary storage.
 // After the operation, the matrix has dimensions (nCols × nRows).
 bool transpose_matrix(float *A, int nRows, int nCols)
 {
@@ -577,110 +577,217 @@ double *transpose(const double *A, int nRows, int nCols)
    return transA;
 }
 
-// Note: A is preserved
-float *inv4x4(float *A)
+float *inv4x4(const float *A)
 {
-   int i;
-
    float detA;
    float *invA;
    float C[16];
    float B[9];
-   float *transC;
 
-   invA=(float *)calloc(16,sizeof(float));
-
-   B[0]=A[5];  B[1]=A[6];  B[2]=A[7]; 
-   B[3]=A[9];  B[4]=A[10]; B[5]=A[11]; 
-   B[6]=A[13]; B[7]=A[14]; B[8]=A[15]; 
-   C[0]=det3x3(B);
-
-   B[0]=A[4];  B[1]=A[6];  B[2]=A[7]; 
-   B[3]=A[8];  B[4]=A[10]; B[5]=A[11]; 
-   B[6]=A[12]; B[7]=A[14]; B[8]=A[15]; 
-   C[1]=-det3x3(B);
-
-   B[0]=A[4];  B[1]=A[5];   B[2]=A[7]; 
-   B[3]=A[8];  B[4]=A[9];  B[5]=A[11]; 
-   B[6]=A[12]; B[7]=A[13]; B[8]=A[15]; 
-   C[2]=det3x3(B);
-
-   B[0]=A[4];  B[1]=A[5];   B[2]=A[6]; 
-   B[3]=A[8];  B[4]=A[9];  B[5]=A[10]; 
-   B[6]=A[12]; B[7]=A[13]; B[8]=A[14]; 
-   C[3]=-det3x3(B);
-
-   B[0]=A[1];  B[1]=A[2];  B[2]=A[3];
-   B[3]=A[9];  B[4]=A[10]; B[5]=A[11];
-   B[6]=A[13]; B[7]=A[14]; B[8]=A[15];
-   C[4]=-det3x3(B);
-
-   B[0]=A[0];  B[1]=A[2];  B[2]=A[3];
-   B[3]=A[8];  B[4]=A[10]; B[5]=A[11];
-   B[6]=A[12]; B[7]=A[14]; B[8]=A[15];
-   C[5]=det3x3(B);
-
-   B[0]=A[0];  B[1]=A[1];  B[2]=A[3];
-   B[3]=A[8];  B[4]=A[9]; B[5]=A[11];
-   B[6]=A[12]; B[7]=A[13]; B[8]=A[15];
-   C[6]=-det3x3(B);
-
-   B[0]=A[0];  B[1]=A[1];  B[2]=A[2];
-   B[3]=A[8];  B[4]=A[9];  B[5]=A[10];
-   B[6]=A[12]; B[7]=A[13]; B[8]=A[14];
-   C[7]=det3x3(B);
-
-   B[0]=A[1];  B[1]=A[2];  B[2]=A[3];
-   B[3]=A[5];  B[4]=A[6];  B[5]=A[7];
-   B[6]=A[13];  B[7]=A[14];  B[8]=A[15];
-   C[8]=det3x3(B);
-
-   B[0]=A[0];  B[1]=A[2];  B[2]=A[3];
-   B[3]=A[4];  B[4]=A[6];  B[5]=A[7];
-   B[6]=A[12];  B[7]=A[14];  B[8]=A[15];
-   C[9]=-det3x3(B);
-
-   B[0]=A[0];  B[1]=A[1];  B[2]=A[3];
-   B[3]=A[4];  B[4]=A[5];  B[5]=A[7];
-   B[6]=A[12];  B[7]=A[13];  B[8]=A[15];
-   C[10]=det3x3(B);
-
-   B[0]=A[0];  B[1]=A[1];  B[2]=A[2];
-   B[3]=A[4];  B[4]=A[5];  B[5]=A[6];
-   B[6]=A[12];  B[7]=A[13];  B[8]=A[14];
-   C[11]=-det3x3(B);
-
-   B[0]=A[1];  B[1]=A[2];  B[2]=A[3];
-   B[3]=A[5];  B[4]=A[6];  B[5]=A[7];
-   B[6]=A[9]; B[7]=A[10]; B[8]=A[11];
-   C[12]=-det3x3(B);
-
-   B[0]=A[0];  B[1]=A[2];  B[2]=A[3];
-   B[3]=A[4];  B[4]=A[6];  B[5]=A[7];
-   B[6]=A[8]; B[7]=A[10]; B[8]=A[11];
-   C[13]=det3x3(B);
-
-   B[0]=A[0];  B[1]=A[1];  B[2]=A[3];
-   B[3]=A[4];  B[4]=A[5];  B[5]=A[7];
-   B[6]=A[8]; B[7]=A[9]; B[8]=A[11];
-   C[14]=-det3x3(B);
-
-   B[0]=A[0];  B[1]=A[1];  B[2]=A[2];
-   B[3]=A[4];  B[4]=A[5];  B[5]=A[6];
-   B[6]=A[8]; B[7]=A[9]; B[8]=A[10];
-   C[15]=det3x3(B);
-
-   transC=transpose(C,4,4);
-
-   detA=det4x4(A);
-
-   if(detA!=0.0)
+   if (A == nullptr)
    {
-      for(i=0;i<16;i++)  
-        invA[i]=transC[i]/detA;
+      return nullptr;
    }
 
-   free(transC);
+   detA = det4x4(A);
 
-   return(invA);
+   if (fabsf(detA) < BBKTOL)
+   {
+      return nullptr;
+   }
+
+   B[0] = A[5];
+   B[1] = A[6];
+   B[2] = A[7];
+   B[3] = A[9];
+   B[4] = A[10];
+   B[5] = A[11];
+   B[6] = A[13];
+   B[7] = A[14];
+   B[8] = A[15];
+   C[0] = det3x3(B);
+
+   B[0] = A[4];
+   B[1] = A[6];
+   B[2] = A[7];
+   B[3] = A[8];
+   B[4] = A[10];
+   B[5] = A[11];
+   B[6] = A[12];
+   B[7] = A[14];
+   B[8] = A[15];
+   C[1] = -det3x3(B);
+
+   B[0] = A[4];
+   B[1] = A[5];
+   B[2] = A[7];
+   B[3] = A[8];
+   B[4] = A[9];
+   B[5] = A[11];
+   B[6] = A[12];
+   B[7] = A[13];
+   B[8] = A[15];
+   C[2] = det3x3(B);
+
+   B[0] = A[4];
+   B[1] = A[5];
+   B[2] = A[6];
+   B[3] = A[8];
+   B[4] = A[9];
+   B[5] = A[10];
+   B[6] = A[12];
+   B[7] = A[13];
+   B[8] = A[14];
+   C[3] = -det3x3(B);
+
+   B[0] = A[1];
+   B[1] = A[2];
+   B[2] = A[3];
+   B[3] = A[9];
+   B[4] = A[10];
+   B[5] = A[11];
+   B[6] = A[13];
+   B[7] = A[14];
+   B[8] = A[15];
+   C[4] = -det3x3(B);
+
+   B[0] = A[0];
+   B[1] = A[2];
+   B[2] = A[3];
+   B[3] = A[8];
+   B[4] = A[10];
+   B[5] = A[11];
+   B[6] = A[12];
+   B[7] = A[14];
+   B[8] = A[15];
+   C[5] = det3x3(B);
+
+   B[0] = A[0];
+   B[1] = A[1];
+   B[2] = A[3];
+   B[3] = A[8];
+   B[4] = A[9];
+   B[5] = A[11];
+   B[6] = A[12];
+   B[7] = A[13];
+   B[8] = A[15];
+   C[6] = -det3x3(B);
+
+   B[0] = A[0];
+   B[1] = A[1];
+   B[2] = A[2];
+   B[3] = A[8];
+   B[4] = A[9];
+   B[5] = A[10];
+   B[6] = A[12];
+   B[7] = A[13];
+   B[8] = A[14];
+   C[7] = det3x3(B);
+
+   B[0] = A[1];
+   B[1] = A[2];
+   B[2] = A[3];
+   B[3] = A[5];
+   B[4] = A[6];
+   B[5] = A[7];
+   B[6] = A[13];
+   B[7] = A[14];
+   B[8] = A[15];
+   C[8] = det3x3(B);
+
+   B[0] = A[0];
+   B[1] = A[2];
+   B[2] = A[3];
+   B[3] = A[4];
+   B[4] = A[6];
+   B[5] = A[7];
+   B[6] = A[12];
+   B[7] = A[14];
+   B[8] = A[15];
+   C[9] = -det3x3(B);
+
+   B[0] = A[0];
+   B[1] = A[1];
+   B[2] = A[3];
+   B[3] = A[4];
+   B[4] = A[5];
+   B[5] = A[7];
+   B[6] = A[12];
+   B[7] = A[13];
+   B[8] = A[15];
+   C[10] = det3x3(B);
+
+   B[0] = A[0];
+   B[1] = A[1];
+   B[2] = A[2];
+   B[3] = A[4];
+   B[4] = A[5];
+   B[5] = A[6];
+   B[6] = A[12];
+   B[7] = A[13];
+   B[8] = A[14];
+   C[11] = -det3x3(B);
+
+   B[0] = A[1];
+   B[1] = A[2];
+   B[2] = A[3];
+   B[3] = A[5];
+   B[4] = A[6];
+   B[5] = A[7];
+   B[6] = A[9];
+   B[7] = A[10];
+   B[8] = A[11];
+   C[12] = -det3x3(B);
+
+   B[0] = A[0];
+   B[1] = A[2];
+   B[2] = A[3];
+   B[3] = A[4];
+   B[4] = A[6];
+   B[5] = A[7];
+   B[6] = A[8];
+   B[7] = A[10];
+   B[8] = A[11];
+   C[13] = det3x3(B);
+
+   B[0] = A[0];
+   B[1] = A[1];
+   B[2] = A[3];
+   B[3] = A[4];
+   B[4] = A[5];
+   B[5] = A[7];
+   B[6] = A[8];
+   B[7] = A[9];
+   B[8] = A[11];
+   C[14] = -det3x3(B);
+
+   B[0] = A[0];
+   B[1] = A[1];
+   B[2] = A[2];
+   B[3] = A[4];
+   B[4] = A[5];
+   B[5] = A[6];
+   B[6] = A[8];
+   B[7] = A[9];
+   B[8] = A[10];
+   C[15] = det3x3(B);
+
+   if (!transpose_matrix(C, 4, 4))
+   {
+      return nullptr;
+   }
+
+   invA = (float *)malloc(16 * sizeof(float));
+
+   if (invA == nullptr)
+   {
+      return nullptr;
+   }
+
+   for (size_t i = 0; i < 16; i++)
+   {
+      invA[i] = C[i] / detA;
+   }
+
+   return invA;
 }
