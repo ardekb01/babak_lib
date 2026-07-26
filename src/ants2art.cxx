@@ -15,6 +15,7 @@
 #include <minmax.h>
 #include <ctype.h>
 #include <nifti1_io.h>
+#include "bbk_linear_algebra.h"
 
 #define YES 1
 #define NO 0

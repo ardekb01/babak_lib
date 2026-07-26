@@ -44,4 +44,6 @@ bool transpose_matrix(const float *A,
 float *transpose(const float *A, int nRows, int nCols);
 double *transpose(const double *A, int nRows, int nCols);
 
+float *inv4(float *A);
+
 #endif

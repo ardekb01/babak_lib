@@ -11,6 +11,7 @@
 #include <niftiimage.h>
 #include "babak_lib.h"
 #include "swap.h"
+#include "bbk_linear_algebra.h"
 
 #define _update_qsform
 

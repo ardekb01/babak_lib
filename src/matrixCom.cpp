@@ -28,10 +28,6 @@ int avgRow(double *X, int N, int P, double *avg);
 int varRow(float *X, int N, int P, float *avg, float *var);
 int varRow(double *X, int N, int P, double *avg, double *var);
 
-/* computes the inverse of the 4x4 matrix A */
-float *inv4(float *A);
-double *inv4(double *A);
-
 //////////////////////////////////////////////////////////////////
 
 void subtractRowAvg(float *X, int N, int P, float *X0)
@@ -979,114 +975,6 @@ void s3eigenval(float *A, float *L)
    return;
 }
 
-// Note: A is preserved
-float *inv4(float *A)
-{
-   int i;
-
-   float detA;
-   float *invA;
-   float C[16];
-   float B[9];
-   float *transC;
-
-   invA=(float *)calloc(16,sizeof(float));
-
-   B[0]=A[5];  B[1]=A[6];  B[2]=A[7]; 
-   B[3]=A[9];  B[4]=A[10]; B[5]=A[11]; 
-   B[6]=A[13]; B[7]=A[14]; B[8]=A[15]; 
-   C[0]=det3x3(B);
-
-   B[0]=A[4];  B[1]=A[6];  B[2]=A[7]; 
-   B[3]=A[8];  B[4]=A[10]; B[5]=A[11]; 
-   B[6]=A[12]; B[7]=A[14]; B[8]=A[15]; 
-   C[1]=-det3x3(B);
-
-   B[0]=A[4];  B[1]=A[5];   B[2]=A[7]; 
-   B[3]=A[8];  B[4]=A[9];  B[5]=A[11]; 
-   B[6]=A[12]; B[7]=A[13]; B[8]=A[15]; 
-   C[2]=det3x3(B);
-
-   B[0]=A[4];  B[1]=A[5];   B[2]=A[6]; 
-   B[3]=A[8];  B[4]=A[9];  B[5]=A[10]; 
-   B[6]=A[12]; B[7]=A[13]; B[8]=A[14]; 
-   C[3]=-det3x3(B);
-
-   B[0]=A[1];  B[1]=A[2];  B[2]=A[3];
-   B[3]=A[9];  B[4]=A[10]; B[5]=A[11];
-   B[6]=A[13]; B[7]=A[14]; B[8]=A[15];
-   C[4]=-det3x3(B);
-
-   B[0]=A[0];  B[1]=A[2];  B[2]=A[3];
-   B[3]=A[8];  B[4]=A[10]; B[5]=A[11];
-   B[6]=A[12]; B[7]=A[14]; B[8]=A[15];
-   C[5]=det3x3(B);
-
-   B[0]=A[0];  B[1]=A[1];  B[2]=A[3];
-   B[3]=A[8];  B[4]=A[9]; B[5]=A[11];
-   B[6]=A[12]; B[7]=A[13]; B[8]=A[15];
-   C[6]=-det3x3(B);
-
-   B[0]=A[0];  B[1]=A[1];  B[2]=A[2];
-   B[3]=A[8];  B[4]=A[9];  B[5]=A[10];
-   B[6]=A[12]; B[7]=A[13]; B[8]=A[14];
-   C[7]=det3x3(B);
-
-   B[0]=A[1];  B[1]=A[2];  B[2]=A[3];
-   B[3]=A[5];  B[4]=A[6];  B[5]=A[7];
-   B[6]=A[13];  B[7]=A[14];  B[8]=A[15];
-   C[8]=det3x3(B);
-
-   B[0]=A[0];  B[1]=A[2];  B[2]=A[3];
-   B[3]=A[4];  B[4]=A[6];  B[5]=A[7];
-   B[6]=A[12];  B[7]=A[14];  B[8]=A[15];
-   C[9]=-det3x3(B);
-
-   B[0]=A[0];  B[1]=A[1];  B[2]=A[3];
-   B[3]=A[4];  B[4]=A[5];  B[5]=A[7];
-   B[6]=A[12];  B[7]=A[13];  B[8]=A[15];
-   C[10]=det3x3(B);
-
-   B[0]=A[0];  B[1]=A[1];  B[2]=A[2];
-   B[3]=A[4];  B[4]=A[5];  B[5]=A[6];
-   B[6]=A[12];  B[7]=A[13];  B[8]=A[14];
-   C[11]=-det3x3(B);
-
-   B[0]=A[1];  B[1]=A[2];  B[2]=A[3];
-   B[3]=A[5];  B[4]=A[6];  B[5]=A[7];
-   B[6]=A[9]; B[7]=A[10]; B[8]=A[11];
-   C[12]=-det3x3(B);
-
-   B[0]=A[0];  B[1]=A[2];  B[2]=A[3];
-   B[3]=A[4];  B[4]=A[6];  B[5]=A[7];
-   B[6]=A[8]; B[7]=A[10]; B[8]=A[11];
-   C[13]=det3x3(B);
-
-   B[0]=A[0];  B[1]=A[1];  B[2]=A[3];
-   B[3]=A[4];  B[4]=A[5];  B[5]=A[7];
-   B[6]=A[8]; B[7]=A[9]; B[8]=A[11];
-   C[14]=-det3x3(B);
-
-   B[0]=A[0];  B[1]=A[1];  B[2]=A[2];
-   B[3]=A[4];  B[4]=A[5];  B[5]=A[6];
-   B[6]=A[8]; B[7]=A[9]; B[8]=A[10];
-   C[15]=det3x3(B);
-
-   transC=transpose(C,4,4);
-
-   detA=det4x4(A);
-
-   if(detA!=0.0)
-   {
-      for(i=0;i<16;i++)  
-        invA[i]=transC[i]/detA;
-   }
-
-   free(transC);
-
-   return(invA);
-}
-
 void multi(double *A, int iA, int jA,  float *B, int iB,  int jB,  float *C)
 {
 	int i,j,k;
@@ -1207,115 +1095,6 @@ void multi(float *A, int iA, int jA,  double *B, int iB,  int jB,  double *C)
 	free(D);
 }
 
-double *inv4(double *A)
-{
-   int i;
-
-   double detA;
-   double *invA;
-   double C[16];
-   double B[9];
-   double *transC;
-
-   invA=(double *)calloc(16,sizeof(double));
-
-   B[0]=A[5];  B[1]=A[6];  B[2]=A[7]; 
-   B[3]=A[9];  B[4]=A[10]; B[5]=A[11]; 
-   B[6]=A[13]; B[7]=A[14]; B[8]=A[15]; 
-   C[0]=det3x3(B);
-
-   B[0]=A[4];  B[1]=A[6];  B[2]=A[7]; 
-   B[3]=A[8];  B[4]=A[10]; B[5]=A[11]; 
-   B[6]=A[12]; B[7]=A[14]; B[8]=A[15]; 
-   C[1]=-det3x3(B);
-
-   B[0]=A[4];  B[1]=A[5];   B[2]=A[7]; 
-   B[3]=A[8];  B[4]=A[9];  B[5]=A[11]; 
-   B[6]=A[12]; B[7]=A[13]; B[8]=A[15]; 
-   C[2]=det3x3(B);
-
-   B[0]=A[4];  B[1]=A[5];   B[2]=A[6]; 
-   B[3]=A[8];  B[4]=A[9];  B[5]=A[10]; 
-   B[6]=A[12]; B[7]=A[13]; B[8]=A[14]; 
-   C[3]=-det3x3(B);
-
-   B[0]=A[1];  B[1]=A[2];  B[2]=A[3];
-   B[3]=A[9];  B[4]=A[10]; B[5]=A[11];
-   B[6]=A[13]; B[7]=A[14]; B[8]=A[15];
-   C[4]=-det3x3(B);
-
-   B[0]=A[0];  B[1]=A[2];  B[2]=A[3];
-   B[3]=A[8];  B[4]=A[10]; B[5]=A[11];
-   B[6]=A[12]; B[7]=A[14]; B[8]=A[15];
-   C[5]=det3x3(B);
-
-   B[0]=A[0];  B[1]=A[1];  B[2]=A[3];
-   B[3]=A[8];  B[4]=A[9]; B[5]=A[11];
-   B[6]=A[12]; B[7]=A[13]; B[8]=A[15];
-   C[6]=-det3x3(B);
-
-   B[0]=A[0];  B[1]=A[1];  B[2]=A[2];
-   B[3]=A[8];  B[4]=A[9];  B[5]=A[10];
-   B[6]=A[12]; B[7]=A[13]; B[8]=A[14];
-   C[7]=det3x3(B);
-
-   B[0]=A[1];  B[1]=A[2];  B[2]=A[3];
-   B[3]=A[5];  B[4]=A[6];  B[5]=A[7];
-   B[6]=A[13];  B[7]=A[14];  B[8]=A[15];
-   C[8]=det3x3(B);
-
-   B[0]=A[0];  B[1]=A[2];  B[2]=A[3];
-   B[3]=A[4];  B[4]=A[6];  B[5]=A[7];
-   B[6]=A[12];  B[7]=A[14];  B[8]=A[15];
-   C[9]=-det3x3(B);
-
-   B[0]=A[0];  B[1]=A[1];  B[2]=A[3];
-   B[3]=A[4];  B[4]=A[5];  B[5]=A[7];
-   B[6]=A[12];  B[7]=A[13];  B[8]=A[15];
-   C[10]=det3x3(B);
-
-   B[0]=A[0];  B[1]=A[1];  B[2]=A[2];
-   B[3]=A[4];  B[4]=A[5];  B[5]=A[6];
-   B[6]=A[12];  B[7]=A[13];  B[8]=A[14];
-   C[11]=-det3x3(B);
-
-   B[0]=A[1];  B[1]=A[2];  B[2]=A[3];
-   B[3]=A[5];  B[4]=A[6];  B[5]=A[7];
-   B[6]=A[9]; B[7]=A[10]; B[8]=A[11];
-   C[12]=-det3x3(B);
-
-   B[0]=A[0];  B[1]=A[2];  B[2]=A[3];
-   B[3]=A[4];  B[4]=A[6];  B[5]=A[7];
-   B[6]=A[8]; B[7]=A[10]; B[8]=A[11];
-   C[13]=det3x3(B);
-
-   B[0]=A[0];  B[1]=A[1];  B[2]=A[3];
-   B[3]=A[4];  B[4]=A[5];  B[5]=A[7];
-   B[6]=A[8]; B[7]=A[9]; B[8]=A[11];
-   C[14]=-det3x3(B);
-
-   B[0]=A[0];  B[1]=A[1];  B[2]=A[2];
-   B[3]=A[4];  B[4]=A[5];  B[5]=A[6];
-   B[6]=A[8]; B[7]=A[9]; B[8]=A[10];
-   C[15]=det3x3(B);
-
-   transC=transpose(C,4,4);
-
-   detA=det4x4(A);
-
-   if(detA!=0.0)
-   {
-      for(i=0;i<16;i++)  
-         invA[i]=transC[i]/detA;
-   }
-
-   free(transC);
-
-   return(invA);
-}
-
-//////////////////////////////////////////////////////////////////
-
 double euclideandistance(float *r0, float *r1, int n)
 {
 	double sum=0.0;
@@ -1327,8 +1106,6 @@ double euclideandistance(float *r0, float *r1, int n)
 
 	return(sum);
 }
-
-//////////////////////////////////////////////////////////////////
 
 void crossProduct(float *a, float *b, float *c)
 {

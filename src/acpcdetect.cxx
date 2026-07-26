@@ -21,6 +21,7 @@
 #include "PILtransform.h"
 #include "ijk2xyz.h"
 #include "matrixCom.h"
+#include "bbk_linear_algebra.h"
 
 #define YES 1
 #define NO 0

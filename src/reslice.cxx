@@ -8,6 +8,7 @@
 #include <string.h>
 #include <babak_lib.h>
 #include "read_nifti_image.h"
+#include "bbk_linear_algebra.h"
 
 #define NO 0
 #define YES 1

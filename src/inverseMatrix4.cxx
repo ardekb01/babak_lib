@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "babak_lib.h"
+#include "bbk_linear_algebra.h"
 
 void print_matrix(char * title, float *T)
 {
