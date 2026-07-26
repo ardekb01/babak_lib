@@ -46,5 +46,8 @@ double *transpose(const double *A, int nRows, int nCols);
 
 float *inv4x4(const float *A);
 
+// It is safe to alias either input: e.g., crossProduct(a, b, a)
+bool crossProduct(const float *a, const float *b, float *c);
+bool crossProduct(const double *a, const double *b, double *c);
 
 #endif

@@ -532,13 +532,8 @@ extern void s3multi(float8 *A, float8 *B, float8 *AB);
 extern void differentiate_distance(float8 *D, float8 *F, float8 *L, float8 *dLdD);
 
 extern void subtractRowAvg(float4 *X, int4 N, int4 P, float4 *X0);
-
-extern void crossProduct(float8 *a, float8 *b, float8 *c);
-extern void crossProduct(float4 *a, float4 *b, float4 *c);
-
 extern void copyVector(float4 *v1, float4 *v2, int4 n);
 extern void subtractVector(float4 *v1, float4 *v2, int4 n);
-
 extern int4 centerMatrixRow(float4 *X, int4 N, int4 P, float4 *avg);
 extern int4 centerMatrixRow(float4 *X, int4 N, int4 P);
 

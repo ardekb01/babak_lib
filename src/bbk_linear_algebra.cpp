@@ -791,3 +791,51 @@ float *inv4x4(const float *A)
 
    return invA;
 }
+
+// The temporary result[3] makes the function safe when c aliases either input:
+// e.g., crossProduct(a, b, a)
+bool crossProduct(const float *a, const float *b, float *c)
+{
+   float result[3];
+
+   if (a == nullptr ||
+       b == nullptr ||
+       c == nullptr)
+   {
+      return false;
+   }
+
+   result[0] = a[1] * b[2] - a[2] * b[1];
+   result[1] = a[2] * b[0] - a[0] * b[2];
+   result[2] = a[0] * b[1] - a[1] * b[0];
+
+   c[0] = result[0];
+   c[1] = result[1];
+   c[2] = result[2];
+
+   return true;
+}
+
+// The temporary result[3] makes the function safe when c aliases either input:
+// e.g., crossProduct(a, b, a)
+bool crossProduct(const double *a, const double *b, double *c)
+{
+   double result[3];
+
+   if (a == nullptr ||
+       b == nullptr ||
+       c == nullptr)
+   {
+      return false;
+   }
+
+   result[0] = a[1] * b[2] - a[2] * b[1];
+   result[1] = a[2] * b[0] - a[0] * b[2];
+   result[2] = a[0] * b[1] - a[1] * b[0];
+
+   c[0] = result[0];
+   c[1] = result[1];
+   c[2] = result[2];
+
+   return true;
+}

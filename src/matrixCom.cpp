@@ -1107,28 +1107,6 @@ double euclideandistance(float *r0, float *r1, int n)
 	return(sum);
 }
 
-void crossProduct(float *a, float *b, float *c)
-{
-	float dum[3];
-
-	dum[0] = a[1]*b[2] - a[2]*b[1];
-	dum[1] = a[2]*b[0] - a[0]*b[2];
-	dum[2] = a[0]*b[1] - a[1]*b[0];
-
-	c[0] = dum[0];
-	c[1] = dum[1];
-	c[2] = dum[2];
-}
-
-void crossProduct(double *a, double *b, double *c)
-{
-   c[0] = a[1]*b[2] - a[2]*b[1];
-   c[1] = a[2]*b[0] - a[0]*b[2];
-   c[2] = a[0]*b[1] - a[1]*b[0];
-
-   return;
-}
-
 void getcomplement (double *U, double *V, double *W)
 {
    double norm;
