@@ -227,7 +227,7 @@ void approximate_affine(int nx, int ny, int nz, float dx, float dy, float dz, fl
 	AFF[12]=0.0; AFF[13]=0.0; AFF[14]=0.0; AFF[15]=1.0;
 
 	// Eq. (3.5) of tech. notes
-	invAFF = inv4(AFF);
+	invAFF = inv4x4(AFF);
 	free(AFF);
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -248,7 +248,7 @@ void fillzerovectors(int nx, int ny, int nz, float dx, float dy, float dz, float
 
     np = nx*ny;
 
-	invT=inv4(T);
+	invT=inv4x4(T);
 
    	xc=dx*(nx-1)/2.0;     /* +---+---+ */
 	yc=dy*(ny-1)/2.0;

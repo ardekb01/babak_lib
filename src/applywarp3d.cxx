@@ -327,7 +327,7 @@ int main(int argc, char **argv)
 
    N=argc-optind;
 
-   invT=inv4(T);
+   invT=inv4x4(T);
 
    for(int i=0; i<N; i++)
    {

@@ -123,7 +123,7 @@ void art_to_fsl(float *Mart, float *Mfsl, DIM sub_dim, DIM trg_dim)
    Ttrg[8]=0.0;  Ttrg[9]=0.0;  Ttrg[10]=1.0; Ttrg[11]=(trg_dim.nz-1.0)*trg_dim.dz/2.0;
    Ttrg[12]=0.0; Ttrg[13]=0.0; Ttrg[14]=0.0; Ttrg[15]=1.0;
 
-   inv_Tsub = inv4(Tsub);
+   inv_Tsub = inv4x4(Tsub);
 
    multi(Ttrg,4,4,Mart,4,4,Mfsl);
    multi(Mfsl,4,4,inv_Tsub,4,4, Mfsl);
@@ -146,7 +146,7 @@ void fsl_to_art(float *Mfsl, float *Mart, DIM sub_dim, DIM trg_dim, int subflg, 
    Ttrg[8]=0.0;  Ttrg[9]=0.0;  Ttrg[10]=1.0; Ttrg[11]=(trg_dim.nz-1.0)*trg_dim.dz/2.0;
    Ttrg[12]=0.0; Ttrg[13]=0.0; Ttrg[14]=0.0; Ttrg[15]=1.0;
 
-   inv_Ttrg = inv4(Ttrg);
+   inv_Ttrg = inv4x4(Ttrg);
 
    multi(inv_Ttrg,4,4,Mfsl,4,4,Mart);
    multi(Mart,4,4,Tsub,4,4, Mart);
@@ -445,7 +445,7 @@ void affineLSE(char *msk, int nx, int ny, int nz, float dx, float dy, float dz, 
 
 	AFF = (float *)calloc(16,sizeof(float));
 
-	invT = inv4(T);
+	invT = inv4x4(T);
 
 	np = nx*ny;
 
@@ -555,7 +555,7 @@ void affineLSE(char *msk, int nx, int ny, int nz, float dx, float dy, float dz, 
 	AFF[12]=0.0; AFF[13]=0.0; AFF[14]=0.0; AFF[15]=1.0;
 
 	// Eq. (3.5) of tech. notes
-	invAFF = inv4(AFF);
+	invAFF = inv4x4(AFF);
 	free(AFF);
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -614,7 +614,7 @@ void affineLSE(short *msk, int nx, int ny, int nz, float dx, float dy, float dz,
 
 	AFF = (float *)calloc(16,sizeof(float));
 
-	invT = inv4(T);
+	invT = inv4x4(T);
 
 	np = nx*ny;
 
@@ -724,7 +724,7 @@ void affineLSE(short *msk, int nx, int ny, int nz, float dx, float dy, float dz,
 	AFF[12]=0.0; AFF[13]=0.0; AFF[14]=0.0; AFF[15]=1.0;
 
 	// Eq. (3.5) of tech. notes
-	invAFF = inv4(AFF);
+	invAFF = inv4x4(AFF);
 	free(AFF);
 
 	///////////////////////////////////////////////////////////////////////////////

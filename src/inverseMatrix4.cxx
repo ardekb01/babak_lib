@@ -27,7 +27,7 @@ int main(int argc, char **argv)
 
    loadTransformation(argv[1],Tin);
 
-   Tout = inv4(Tin);
+   Tout = inv4x4(Tin);
 
    fp = fopen(argv[2],"w");
    fprintf(fp,"%f\t%f\t%f\t%f\n",Tout[0],Tout[1],Tout[2],Tout[3]);

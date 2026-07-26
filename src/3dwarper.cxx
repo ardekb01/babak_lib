@@ -418,7 +418,7 @@ void generateMultiResolution(short *im, DIM im_dim, float *T, short *im1, short 
    float I[16];
    float *invT;		
 
-   invT=inv4(T); 
+   invT=inv4x4(T); 
    tmp = resliceImage(im, im_dim, dim1, invT, LIN); 
    free(invT);
    for(int i=0; i<dim1.nv; i++) im1[i]=tmp[i];
@@ -843,7 +843,7 @@ int main(int argc, char **argv)
       affineReg(subPIL2, trgPIL2, mskPIL2, dim2, patch_r, search_R, A);
       multi(A,4,4,subTPIL,4,4,subTPIL);  // update subTPIL according to A
 
-      invT = inv4(trgTPIL);
+      invT = inv4x4(trgTPIL);
       multi(invT, 4,4, subTPIL, 4, 4, sub_to_trg);
       free(invT);
 
@@ -864,7 +864,7 @@ int main(int argc, char **argv)
       short *tmp;
       float *invT;		
 
-      invT=inv4(sub_to_trg);
+      invT=inv4x4(sub_to_trg);
       tmp = resliceImage(sub, dim_sub, dim_trg, invT, LIN); 
       free(invT);
 

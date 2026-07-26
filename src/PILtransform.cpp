@@ -394,7 +394,7 @@ void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float
    PILbraincloud_hdr=read_NIFTI_hdr(filename);
 
    set_dim(subimPIL, PILbraincloud_hdr);
-   invT = inv4(TPIL0);
+   invT = inv4x4(TPIL0);
    resliceImage(subim, subimPIL, invT, LIN);
    free(invT);
 
@@ -411,7 +411,7 @@ void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float
    {
       FILE *fp;
       float landmark[4];
-      invT = inv4(TPIL0);
+      invT = inv4x4(TPIL0);
       snprintf(filename, 3*DEFAULT_STRING_LENGTH, "%s/%s_orion.txt",imagedir,subfile_prefix);
       fp=fopen(filename,"w");
       if(fp==NULL) file_open_error(filename);
@@ -499,7 +499,7 @@ void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float
       FILE *fp;
       float Ttmp[16];
 
-      invT = inv4(TPIL);
+      invT = inv4x4(TPIL);
       resliceImage(subim, subimPIL, invT, LIN);
       free(invT);
 

@@ -496,7 +496,7 @@ short *find_subject_msp(char *imagefilename, char *prefix, char *lmfile)
    output_dim.dz = dz;
    output_dim.dt = 0.0;
 
-   invT = inv4(Tacpc);
+   invT = inv4x4(Tacpc);
    msp = resliceImage(subj_volume,input_dim, output_dim,invT,LIN);
    free(invT);
    
@@ -624,7 +624,7 @@ short *find_subject_msp_using_transformation(char *imagefilename, char *prefix, 
 
    loadTransformation(msp_transformation_file, Tacpc);
 
-   invT = inv4(Tacpc);
+   invT = inv4x4(Tacpc);
    msp = resliceImage(subj_volume,input_dim, output_dim,invT,LIN);
    free(invT);
 

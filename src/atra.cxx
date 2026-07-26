@@ -452,7 +452,7 @@ void atra(const char *imagelistfile, DIM output_dim, const char *outputOrientati
       im[i].v = (short *)read_nifti_image(imagefile[i], &imhdr);
       set_dim(im[i], imhdr);
 
-      invT = inv4(TPIL[i]);
+      invT = inv4x4(TPIL[i]);
       //freed before atra() returns
       PILim[i].v = resliceImage(im[i].v, im[i].nx, im[i].ny, im[i].nz, im[i].dx, im[i].dy, im[i].dz,
       PILim[i].nx, PILim[i].ny, PILim[i].nz, PILim[i].dx, PILim[i].dy, PILim[i].dz, invT, LIN);
@@ -467,7 +467,7 @@ void atra(const char *imagelistfile, DIM output_dim, const char *outputOrientati
       set_dim(input_dim, tmp_hdr);
 
       multi(PIL2OUT,4,4,TPIL[0],4,4,TOUT);
-      invT = inv4(TOUT);
+      invT = inv4x4(TOUT);
       tmp = resliceImage(im[0].v,input_dim,output_dim,invT,LIN);
       free(invT);
 
@@ -744,7 +744,7 @@ void atra(const char *imagelistfile, DIM output_dim, const char *outputOrientati
       for(int i=0; i<nim; i++)
       {
          free(PILim[i].v);
-         invT = inv4(TPIL[i]);
+         invT = inv4x4(TPIL[i]);
          PILim[i].v = resliceImage(im[i].v, im[i].nx, im[i].ny, im[i].nz, im[i].dx, im[i].dy, im[i].dz,
          PILim[i].nx, PILim[i].ny, PILim[i].nz, PILim[i].dx, PILim[i].dy, PILim[i].dz, invT, LIN);
          free(invT);
@@ -812,7 +812,7 @@ void atra(const char *imagelistfile, DIM output_dim, const char *outputOrientati
       set_dim(input_dim, tmp_hdr);
 
       multi(PIL2OUT,4,4,TPIL[i],4,4,TOUT);
-      invT = inv4(TOUT);
+      invT = inv4x4(TOUT);
       if(opt_nn)
          tmp = resliceImage(im[i].v,input_dim,output_dim,invT,NEARN);
       else
@@ -1052,7 +1052,7 @@ int main(int argc, char **argv)
    {
       multi(random_mat,4,4,TPIL[2],4,4,TPIL[2]);
       free(PILim[2].v);
-      invT = inv4(TPIL[2]);
+      invT = inv4x4(TPIL[2]);
       PILim[2].v = resliceImage(im[2].v, im[2].nx, im[2].ny, im[2].nz, im[2].dx, im[2].dy, im[2].dz,
       PILim[2].nx, PILim[2].ny, PILim[2].nz, PILim[2].dx, PILim[2].dy, PILim[2].dz, invT, LIN);
       free(invT);
@@ -1062,7 +1062,7 @@ int main(int argc, char **argv)
    {
       multi(random_mat,4,4,TPIL[3],4,4,TPIL[3]);
       free(PILim[3].v);
-      invT = inv4(TPIL[3]);
+      invT = inv4x4(TPIL[3]);
       PILim[3].v = resliceImage(im[3].v, im[3].nx, im[3].ny, im[3].nz, im[3].dx, im[3].dy, im[3].dz,
       PILim[3].nx, PILim[3].ny, PILim[3].nz, PILim[3].dx, PILim[3].dy, PILim[3].dz, invT, LIN);
       free(invT);
@@ -1072,7 +1072,7 @@ int main(int argc, char **argv)
    {
       multi(random_mat,4,4,TPIL[1],4,4,TPIL[1]);
       free(PILim[1].v);
-      invT = inv4(TPIL[1]);
+      invT = inv4x4(TPIL[1]);
       PILim[1].v = resliceImage(im[1].v, im[1].nx, im[1].ny, im[1].nz, im[1].dx, im[1].dy, im[1].dz,
       PILim[1].nx, PILim[1].ny, PILim[1].nz, PILim[1].dx, PILim[1].dy, PILim[1].dz, invT, LIN);
       free(invT);
@@ -1082,7 +1082,7 @@ int main(int argc, char **argv)
    {
       multi(random_mat,4,4,TPIL[0],4,4,TPIL[0]);
       free(PILim[0].v);
-      invT = inv4(TPIL[0]);
+      invT = inv4x4(TPIL[0]);
       PILim[0].v = resliceImage(im[0].v, im[0].nx, im[0].ny, im[0].nz, im[0].dx, im[0].dy, im[0].dz,
       PILim[0].nx, PILim[0].ny, PILim[0].nz, PILim[0].dx, PILim[0].dy, PILim[0].dz, invT, LIN);
       free(invT);

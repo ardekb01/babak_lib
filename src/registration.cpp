@@ -786,7 +786,7 @@ static float costFunction1(short *KMI, float *P, struct im_params *IP)
 	}
 
 	invT=transformation(P[0],P[1],P[2],P[3],P[4],P[5], 1.,1.,1.,0,0,0,transcode);
-	T = inv4(invT); free(invT);
+	T = inv4x4(invT); free(invT);
 
 	T[0] /= IP->dx1;
 	T[1] /= IP->dx1;
@@ -907,7 +907,7 @@ static float newCostFunction(short *KMI, float *P, struct im_params *IP)
 	}
 
 	invT=transformation(P[0],P[1],P[2],P[3],P[4],P[5], 1.,1.,1.,0,0,0, transcode);
-	T = inv4(invT); free(invT);
+	T = inv4x4(invT); free(invT);
 
 	T[0] /= IP->dx1;
 	T[1] /= IP->dx1;
@@ -1042,7 +1042,7 @@ static float costFunction2(short *KMI, float *P, struct im_params *IP)
 	}
 
 	invT=transformation(P[0],P[1],P[2],P[3],P[4],P[5], 1.,1.,1.,0,0,0, transcode);
-	T = inv4(invT); free(invT);
+	T = inv4x4(invT); free(invT);
 
 	T[0] /= IP->dx1;
 	T[1] /= IP->dx1;

@@ -207,7 +207,7 @@ void update_qsform( const char *imagefile1, const char *imagefile2)
    fclose(fp);
    ///////////////////////////////////////////////////////////////////////////
 
-   invq1 = inv4(q1);
+   invq1 = inv4x4(q1);
 
    multi(invq1,4,4,q2,4,4,s2);
    multi(s1,4,4,s2,4,4,s2);

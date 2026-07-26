@@ -247,7 +247,7 @@ float8 ssd_cost_function(float4 *T, DIM dimb, DIM dimf, float4 *sclbim, float4 *
    float4 ptrg0, ptrg1, ptrg2;
    float4 nxtrg2, nytrg2, nztrg2;
 
-   invT = inv4(T);
+   invT = inv4x4(T);
 
    nxsub2 = (dimf.nx-1)/2.0;
    nysub2 = (dimf.ny-1)/2.0;
@@ -395,7 +395,7 @@ float8 ncc_cost_function(float4 *T, DIM dimb, DIM dimf, float4 *sclbim, float4 *
    float4 ptrg0, ptrg1, ptrg2;
    float4 nxtrg2, nytrg2, nztrg2;
 
-   invT = inv4(T);
+   invT = inv4x4(T);
 
    nxsub2 = (dimf.nx-1)/2.0;
    nysub2 = (dimf.ny-1)/2.0;
@@ -774,7 +774,7 @@ void atra_to_fsl(float4 *Matra, float4 *Mfsl, DIM dimf, DIM trg_dim)
    Ttrg[8]=0.0;  Ttrg[9]=0.0;  Ttrg[10]=1.0; Ttrg[11]=(trg_dim.nz-1.0)*trg_dim.dz/2.0;
    Ttrg[12]=0.0; Ttrg[13]=0.0; Ttrg[14]=0.0; Ttrg[15]=1.0;
 
-   inv_Tsub = inv4(Tsub);
+   inv_Tsub = inv4x4(Tsub);
 
    multi(Ttrg,4,4,Matra,4,4,Mfsl);
    multi(Mfsl,4,4,inv_Tsub,4,4, Mfsl);
@@ -893,7 +893,7 @@ void symmetric_registration(SHORTIM &aimpil, const char *bfile, const char *ffil
    orient[0]='\0';
    new_PIL_transform(bfile, blmfile, orient, bTPIL, 0);
 
-   ibTPIL= inv4(bTPIL);
+   ibTPIL= inv4x4(bTPIL);
 
    if(verbose) printf("Computing follow-up image PIL transformation ...\n");
    orient[0]='\0';
@@ -1117,7 +1117,7 @@ void symmetric_registration(SHORTIM &aimpil, const char *bfile, const char *ffil
       SHORTIM bimpil; // baseline image after transformation to standard PIL space
       SHORTIM fimpil; // follow-up image after transformation to standard PIL space
 
-      invT = inv4(Tf);
+      invT = inv4x4(Tf);
       fimpil.v= resliceImage(fim, dimf, PILbraincloud_dim, invT, LIN);
       set_dim(fimpil, PILbraincloud_dim);
       strcpy(PILbraincloud_hdr.descrip,"Created by ART's KAIBA module");
@@ -1125,7 +1125,7 @@ void symmetric_registration(SHORTIM &aimpil, const char *bfile, const char *ffil
       save_nifti_image(filename, fimpil.v, &PILbraincloud_hdr);
       free(invT);
 
-      invT = inv4(Tb);
+      invT = inv4x4(Tb);
       bimpil.v = resliceImage(bim, dimb, PILbraincloud_dim, invT, LIN);
       set_dim(bimpil, PILbraincloud_dim);
       strcpy(PILbraincloud_hdr.descrip,"Created by ART's KAIBA module");
@@ -1835,7 +1835,7 @@ int main(int argc, char **argv)
       for(int i=0; i<nim; i++)
       {
          loadTransformation(mrxfile[i], TPIL[i]);
-         invT = inv4(TPIL[i]);
+         invT = inv4x4(TPIL[i]);
          tmp = resliceImage(im[i].v, im_dim[i], PILbraincloud_dim, invT, LIN);
 
          for(int v=0; v<aimpil.nv; v++) sum[v] += tmp[v]*scalefactor[i];
@@ -1856,7 +1856,7 @@ int main(int argc, char **argv)
       orient[0]='\0';
       new_PIL_transform(imagefile[0],lmfile, orient, TPIL[0], 0);
 
-      invT = inv4(TPIL[0]);
+      invT = inv4x4(TPIL[0]);
       aimpil.v = resliceImage(im[0].v, im_dim[0], PILbraincloud_dim, invT, LIN);
       free(invT);
    } 
@@ -2008,7 +2008,7 @@ int main(int argc, char **argv)
     for(int v=0; v<roidim.nv; v++) { roi[v] = roi1[v] + roi2[v]; }
  
     // transform compined roi to PIL space
-    invT = inv4(TPIL[i]);
+    invT = inv4x4(TPIL[i]);
     roiPIL = resliceImage(roi, roidim, PILbraincloud_dim, invT, LIN);
     free(invT);
 
@@ -2038,7 +2038,7 @@ int main(int argc, char **argv)
     set_dim(PILbraincloud_hdr,opdim);
 
     free(roiPIL);
-    invT = inv4(T);
+    invT = inv4x4(T);
     roiPIL = resliceImage(roi, roidim, opdim, invT, LIN);
     free(invT);
 
@@ -2046,7 +2046,7 @@ int main(int argc, char **argv)
     save_nifti_image(roifile, roiPIL, &PILbraincloud_hdr);
 
     im = (int2 *)read_nifti_image(imagefile[i], &hdr);
-    invT = inv4(T);
+    invT = inv4x4(T);
     imHC = resliceImage(im, roidim, opdim, invT, LIN);
     free(invT);
 
@@ -2073,7 +2073,7 @@ int main(int argc, char **argv)
     for(int v=0; v<roidim.nv; v++) { roi[v] = roi1[v] + roi2[v]; }
  
     // transform compined roi to PIL space
-    invT = inv4(TPIL[i]);
+    invT = inv4x4(TPIL[i]);
     roiPIL = resliceImage(roi, roidim, PILbraincloud_dim, invT, LIN);
     free(invT);
 
@@ -2109,7 +2109,7 @@ int main(int argc, char **argv)
     PILbraincloud_hdr.pixdim[0] *= -1.0;
 
     free(roiPIL);
-    invT = inv4(T);
+    invT = inv4x4(T);
     roiPIL = resliceImage(roi, roidim, opdim, invT, LIN);
     free(invT);
 
@@ -2117,7 +2117,7 @@ int main(int argc, char **argv)
     save_nifti_image(roifile, roiPIL, &PILbraincloud_hdr);
 
     im = (int2 *)read_nifti_image(imagefile[i], &hdr);
-    invT = inv4(T);
+    invT = inv4x4(T);
     imHC = resliceImage(im, roidim, opdim, invT, LIN);
     free(invT);
 

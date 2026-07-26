@@ -178,8 +178,8 @@ int main(int argc, char **argv)
    Qant[8]=thdr.srow_z[0]; Qant[9]=thdr.srow_z[1]; Qant[10]=thdr.srow_z[2];Qant[11]=thdr.srow_z[3];
    Qant[12]=0.0;    Qant[13]=0.0;    Qant[14]=0.0;     Qant[15]=1.0;
 
-   //iQart=inv4(Qart);
-   iQant=inv4(Qant);
+   //iQart=inv4x4(Qart);
+   iQant=inv4x4(Qant);
    
    multi(Qart,4,4,iQant,4,4,Q);
 
@@ -242,7 +242,7 @@ int main(int argc, char **argv)
    Sant[8]=shdr.srow_z[0]; Sant[9]=shdr.srow_z[1]; Sant[10]=shdr.srow_z[2];Sant[11]=shdr.srow_z[3];
    Sant[12]=0.0;    Sant[13]=0.0;    Sant[14]=0.0;     Sant[15]=1.0;
 
-   iSart=inv4(Sart);
+   iSart=inv4x4(Sart);
    //iSant=inv4(Sant);
 
    multi(Sant,4,4,iSart,4,4,S);
@@ -343,7 +343,7 @@ int main(int argc, char **argv)
    }
 
    // The following converts it to ART matrix format
-   Mart=inv4(Mants);
+   Mart=inv4x4(Mants);
    multi(Q,4,4,Mart,4,4,Mart);
    multi(Mart,4,4,S,4,4,Mart);
 

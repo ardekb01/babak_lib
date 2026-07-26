@@ -261,7 +261,7 @@ int main(int argc, char **argv)
    {
       float *invT;
 
-      invT=inv4(T);
+      invT=inv4x4(T);
       obj=resliceImage(objOrig, Onx, Ony, Onz, Odx, Ody, Odz, Tnx, Tny, Tnz, Tdx, Tdy, Tdz, invT, LIN);
       free(invT);
    }

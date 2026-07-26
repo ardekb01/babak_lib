@@ -410,7 +410,7 @@ void generateMultiResolution(short *im, DIM im_dim, float *T, short *im1, short 
    float I[16];
    float *invT;		
 
-   invT=inv4(T); 
+   invT=inv4x4(T); 
    tmp = resliceImage(im, im_dim, dim1, invT, LIN); 
    free(invT);
    for(int i=0; i<dim1.nv; i++) im1[i]=tmp[i];
@@ -605,7 +605,7 @@ void approximate_affine(int nx, int ny, int nz, float dx, float dy, float dz, fl
 	AFF[12]=0.0; AFF[13]=0.0; AFF[14]=0.0; AFF[15]=1.0;
 
 	// Eq. (3.5) of tech. notes
-	invAFF = inv4(AFF);
+	invAFF = inv4x4(AFF);
 
 	///////////////////////////////////////////////////////////////////////////////
 
@@ -625,7 +625,7 @@ void fillzerovectors(int nx, int ny, int nz, float dx, float dy, float dz, float
 
     np = nx*ny;
 
-	invT=inv4(T);
+	invT=inv4x4(T);
 
    	xc=dx*(nx-1)/2.0;     /* +---+---+ */
 	yc=dy*(ny-1)/2.0;
@@ -1225,7 +1225,7 @@ int main(int argc, char **argv)
       }
       //save_nifti_image("M1.nii", tmpmsk, &PILbraincloudHdr);
 
-      invT=inv4(sub2PIL); 
+      invT=inv4x4(sub2PIL); 
       tmp1 = resliceImage(sub, subDim, PILbraincloudDim, invT, LIN); 
       free(invT);
 
@@ -1333,13 +1333,13 @@ int main(int argc, char **argv)
       affineReg(PILatl2, PILsub2, PILmsk2, dim2, patch_r, search_R, A);
       multi(A,4,4,atl2PIL+i*16,4,4,atl2PIL+i*16);  // update atl2PIL
 
-      invT = inv4(sub2PIL);
+      invT = inv4x4(sub2PIL);
       multi(invT,4,4, atl2PIL+i*16,4,4, atl_to_sub+i*16);
       free(invT);
 
       if(opt_v) printMatrix(atl_to_sub+i*16,4,4,"Atlas image -> subject image affine transformation",NULL);
 
-      invT=inv4(atl2PIL+i*16); 
+      invT=inv4x4(atl2PIL+i*16); 
       tmp = resliceImage(atlmsk, atlDim, dim1, invT, LIN); 
       free(invT);
       for(int v=0; v<dim1.nv; v++) label[v] += tmp[v]/100.0;
@@ -1407,11 +1407,11 @@ int main(int argc, char **argv)
       if(PILatl1!=NULL) free(PILatl1);
       if(PILmsk1!=NULL) free(PILmsk1);
 
-      invT=inv4(atl2PIL+ai*16); 
+      invT=inv4x4(atl2PIL+ai*16); 
       PILmsk1 = resliceImage(atlmsk, atlDim, dim1, invT, NEARN); 
       free(invT);
 
-      invT=inv4(atl2PIL+ai*16); 
+      invT=inv4x4(atl2PIL+ai*16); 
       PILatl1 = resliceImage(atl, atlDim, dim1, invT, LIN); 
       free(invT);
 

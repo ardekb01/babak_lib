@@ -222,7 +222,7 @@ void sub2trg_rigid_body_transformation(float *sub2trg, const char *subfile, cons
    float temp_mat[16];
    multi(sub_ijk2RAS, 4, 4, sub_xyz2ijk, 4, 4, temp_mat);
 
-   trg_RAS2ijk = inv4(trg_ijk2RAS);
+   trg_RAS2ijk = inv4x4(trg_ijk2RAS);
    multi(trg_RAS2ijk, 4, 4, temp_mat, 4, 4, temp_mat);
    free(trg_RAS2ijk);
 
@@ -336,7 +336,7 @@ float *AC, float *PC, float *RP, DIM HR, DIM Orig, short *volOrig, float *Tmsp)
    multi(X2I, 4, 4,  PC, 4,  1, pc);
    multi(X2I, 4, 4,  AC, 4,  1, ac);
 		
-   invT = inv4(Tmsp);
+   invT = inv4x4(Tmsp);
    im=resliceImage(volOrig,Orig.nx,Orig.ny,Orig.nz,Orig.dx,Orig.dy,Orig.dz,HR.nx,HR.ny,1, HR.dx,HR.dy,HR.dz,invT,LIN);
    free(invT);
 
@@ -440,7 +440,7 @@ float *AC, float *PC, float *RP, DIM HR, DIM Orig, short *volOrig, float *Tmsp)
    multi(X2I, 4, 4,  pc, 4,  1, pc);
    multi(X2I, 4, 4,  ac, 4,  1, ac);
 
-   invT = inv4(T);
+   invT = inv4x4(T);
    im=resliceImage(volOrig,Orig.nx,Orig.ny,Orig.nz,Orig.dx,Orig.dy,Orig.dz,HR.nx,HR.ny,1, HR.dx,HR.dy,HR.dz,invT,LIN);
    free(invT);
 
@@ -480,7 +480,7 @@ void saveACPClocation(const char *imagefilename, float *Tmsp, DIM Orig, float *A
    float X2I[16]; // 4x4 matrix that transforms a vector from xyz-coordinates to ijk-coordinates
    char filename[DEFAULT_STRING_LENGTH];
 
-   invT = inv4(Tmsp);
+   invT = inv4x4(Tmsp);
 
    acpc_distance = sqrtf( (AC[0]-PC[0])*(AC[0]-PC[0]) + (AC[1]-PC[1])*(AC[1]-PC[1]) + (AC[2]-PC[2])*(AC[2]-PC[2]));
 
@@ -558,7 +558,7 @@ void compute_MSP_parameters_from_Tmsp(float *Tmsp, float *n, float *d)
    // a point on the MSP in the original image xyz coordinate system
    float p[3]; 
 
-   invTmsp = inv4(Tmsp);
+   invTmsp = inv4x4(Tmsp);
 
    n[0] = invTmsp[2];
    n[1] = invTmsp[6];
@@ -1508,7 +1508,7 @@ float *AC, float *PC, float *RP, float *Tmsp, int opt_v, int opt_T2)
 
    ////////////////////////////////////////////////////////////////////////////
 
-   invT = inv4(Tmsp);
+   invT = inv4x4(Tmsp);
    volumeMSP_HR=resliceImage(volOrig,Orig,HR,invT,LIN);
    free(invT);
    volumeMSP_LR = resizeXYZ(volumeMSP_HR, HR, LR);
@@ -1517,7 +1517,7 @@ float *AC, float *PC, float *RP, float *Tmsp, int opt_v, int opt_T2)
       short *maskOrig;
       maskOrig=thresholdImageOtsu(volOrig, Orig.nx*Orig.ny*Orig.nz, &nbv);
 
-      invT = inv4(Tmsp);
+      invT = inv4x4(Tmsp);
       mask_HR = resliceImage(maskOrig,Orig,HR,invT,LIN);
       free(invT);
 
@@ -1644,7 +1644,7 @@ float *AC, float *PC, float *RP, float *Tmsp, int opt_v, int opt_T2)
 
       float *invT; 
 
-      invT = inv4(Tmsp);
+      invT = inv4x4(Tmsp);
 
       multi(invT, 4, 4,  AC, 4,  1, AC);
       multi(invT, 4, 4,  PC, 4,  1, PC);
@@ -1945,7 +1945,7 @@ float optimizeNormalVector(short *image,DIM dim, float *A, float *B, float *C)
    *B /= (*C); 
    *C = 1.0;
 
-   invT = inv4(T);
+   invT = inv4x4(T);
    gimage=resliceImage(image, dim, dim, invT, LIN);
    free(invT);
 
@@ -2414,7 +2414,7 @@ void combine_warps_and_trans(int nx, int ny, int nz, float dx, float dy, float d
 
    np = nx*ny;
 
-   invT=inv4(T);
+   invT=inv4x4(T);
 
    xc=dx*(nx-1)/2.0;     /* +---+---+ */
    yc=dy*(ny-1)/2.0;

@@ -230,7 +230,7 @@ void computeSiemensVisionOffsets(float *Tmsp, float *AC, float *PC)
 
 	pi=4.0*atan(1.0);
 
-	invT=inv4(Tmsp);
+	invT=inv4x4(Tmsp);
 
 	// assumes original is PIL, N[3]=0.0 is not a mistake, in fact very necessary
 	N[0]=0.0; N[1]=0.0; N[2]=1.0; N[3]=0.0; 
@@ -275,7 +275,7 @@ void computeSiemensVisionOffsets(float *Tmsp, float *AC, float *PC)
 	multi(TLAI, 4, 4,  ac, 4,  1, ac);
 	multi(TLAI, 4, 4,  pc, 4,  1, pc);
 
-	invT=inv4(R);
+	invT=inv4x4(R);
 	multi(invT,4,4,ac,4,1,ac);
 	multi(invT,4,4,pc,4,1,pc);
 	free(invT);
@@ -689,7 +689,7 @@ int main(int argc, char **argv)
     update_qsform(ophdr, Ttmp);
     ////////////////////////////////////////////////////////////////////
 
-    invT = inv4(Tout);
+    invT = inv4x4(Tout);
   }
 
   if( opt_tiltcorrect == NO)
@@ -709,7 +709,7 @@ int main(int argc, char **argv)
     ////////////////////////////////////////////////////////////////////
 
     multi(PIL2OPORIENT, 4, 4,  IPORIENT2PIL, 4,  4, IPORIENT2OPORIENT);
-    invT = inv4(IPORIENT2OPORIENT);
+    invT = inv4x4(IPORIENT2OPORIENT);
   }
 
   if(!opt_nn)

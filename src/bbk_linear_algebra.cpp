@@ -578,7 +578,7 @@ double *transpose(const double *A, int nRows, int nCols)
 }
 
 // Note: A is preserved
-float *inv4(float *A)
+float *inv4x4(float *A)
 {
    int i;
 
