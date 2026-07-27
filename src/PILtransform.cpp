@@ -589,7 +589,14 @@ void standard_PIL_transformation(const char *imfile, const char *lmfile, char *o
    //////////////////////////////////////////////////////////////////////////////////
    float Tmsp[16]; // takes the image to PIL orientation -- no AC/PC alignment
 
-   findMSP(imfile,orient,lmfile,Tmsp,verbose,dim);
+   if( lmfile[0]!='\0' )
+   {
+      MSPtransformation(imfile,orient,lmfile,Tmsp,dim);
+   }
+   else
+   {
+      MSPtransformation(imfile,orient,Tmsp,dim);
+   }
 
    ///////////////////////////////////////////////////////////////////////////////////////////////
    // AC/PC detection 
