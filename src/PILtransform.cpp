@@ -13,6 +13,7 @@
 #include "set_dim.h"
 #include "ijk2xyz.h"
 #include "bbk_linear_algebra.h"
+#include "MSPtransformation.h"
 
 double searchradius[3]; // in units of mm
 int opt_CENTER_AC=NO;
