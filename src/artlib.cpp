@@ -27,6 +27,8 @@
 #define MAXITER 5000
 #define DEL 3
 
+double searchradius[3]={50.0, 15.0, 15.0}; // in units of mm
+
 // Turns verbose mode on (opt_v=YES) or off (opt_v=NO)
 char opt_v= NO;
 
@@ -59,7 +61,6 @@ float detectAC(float *AC, char *modelfile, short *volumeMSP_HR, char *ACregion, 
 void initialAC(float Ax, float Ay, float Bx, float By, float *Cx, float *Cy, float parcomMean, float percomMean);
 char *defineACregion(DIM dim, float *RP, float *PC, float parcomMean, float percomMean, double ACsr);
 char *definePCregion(DIM HR, float *RP, float *RPPCmean, double PCsr);
-void detectRP(float *RP1, float *RP2, char *modelfile, short *volumeMSP_LR, short *mask_LR, short *xRP, short *yRP, short *zRP);
 void defineTemplate(int r, int h, short *x, short *y, short *z);
 char *expandMask(short *mask_HR, DIM HR, float *RPmean, double RPsr);
 short *thresholdImageOtsu(short *im, int nv, int *nbv);
@@ -108,8 +109,10 @@ void sub2trg_rigid_body_transformation(float *sub2trg, const char *subfile, cons
    // combining the two transformations gives
    // (x, y, z)_trg = trg_ijk2xyz * trg_RAS2ijk * sub_ijk2RAS * sub_xyz2ijk * (x, y, z)_sub
 
-   sub_hdr = read_NIFTI_hdr(subfile);
-   trg_hdr = read_NIFTI_hdr(trgfile);
+   //sub_hdr = read_NIFTI_hdr(subfile);
+   //trg_hdr = read_NIFTI_hdr(trgfile);
+   read_nifti_hdr(subfile, &sub_hdr);
+   read_nifti_hdr(trgfile, &trg_hdr);
 
    xyz2ijk(sub_xyz2ijk, sub_hdr.dim[1], sub_hdr.dim[2], sub_hdr.dim[3], 
    sub_hdr.pixdim[1], sub_hdr.pixdim[2], sub_hdr.pixdim[3]);
@@ -1091,7 +1094,6 @@ short *yRP, short *zRP, int opt_T2)
    DIM LR, HR;
    long templatesFilePosition;
    float *ccmap_LR;
-   //int RPint[3]; // variables storing RP ijk coordinates
    int RPint[3]={0,0,0}; // variables storing RP ijk coordinates
    int npLR;
    float *rp_template;
@@ -1112,7 +1114,7 @@ short *yRP, short *zRP, int opt_T2)
       printf("Failed to read \"mhdr\" variable.\n");
    }
 
-   if (bigEndian() == true)
+   if( bigEndian() == true )
    {
       swap_model_file_hdr(&mhdr);
    }
@@ -1140,8 +1142,8 @@ short *yRP, short *zRP, int opt_T2)
 
    for(int i=0; i<mhdr.nvol; i++)
    {
-
-      if( fread(rp_template+i*mhdr.RPtemplatesize*mhdr.nangles, sizeof(float), mhdr.RPtemplatesize*mhdr.nangles, fp) != (size_t)(mhdr.RPtemplatesize*mhdr.nangles) )
+      if( fread(rp_template+i*mhdr.RPtemplatesize*mhdr.nangles, sizeof(float), 
+                mhdr.RPtemplatesize*mhdr.nangles, fp) != (size_t)(mhdr.RPtemplatesize*mhdr.nangles) )
       {
          printf("Failed to read \"rp_template\" variable.\n");
       }
@@ -1157,88 +1159,92 @@ short *yRP, short *zRP, int opt_T2)
    }
 
    {
-		int ns;
+      int ns;
 			
-		ns = mhdr.RPtemplatesize*mhdr.nangles;
+      ns = mhdr.RPtemplatesize*mhdr.nangles;
 
-		for(int s=0; s<ns; s++)
-		{
-			mean_rp_template[s]=0.0;
+      for(int s=0; s<ns; s++)
+      {
+         mean_rp_template[s]=0.0;
 
-			for(int i=0; i<mhdr.nvol; i++)
-				mean_rp_template[s] += rp_template[ i*ns + s];
+         for(int i=0; i<mhdr.nvol; i++)
+            mean_rp_template[s] += rp_template[ i*ns + s];
 
-			mean_rp_template[s] /= mhdr.nvol;
-		}
+         mean_rp_template[s] /= mhdr.nvol;
+      }
    }
 
-	for(int x=mhdr.RPtemplateradius; x<LR.nx-mhdr.RPtemplateradius; x++)
-	for(int y=mhdr.RPtemplateradius; y<LR.ny-mhdr.RPtemplateradius; y++)
-	if(mask_LR[ RPint[2]*npLR + y*LR.nx + x])
-	{
-		extractArray(volumeMSP_LR, LR.nx, LR.ny, LR.nz, x, y, RPint[2], xRP,yRP,zRP,mhdr.RPtemplatesize, rp_test_vec);
+   for(int x=mhdr.RPtemplateradius; x<LR.nx-mhdr.RPtemplateradius; x++)
+   {
+      for(int y=mhdr.RPtemplateradius; y<LR.ny-mhdr.RPtemplateradius; y++)
+      {
+         if(mask_LR[ RPint[2]*npLR + y*LR.nx + x])
+         {
+            extractArray(volumeMSP_LR, LR.nx, LR.ny, LR.nz, x, y, 
+                         RPint[2], xRP,yRP,zRP,mhdr.RPtemplatesize, rp_test_vec);
 
-		removeVectorMean( rp_test_vec, mhdr.RPtemplatesize);
-		normalizeVector(rp_test_vec, mhdr.RPtemplatesize);
+            removeVectorMean(rp_test_vec, mhdr.RPtemplatesize);
+            normalizeVector(rp_test_vec, mhdr.RPtemplatesize);
 
-		ccmax=0.0;
-		for(int j=0; j<mhdr.nangles; j++)
-		{
-			cc=dot(rp_test_vec, mean_rp_template + j*mhdr.RPtemplatesize, mhdr.RPtemplatesize);
+            ccmax=0.0;
+            for(int j=0; j<mhdr.nangles; j++)
+            {
+               cc=dot(rp_test_vec, mean_rp_template + j*mhdr.RPtemplatesize, mhdr.RPtemplatesize);
 
-            if(opt_T2) cc *= -1.0;
-
-			if(cc>ccmax) ccmax=cc;
-		}
+               if(opt_T2) cc *= -1.0;
+               if(cc>ccmax) ccmax=cc;
+            }
 		
-		ccmap_LR[y*LR.nx + x] = ccmax;
+            ccmap_LR[y*LR.nx + x] = ccmax;
+         }
+      }
+   }
+
+   ccmax=0.0;
+   for(int x=mhdr.RPtemplateradius; x<LR.nx-mhdr.RPtemplateradius; x++)
+   for(int y=mhdr.RPtemplateradius; y<LR.ny-mhdr.RPtemplateradius; y++)
+   {
+      cc = ccmap_LR[y*LR.nx + x];
+      if(cc>ccmax) 
+      {
+         ccmax=cc;
+         RPint[0]=x; RPint[1]=y;
+      }
+   }
+
+   RP1[0]=RPint[0]; RP1[1]=RPint[1]; RP1[2]=RPint[2]; RP1[3]=1.0;
+   ijk2xyz(I2X, LR.nx, LR.ny, LR.nz, LR.dx, LR.dy, LR.dz);
+   multi(I2X,4,4, RP1, 4, 1, RP1);
+
+   for(int x=RPint[0]-mhdr.RPtemplateradius; x<RPint[0]+mhdr.RPtemplateradius; x++)
+   for(int y=RPint[1]-mhdr.RPtemplateradius; y<RPint[1]+mhdr.RPtemplateradius; y++)
+   {
+      if( (y*LR.nx + x)>=0 && (y*LR.nx + x)<npLR)
+         ccmap_LR[y*LR.nx + x]=0.0;
 	}
 
-	ccmax=0.0;
-	for(int x=mhdr.RPtemplateradius; x<LR.nx-mhdr.RPtemplateradius; x++)
-	for(int y=mhdr.RPtemplateradius; y<LR.ny-mhdr.RPtemplateradius; y++)
-	{
-		cc = ccmap_LR[y*LR.nx + x];
-		if(cc>ccmax) 
-		{
-			ccmax=cc;
-			RPint[0]=x; RPint[1]=y;
-		}
-	}
+      ccmax=0.0;
+      for(int x=mhdr.RPtemplateradius; x<LR.nx-mhdr.RPtemplateradius; x++)
+      for(int y=mhdr.RPtemplateradius; y<LR.ny-mhdr.RPtemplateradius; y++)
+      {
+         cc = ccmap_LR[y*LR.nx + x];
+         if(cc>ccmax) 
+         {
+            ccmax=cc;
+            RPint[0]=x; RPint[1]=y;
+         }
+      }
 
-	RP1[0]=RPint[0]; RP1[1]=RPint[1]; RP1[2]=RPint[2]; RP1[3]=1.0;
-	ijk2xyz(I2X, LR.nx, LR.ny, LR.nz, LR.dx, LR.dy, LR.dz);
-   	multi(I2X,4,4, RP1, 4, 1, RP1);
+   RP2[0]=RPint[0]; RP2[1]=RPint[1]; RP2[2]=RPint[2]; RP2[3]=1.0;
+   ijk2xyz(I2X, LR.nx, LR.ny, LR.nz, LR.dx, LR.dy, LR.dz);
+   multi(I2X,4,4, RP2, 4, 1, RP2);
 
-	for(int x=RPint[0]-mhdr.RPtemplateradius; x<RPint[0]+mhdr.RPtemplateradius; x++)
-	for(int y=RPint[1]-mhdr.RPtemplateradius; y<RPint[1]+mhdr.RPtemplateradius; y++)
-	{
-		if( (y*LR.nx + x)>=0 && (y*LR.nx + x)<npLR)
-			ccmap_LR[y*LR.nx + x]=0.0;
-	}
+   fclose(fp);
 
-	ccmax=0.0;
-	for(int x=mhdr.RPtemplateradius; x<LR.nx-mhdr.RPtemplateradius; x++)
-	for(int y=mhdr.RPtemplateradius; y<LR.ny-mhdr.RPtemplateradius; y++)
-	{
-		cc = ccmap_LR[y*LR.nx + x];
-		if(cc>ccmax) 
-		{
-			ccmax=cc;
-			RPint[0]=x; RPint[1]=y;
-		}
-	}
-
-	RP2[0]=RPint[0]; RP2[1]=RPint[1]; RP2[2]=RPint[2]; RP2[3]=1.0;
-	ijk2xyz(I2X, LR.nx, LR.ny, LR.nz, LR.dx, LR.dy, LR.dz);
-   	multi(I2X,4,4, RP2, 4, 1, RP2);
-
-	fclose(fp);
-
-	free(ccmap_LR);
-	free(rp_template);
-	free(mean_rp_template);
-	free(rp_test_vec);
+   free(ccmap_LR);
+   free(rp_template);
+   free(mean_rp_template);
+   free(rp_test_vec);
 }
 
 void defineTemplate(int r, int h, short *x, short *y, short *z)
@@ -1432,11 +1438,11 @@ float *AC, float *PC, float *RP, float *Tmsp, int opt_v, int opt_T2)
          swap_model_file_hdr(&mhdr);
       }
 
-      HR.nx=HR.ny=mhdr.nxHR;
-      LR.nz=HR.nz=mhdr.nzHR;
-      LR.dz=HR.dz=HR.dy=HR.dx=mhdr.dxHR; 
-      LR.nx=LR.ny=mhdr.nxLR;
-      LR.dy=LR.dx=2.0*HR.dx;
+      HR.nx = HR.ny = mhdr.nxHR;
+      LR.nz = HR.nz = mhdr.nzHR;
+      LR.dz = HR.dz = HR.dy = HR.dx = mhdr.dxHR; 
+      LR.nx = LR.ny = mhdr.nxLR;
+      LR.dy = LR.dx = 2.0*HR.dx;
 
       fseek(fp, sizeof(float)*mhdr.RPtemplatesize*mhdr.nangles*mhdr.nvol, SEEK_CUR);
       fseek(fp, sizeof(float)*mhdr.ACtemplatesize*mhdr.nangles*mhdr.nvol, SEEK_CUR);
@@ -1531,9 +1537,15 @@ float *AC, float *PC, float *RP, float *Tmsp, int opt_v, int opt_T2)
    {
       float ACccmax[2];
       float PCccmax[2];
-      float AC1[4], AC2[4]; // variables storing AC coordinates
-      float PC1[4], PC2[4]; // variables storing PC coordinates
-      float RP1[4], RP2[4]; // variables storing RP coordinates
+      // variables storing AC coordinates
+      float AC1[4]={0.0f, 0.0f, 0.0f, 0.0f}; 
+      float AC2[4]={0.0f, 0.0f, 0.0f, 0.0f}; 
+      // variables storing PC coordinates
+      float PC1[4]={0.0f, 0.0f, 0.0f, 0.0f}; 
+      float PC2[4]={0.0f, 0.0f, 0.0f, 0.0f}; 
+      // variables storing RP coordinates
+      float RP1[4]={0.0f, 0.0f, 0.0f, 0.0f}; 
+      float RP2[4]={0.0f, 0.0f, 0.0f, 0.0f}; 
       short *xRP, *yRP, *zRP;
       short *xAC, *yAC, *zAC;
       short *xPC, *yPC, *zPC;
@@ -1555,6 +1567,7 @@ float *AC, float *PC, float *RP, float *Tmsp, int opt_v, int opt_T2)
       defineTemplate(mhdr.PCtemplateradius,mhdr.PCtemplateheight, xPC, yPC, zPC);
 
       mask_LR = resizeXYZ(mask_HR, HR, LR);
+
       if(opt_RP)
       {
          detectRP(RP1, RP2, modelfilepath, volumeMSP_LR, mask_LR, xRP, yRP, zRP, opt_T2);

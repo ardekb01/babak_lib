@@ -10,8 +10,10 @@
 #include "minmax.h"
 #include "nifti1_io.h"
 #include "matrixCom.h"
+#include "read_nifti_image.h"
 
 //////////////////////////////////////////////////////////////////
+/*
 nifti_1_header read_NIFTI_hdr(const char *filename)
 {
    FILE *fp;
@@ -39,12 +41,14 @@ nifti_1_header read_NIFTI_hdr(const char *filename)
 
    return(hdr);
 }
+*/
 
 int same_nifti_image_size(int N, char **imagefile, int *nx, int *ny, int *nz, float *dx, float *dy, float *dz)
 {
    nifti_1_header hdr;
 
-   hdr=read_NIFTI_hdr(imagefile[0]);
+   //hdr=read_NIFTI_hdr(imagefile[0]);
+   read_nifti_hdr(imagefile[0], &hdr);
 
    *nx = hdr.dim[1];
    *ny = hdr.dim[2];
@@ -55,7 +59,8 @@ int same_nifti_image_size(int N, char **imagefile, int *nx, int *ny, int *nz, fl
 
    for(int i=1; i<N; i++)
    {
-      hdr=read_NIFTI_hdr(imagefile[i]);
+      //hdr=read_NIFTI_hdr(imagefile[i]);
+      read_nifti_hdr(imagefile[i], &hdr);
 
       if( (*nx != hdr.dim[1]) ||  (*ny != hdr.dim[2]) ||  (*nz != hdr.dim[3]) )
       {

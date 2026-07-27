@@ -15,7 +15,6 @@
 #include "bbk_linear_algebra.h"
 #include "MSPtransformation.h"
 
-double searchradius[3]; // in units of mm
 int opt_CENTER_AC=NO;
 
 // Matrices of type T are called "signed permutation matrices"
@@ -346,6 +345,7 @@ void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float
    float Qavg[3]; // average of rows of Q
    float Pavg[3]; // average of rows of P
    float TPIL0[16]; // transforms the original image to MSP/AC-PC aligned PIL orientation
+   set_to_I(TPIL0, 4);
    int n; // number of landmarks
    float *LM;  // (3 x n) matrix of detected landmarks
    float *invT;
@@ -392,7 +392,8 @@ void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float
    /////////////////////////////////////////////////////////
    // Reslice subim to PIL space 
    snprintf(filename,sizeof(filename),"%s/PILbrain.nii",ARTHOME);
-   PILbraincloud_hdr=read_NIFTI_hdr(filename);
+   //PILbraincloud_hdr=read_NIFTI_hdr(filename);
+   read_nifti_hdr(filename, &PILbraincloud_hdr);
 
    set_dim(subimPIL, PILbraincloud_hdr);
    invT = inv4x4(TPIL0);

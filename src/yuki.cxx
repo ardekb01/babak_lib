@@ -519,7 +519,8 @@ short *find_subject_msp(char *imagefilename, char *prefix, char *lmfile)
       float T_ijk2xyz[16];
       float PIL2RAS[16];
 
-      output_hdr = read_NIFTI_hdr(imagefilename);
+      //output_hdr = read_NIFTI_hdr(imagefilename);
+      read_nifti_hdr(imagefilename, &output_hdr);
       output_hdr.pixdim[1]=output_dim.dx; 
       output_hdr.pixdim[2]=output_dim.dy; 
       output_hdr.pixdim[3]=output_dim.dz;
@@ -632,7 +633,8 @@ short *find_subject_msp_using_transformation(char *imagefilename, char *prefix, 
       float T_ijk2xyz[16];
       float PIL2RAS[16];
 
-      output_hdr = read_NIFTI_hdr(imagefilename);
+      //output_hdr = read_NIFTI_hdr(imagefilename);
+      read_nifti_hdr(imagefilename, &output_hdr);
       output_hdr.pixdim[1]=output_dim.dx;
       output_hdr.pixdim[2]=output_dim.dy; 
       output_hdr.pixdim[3]=output_dim.dz;

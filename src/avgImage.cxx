@@ -354,7 +354,8 @@ int checkDimension_avgImage(int N, char **imagefile, int *nx, int *ny, int *nz, 
 
    printf("Image %d: %s\n",1,imagefile[0]);
 
-   hdr = read_NIFTI_hdr(imagefile[0]);
+   //hdr = read_NIFTI_hdr(imagefile[0]);
+   read_nifti_hdr(imagefile[0], &hdr);
    *nx = hdr.dim[1];
    *ny = hdr.dim[2];
    *nz = hdr.dim[3];
@@ -365,7 +366,8 @@ int checkDimension_avgImage(int N, char **imagefile, int *nx, int *ny, int *nz, 
    for(int i=1; i<N; i++)
    {
       printf("Image %d: %s\n",i+1,imagefile[i]);
-      hdr = read_NIFTI_hdr(imagefile[i]);
+      //hdr = read_NIFTI_hdr(imagefile[i]);
+      read_nifti_hdr(imagefile[i], &hdr);
 
       if( *nx != hdr.dim[1] ||  *ny != hdr.dim[2] ||  *nz != hdr.dim[3]) 
       {
@@ -450,7 +452,8 @@ int main(int argc, char **argv)
       exit(0);
    }
 
-   hdr = read_NIFTI_hdr( (argv+optind)[0]);
+   //hdr = read_NIFTI_hdr( (argv+optind)[0]);
+   read_nifti_hdr( (argv+optind)[0], &hdr);
 
    if( hdr.dim[0] == 4 && number_of_images == 1)
    {

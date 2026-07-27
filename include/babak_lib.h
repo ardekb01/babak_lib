@@ -20,7 +20,6 @@
 #include "valid_orientation_code.h"
 
 #ifndef _PILTRANSFORM
-extern double searchradius[3]; // in units of mm
 extern int opt_CENTER_AC;
 #endif
 
@@ -61,6 +60,7 @@ extern void getARTHOME();
 // Turns verbose mode on (opt_v=YES) or off (opt_v=NO)
 // Initialized to NO in artlib.c
 extern char opt_v;
+extern double searchradius[3]; // in units of mm
 #endif
 
 #ifndef _SHORTIM
@@ -741,7 +741,7 @@ void read_nifti_image(const char *filename, uchar **im, nifti_1_header *hdr);
 void read_nifti_image(const char *filename, int2 **im, nifti_1_header *hdr);
 void print_NIFTI_hdr(const char *filename);
 void print_NIFTI_hdr(nifti_1_header hdr);
-nifti_1_header read_NIFTI_hdr(const char *filename);
+//nifti_1_header read_NIFTI_hdr(const char *filename);
 nifti_1_header read_NIFTI_hdr(const char *filename, nifti1_extender *extender, char **extension);
 void save_nifti_image(const char *filename, uchar *im, nifti_1_header *hdr);
 void save_nifti_image(const char *filename, int2 *im, nifti_1_header *hdr);

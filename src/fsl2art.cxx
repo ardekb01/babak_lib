@@ -15,6 +15,7 @@
 #include "landmarks.h"
 #include "minmax.h"
 #include "nifti1_io.h"
+#include "read_nifti_image.h"
 
 #define YES 1
 #define NO 0
@@ -129,7 +130,8 @@ int main(int argc, char **argv)
 
    nifti_1_header trghdr;
    char trg_orientation_code[4];
-   trghdr = read_NIFTI_hdr(trgImFile);
+   //trghdr = read_NIFTI_hdr(trgImFile);
+   read_nifti_hdr(trgImFile, &trghdr);
 
    tdim.nx=trghdr.dim[1]; tdim.ny=trghdr.dim[2]; tdim.nz=trghdr.dim[3];
    tdim.dx=trghdr.pixdim[1]; tdim.dy=trghdr.pixdim[2]; tdim.dz=trghdr.pixdim[3];
@@ -166,7 +168,8 @@ int main(int argc, char **argv)
 
    nifti_1_header subhdr;
    char sub_orientation_code[4];
-   subhdr = read_NIFTI_hdr(subImFile);
+   //subhdr = read_NIFTI_hdr(subImFile);
+   read_nifti_hdr(subImFile, &subhdr);
 
    sdim.nx=subhdr.dim[1]; sdim.ny=subhdr.dim[2]; sdim.nz=subhdr.dim[3];
    sdim.dx=subhdr.pixdim[1]; sdim.dy=subhdr.pixdim[2]; sdim.dz=subhdr.pixdim[3];

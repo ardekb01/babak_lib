@@ -52,7 +52,7 @@ bool normalizeVector(float *x, int n)
 
    for (int i = 0; i < n; i++)
    {
-      x[i] = static_cast<float>(x[i] / norm);
+      x[i] = (float)(x[i] / norm);
    }
 
    return true;
