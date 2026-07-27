@@ -40,34 +40,6 @@ nifti_1_header read_NIFTI_hdr(const char *filename)
    return(hdr);
 }
 
-// returns 0 on failure
-int read_NIFTI_hdr(const char *filename, nifti_1_header *hdr)
-{
-   FILE *fp;
-
-   fp = fopen(filename,"r");
-
-   if(fp==NULL)
-   {
-      printf("read_NIFTI_hdr(): I could not open file: %s\n", filename);
-      return(0);
-   }
-
-   if( fread(hdr, sizeof(nifti_1_header), 1, fp)!=1 )
-   {
-      printf("read_NIFTI_hdr(): I could not read the NIFTI header from file: %s\n", filename);
-      fclose(fp);
-      return(0);
-   }
-
-   if(hdr->dim[0]<1 || hdr->dim[0]>7)
-   {
-      swapniftiheader(hdr);
-   }
-
-   return(1);
-}
-
 int same_nifti_image_size(int N, char **imagefile, int *nx, int *ny, int *nz, float *dx, float *dy, float *dz)
 {
    nifti_1_header hdr;

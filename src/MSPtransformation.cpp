@@ -65,7 +65,10 @@ bool MSPtransformation(
 
    nifti_1_header hdr;
 
-   read_NIFTI_hdr(filename, &hdr);
+   if ( !read_nifti_hdr(filename, &hdr) )
+   {
+      return false;
+   }
 
    set_dim(dim, hdr);
 

@@ -43,12 +43,21 @@ char *read_nifti_image(const char *filename, nifti_1_header *hdr)
 
    fclose(fp);
 
-   // If dim[0] is outside the range [1,7], then the header information
-   // needs to be byte swapped appropriately.
-   if (hdr->dim[0] < 1 || hdr->dim[0] > 7)
+   // For a NIFTI-1 header, sizeof_hdr should be 348, so an unexpected value 
+   // is a reasonable indication that byte swapping is required.
+   // If sizeof_hdr is not 348, assume that the header has the
+   // opposite byte order and swap the header.
+   if(hdr->sizeof_hdr != 348)
    {
       swapflg = 1;
       swapniftiheader(hdr);
+
+      // After swapping, verify that the header is now valid. Otherwise, 
+      // a corrupt or non-NIFTI file could be accepted:
+      if(hdr->sizeof_hdr != 348)
+      {
+         return nullptr;
+      }
    }
 
    if (!isfinite(hdr->vox_offset) ||
@@ -195,4 +204,48 @@ char *read_nifti_image(const char *filename, nifti_1_header *hdr)
    }
 
    return(im);
+}
+
+// Returns false on failure.
+bool read_nifti_hdr(const char *filename, nifti_1_header *hdr)
+{
+   // Validate inputs.
+   if(filename == nullptr ||
+      hdr == nullptr)
+   {
+      return false;
+   }
+
+   FILE *fp = fopen(filename, "rb");
+
+   if(fp == nullptr)
+   {
+      return false;
+   }
+
+   if(fread(hdr, sizeof(nifti_1_header), 1, fp) != 1)
+   {
+      fclose(fp);
+      return false;
+   }
+
+   fclose(fp);
+
+   // For a NIFTI-1 header, sizeof_hdr should be 348, so an unexpected value 
+   // is a reasonable indication that byte swapping is required.
+   // If sizeof_hdr is not 348, assume that the header has the
+   // opposite byte order and swap the header.
+   if(hdr->sizeof_hdr != 348)
+   {
+      swapniftiheader(hdr);
+
+      // After swapping, verify that the header is now valid. Otherwise, 
+      // a corrupt or non-NIFTI file could be accepted:
+      if(hdr->sizeof_hdr != 348)
+      {
+         return false;
+      }
+   }
+
+   return true;
 }

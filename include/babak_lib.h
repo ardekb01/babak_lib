@@ -742,7 +742,6 @@ void read_nifti_image(const char *filename, int2 **im, nifti_1_header *hdr);
 void print_NIFTI_hdr(const char *filename);
 void print_NIFTI_hdr(nifti_1_header hdr);
 nifti_1_header read_NIFTI_hdr(const char *filename);
-int4 read_NIFTI_hdr(const char *filename, nifti_1_header *hdr);
 nifti_1_header read_NIFTI_hdr(const char *filename, nifti1_extender *extender, char **extension);
 void save_nifti_image(const char *filename, uchar *im, nifti_1_header *hdr);
 void save_nifti_image(const char *filename, int2 *im, nifti_1_header *hdr);
