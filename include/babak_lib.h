@@ -23,6 +23,11 @@
 extern int opt_CENTER_AC;
 #endif
 
+#ifndef GETARTHOME
+extern const char *ARTHOME;
+extern bool getARTHOME();
+#endif
+
 typedef unsigned char uchar;
 typedef unsigned short uint2;
 typedef unsigned short uint2;
@@ -49,11 +54,6 @@ void update_qsform( const char *imagefilename , float *matrix);
 void update_qsform( const char *imagefile1, const char *imagefile2);
 extern int opt_sform;
 extern int opt_qform;
-#endif
-
-#ifndef _getARTHOME
-extern char *ARTHOME;
-extern void getARTHOME();
 #endif
 
 #ifndef _artlib

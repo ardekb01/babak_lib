@@ -1,22 +1,21 @@
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
 
-#define _getARTHOME
+#define GETARTHOME
 
-char *ARTHOME=NULL;
+const char *ARTHOME = nullptr;
 
-///////////////////////////////////////////////////////////////////////////////////////////////
-// get the value of the ARTHOME environment variable
-// The getenv() function searches the environment list for a string that matches "ARTHOME".
-// It returns a pointer to the value in the environment, or NULL if there is no match.
-///////////////////////////////////////////////////////////////////////////////////////////////
-void getARTHOME()
+// Get the value of the ARTHOME environment variable.
+// The getenv() function searches the environment list for a string
+// that matches "ARTHOME". It returns a pointer to the value in the
+// environment, or nullptr if there is no match.
+bool getARTHOME()
 {
-   ARTHOME=getenv("ARTHOME");
+   ARTHOME = getenv("ARTHOME");
 
-   if(ARTHOME == NULL)
+   if(ARTHOME == nullptr)
    {
-      printf("The ARTHOME environment variable is not defined.\n");
-      exit(0);
+      return false;
    }
+
+   return true;
 }
