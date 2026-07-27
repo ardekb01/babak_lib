@@ -12,37 +12,6 @@
 #include "matrixCom.h"
 #include "read_nifti_image.h"
 
-//////////////////////////////////////////////////////////////////
-/*
-nifti_1_header read_NIFTI_hdr(const char *filename)
-{
-   FILE *fp;
-   nifti_1_header hdr;
-
-   fp = fopen(filename,"r");
-
-   if(fp==NULL)
-   {
-      printf("read_NIFTI_hdr(): I could not open file: %s\n", filename);
-      return(hdr);
-   }
-
-   if( fread(&hdr, sizeof(hdr), 1, fp)!=1 )
-   {
-      printf("read_NIFTI_hdr(): I could not read the NIFTI header from file: %s\n", filename);
-      fclose(fp);
-      return(hdr);
-   }
-
-   if(hdr.dim[0]<1 || hdr.dim[0]>7)
-   {
-      swapniftiheader(&hdr);
-   }
-
-   return(hdr);
-}
-*/
-
 int same_nifti_image_size(int N, char **imagefile, int *nx, int *ny, int *nz, float *dx, float *dy, float *dz)
 {
    nifti_1_header hdr;
