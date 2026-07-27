@@ -201,7 +201,6 @@ int main(int argc, char **argv)
 
   if(targetImageFile[0]!='\0')
   {
-    //ophdr = read_NIFTI_hdr(targetImageFile);
     read_nifti_hdr(targetImageFile, &ophdr);
 
     nx2=ophdr.dim[1]; ny2=ophdr.dim[2]; nz2=ophdr.dim[3];
@@ -281,7 +280,6 @@ int main(int argc, char **argv)
 
   if(targetImageFile[0]=='\0')
   {
-    //ophdr = read_NIFTI_hdr(inputImageFile);
     read_nifti_hdr(inputImageFile, &ophdr);
     ophdr.dim[0]=3; ophdr.dim[1]=nx2; ophdr.dim[2]=ny2; ophdr.dim[3]=nz2;
     ophdr.pixdim[1]=dx2; ophdr.pixdim[2]=dy2; ophdr.pixdim[3]=dz2; 

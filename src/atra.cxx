@@ -97,7 +97,6 @@ int checkDimension_avgImage(int N, char **imagefile, int *nx, int *ny, int *nz, 
 
    printf("Image %d: %s\n",1,imagefile[0]);
 
-   //hdr = read_NIFTI_hdr(imagefile[0]);
    read_nifti_hdr(imagefile[0], &hdr);
    *nx = hdr.dim[1];
    *ny = hdr.dim[2];
@@ -109,7 +108,6 @@ int checkDimension_avgImage(int N, char **imagefile, int *nx, int *ny, int *nz, 
    for(int i=1; i<N; i++)
    {
       printf("Image %d: %s\n",i+1,imagefile[i]);
-      //hdr = read_NIFTI_hdr(imagefile[i]);
       read_nifti_hdr(imagefile[i], &hdr);
 
       if( *nx != hdr.dim[1] ||  *ny != hdr.dim[2] ||  *nz != hdr.dim[3]) 
@@ -465,7 +463,6 @@ void atra(const char *imagelistfile, DIM output_dim, const char *outputOrientati
    {
       short *tmp;
 
-      //tmp_hdr = read_NIFTI_hdr(imagefile[0]);
       read_nifti_hdr(imagefile[0], &tmp_hdr);
       set_dim(input_dim, tmp_hdr);
 
@@ -811,7 +808,6 @@ void atra(const char *imagelistfile, DIM output_dim, const char *outputOrientati
    {
       short *tmp;
 
-      //tmp_hdr = read_NIFTI_hdr(imagefile[i]);
       read_nifti_hdr(imagefile[i], &tmp_hdr);
       set_dim(input_dim, tmp_hdr);
 

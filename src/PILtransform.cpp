@@ -392,7 +392,6 @@ void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float
    /////////////////////////////////////////////////////////
    // Reslice subim to PIL space 
    snprintf(filename,sizeof(filename),"%s/PILbrain.nii",ARTHOME);
-   //PILbraincloud_hdr=read_NIFTI_hdr(filename);
    read_nifti_hdr(filename, &PILbraincloud_hdr);
 
    set_dim(subimPIL, PILbraincloud_hdr);

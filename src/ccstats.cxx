@@ -124,7 +124,6 @@ void checkDimension_vancova(int N, char **imagefile, int *nx, int *ny, int *nz, 
 
    if(N==0) return;
 
-   //hdr = read_NIFTI_hdr(imagefile[0]);
    read_nifti_hdr(imagefile[0], &hdr);
    *nx = hdr.dim[1];
    *ny = hdr.dim[2];
@@ -148,7 +147,6 @@ void checkDimension_vancova(int N, char **imagefile, int *nx, int *ny, int *nz, 
 
    for(int i=1; i<N; i++)
    {
-      //hdr = read_NIFTI_hdr(imagefile[i]);
       read_nifti_hdr(imagefile[i], &hdr);
 
       if( *nx != hdr.dim[1] ||  *ny != hdr.dim[2] ||  *nz != hdr.dim[3]) 

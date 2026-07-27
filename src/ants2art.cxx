@@ -138,7 +138,6 @@ int main(int argc, char **argv)
    char trg_orientation_code[4];
    float txc, tyc, tzc;
 
-   //thdr = read_NIFTI_hdr(trgImFile);
    read_nifti_hdr(trgImFile, &thdr);
 
    tdim.nx=thdr.dim[1]; tdim.ny=thdr.dim[2]; tdim.nz=thdr.dim[3];
@@ -203,7 +202,6 @@ int main(int argc, char **argv)
    char sub_orientation_code[4];
    float sxc, syc, szc;
 
-   //shdr = read_NIFTI_hdr(subImFile);
    read_nifti_hdr(subImFile, &shdr);
 
    sdim.nx=shdr.dim[1]; sdim.ny=shdr.dim[2]; sdim.nz=shdr.dim[3];

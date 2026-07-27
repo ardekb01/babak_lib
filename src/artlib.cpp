@@ -109,8 +109,6 @@ void sub2trg_rigid_body_transformation(float *sub2trg, const char *subfile, cons
    // combining the two transformations gives
    // (x, y, z)_trg = trg_ijk2xyz * trg_RAS2ijk * sub_ijk2RAS * sub_xyz2ijk * (x, y, z)_sub
 
-   //sub_hdr = read_NIFTI_hdr(subfile);
-   //trg_hdr = read_NIFTI_hdr(trgfile);
    read_nifti_hdr(subfile, &sub_hdr);
    read_nifti_hdr(trgfile, &trg_hdr);
 

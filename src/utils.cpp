@@ -382,7 +382,6 @@ void checkDimension_nifti(int N, char **imagefile, int nx, int ny, int nz)
 
 	for(int i=0; i<N; i++)
 	{
-		//hdr = read_NIFTI_hdr(imagefile[i]);
 		read_nifti_hdr(imagefile[i], &hdr);
 
 		if(nx != hdr.dim[1] || ny != hdr.dim[2] || nz != hdr.dim[3]) 

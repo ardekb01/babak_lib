@@ -114,8 +114,6 @@ int main(int argc, char **argv)
    printf("Input file: %s\n", inputfile);
    printf("Output file: %s\n", outputfile);
 
-   //input_hdr = read_NIFTI_hdr(inputfile);
-   //output_hdr = read_NIFTI_hdr(outputfile);
    read_nifti_hdr(inputfile, &input_hdr);
    read_nifti_hdr(outputfile, &output_hdr);
 
