@@ -63,17 +63,9 @@ bool MSPtransformation(
    // At this point, Tmsp only makes the orientation PIL without MSP alignment
    PILtransform(imorient, Tmsp);
 
-   short *im = nullptr;
    nifti_1_header hdr;
 
-   im = (short *)read_nifti_image(filename, &hdr);
-
-   if(im == nullptr)
-   {
-      return false;
-   }
-
-   free(im);
+   read_NIFTI_hdr(filename, &hdr);
 
    set_dim(dim, hdr);
 
