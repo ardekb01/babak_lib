@@ -563,7 +563,7 @@ short *find_subject_msp_using_transformation(char *imagefilename, char *prefix, 
 
    char outputfilename[512];
 
-   detect_AC_PC_MSP(imagefilename, orientation, modelfile, AC, PC, VSPS, Tmsp, 0, opt_T2);
+   detect_AC_PC_MSP(imagefilename, orientation, modelfile, AC, PC, VSPS, Tmsp, opt_T2);
 
    input_dim.nx = Snx;
    input_dim.ny = Sny;

@@ -64,8 +64,6 @@ char *definePCregion(DIM HR, float *RP, float *RPPCmean, double PCsr);
 void defineTemplate(int r, int h, short *x, short *y, short *z);
 char *expandMask(short *mask_HR, DIM HR, float *RPmean, double RPsr);
 short *thresholdImageOtsu(short *im, int nv, int *nbv);
-int detect_AC_PC_MSP(const char *imagefilename, char *orientation, char *modelfile,
-float *AC, float *PC, float *RP, float *Tmsp, int opt_v, int opt_T2);
 float reflectVertex(int pmax, float fac);
 int dsm(void);
 float reflection_cross_correlation2(short *image, DIM dim, float A, float B, float C);
@@ -1342,7 +1340,7 @@ short *thresholdImageOtsu(short *im, int nv, int *nbv)
 }
 
 int detect_AC_PC_MSP(const char *imagefilename, char *orientation, char *modelfile,
-float *AC, float *PC, float *RP, float *Tmsp, int opt_v, int opt_T2)
+float *AC, float *PC, float *RP, float *Tmsp, int opt_T2)
 {
    char modelfilepath[DEFAULT_STRING_LENGTH];
 
@@ -1645,7 +1643,7 @@ float *AC, float *PC, float *RP, float *Tmsp, int opt_v, int opt_T2)
    // save the results 
    updateTmsp(imagefilename, Tmsp, RP, AC, PC);
 
-   saveACPClocation(imagefilename, Tmsp, Orig, AC, PC, RP, opt_v);
+   saveACPClocation(imagefilename, Tmsp, Orig, AC, PC, RP, 0);
 
    saveACPCimages(imagefilename, ACregion, PCregion, RPregion, AC, PC, RP, HR, Orig, volOrig, Tmsp);
 
@@ -2588,7 +2586,7 @@ void find_pil_transformation(char *imfile, DIM dim, float *pilT, float *AC, floa
 
    float Tmsp[16]; // transforms image to MSP aligned PIL orientation
 
-   detect_AC_PC_MSP(imfile, orientation, modelfile, AC, PC, VSPS, Tmsp, 0, 0);
+   detect_AC_PC_MSP(imfile, orientation, modelfile, AC, PC, VSPS, Tmsp, 0);
 
    // convert the AC/PC from (i,j,k) in original space to (x,y,z) in PIL space
    for(int i=0; i<4; i++) ac[i] = AC[i];
@@ -2614,7 +2612,7 @@ void find_pil_transformation(char *imfile, DIM dim, float *pilT)
 
    float Tmsp[16]; // transforms image to MSP aligned PIL orientation
 
-   detect_AC_PC_MSP(imfile, orientation, modelfile, AC, PC, VSPS, Tmsp, 0, 0);
+   detect_AC_PC_MSP(imfile, orientation, modelfile, AC, PC, VSPS, Tmsp, 0);
 
    // convert the AC/PC from (i,j,k) in original space to (x,y,z) in PIL space
    for(int i=0; i<4; i++) ac[i] = AC[i];

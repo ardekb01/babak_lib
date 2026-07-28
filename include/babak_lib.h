@@ -252,7 +252,7 @@ void errorMessage(const char *message);
 // Input: (x,y,z) a vector defined in RAS system
 // Output: One of six charaters {R,L,A,P,S,I}
 void new_PIL_transform(const char *subfile, const char *lmfile, char *orient, float4 *T, int SAVE_PIL_FLAG);
-void standard_PIL_transformation(const char *imfile, const char *lmfile, char *orient, int4 verbose, float4 *TPIL);
+void standard_PIL_transformation(const char *imfile, const char *lmfile, char *orient, float4 *TPIL);
 void Procrustes(float *Q, float *Qavg, int n, float *P, float *Pavg, float *TLM);
 void Procrustes(float *Q, int n, float *P, float *TLM);
 void compute_cm(int2 *image, int4 nx, int4 ny, int4 nz, float4 dx, float4 dy, float4 dz, float4 *x, float4 *y, float4 *z);
@@ -319,7 +319,7 @@ extern char *expandMask(int2 *mask_HR, DIM HR, float4 *RPmean, float8 RPsr);
 extern void ACPCtransform(float4 *Tacpc, float4 *Tmsp, float4 *AC, float4 *PC, char flg);
 extern void compute_MSP_parameters_from_Tmsp(float4 *Tmsp, float4 *n, float4 *d);
 extern int4 detect_AC_PC_MSP( const char *imagefilename, char *orientation, char *modelfile,
-float4 *AC, float4 *PC, float4 *RP, float4 *Tmsp, int4 opt_v, int4 opt_T2);
+float4 *AC, float4 *PC, float4 *RP, float4 *Tmsp, int4 opt_T2);
 extern float4 optimizeNormalVector(int2 *image,DIM dim,float4 *A, float4 *B, float4 *C);
 extern float4 reflection_cross_correlation2(int2 *image, DIM dim, float4 A, float4 B, float4 C);
 extern float4 reflection_cross_correlation(int2 *image, DIM dim, float4 a, float4 b, float4 c, float4 d);

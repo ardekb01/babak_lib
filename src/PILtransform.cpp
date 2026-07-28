@@ -370,7 +370,7 @@ void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float
    char opt_CENTER_AC_old;   
    opt_CENTER_AC_old = opt_CENTER_AC; // record opt_CENTER_AC
    opt_CENTER_AC = NO; // temporarily set opt_CENTER_AC to NO
-   standard_PIL_transformation(subfile, lmfile, orient, 0, TPIL0);
+   standard_PIL_transformation(subfile, lmfile, orient, TPIL0);
    opt_CENTER_AC = opt_CENTER_AC_old; // restore opt_CENTER_AC
 
    /////////////////////////////////////////////////////////
@@ -576,7 +576,7 @@ void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float
 
 // If is empty, i.e. orient="", that the orientation is read from imfile header
 // otherwise, the orien overrides the header information
-void standard_PIL_transformation(const char *imfile, const char *lmfile, char *orient, int verbose, float *TPIL)
+void standard_PIL_transformation(const char *imfile, const char *lmfile, char *orient, float *TPIL)
 {
    char modelfile[1024]="";
 
@@ -620,7 +620,7 @@ void standard_PIL_transformation(const char *imfile, const char *lmfile, char *o
    }
 
    opt_MSP=NO;
-   detect_AC_PC_MSP(imfile,orient,modelfile,ac,pc,rp,Tmsp,verbose,0);
+   detect_AC_PC_MSP(imfile,orient,modelfile,ac,pc,rp,Tmsp,0);
    //restore to default state, this is important for subsequent calls to detect_AC_PC_MSP()
    opt_MSP=YES; 
 

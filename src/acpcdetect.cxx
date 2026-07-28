@@ -334,7 +334,7 @@ int main(int argc, char **argv)
 // char modelfile[1024] = "";
    char ipimagepath[1024] = "";     // input image full path (e.g., /usr/home/myimage.nii)
    char ipimagebasename[512] = "";  // input image basename (e.g., myimage)
-   char ipimagedir[512] = "";       // input image directory (e.g., /usr/home). Important to initialize to "".
+   char ipimagedir[512] = ""; // input image directory (e.g., /usr/home). Important to initialize to "".
    char opimagepath[1024] = "";
 
    char iporient[4] = "";
@@ -799,7 +799,7 @@ int main(int argc, char **argv)
   // find TPIL which transforms the input image in iporient to tilt-corrected PIL
   if(opt_standard)
   {
-    standard_PIL_transformation(ipimagepath, lmfile, iporient, 0, TPIL);
+    standard_PIL_transformation(ipimagepath, lmfile, iporient, TPIL);
   }
   else
   {
