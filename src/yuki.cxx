@@ -2621,8 +2621,8 @@ void find_thickness_profile(short *cc, const char *prefix)
 int main(int argc, char **argv)
 {
   int opt_automatic_fusion_threshold = NO;
-  char ipimagepath[1024]="";  // important to initialize to "" 
-  char ipimagedir[1024]="";     // important to initialize to ""
+  char ipimagepath[DEFAULT_STRING_LENGTH]="";  // important to initialize to "" 
+  char ipimagedir[DEFAULT_STRING_LENGTH]="";     // important to initialize to ""
 
   int number_of_atlases_used=49;
   float max_t=50.0;
@@ -2657,9 +2657,9 @@ int main(int argc, char **argv)
 
    int N=11; // N=2*L+1
 
-   char output_prefix[1024]="";
-   char outputfile[1024]="";
-   char msp_transformation_file[1024]="";
+   char output_prefix[DEFAULT_STRING_LENGTH]="";
+   char outputfile[DEFAULT_STRING_LENGTH]="";
+   char msp_transformation_file[DEFAULT_STRING_LENGTH]="";
 
    int window_width=5;
 
@@ -2779,7 +2779,7 @@ int main(int argc, char **argv)
   }
 
   // determine input image directory
-  if( get_directory_name(ipimagepath, ipimagedir, sizeof(ipimagedir)) == false)
+  if( get_directory_name(ipimagepath, ipimagedir, DEFAULT_STRING_LENGTH) == false)
   {
     fprintf(stderr,"get_directory_name() error, aborting ...\n");
     exit(0);
@@ -2797,7 +2797,7 @@ int main(int argc, char **argv)
   /////////////////////////////////////////////////////////////////////////////////////////////
   if( output_prefix[0]=='\0')
   {
-    if(get_nifti_basename(output_prefix, sizeof(output_prefix), ipimagepath)==false ) { exit(1); }
+    if(get_nifti_basename(output_prefix, DEFAULT_STRING_LENGTH, ipimagepath)==false ) { exit(1); }
   }
 
   if(opt_v)

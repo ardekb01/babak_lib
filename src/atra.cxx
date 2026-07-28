@@ -371,8 +371,13 @@ void atra(const char *imagelistfile, DIM output_dim, const char *outputOrientati
       if( check_nifti1_magic(temporaryFilename) == true ) 
       {
          strcpy(imagefile[nim], temporaryFilename);
-         if( get_nifti_basename(imagefileprefix[nim], sizeof(imagefileprefix[nim]),  imagefile[nim])==false ) { exit(0); }
-         if( get_directory_name(imagefile[nim], imagedir[nim], sizeof(imagedir[nim])) == false)
+         if( get_nifti_basename(imagefileprefix[nim], DEFAULT_STRING_LENGTH,  
+                                imagefile[nim]) == false ) 
+         { 
+            exit(0); 
+         }
+
+         if( get_directory_name(imagefile[nim], imagedir[nim], DEFAULT_STRING_LENGTH) == false)
          {
             fprintf(stderr,"get_directory_name() error, aborting ...\n");
             exit(0);

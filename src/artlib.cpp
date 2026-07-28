@@ -309,7 +309,9 @@ void brandImage(unsigned char *R, unsigned char *G, unsigned char *B, int nx, in
 void saveACPCimages(const char *imagefilename, char *ACregion, char *PCregion, char *RPregion,  
 float *AC, float *PC, float *RP, DIM HR, DIM Orig, short *volOrig, float *Tmsp)
 {
-   char filename[DEFAULT_STRING_LENGTH]; // filename variable for reading/writing data files
+   // For reading/writing data files.
+   char filename[DEFAULT_STRING_LENGTH]; 
+
    unsigned char *Rchannel, *Gchannel, *Bchannel;
    int npHR;
    float TPIL2LPS[16];
@@ -391,12 +393,12 @@ float *AC, float *PC, float *RP, DIM HR, DIM Orig, short *volOrig, float *Tmsp)
    
    char dirname[DEFAULT_STRING_LENGTH]; // name of the directory only
    char fullpath[2048]; // directory + filename
-   if( get_directory_name(imagefilename, dirname, sizeof(dirname)) == false)
+   if( get_directory_name(imagefilename, dirname, DEFAULT_STRING_LENGTH) == false)
    { 
       fprintf(stderr,"get_directory_name() error, aborting ...\n");
       exit(0);
    }
-   get_nifti_basename(filename, sizeof(filename), imagefilename);
+   get_nifti_basename(filename, DEFAULT_STRING_LENGTH, imagefilename);
    snprintf(fullpath,sizeof(fullpath),"%s/%s_ACPC_sagittal.ppm",dirname,filename);
 
    if(opt_ppm || opt_png)
@@ -457,7 +459,7 @@ float *AC, float *PC, float *RP, DIM HR, DIM Orig, short *volOrig, float *Tmsp)
    brandImage(Rchannel, Gchannel, Bchannel, HR.nx, HR.ny, (int)(ac[0]+0.5), (int)(ac[1]+0.5), 4, 4, 0, 255, 0);
 
 
-   get_nifti_basename(filename, sizeof(filename), imagefilename);
+   get_nifti_basename(filename, DEFAULT_STRING_LENGTH, imagefilename);
    snprintf(fullpath,sizeof(fullpath),"%s/%s_ACPC_axial.ppm",dirname,filename);
 
    if(opt_ppm || opt_png)
@@ -505,12 +507,12 @@ void saveACPClocation(const char *imagefilename, float *Tmsp, DIM Orig, float *A
 
    char dirname[DEFAULT_STRING_LENGTH]; // name of the directory only
    char fullpath[2048]; // directory + filename
-   if( get_directory_name(imagefilename, dirname, sizeof(dirname)) == false)
+   if( get_directory_name(imagefilename, dirname, DEFAULT_STRING_LENGTH) == false)
    { 
       fprintf(stderr,"get_directory_name() error, aborting ...\n");
       exit(0);
    }
-   get_nifti_basename(filename, sizeof(filename), imagefilename);
+   get_nifti_basename(filename, DEFAULT_STRING_LENGTH, imagefilename);
    snprintf(fullpath,sizeof(fullpath),"%s/%s_ACPC.txt",dirname, filename);
 
    if(opt_txt)
@@ -679,12 +681,12 @@ void updateTmsp(const char *imagefilename, float *Tmsp, float *RP, float *AC, fl
 
       char dirname[DEFAULT_STRING_LENGTH]; // name of the directory only
       char fullpath[3*DEFAULT_STRING_LENGTH]; // directory + filename
-      if( get_directory_name(imagefilename, dirname, sizeof(dirname)) == false)
+      if( get_directory_name(imagefilename, dirname, DEFAULT_STRING_LENGTH) == false)
       {
          fprintf(stderr,"get_directory_name() error, aborting ...\n");
          exit(0);
       }
-      get_nifti_basename(filename, sizeof(filename), imagefilename);
+      get_nifti_basename(filename, DEFAULT_STRING_LENGTH, imagefilename);
       snprintf(fullpath,sizeof(fullpath),"%s/%s_ACPC.txt",dirname, filename);
 
       if(opt_txt)

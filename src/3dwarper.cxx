@@ -495,9 +495,9 @@ int main(int argc, char **argv)
    char targetImageFile[1024]="";
 
    // extracted subject image filename only without suffix
-   char subprefix[1024]=""; 
+   char subprefix[DEFAULT_STRING_LENGTH]=""; 
    // extracted target image filename only without suffix
-   char trgprefix[1024]="";
+   char trgprefix[DEFAULT_STRING_LENGTH]="";
 
    // original subject and target images loaded 
    // from subjectImageFile and targetImageFile
@@ -710,8 +710,8 @@ int main(int argc, char **argv)
    ////////////////////////////////////////////////////////////////////////////////////////////
 
    // extract subject and target filenames without path/suffix
-   if( get_nifti_basename(subprefix, sizeof(subprefix), subjectImageFile) == false) { exit(0); }
-   if( get_nifti_basename(trgprefix, sizeof(trgprefix), targetImageFile) == false) { exit(0); }
+   if( get_nifti_basename(subprefix, DEFAULT_STRING_LENGTH, subjectImageFile) == false) { exit(0); }
+   if( get_nifti_basename(trgprefix, DEFAULT_STRING_LENGTH, targetImageFile) == false) { exit(0); }
 
    ////////////////////////////////////////////////////////////////////////////////////////////
    // read subject and target images

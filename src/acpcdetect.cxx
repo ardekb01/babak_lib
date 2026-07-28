@@ -258,12 +258,12 @@ int main(int argc, char **argv)
    nifti_1_header iphdr, ophdr; // 348 bytes
 
    char optransformationpath[1024] = "";
-   char lmfile[512] = "";
-// char modelfile[1024] = "";
-   char ipimagepath[1024] = "";     // input image full path (e.g., /usr/home/myimage.nii)
-   char ipimagebasename[512] = "";  // input image basename (e.g., myimage)
-   char ipimagedir[512] = ""; // input image directory (e.g., /usr/home). Important to initialize to "".
-   char opimagepath[1024] = "";
+   char lmfile[DEFAULT_STRING_LENGTH] = "";
+// char modelfile[DEFAULT_STRING_LENGTH] = "";
+   char ipimagepath[DEFAULT_STRING_LENGTH] = "";     // input image full path (e.g., /usr/home/myimage.nii)
+   char ipimagebasename[DEFAULT_STRING_LENGTH] = "";  // input image basename (e.g., myimage)
+   char ipimagedir[DEFAULT_STRING_LENGTH] = ""; // input image directory (e.g., /usr/home). Important to initialize to "".
+   char opimagepath[DEFAULT_STRING_LENGTH] = "";
 
    char iporient[4] = "";
    char oporient[4] = "RAS"; // The default output orientation is RAS.
@@ -502,7 +502,7 @@ int main(int argc, char **argv)
    }
 
    // Determine the input image directory.
-   if(get_directory_name(ipimagepath, ipimagedir, sizeof(ipimagedir)) == false)
+   if(get_directory_name(ipimagepath, ipimagedir, DEFAULT_STRING_LENGTH) == false)
    {
       fprintf(stderr,
               "Error: Could not determine the input image directory, aborting ...\n");
@@ -516,8 +516,8 @@ int main(int argc, char **argv)
    
    // Determine input image basename (i.e., without the .nii suffix).
    if(get_nifti_basename(ipimagebasename,
-                        sizeof(ipimagebasename),
-                        ipimagepath) == false)
+                          DEFAULT_STRING_LENGTH,
+                          ipimagepath) == false)
    {
       fprintf(stderr,
               "Error: Could not determine the input image basename, aborting ...\n");

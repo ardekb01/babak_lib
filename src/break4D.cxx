@@ -711,20 +711,20 @@ double compute_F_value(double *y, double *X, double *c, int n, int p, double *df
 
 int main(int argc, char **argv)
 {
-   char outputfile[1024]="";
-   char imagefile[1024]=""; // 4D NIFTI image
-   char paramfile[1024]=""; 
-   char rwfile[1024]=""; 
-   char prefix[512];
+   char outputfile[DEFAULT_STRING_LENGTH]="";
+   char imagefile[DEFAULT_STRING_LENGTH]=""; // 4D NIFTI image
+   char paramfile[DEFAULT_STRING_LENGTH]=""; 
+   char rwfile[DEFAULT_STRING_LENGTH]=""; 
+   char prefix[DEFAULT_STRING_LENGTH];
    nifti_1_header hdr;
    SHORTIM im4D;
-   char dataFile[512]="";
+   char dataFile[DEFAULT_STRING_LENGTH]="";
    NIFTIIMAGE im0;
 
-	char contrastFile[512];
-	char maskFile[512];
-	char dataMaskCode[128];
-	char dataTypeCode[128];		// a string composed of characters 'i' and 'n' only, where 'i' denotes
+   char contrastFile[DEFAULT_STRING_LENGTH];
+   char maskFile[DEFAULT_STRING_LENGTH];
+   char dataMaskCode[128];
+   char dataTypeCode[128];		// a string composed of characters 'i' and 'n' only, where 'i' denotes
 								// image type variables and 'n' denotes numerical type variables
    while( (opt=getoption(argc, argv, options)) != -1)
    {
@@ -786,7 +786,7 @@ int main(int argc, char **argv)
       printf("4D NIFTI image file: %s\n",imagefile);
    }
 
-   if( get_nifti_basename(prefix, sizeof(prefix), imagefile) == false ) exit(0);
+   if( get_nifti_basename(prefix, DEFAULT_STRING_LENGTH, imagefile) == false ) exit(0);
    if(opt_v)
    {
       printf("Image prefix: %s\n",prefix);
