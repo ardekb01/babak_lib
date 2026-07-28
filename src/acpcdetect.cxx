@@ -53,7 +53,6 @@ static struct CmdOption options[] =
    {"-notxt",0,'t'},
    {"-version",0,'V'},
 //   {"-T2",0,'T'},
-//   {"-T2",0,'T'},
    {"-rvsps",1,'0'},
    {"-rac",1,'1'},
    {"-rpc",1,'2'},
@@ -61,6 +60,7 @@ static struct CmdOption options[] =
 //   {"-model",1,'m'},
 //   {"-model",1,'m'},
    {"-input-orient",1,'O'}, // secret option
+   {"-io",1,'O'}, // secret option
    {"-help",0,'h'},
    {0,0,0}
 };
@@ -289,274 +289,438 @@ void computeSiemensVisionOffsets(float *Tmsp, float *AC, float *PC)
 
 int main(int argc, char **argv)
 {
-  int opt_nn=NO;
-  float PIL2RAS[16];
-  float IPORIENT2PIL[16];
-  float PIL2IPORIENT[16];
-  float OPORIENT2PIL[16];
-  float PIL2OPORIENT[16];
-  float Tijk2xyz[16];
-  float *invT=NULL;
-  short *opimage;
-  short *ipimage;
-  char opt_tiltcorrect=YES;
-  int nPA=0, nLR=0, nIS=0;
-  float dPA=0.0, dLR=0.0, dIS=0.0;
-  char opt_standard=NO;
-  FILE *fp;
-  DIM ipdim, opdim;  // input (ip) and output (op) dimension structures (dim)
-  opdim.dx = opdim.dy = opdim.dz = 0.0;
-  opdim.nx = opdim.ny = opdim.nz = 0;
+   // opt_CENTER_AC = NO means that by default the mid-point between AC and PC
+   // is set to the FOV center. If -center-AC is selected, then the AC is made
+   // the FOV center. The opt_CENTER_AC variable is defined in PILtransform.cpp
+   // and made global in babak_lib.h.
+   opt_CENTER_AC = NO;
+   int opt_nn = NO;
+// int opt_T2 = NO;
+   char opt_standard = NO;
+   char opt_tiltcorrect = YES;
 
-  nifti_1_header iphdr, ophdr; // 348 bytes
-//  int opt_T2=NO;
-  char optransformationpath[1024]="";
-  char lmfile[512]="";
-//  char modelfile[1024]="";
-  char ipimagepath[1024]=""; // input image full path (E.g., /usr/home/myimage.nii)
-  char ipimagebasename[512]=""; // input image basename (E.g., myimage)
-  char ipimagedir[512]="";  // input image directory (E.g., /use/home). Important to initialize to "".
-  char opimagepath[1024]="";
-  char iporient[4]="";
-  char oporient[4]="RAS"; // default output orientation is RAS
-  float Tout[16]; // transforms ipimage to the specified output orientation
-  float TPIL[16]; // transforms ipimage to PIL orientation
+   // Transformation matrices
+   float Tout[16]; // Transforms ipimage to the specified output orientation.
+   float TPIL[16]; // Transforms ipimage to PIL orientation.
+   float PIL2RAS[16];
+   float IPORIENT2PIL[16];
+   float PIL2IPORIENT[16];
+   float OPORIENT2PIL[16];
+   float PIL2OPORIENT[16];
+   float Tijk2xyz[16];
+   float *invT = nullptr;
 
-  // It is very important to have these initializations.
-  int nx=0, ny=0, nz=0;
-  float dx=0.0, dy=0.0, dz=0.0;
+   short *opimage = nullptr;
+   short *ipimage = nullptr;
 
-  // opt_CENTER_AC=NO means that by default the mid-point between AC and PC is set to the FOV
-  // center.  If -centerAC is selected, then the AC is made the FOV center.
-  // The opt_CENTER_AC variable is defined in PILtransform.cpp and made global in babak_lib.h
-  opt_CENTER_AC=NO; 
+   int nPA = 0; 
+   int nLR = 0; 
+   int nIS = 0;
+   float dPA = 0.0f; 
+   float dLR = 0.0f; 
+   float dIS = 0.0f;
 
-  while ((opt = getoption(argc, argv, options)) != -1 )
-  {
-      switch (opt) 
+   FILE *fp = nullptr;
+
+   // Input (ip) and output (op) dimension structures (dim).
+   // The curly brackets ensure that every member of DIM is initialized.
+   DIM ipdim{};
+   DIM opdim{}; 
+
+   nifti_1_header iphdr, ophdr; // 348 bytes
+
+   char optransformationpath[1024] = "";
+   char lmfile[512] = "";
+// char modelfile[1024] = "";
+   char ipimagepath[1024] = "";     // input image full path (e.g., /usr/home/myimage.nii)
+   char ipimagebasename[512] = "";  // input image basename (e.g., myimage)
+   char ipimagedir[512] = "";       // input image directory (e.g., /usr/home). Important to initialize to "".
+   char opimagepath[1024] = "";
+
+   char iporient[4] = "";
+   char oporient[4] = "RAS"; // The default output orientation is RAS.
+
+   // It is very important to have these initializations.
+   int nx = 0; 
+   int ny = 0; 
+   int nz = 0;
+   float dx = 0.0f; 
+   float dy = 0.0f; 
+   float dz = 0.0f;
+
+   while((opt = getoption(argc, argv, options)) != -1)
+   {
+      switch(opt)
       {
          case 'n':
-            opt_nn=YES;
+            opt_nn = YES;
             break;
+
          case 'M':
-            opt_CENTER_AC=YES;
+            opt_CENTER_AC = YES;
             break;
+
          case 'S':
-            opt_standard=YES;
+            opt_standard = YES;
             break;
+
          case 't':
             opt_txt = NO;
             break;
+
          case 'g':
             opt_png = NO;
             break;
+
          case 'N':
             opt_ppm = NO;
             break;
-//         case 's':
-//            opt_sform = YES;
-//            break;
-//         case 'q':
-//            opt_qform = YES;
-//            break;
+
+//       case 's':
+//          opt_sform = YES;
+//          break;
+//
+//       case 'q':
+//          opt_qform = YES;
+//          break;
+
          case 'V':
             printf("acpcdetect v2.2 (April 2024)\n");
             exit(0);
+
          case 'x':
             nx = atoi(optArg);
+            if(nx <= 0)
+            {
+               fprintf(stderr,
+                       "\'-nx %s\' is not a valid argument.\n",
+                       optArg);
+               exit(1);
+            }
             break;
+
          case 'y':
             ny = atoi(optArg);
+            if(ny <= 0)
+            {
+               fprintf(stderr,
+                       "\'-ny %s\' is not a valid argument.\n",
+                       optArg);
+               exit(1);
+            }
             break;
+
          case 'z':
             nz = atoi(optArg);
+            if(nz <= 0)
+            {
+               fprintf(stderr,
+                       "\'-nz %s\' is not a valid argument.\n",
+                       optArg);
+               exit(1);
+            }
             break;
+
          case 'X':
             dx = atof(optArg);
+            if(dx <= 0.0f)
+            {
+               fprintf(stderr,
+                       "\'-dx %s\' is not a valid argument.\n",
+                       optArg);
+               exit(1);
+            }
             break;
+
          case 'Y':
             dy = atof(optArg);
+            if(dy <= 0.0f)
+            {
+               fprintf(stderr,
+                       "\'-dy %s\' is not a valid argument.\n",
+                       optArg);
+               exit(1);
+            }
             break;
+
          case 'Z':
             dz = atof(optArg);
+            if(dz <= 0.0f)
+            {
+               fprintf(stderr,
+                       "\'-dz %s\' is not a valid argument.\n",
+                       optArg);
+               exit(1);
+            }
             break;
-//         case 'T':
-//            opt_T2=YES;
-//            break;
+
+//       case 'T':
+//          opt_T2 = YES;
+//          break;
+
          case 'R':
-            opt_tiltcorrect=NO;
+            opt_tiltcorrect = NO;
             break;
+
          case 'L':
-            snprintf(lmfile,sizeof(lmfile),"%s",optArg);
+            snprintf(lmfile, sizeof(lmfile), "%s", optArg);
             break;
+
          case 'i':
-            snprintf(ipimagepath,sizeof(ipimagepath),"%s",optArg);
+            snprintf(ipimagepath, sizeof(ipimagepath), "%s", optArg);
             break;
+
          case '0':
             searchradius[0] = atof(optArg); // searchradius[0] is for VSPS
+            // Clamp search radius.
+            if(searchradius[0]<=0.0 || searchradius[0]>200.0) searchradius[0]=50.0;
             break;
+
          case '1':
             searchradius[1] = atof(optArg); // searchradius[1] is for AC
+            // Clamp search radius.
+            if(searchradius[1]<=0.0 || searchradius[1]>100.0) searchradius[1]=15.0;
             break;
+
          case '2':
             searchradius[2] = atof(optArg); // searchradius[2] is for PC
+            // Clamp search radius.
+            if(searchradius[2]<=0.0 || searchradius[2]>100.0) searchradius[2]=15.0;
             break;
+
          case 'v':
-            opt_v=YES;
+            opt_v = YES;
             break;
+
          case 'h':
             print_help_and_exit();
             break;
+
          case 'O':
-            snprintf(iporient,sizeof(iporient),"%s",optArg);
-            iporient[0]=(char)toupper((int)iporient[0]);
-            iporient[1]=(char)toupper((int)iporient[1]);
-            iporient[2]=(char)toupper((int)iporient[2]);
+            snprintf(iporient, sizeof(iporient), "%s", optArg);
+            iporient[0] = (char)toupper((unsigned char)iporient[0]);
+            iporient[1] = (char)toupper((unsigned char)iporient[1]);
+            iporient[2] = (char)toupper((unsigned char)iporient[2]);
+            iporient[3] = '\0';
+            // If input orientation is specified using -input-orient, 
+            // make sure it's valid. -input-orient overrides the orientation 
+            // inferred from the image header.
+            if( !valid_orientation_code(iporient) )
+            {
+              fprintf(stderr,
+                      "%s is not a valid input orientation code, aborting ...\n",
+                      iporient);
+              exit(1);
+            }
             break;
+
          case 'u':
-            snprintf(oporient,sizeof(oporient),"%s",optArg);
-            oporient[0]=(char)toupper((int)oporient[0]);
-            oporient[1]=(char)toupper((int)oporient[1]);
-            oporient[2]=(char)toupper((int)oporient[2]);
+            snprintf(oporient, sizeof(oporient), "%s", optArg);
+            oporient[0] = (char)toupper((int)oporient[0]);
+            oporient[1] = (char)toupper((int)oporient[1]);
+            oporient[2] = (char)toupper((int)oporient[2]);
+            oporient[3] = '\0';
+            if( !valid_orientation_code(oporient) )
+            {
+              fprintf(stderr,
+                      "%s is not a valid output orientation code, aborting ...\n",
+                      oporient);
+              exit(1);
+            }
             break;
-//         case 'm':
-//            snprintf(modelfile,sizeof(modelfile),"%s",optArg);
-//            break;
+
+//       case 'm':
+//          snprintf(modelfile, sizeof(modelfile), "%s", optArg);
+//          break;
+
          case '?':
             print_help_and_exit();
       }
-  }
+   }
 
-  ///////////////////////////////////////////////////////////////////////////////////////
-  // This block of code sets: ipimagepath, ipimagebasename, ipimagedir
-  // iporient, ipimage, iphdr, ipdim, nPA, nIS, nLR, dPA, dIS, dLR 
-  // IPORIENT2PIL, PIL2IPORIENT
-  ///////////////////////////////////////////////////////////////////////////////////////
+   ///////////////////////////////////////////////////////////////////////////////////////
+   // This block of code sets: ipimagepath, ipimagebasename, ipimagedir
+   // iporient, ipimage, iphdr, ipdim, nPA, nIS, nLR, dPA, dIS, dLR 
+   // IPORIENT2PIL, PIL2IPORIENT
+   ///////////////////////////////////////////////////////////////////////////////////////
 
-  if( ipimagepath[0]=='\0' )
-  {
-    printf("Please specify an input image using: -i <inputimage.nii>\n");
-    exit(1);
-  }
-  if(opt_v) printf("Input image: %s\n",ipimagepath);
-
-  // Ensure that the specified image has extension ".nii".
-  if( check_nifti_file_extension(ipimagepath) == false )
-  {
-    fprintf(stderr,
-            "Input image \"%s\" does not have a \".nii\" extension. Aborting ...\n",
-            ipimagepath);
-    exit(1);
-  }
-
-  // Ensure that the specified image has extension ".nii".
-  if( check_nifti1_magic(ipimagepath) == false )
-  {
-    fprintf(stderr,
-            "\"%s\" does not appear to be a NIFTI-1 image. Aborting ...\n",
-            ipimagepath);
-    exit(1);
-  }
-
-  // Determine the input image directory.
-  if( get_directory_name(ipimagepath, ipimagedir, sizeof(ipimagedir)) == false )
-  {
-    fprintf(stderr,
-            "Error: Could not determine the input image directory, aborting ...\n");
-    exit(1);
-  }
-  if(opt_v) printf("Input image directory: %s\n",ipimagedir);
-
-  // Determine input image basename (i.e., without the .nii suffix).
-  if( get_nifti_basename(ipimagebasename, sizeof(ipimagebasename), ipimagepath) == false ) { 
-    fprintf(stderr,
-            "Error: Could not determine the input image basename, aborting ...\n");
-    exit(1); 
-  }
-  if(opt_v) printf("Input image basename: %s\n",ipimagebasename);
-
-  // If input orientation is specified using -input-orient, make sure it's valid.
-  // -input-orient overrides the orientation inferred from the image header.
-  if(iporient[0]!='\0' && valid_orientation_code(iporient) == false)
-  {
-    fprintf(stderr,
-            "\"%s\" is not a valid orientation code, aborting ...\n",iporient);
-    exit(1);
-  }
-
-  // If input orientation is not specified using -input-orient option, 
-  // read it from image header. This is almost always going to be the case.
-  if(iporient[0]=='\0')
-  {
-    getNiftiImageOrientation(ipimagepath, iporient);
-
-    if(valid_orientation_code(iporient) == false)
-    {
-      fprintf(stderr,
-              "Unable to determine input image orientation, aborting ...\n");
+   if(ipimagepath[0] == '\0')
+   {
+      printf("Please specify an input image using: -i <inputimage.nii>\n");
       exit(1);
-     }
-  }
+   }
 
-  if(opt_v) printf("Input image orientation: %s\n",iporient);
+   if(opt_v)
+   {
+      printf("Input image: %s\n", ipimagepath);
+   }
 
-  ipimage = (short  *)read_nifti_image(ipimagepath, &iphdr);
-  if (ipimage == NULL)
-  {
-    fprintf(stderr, 
-            "Error reading %s, aborting ...\n",
-            ipimagepath);
-    exit(1);
-  }
+   // Ensure that the specified image has extension ".nii".
+   if(check_nifti_file_extension(ipimagepath) == false)
+   {
+      fprintf(stderr,
+              "Input image \"%s\" does not have a \".nii\" extension. Aborting ...\n",
+              ipimagepath);
+      exit(1);
+   }
 
-  if( iphdr.datatype != DT_SIGNED_SHORT && iphdr.datatype != DT_UINT16 )
-  {
-    printf("\nSorry, but this program can only handle NIFTI-1 images of type \"short\"\n" 
-           "or \"unsigned short\". Please convert you original image to one of these\n"
-           "data types and try again.\n\n");
-    exit(0);
-  }
+   // Ensure that the specified image is a NIFTI-1 image.
+   if(check_nifti1_magic(ipimagepath) == false)
+   {
+      fprintf(stderr,
+              "\"%s\" does not appear to be a NIFTI-1 image. Aborting ...\n",
+              ipimagepath);
+      exit(1);
+   }
 
-  set_dim(ipdim, iphdr);
+   // Determine the input image directory.
+   if(get_directory_name(ipimagepath, ipimagedir, sizeof(ipimagedir)) == false)
+   {
+      fprintf(stderr,
+              "Error: Could not determine the input image directory, aborting ...\n");
+      exit(1);
+   }
+   
+   if(opt_v)
+   {
+      printf("Input image directory: %s\n", ipimagedir);
+   }
+   
+   // Determine input image basename (i.e., without the .nii suffix).
+   if(get_nifti_basename(ipimagebasename,
+                        sizeof(ipimagebasename),
+                        ipimagepath) == false)
+   {
+      fprintf(stderr,
+              "Error: Could not determine the input image basename, aborting ...\n");
+      exit(1);
+   }
 
-  if(opt_v) 
-  {
-    printf("Input image matrix size: %d x %d x %d\n",ipdim.nx,ipdim.ny,ipdim.nz);
-    printf("Input image voxel size: %6.4f x %6.4f x %6.4f\n",ipdim.dx,ipdim.dy,ipdim.dz);
-    printf("Input image scl_slope = %f\n",iphdr.scl_slope);
-    printf("Input image scl_inter = %f\n",iphdr.scl_inter);
-  }
+   if(opt_v)
+   {
+      printf("Input image basename: %s\n", ipimagebasename);
+   }
+   
+   // If input orientation is not specified using -input-orient option,
+   // read it from image header. This is almost always going to be the case.
+   if(iporient[0] == '\0')
+   {
+      getNiftiImageOrientation(ipimagepath, iporient);
+   
+      if(valid_orientation_code(iporient) == false)
+      {
+         fprintf(stderr,
+                 "Unable to determine input image orientation, aborting ...\n");
+         exit(1);
+      }
+   }
 
-  // set nPA, nIS, nLR, dPA, dIS, dLR depending on iporient
-  if(iporient[0]=='P' || iporient[0]=='A') { nPA=ipdim.nx; dPA=ipdim.dx; }
-  if(iporient[0]=='I' || iporient[0]=='S') { nIS=ipdim.nx; dIS=ipdim.dx; }
-  if(iporient[0]=='L' || iporient[0]=='R') { nLR=ipdim.nx; dLR=ipdim.dx; }
+   if(opt_v)
+   {
+      printf("Input image orientation: %s\n", iporient);
+   }
 
-  if(iporient[1]=='P' || iporient[1]=='A') { nPA=ipdim.ny; dPA=ipdim.dy; }
-  if(iporient[1]=='I' || iporient[1]=='S') { nIS=ipdim.ny; dIS=ipdim.dy; }
-  if(iporient[1]=='L' || iporient[1]=='R') { nLR=ipdim.ny; dLR=ipdim.dy; }
+   ipimage = (short *)read_nifti_image(ipimagepath, &iphdr);
+   
+   if(ipimage == nullptr)
+   {
+      fprintf(stderr,
+              "Error reading %s, aborting ...\n",
+              ipimagepath);
+      exit(1);
+   }
 
-  if(iporient[2]=='P' || iporient[2]=='A') { nPA=ipdim.nz; dPA=ipdim.dz; }
-  if(iporient[2]=='I' || iporient[2]=='S') { nIS=ipdim.nz; dIS=ipdim.dz; }
-  if(iporient[2]=='L' || iporient[2]=='R') { nLR=ipdim.nz; dLR=ipdim.dz; }
+   if(iphdr.datatype != DT_SIGNED_SHORT &&
+      iphdr.datatype != DT_UINT16)
+   {
+      printf("\nSorry, but this program can only handle NIFTI-1 images of type \"short\"\n"
+             "or \"unsigned short\". Please convert your original image to one of these\n"
+             "data types and try again.\n\n");
+      exit(0);
+   }
 
-  PILtransform(iporient, IPORIENT2PIL);
-  inversePILtransform(iporient, PIL2IPORIENT);
-  ///////////////////////////////////////////////////////////////////////////////////////
+   set_dim(ipdim, iphdr);
+
+   if(opt_v)
+   {
+      printf("Input image matrix size: %d x %d x %d\n",
+             ipdim.nx,
+             ipdim.ny,
+             ipdim.nz);
+
+      printf("Input image voxel size: %6.4f x %6.4f x %6.4f\n",
+             ipdim.dx,
+             ipdim.dy,
+             ipdim.dz);
+
+      printf("Input image scl_slope = %f\n", iphdr.scl_slope);
+      printf("Input image scl_inter = %f\n", iphdr.scl_inter);
+   }
+
+   // Set nPA, nIS, nLR, dPA, dIS, dLR depending on iporient.
+   if(iporient[0] == 'P' || iporient[0] == 'A')
+   {
+      nPA = ipdim.nx;
+      dPA = ipdim.dx;
+   }
+
+   if(iporient[0] == 'I' || iporient[0] == 'S')
+   {
+      nIS = ipdim.nx;
+      dIS = ipdim.dx;
+   }
+
+   if(iporient[0] == 'L' || iporient[0] == 'R')
+   {
+      nLR = ipdim.nx;
+      dLR = ipdim.dx;
+   }
+
+   if(iporient[1] == 'P' || iporient[1] == 'A')
+   {
+      nPA = ipdim.ny;
+      dPA = ipdim.dy;
+   }
+
+   if(iporient[1] == 'I' || iporient[1] == 'S')
+   {
+      nIS = ipdim.ny;
+      dIS = ipdim.dy;
+   }
+
+   if(iporient[1] == 'L' || iporient[1] == 'R')
+   {
+      nLR = ipdim.ny;
+      dLR = ipdim.dy;
+   }
+
+   if(iporient[2] == 'P' || iporient[2] == 'A')
+   {
+      nPA = ipdim.nz;
+      dPA = ipdim.dz;
+   }
+
+   if(iporient[2] == 'I' || iporient[2] == 'S')
+   {
+      nIS = ipdim.nz;
+      dIS = ipdim.dz;
+   }
+
+   if(iporient[2] == 'L' || iporient[2] == 'R')
+   {
+      nLR = ipdim.nz;
+      dLR = ipdim.dz;
+   }
+
+   PILtransform(iporient, IPORIENT2PIL);
+   inversePILtransform(iporient, PIL2IPORIENT);
+
+   ///////////////////////////////////////////////////////////////////////////////////////
 
   ///////////////////////////////////////////////////////////////////////////////////////
   // This block of code sets: oporient, opdim, opimagepath, PIL2OPORIENT
   // OPORIENT2PIL, Tijk2xyz, ophdr
   ///////////////////////////////////////////////////////////////////////////////////////
-
-  // if ouput orientation is specified using -oo option, make sure it's valid
-  if( !valid_orientation_code(oporient) )
-  {
-    fprintf(stderr,
-            "%s is not a valid orientation code, aborting ...\n",
-            oporient);
-    exit(1);
-  }
 
   // setting opdim
   if(oporient[0]=='P' || oporient[0]=='A') { opdim.nx=nPA; opdim.dx=dPA; }
@@ -627,10 +791,6 @@ int main(int argc, char **argv)
   // set TPIL and Tout
   //////////////////////////////////////////////////////////////////////////////
   
-  if(searchradius[0]<=0.0 || searchradius[0]>200.0) searchradius[0]=50.0;
-  if(searchradius[1]<=0.0 || searchradius[1]>100.0) searchradius[1]=15.0;
-  if(searchradius[2]<=0.0 || searchradius[2]>100.0) searchradius[2]=15.0;
-
   if(opt_v && lmfile[0]!='\0') 
   {
     printf("Manually specified landmarks: %s\n",lmfile);
@@ -659,7 +819,7 @@ int main(int argc, char **argv)
     if(opt_v) printf("Output transformation matrix: %s\n",optransformationpath);
 
     fp = fopen(optransformationpath,"w");
-    if(fp==NULL) file_open_error(optransformationpath);
+    if(fp==nullptr) file_open_error(optransformationpath);
     printMatrix(Tout, 4, 4, "ART acpcdetect tilt correction matrix:", fp);
     fclose(fp);
 
@@ -667,7 +827,7 @@ int main(int argc, char **argv)
     snprintf(optransformationpath,sizeof(optransformationpath),"%s/%s_FSL.mat",ipimagedir,ipimagebasename);
     if(opt_v) printf("Output transformation matrix (FSL format): %s\n",optransformationpath);
     fp=fopen(optransformationpath,"w");
-    if(fp==NULL) file_open_error(optransformationpath);
+    if(fp==nullptr) file_open_error(optransformationpath);
     printMatrix(Tout_FSL,4,4,"",fp);
     fclose(fp);
   }
