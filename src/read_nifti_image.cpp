@@ -1,12 +1,122 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <climits>
-#include <math.h>
-#include <stdint.h>
+#include <limits>
+#include <cmath>
+#include <cfloat>
 
 #include "babak_lib.h"
 #include "nifti1.h"
 #include "swap.h"
+#include "minmax.h"
+
+bool scaleFloatToUnsignedShort(
+   const float *input,
+   unsigned short *output,
+   size_t n)
+{
+   float scale;
+
+   if(input == nullptr ||
+      output == nullptr ||
+      n == 0)
+   {
+      return false;
+   }
+
+   float minValue = input[0];
+   float maxValue = input[0];
+
+   minmax(input, n, minValue, maxValue);
+
+   // All values are identical.
+   if(fabsf(maxValue - minValue) <= FLT_EPSILON)
+   {
+      for(size_t i = 0; i < n; i++)
+      {
+         output[i] = 0;
+      }
+
+      return true;
+   }
+
+   const float shortMax = (float)std::numeric_limits<short>::max();
+
+   if( maxValue > shortMax )
+   {
+      scale  = maxValue/shortMax;
+      for(size_t i = 0; i < n; i++)
+      {
+         float s = input[i] / scale;
+
+         if(s > shortMax) s = shortMax;
+
+         output[i] = (unsigned short)lroundf(s);
+      }
+   }
+
+   return true;
+}
+
+bool scaleFloatToShort(
+   const float *input,
+   short *output,
+   size_t n)
+{
+   float scale;
+
+   if(input == nullptr ||
+      output == nullptr ||
+      n == 0)
+   {
+      return false;
+   }
+
+   float minValue = input[0];
+   float maxValue = input[0];
+
+   minmax(input, n, minValue, maxValue);
+
+   // All values are identical.
+   if(fabsf(maxValue - minValue) <= FLT_EPSILON)
+   {
+      for(size_t i = 0; i < n; i++)
+      {
+         output[i] = 0;
+      }
+
+      return true;
+   }
+
+   const float shortMin = (float)std::numeric_limits<short>::min();
+   const float shortMax = (float)std::numeric_limits<short>::max();
+
+   if( maxValue > shortMax )
+   {
+      scale  = maxValue/shortMax;
+      for(size_t i = 0; i < n; i++)
+      {
+         float s = input[i] / scale;
+
+         if(s > shortMax) s = shortMax;
+
+         output[i] = (short)lroundf(s);
+      }
+
+      minValue /= scale;
+   }
+
+   if( minValue < shortMin )
+   for(size_t i = 0; i < n; i++)
+   {
+      scale  = minValue/shortMin;
+
+      float s = input[i] / scale;
+
+      if(s < shortMin) s = shortMin;
+
+      output[i] = (short)lroundf(s);
+   }
+
+   return true;
+}
 
 char *read_nifti_image(const char *filename, nifti_1_header *hdr)
 {
@@ -16,7 +126,12 @@ char *read_nifti_image(const char *filename, nifti_1_header *hdr)
    char *im = NULL;
    long voxeloffset;
    size_t nv = 1;
-   float value;
+   float *float_im;
+
+   const float shortMin = (float)std::numeric_limits<short>::min();
+   const float shortMax = (float)std::numeric_limits<short>::max();
+
+   const float ushortMax = (float)std::numeric_limits<unsigned short>::max();
 
    // Validate input arguments.
    if (filename == nullptr || hdr == nullptr)
@@ -121,9 +236,19 @@ char *read_nifti_image(const char *filename, nifti_1_header *hdr)
       return nullptr;
    }
 
+   float_im = (float *)calloc(nv, sizeof(float) );
+
+   if (float_im == nullptr)
+   {
+      free(im);
+      fclose(fp);
+      return nullptr;
+   }
+
    if ( fread(im, 1, datasize, fp) != datasize )
    {
       free(im);
+      free(float_im);
       fclose(fp);
       return nullptr;
    }
@@ -164,6 +289,8 @@ char *read_nifti_image(const char *filename, nifti_1_header *hdr)
       }
    }
 
+   float min, max;
+
    if (hdr->datatype == DT_SIGNED_SHORT)
    {
       short *tmp;
@@ -172,15 +299,18 @@ char *read_nifti_image(const char *filename, nifti_1_header *hdr)
 
       for (size_t i = 0; i < nv; i++)
       {
-         value = roundf( tmp[i] * slope + inter );
+         float_im[i] = roundf( tmp[i] * slope + inter );
+      }
 
-         if (value < SHRT_MIN)
-            value = SHRT_MIN;
-
-         if (value > SHRT_MAX)
-            value = SHRT_MAX;
-
-         tmp[i] = (short)value;
+      minmax(float_im, nv, min, max);
+      if (min < shortMin || max > shortMax )
+      {
+         scaleFloatToShort(float_im, tmp, nv);
+      }
+      else
+      {
+         for (size_t i = 0; i < nv; i++)
+            tmp[i] = (short)float_im[i];
       }
    }
    else if (hdr->datatype == DT_UINT16)
@@ -191,18 +321,22 @@ char *read_nifti_image(const char *filename, nifti_1_header *hdr)
 
       for (size_t i = 0; i < nv; i++)
       {
-         value = roundf( tmp[i] * slope + inter );
+         float_im[i] = roundf( tmp[i] * slope + inter );
+      }
 
-         if (value < 0.0f)
-            value = 0.0f;
-
-         if (value > USHRT_MAX)
-            value = USHRT_MAX;
-
-         tmp[i] = (unsigned short)value; 
+      minmax(float_im, nv, min, max);
+      if (max > ushortMax )
+      {
+         scaleFloatToUnsignedShort(float_im, tmp, nv);
+      }
+      else
+      {
+         for (size_t i = 0; i < nv; i++)
+            tmp[i] = (unsigned short)float_im[i];
       }
    }
 
+   free(float_im);
    return(im);
 }
 

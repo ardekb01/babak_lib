@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////
-// Copyright (C) 2024 Babak A. Ardekani, PhD - All Rights Reserved. 
+// Copyright (C) 2024 Babak A. Ardekani, PhD - All Rights Reserved.
 ///////////////////////////////////////////////////////////////////////
 
 #ifndef BABAK_LIB_H
@@ -477,7 +477,7 @@ extern float (*interpolator)(float4 x, float4 y, float4 z, int2 *array, int4 nx,
 extern float4 P[12];
 extern struct im_params IP;
 
-extern void scale_short_minmax(int2 *imagein, uchar **imageout, int4 np, int4 min,int4 max);
+extern void scale_short_minmax(int2 *imagein, uchar **imageout, int4 np, int4 min, int4 max);
 
 extern void testCostFunc1(int2 *trg, int4 Tnx, int4 Tny, int4 Tnz, float4 Tdx, float4 Tdy, float4 Tdz,
 int2 *obj, int4 Onx, int4 Ony, int4 Onz, float4 Odx, float4 Ody, float4 Odz);
