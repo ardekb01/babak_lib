@@ -62,7 +62,6 @@ void initialAC(float Ax, float Ay, float Bx, float By, float *Cx, float *Cy, flo
 char *defineACregion(DIM dim, float *RP, float *PC, float parcomMean, float percomMean, double ACsr);
 char *definePCregion(DIM HR, float *RP, float *RPPCmean, double PCsr);
 void defineTemplate(int r, int h, short *x, short *y, short *z);
-char *expandMask(short *mask_HR, DIM HR, float *RPmean, double RPsr);
 short *thresholdImageOtsu(short *im, int nv, int *nbv);
 float reflectVertex(int pmax, float fac);
 int dsm(void);
@@ -352,7 +351,7 @@ float *AC, float *PC, float *RP, DIM HR, DIM Orig, short *volOrig, float *Tmsp)
 
    brandImage(Rchannel, Gchannel, Bchannel, HR.nx, HR.ny, (int)(rp[0]+0.5), (int)(rp[1]+0.5), 4, 4, 0, 0, 255);
    brandImage(Rchannel, Gchannel, Bchannel, HR.nx, HR.ny, (int)(pc[0]+0.5), (int)(pc[1]+0.5), 4, 4, 255, 0, 0);
-   brandImage(Rchannel, Gchannel, Bchannel, HR.nx, HR.ny, (int)(ac[0]+0.5), (int)(ac[1]+0.5), 4, 4, 0, 255, 0);
+   brandImage(Rchannel, Gchannel, Bchannel, HR.nx, HR.ny, (int)(ac[0]+0.5), (int)(ac[1]+0.5), 4, 4, 255, 255, 255);
 
 	for(int i=1; i<HR.nx-1; i++)
 	for(int j=1; j<HR.ny-1; j++)
@@ -363,9 +362,9 @@ float *AC, float *PC, float *RP, DIM HR, DIM Orig, short *volOrig, float *Tmsp)
 		ACregion[npHR*(HR.nz-1)/2 + (j+1)*HR.nx + i ]==0 || 
 		ACregion[npHR*(HR.nz-1)/2 + (j-1)*HR.nx + i ]==0) )
 		{
-			Rchannel[j*HR.nx + i]=0;
+			Rchannel[j*HR.nx + i]=255;
 			Gchannel[j*HR.nx + i]=255;
-			Bchannel[j*HR.nx + i]=0;
+			Bchannel[j*HR.nx + i]=255;
 		}
 
 		if( PCregion[npHR*(HR.nz-1)/2 + j*HR.nx + i]==1 && 
@@ -1268,8 +1267,10 @@ void defineTemplate(int r, int h, short *x, short *y, short *z)
    }
 }
 
+// RPsr: reference point search radius
 char *expandMask(short *mask_HR, DIM HR, float *RPmean, double RPsr)
 {
+
    char *RPregion;
    double r1, r2, r;
    int npHR;
@@ -1277,6 +1278,12 @@ char *expandMask(short *mask_HR, DIM HR, float *RPmean, double RPsr)
    npHR = HR.nx * HR.ny;
 
    RPregion = (char *)calloc(HR.nx*HR.ny, sizeof(char));
+
+   if( RPregion == nullptr )
+      return nullptr;
+
+printf("%d %d %d\n",HR.nx, HR.ny, HR.nz);
+printf("%f %f %f\n",HR.dx, HR.dy, HR.dz);
 
    for(int i=0; i<HR.nx; i++)
    for(int j=0; j<HR.ny; j++)
@@ -1459,6 +1466,8 @@ float *AC, float *PC, float *RP, float *Tmsp, int opt_T2)
       fclose(fp);
    }
 
+   //printf("%f %f\n", mtail.parcomMean, mtail.percomMean);
+   //printf("%f %f\n", mtail.RPmean[0], mtail.RPmean[1]);
    ////////////////////////////////////////////////////////////////////////////
 
    //volOrig = readNiftiImage( (const char *)imagefilename, &Orig, 0);
