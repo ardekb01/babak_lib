@@ -260,10 +260,10 @@ int main(int argc, char **argv)
    char optransformationpath[1024] = "";
    char lmfile[DEFAULT_STRING_LENGTH] = "";
 // char modelfile[DEFAULT_STRING_LENGTH] = "";
-   char ipimagepath[DEFAULT_STRING_LENGTH] = "";     // input image full path (e.g., /usr/home/myimage.nii)
-   char ipimagebasename[DEFAULT_STRING_LENGTH] = "";  // input image basename (e.g., myimage)
-   char ipimagedir[DEFAULT_STRING_LENGTH] = ""; // input image directory (e.g., /usr/home). Important to initialize to "".
-   char opimagepath[DEFAULT_STRING_LENGTH] = "";
+   char ipimagefile[DEFAULT_STRING_LENGTH] = "";  // Input image full path (e.g., /home/myimage.nii)
+   char ipimagebasename[DEFAULT_STRING_LENGTH] = "";  // Input image basename (e.g., myimage)
+   char ipimagedir[DEFAULT_STRING_LENGTH] = ""; // Important to initialize to "".
+   char opimagefile[DEFAULT_STRING_LENGTH] = "";
 
    char iporient[4] = "";
    char oporient[4] = "RAS"; // The default output orientation is RAS.
@@ -318,7 +318,7 @@ int main(int argc, char **argv)
 
          case 'x':
             nx = atoi(optArg);
-            if(nx <= 0)
+            if(nx <= 0 || nx > 1024 )
             {
                fprintf(stderr,
                        "\'-nx %s\' is not a valid argument.\n",
@@ -329,7 +329,7 @@ int main(int argc, char **argv)
 
          case 'y':
             ny = atoi(optArg);
-            if(ny <= 0)
+            if(ny <= 0 || ny > 1024 )
             {
                fprintf(stderr,
                        "\'-ny %s\' is not a valid argument.\n",
@@ -340,7 +340,7 @@ int main(int argc, char **argv)
 
          case 'z':
             nz = atoi(optArg);
-            if(nz <= 0)
+            if(nz <= 0 || nz > 1024)
             {
                fprintf(stderr,
                        "\'-nz %s\' is not a valid argument.\n",
@@ -395,7 +395,7 @@ int main(int argc, char **argv)
             break;
 
          case 'i':
-            snprintf(ipimagepath, sizeof(ipimagepath), "%s", optArg);
+            snprintf(ipimagefile, sizeof(ipimagefile), "%s", optArg);
             break;
 
          case '0':
@@ -467,45 +467,49 @@ int main(int argc, char **argv)
    }
 
    ///////////////////////////////////////////////////////////////////////////////////////
-   // This block of code sets: ipimagepath, ipimagebasename, ipimagedir
+   // This block of code sets: ipimagefile, ipimagebasename, ipimagedir
    // iporient, ipimage, iphdr, ipdim, nPA, nIS, nLR, dPA, dIS, dLR 
    // IPORIENT2PIL, PIL2IPORIENT
    ///////////////////////////////////////////////////////////////////////////////////////
 
-   if(ipimagepath[0] == '\0')
+   if(ipimagefile[0] == '\0')
    {
-      printf("Please specify an input image using: -i <inputimage.nii>\n");
+      printf("Please specify an input NIFTI-1 image, for example:\n"
+             "acpcdetect -i /usr/home/myimage.nii\n");
       exit(1);
    }
 
    if(opt_v)
    {
-      printf("Input image: %s\n", ipimagepath);
+      printf("Input image: %s\n", ipimagefile);
    }
 
    // Ensure that the specified image has extension ".nii".
-   if(check_nifti_file_extension(ipimagepath) == false)
+   if(check_nifti_file_extension(ipimagefile) == false)
    {
       fprintf(stderr,
-              "Input image \"%s\" does not have a \".nii\" extension. Aborting ...\n",
-              ipimagepath);
+              "Input image \"%s\" does not have a \".nii\" extension,\n"
+              "aborting ...\n",
+              ipimagefile);
       exit(1);
    }
 
    // Ensure that the specified image is a NIFTI-1 image.
-   if(check_nifti1_magic(ipimagepath) == false)
+   if(check_nifti1_magic(ipimagefile) == false)
    {
       fprintf(stderr,
-              "\"%s\" does not appear to be a NIFTI-1 image. Aborting ...\n",
-              ipimagepath);
+              "\"%s\" does not appear to be a NIFTI-1 image,\n"
+              "aborting ...\n",
+              ipimagefile);
       exit(1);
    }
 
    // Determine the input image directory.
-   if(get_directory_name(ipimagepath, ipimagedir, DEFAULT_STRING_LENGTH) == false)
+   if(get_directory_name(ipimagefile, ipimagedir, DEFAULT_STRING_LENGTH) == false)
    {
       fprintf(stderr,
-              "Error: Could not determine the input image directory, aborting ...\n");
+              "Error: Could not determine the input image directory,\n"
+              "aborting ...\n");
       exit(1);
    }
    
@@ -517,10 +521,11 @@ int main(int argc, char **argv)
    // Determine input image basename (i.e., without the .nii suffix).
    if(get_nifti_basename(ipimagebasename,
                           DEFAULT_STRING_LENGTH,
-                          ipimagepath) == false)
+                          ipimagefile) == false)
    {
       fprintf(stderr,
-              "Error: Could not determine the input image basename, aborting ...\n");
+              "Error: Could not determine the input image basename,\n"
+              "aborting ...\n");
       exit(1);
    }
 
@@ -533,12 +538,14 @@ int main(int argc, char **argv)
    // read it from image header. This is almost always going to be the case.
    if(iporient[0] == '\0')
    {
-      getNiftiImageOrientation(ipimagepath, iporient);
+      getNiftiImageOrientation(ipimagefile, iporient);
    
       if(valid_orientation_code(iporient) == false)
       {
          fprintf(stderr,
-                 "Unable to determine input image orientation, aborting ...\n");
+                 "Error: unable to determine the input image orientation.\n"
+                 "You may need to specify it manually at the command line.\n"
+                 "For example: acpcdetect -input-orient PIL ....\n");
          exit(1);
       }
    }
@@ -548,13 +555,13 @@ int main(int argc, char **argv)
       printf("Input image orientation: %s\n", iporient);
    }
 
-   ipimage = (short *)read_nifti_image(ipimagepath, &iphdr);
+   ipimage = (short *)read_nifti_image(ipimagefile, &iphdr);
    
    if(ipimage == nullptr)
    {
       fprintf(stderr,
               "Error reading %s, aborting ...\n",
-              ipimagepath);
+              ipimagefile);
       exit(1);
    }
 
@@ -645,75 +652,158 @@ int main(int argc, char **argv)
 
    ///////////////////////////////////////////////////////////////////////////////////////
 
-  ///////////////////////////////////////////////////////////////////////////////////////
-  // This block of code sets: oporient, opdim, opimagepath, PIL2OPORIENT
-  // OPORIENT2PIL, Tijk2xyz, ophdr
-  ///////////////////////////////////////////////////////////////////////////////////////
+   ///////////////////////////////////////////////////////////////////////////////////////
+   // This block of code sets: oporient, opdim, opimagefile, PIL2OPORIENT
+   // OPORIENT2PIL, Tijk2xyz, ophdr
+   ///////////////////////////////////////////////////////////////////////////////////////
 
-  // setting opdim
-  if(oporient[0]=='P' || oporient[0]=='A') { opdim.nx=nPA; opdim.dx=dPA; }
-  if(oporient[0]=='I' || oporient[0]=='S') { opdim.nx=nIS; opdim.dx=dIS; }
-  if(oporient[0]=='L' || oporient[0]=='R') { opdim.nx=nLR; opdim.dx=dLR; }
+   // Set opdim.
+   if(oporient[0] == 'P' || oporient[0] == 'A')
+   {
+      opdim.nx = nPA;
+      opdim.dx = dPA;
+   }
 
-  if(oporient[1]=='P' || oporient[1]=='A') { opdim.ny=nPA; opdim.dy=dPA; }
-  if(oporient[1]=='I' || oporient[1]=='S') { opdim.ny=nIS; opdim.dy=dIS; }
-  if(oporient[1]=='L' || oporient[1]=='R') { opdim.ny=nLR; opdim.dy=dLR; }
+   if(oporient[0] == 'I' || oporient[0] == 'S')
+   {
+      opdim.nx = nIS;
+      opdim.dx = dIS;
+   }
 
-  if(oporient[2]=='P' || oporient[2]=='A') { opdim.nz=nPA; opdim.dz=dPA; }
-  if(oporient[2]=='I' || oporient[2]=='S') { opdim.nz=nIS; opdim.dz=dIS; }
-  if(oporient[2]=='L' || oporient[2]=='R') { opdim.nz=nLR; opdim.dz=dLR; }
+   if(oporient[0] == 'L' || oporient[0] == 'R')
+   {
+      opdim.nx = nLR;
+      opdim.dx = dLR;
+   }
 
-  // If any of these variables is specified at the command line,
-  // they override the ones that are automatically set based in the
-  // dimensions of the input image.
-  if(nx > 0) opdim.nx=nx; 
-  if(ny > 0) opdim.ny=ny; 
-  if(nz > 0) opdim.nz=nz;
-  if(dx > 0.0) opdim.dx=dx; 
-  if(dy > 0.0) opdim.dy=dy; 
-  if(dz > 0.0) opdim.dz=dz;
+   if(oporient[1] == 'P' || oporient[1] == 'A')
+   {
+      opdim.ny = nPA;
+      opdim.dy = dPA;
+   }
 
-  opdim.nt=1; 
-  opdim.dt=0.0; 
-  opdim.np=opdim.nx*opdim.ny; 
-  opdim.nv=opdim.np*opdim.nz; 
+   if(oporient[1] == 'I' || oporient[1] == 'S')
+   {
+      opdim.ny = nIS;
+      opdim.dy = dIS;
+   }
 
-  snprintf(opimagepath,sizeof(opimagepath),"%s/%s_%s.nii",ipimagedir,ipimagebasename,oporient);
+   if(oporient[1] == 'L' || oporient[1] == 'R')
+   {
+      opdim.ny = nLR;
+      opdim.dy = dLR;
+   }
 
-  if(opt_v) 
-  {
-    printf("Output image: %s\n",opimagepath);
-    printf("Output image matrix size: %d x %d x %d\n",opdim.nx,opdim.ny,opdim.nz);
-    printf("Output image voxel size: %6.4f x %6.4f x %6.4f\n",opdim.dx,opdim.dy,opdim.dz);
-    printf("Output image scl_slope = %f\n",1.0);
-    printf("Output image scl_inter = %f\n",0.0);
-    printf("Output image orientation: %s\n",oporient);
-  }
+   if(oporient[2] == 'P' || oporient[2] == 'A')
+   {
+      opdim.nz = nPA;
+      opdim.dz = dPA;
+   }
 
-  // PIL2OPORIENT takes points from PIL space to oporient space
-  inversePILtransform(oporient, PIL2OPORIENT);
+   if(oporient[2] == 'I' || oporient[2] == 'S')
+   {
+      opdim.nz = nIS;
+      opdim.dz = dIS;
+   }
 
-  // OPORIENT2PIL takes points from oporient space to PIL space
-  PILtransform(oporient, OPORIENT2PIL);
+   if(oporient[2] == 'L' || oporient[2] == 'R')
+   {
+      opdim.nz = nLR;
+      opdim.dz = dLR;
+   }
 
-  // (i,j,k) -> (x,y,z) in oporient
-  ijk2xyz(Tijk2xyz, opdim);
+   // If any of these variables is specified at the command line,
+   // they override the ones that are automatically set based on the
+   // dimensions of the input image.
+   if(nx > 0)
+   {
+      opdim.nx = nx;
+   }
 
-  // What about the direction information in ophdr?  It can't be the same as iphdr!
-  // Make sure this is taken care of later.
-  ophdr = iphdr;
-  ophdr.pixdim[1]=opdim.dx; 
-  ophdr.pixdim[2]=opdim.dy; 
-  ophdr.pixdim[3]=opdim.dz;
-  ophdr.dim[0] = 4;
-  ophdr.dim[1]=opdim.nx; 
-  ophdr.dim[2]=opdim.ny; 
-  ophdr.dim[3]=opdim.nz;
-  ophdr.dim[4] = 1;
-  ophdr.scl_slope = 1.0;
-  ophdr.scl_inter = 0.0;
-  snprintf(ophdr.descrip,sizeof(ophdr.descrip),"Created by ART acpcdetect");
-  //////////////////////////////////////////////////////////////////////////////
+   if(ny > 0)
+   {
+      opdim.ny = ny;
+   }
+
+   if(nz > 0)
+   {
+      opdim.nz = nz;
+   }
+
+   if(dx > 0.0f)
+   {
+      opdim.dx = dx;
+   }
+
+   if(dy > 0.0f)
+   {
+      opdim.dy = dy;
+   }
+
+   if(dz > 0.0f)
+   {
+      opdim.dz = dz;
+   }
+
+   opdim.nt = 1;
+   opdim.dt = 0.0;
+   opdim.np = opdim.nx * opdim.ny;
+   opdim.nv = opdim.np * opdim.nz;
+
+   snprintf(opimagefile,
+            sizeof(opimagefile),
+            "%s/%s_%s.nii",
+            ipimagedir,
+            ipimagebasename,
+            oporient);
+
+   if(opt_v)
+   {
+      printf("Output image: %s\n", opimagefile);
+      printf("Output image matrix size: %d x %d x %d\n",
+             opdim.nx,
+             opdim.ny,
+             opdim.nz);
+      printf("Output image voxel size: %6.4f x %6.4f x %6.4f\n",
+             opdim.dx,
+             opdim.dy,
+             opdim.dz);
+      printf("Output image scl_slope = %f\n", 1.0);
+      printf("Output image scl_inter = %f\n", 0.0);
+      printf("Output image orientation: %s\n", oporient);
+   }
+
+   // PIL2OPORIENT takes points from PIL space to oporient space.
+   inversePILtransform(oporient, PIL2OPORIENT);
+
+   // OPORIENT2PIL takes points from oporient space to PIL space.
+   PILtransform(oporient, OPORIENT2PIL);
+
+   // (i,j,k) -> (x,y,z) in oporient.
+   ijk2xyz(Tijk2xyz, opdim);
+
+   // What about the direction information in ophdr?
+   // It can't be the same as iphdr! Make sure this is taken care of later.
+   ophdr = iphdr;
+
+   ophdr.pixdim[1] = opdim.dx;
+   ophdr.pixdim[2] = opdim.dy;
+   ophdr.pixdim[3] = opdim.dz;
+
+   ophdr.dim[0] = 4;
+   ophdr.dim[1] = opdim.nx;
+   ophdr.dim[2] = opdim.ny;
+   ophdr.dim[3] = opdim.nz;
+   ophdr.dim[4] = 1;
+
+   ophdr.scl_slope = 1.0;
+   ophdr.scl_inter = 0.0;
+
+   snprintf(ophdr.descrip,
+            sizeof(ophdr.descrip),
+            "Created by ART acpcdetect");
+
+   //////////////////////////////////////////////////////////////////////////////
 
   //////////////////////////////////////////////////////////////////////////////
   // set TPIL and Tout
@@ -727,11 +817,11 @@ int main(int argc, char **argv)
   // find TPIL which transforms the input image in iporient to tilt-corrected PIL
   if(opt_standard)
   {
-    standard_PIL_transformation(ipimagepath, lmfile, iporient, TPIL);
+    standard_PIL_transformation(ipimagefile, lmfile, iporient, TPIL);
   }
   else
   {
-    new_PIL_transform(ipimagepath, lmfile, iporient, TPIL, 0);
+    new_PIL_transform(ipimagefile, lmfile, iporient, TPIL, 0);
   }
 
   //Tout transforms points from the input iporient to tilt-corrected oporient 
@@ -810,7 +900,7 @@ int main(int argc, char **argv)
   }
   free(invT);
 
-  save_nifti_image(opimagepath, opimage, &ophdr);
+  save_nifti_image(opimagefile, opimage, &ophdr);
 
   free(ipimage);
   free(opimage);
