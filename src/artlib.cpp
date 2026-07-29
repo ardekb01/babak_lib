@@ -1270,7 +1270,6 @@ void defineTemplate(int r, int h, short *x, short *y, short *z)
 // RPsr: reference point search radius
 char *expandMask(short *mask_HR, DIM HR, float *RPmean, double RPsr)
 {
-
    char *RPregion;
    double r1, r2, r;
    int npHR;
@@ -1281,9 +1280,6 @@ char *expandMask(short *mask_HR, DIM HR, float *RPmean, double RPsr)
 
    if( RPregion == nullptr )
       return nullptr;
-
-printf("%d %d %d\n",HR.nx, HR.ny, HR.nz);
-printf("%f %f %f\n",HR.dx, HR.dy, HR.dz);
 
    for(int i=0; i<HR.nx; i++)
    for(int j=0; j<HR.ny; j++)
@@ -1463,11 +1459,13 @@ float *AC, float *PC, float *RP, float *Tmsp, int opt_T2)
          swap_model_file_tail(&mtail);
       }
 
+      // updated parameters, overrides the numbers in th model file
+      //mtail.RPmean[0] = 13.750710;
+      //mtail.RPmean[1] = 10.617091;
+
       fclose(fp);
    }
 
-   //printf("%f %f\n", mtail.parcomMean, mtail.percomMean);
-   //printf("%f %f\n", mtail.RPmean[0], mtail.RPmean[1]);
    ////////////////////////////////////////////////////////////////////////////
 
    //volOrig = readNiftiImage( (const char *)imagefilename, &Orig, 0);
