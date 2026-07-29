@@ -27,7 +27,7 @@
 #define MAXITER 5000
 #define DEL 3
 
-double searchradius[3]={50.0, 15.0, 15.0}; // in units of mm
+double searchradius[3]={40.0, 15.0, 15.0}; // in units of mm
 
 // Turns verbose mode on (opt_v=YES) or off (opt_v=NO)
 char opt_v= NO;

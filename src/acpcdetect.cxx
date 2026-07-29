@@ -149,7 +149,7 @@ void print_help_and_exit()
   "\tPrevents outputting *.txt files\n\n"
 
   "-rvsps <r>\n"
-  "\tSearch radius for VSPS (default = 50 mm)\n\n"
+  "\tSearch radius for VSPS (default = 40 mm)\n\n"
 
   "-rac <r>\n"
   "\tSearch radius for AC (default = 15 mm)\n\n"
@@ -401,7 +401,7 @@ int main(int argc, char **argv)
          case '0':
             searchradius[0] = atof(optArg); // searchradius[0] is for VSPS
             // Clamp search radius.
-            if(searchradius[0]<=0.0 || searchradius[0]>200.0) searchradius[0]=50.0;
+            if(searchradius[0]<=0.0 || searchradius[0]>200.0) searchradius[0]=40.0;
             break;
 
          case '1':
@@ -771,6 +771,13 @@ int main(int argc, char **argv)
       printf("Output image scl_slope = %f\n", 1.0);
       printf("Output image scl_inter = %f\n", 0.0);
       printf("Output image orientation: %s\n", oporient);
+   }
+
+   if(opt_v)
+   {
+      printf("VSPS search radius: %4.1f mm\n",searchradius[0]);
+      printf("AC search radius: %4.1f mm\n",searchradius[1]);
+      printf("PC search radius: %4.1f mm\n",searchradius[2]);
    }
 
    // PIL2OPORIENT takes points from PIL space to oporient space.
