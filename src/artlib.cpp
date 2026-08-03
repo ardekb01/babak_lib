@@ -66,9 +66,7 @@ short *thresholdImageOtsu(short *im, int nv, int *nbv);
 float reflectVertex(int pmax, float fac);
 int dsm(void);
 float reflection_cross_correlation2(short *image, DIM dim, float A, float B, float C);
-float optimizeNormalVector(short *image,DIM dim,float *A, float *B, float *C);
 float reflection_cross_correlation(short *image, DIM dim, float a, float b, float c, float d);
-void findInitialNormalVector(short *image, DIM dim, float *A, float *B,float *C);
 float msp(short *im_in, int nx, int ny, int nz, float dx, float dy, float dz, float *A, float *B, float *C);
 void combine_warps_and_trans(int nx, int ny, int nz, float dx, float dy, float dz, float *Xwarp, float *Ywarp, float *Zwarp, float *T);
 
@@ -349,9 +347,9 @@ float *AC, float *PC, float *RP, DIM HR, DIM Orig, short *volOrig, float *Tmsp)
       Bchannel[i] = (unsigned char)(im[i]*255.0/max);
    }
 
-   brandImage(Rchannel, Gchannel, Bchannel, HR.nx, HR.ny, (int)(rp[0]+0.5), (int)(rp[1]+0.5), 4, 4, 0, 0, 255);
+   brandImage(Rchannel, Gchannel, Bchannel, HR.nx, HR.ny, (int)(rp[0]+0.5), (int)(rp[1]+0.5), 4, 4, 255, 255, 255);
    brandImage(Rchannel, Gchannel, Bchannel, HR.nx, HR.ny, (int)(pc[0]+0.5), (int)(pc[1]+0.5), 4, 4, 255, 0, 0);
-   brandImage(Rchannel, Gchannel, Bchannel, HR.nx, HR.ny, (int)(ac[0]+0.5), (int)(ac[1]+0.5), 4, 4, 255, 255, 255);
+   brandImage(Rchannel, Gchannel, Bchannel, HR.nx, HR.ny, (int)(ac[0]+0.5), (int)(ac[1]+0.5), 4, 4, 0, 255, 255);
 
 	for(int i=1; i<HR.nx-1; i++)
 	for(int j=1; j<HR.ny-1; j++)
@@ -362,7 +360,7 @@ float *AC, float *PC, float *RP, DIM HR, DIM Orig, short *volOrig, float *Tmsp)
 		ACregion[npHR*(HR.nz-1)/2 + (j+1)*HR.nx + i ]==0 || 
 		ACregion[npHR*(HR.nz-1)/2 + (j-1)*HR.nx + i ]==0) )
 		{
-			Rchannel[j*HR.nx + i]=255;
+			Rchannel[j*HR.nx + i]=0;
 			Gchannel[j*HR.nx + i]=255;
 			Bchannel[j*HR.nx + i]=255;
 		}
@@ -384,8 +382,8 @@ float *AC, float *PC, float *RP, DIM HR, DIM Orig, short *volOrig, float *Tmsp)
 		RPregion[(j+1)*HR.nx + i ]==0 || 
 		RPregion[(j-1)*HR.nx + i ]==0) )
 		{
-			Rchannel[j*HR.nx + i]=0;
-			Gchannel[j*HR.nx + i]=0;
+			Rchannel[j*HR.nx + i]=255;
+			Gchannel[j*HR.nx + i]=255;
 			Bchannel[j*HR.nx + i]=255;
 		}
 	}
@@ -455,7 +453,7 @@ float *AC, float *PC, float *RP, DIM HR, DIM Orig, short *volOrig, float *Tmsp)
 
    brandImage(Rchannel, Gchannel, Bchannel, HR.nx, HR.ny, (HR.nx-1)/2, (HR.ny-1)/2, 0, (HR.nx-1)/2, 255, 255, 255);
    brandImage(Rchannel, Gchannel, Bchannel, HR.nx, HR.ny, (int)(pc[0]+0.5), (int)(pc[1]+0.5), 4, 4, 255, 0, 0);
-   brandImage(Rchannel, Gchannel, Bchannel, HR.nx, HR.ny, (int)(ac[0]+0.5), (int)(ac[1]+0.5), 4, 4, 0, 255, 0);
+   brandImage(Rchannel, Gchannel, Bchannel, HR.nx, HR.ny, (int)(ac[0]+0.5), (int)(ac[1]+0.5), 4, 4, 0, 255, 255);
 
 
    get_nifti_basename(filename, DEFAULT_STRING_LENGTH, imagefilename);

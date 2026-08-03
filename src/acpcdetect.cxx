@@ -230,11 +230,11 @@ int main(int argc, char **argv)
    // Transformation matrices
    float Tout[16]; // Transforms ipimage to the specified output orientation.
    float TPIL[16]; // Transforms ipimage to PIL orientation.
-   float PIL2RAS[16];
-   float IPORIENT2PIL[16];
-   float PIL2IPORIENT[16];
-   float OPORIENT2PIL[16];
-   float PIL2OPORIENT[16];
+   float TPIL2RAS[16];
+   float TIP2PIL[16];
+   float TPIL2IP[16];
+   float TOP2PIL[16];
+   float TPIL2OP[16];
    float Tijk2xyz[16];
    float *invT = nullptr;
 
@@ -469,7 +469,7 @@ int main(int argc, char **argv)
    ///////////////////////////////////////////////////////////////////////////////////////
    // This block of code sets: ipimagefile, ipimagebasename, ipimagedir
    // iporient, ipimage, iphdr, ipdim, nPA, nIS, nLR, dPA, dIS, dLR 
-   // IPORIENT2PIL, PIL2IPORIENT
+   // TIP2PIL, TPIL2IP
    ///////////////////////////////////////////////////////////////////////////////////////
 
    if(ipimagefile[0] == '\0')
@@ -647,14 +647,14 @@ int main(int argc, char **argv)
       dLR = ipdim.dz;
    }
 
-   PILtransform(iporient, IPORIENT2PIL);
-   inversePILtransform(iporient, PIL2IPORIENT);
+   PILtransform(iporient, TIP2PIL);
+   inversePILtransform(iporient, TPIL2IP);
 
    ///////////////////////////////////////////////////////////////////////////////////////
 
    ///////////////////////////////////////////////////////////////////////////////////////
-   // This block of code sets: oporient, opdim, opimagefile, PIL2OPORIENT
-   // OPORIENT2PIL, Tijk2xyz, ophdr
+   // This block of code sets: oporient, opdim, opimagefile, TPIL2OP
+   // TOP2PIL, Tijk2xyz, ophdr
    ///////////////////////////////////////////////////////////////////////////////////////
 
    // Set opdim.
@@ -780,11 +780,11 @@ int main(int argc, char **argv)
       printf("PC search radius: %4.1f mm\n",searchradius[2]);
    }
 
-   // PIL2OPORIENT takes points from PIL space to oporient space.
-   inversePILtransform(oporient, PIL2OPORIENT);
+   // TPIL2OP takes points from PIL space to oporient space.
+   inversePILtransform(oporient, TPIL2OP);
 
-   // OPORIENT2PIL takes points from oporient space to PIL space.
-   PILtransform(oporient, OPORIENT2PIL);
+   // TOP2PIL takes points from oporient space to PIL space.
+   PILtransform(oporient, TOP2PIL);
 
    // (i,j,k) -> (x,y,z) in oporient.
    ijk2xyz(Tijk2xyz, opdim);
@@ -832,7 +832,7 @@ int main(int argc, char **argv)
   }
 
   //Tout transforms points from the input iporient to tilt-corrected oporient 
-  multi(PIL2OPORIENT, 4, 4,  TPIL, 4,  4, Tout);
+  multi(TPIL2OP, 4, 4,  TPIL, 4,  4, Tout);
   //////////////////////////////////////////////////////////////////////////////
 
   //////////////////////////////////////////////////////////////////////////////
@@ -858,8 +858,8 @@ int main(int argc, char **argv)
   }
   //////////////////////////////////////////////////////////////////////////////
 
-  // PIL2RAS takes (x,y,z) points from PIL to RAS space
-  inversePILtransform("RAS", PIL2RAS);
+  // TPIL2RAS takes (x,y,z) points from PIL to RAS space
+  inversePILtransform("RAS", TPIL2RAS);
 
   if( opt_tiltcorrect == YES)
   {
@@ -868,8 +868,8 @@ int main(int argc, char **argv)
     ////////////////////////////////////////////////////////////////////
     // setup ophdr sform and qform
 
-    multi(OPORIENT2PIL, 4, 4,  Tijk2xyz, 4,  4, Ttmp);
-    multi(PIL2RAS, 4, 4,  Ttmp, 4,  4, Ttmp);
+    multi(TOP2PIL, 4, 4,  Tijk2xyz, 4,  4, Ttmp);
+    multi(TPIL2RAS, 4, 4,  Ttmp, 4,  4, Ttmp);
 
     update_qsform(ophdr, Ttmp);
     ////////////////////////////////////////////////////////////////////
@@ -886,14 +886,14 @@ int main(int argc, char **argv)
     ////////////////////////////////////////////////////////////////////
     // setup ophdr sform and qform
 
-    multi(PIL2IPORIENT, 4, 4,  OPORIENT2PIL, 4,  4, OPORIENT2IPORIENT);
+    multi(TPIL2IP, 4, 4,  TOP2PIL, 4,  4, OPORIENT2IPORIENT);
     multi(OPORIENT2IPORIENT, 4, 4,  Tijk2xyz, 4,  4, Ttmp);
     multi(TPIL, 4, 4,  Ttmp, 4,  4, Ttmp);
-    multi(PIL2RAS, 4, 4,  Ttmp, 4,  4, Ttmp); 
+    multi(TPIL2RAS, 4, 4,  Ttmp, 4,  4, Ttmp); 
     update_qsform(ophdr, Ttmp);
     ////////////////////////////////////////////////////////////////////
 
-    multi(PIL2OPORIENT, 4, 4,  IPORIENT2PIL, 4,  4, IPORIENT2OPORIENT);
+    multi(TPIL2OP, 4, 4,  TIP2PIL, 4,  4, IPORIENT2OPORIENT);
     invT = inv4x4(IPORIENT2OPORIENT);
   }
 
