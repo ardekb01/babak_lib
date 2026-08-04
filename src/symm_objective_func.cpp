@@ -9,7 +9,7 @@
 //      Ax + By + Cz = 1
 //
 // using trilinear interpolation.
-float symm_objective_func(short *image, const DIM &dim, float A, float B, float C)
+float symm_objective_func(const short *image, const DIM &dim, float A, float B, float C)
 {
    float a,b,c,d;
    float dum = 0.0f;

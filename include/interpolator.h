@@ -1,7 +1,8 @@
-#ifndef _linearInterpolator_h
+#ifndef LINEARINTERPOLATOR_H
+#define LINEARINTERPOLATOR_H
 #include <cstddef>
 
-template<class TYPE> float linearInterpolator(float x, float y, TYPE *array, int nx, int ny)
+template<class TYPE> float linearInterpolator(float x, float y, const TYPE *array, int nx, int ny)
 {
    int i, j, n;
    float u, uu;
@@ -35,7 +36,7 @@ template<class TYPE> float linearInterpolator(float x, float y, TYPE *array, int
 }
 
 template<class TYPE> float linearInterpolator(float x, float y, float z,
-                                              TYPE *array, int nx, int ny,
+                                              const TYPE *array, int nx, int ny,
                                               int nz, int np)
 {
    int i, j, k, n;
@@ -108,7 +109,7 @@ template<class TYPE> float linearInterpolator(float x, float y, float z,
 }
 
 template<class TYPE> float nearestNeighbor(float x, float y, float z,
-                                           TYPE *array, int nx, int ny,
+                                           const TYPE *array, int nx, int ny,
                                            int nz, int np)
 {
    int i, j, k;
@@ -127,5 +128,4 @@ template<class TYPE> float nearestNeighbor(float x, float y, float z,
    }
 }
 
-#define _linearInterpolator_h
 #endif
