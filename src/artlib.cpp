@@ -2,6 +2,8 @@
 // Copyright (C) 2024 Babak A. Ardekani, PhD - All Rights Reserved.
 ///////////////////////////////////////////////////////////////////////
 
+#include <cmath>
+#include <cfloat>
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
@@ -40,7 +42,6 @@ char opt_PC = YES;
 char opt_RP = YES;
 char opt_MSP = YES;
 
-static float Sff,Sf;
 static short *gimage;
 static DIM gdim;
 static float vertex[4][3];
@@ -66,7 +67,6 @@ short *thresholdImageOtsu(short *im, int nv, int *nbv);
 float reflectVertex(int pmax, float fac);
 int dsm(void);
 float reflection_cross_correlation2(short *image, DIM dim, float A, float B, float C);
-float reflection_cross_correlation(short *image, DIM dim, float a, float b, float c, float d);
 float msp(short *im_in, int nx, int ny, int nz, float dx, float dy, float dz, float *A, float *B, float *C);
 void combine_warps_and_trans(int nx, int ny, int nz, float dx, float dy, float dz, float *Xwarp, float *Ywarp, float *Zwarp, float *T);
 
@@ -2004,71 +2004,86 @@ float optimizeNormalVector(short *image,DIM dim, float *A, float *B, float *C)
    return(cc);
 }
 
-float reflection_cross_correlation(short *image, DIM dim, float a, float b, float c, float d)
+// Compute the normalized cross-correlation between the image
+// and its reflection across the plane
+//
+//      ax + by + cz = d
+//
+// using trilinear interpolation.
+float reflection_cross_correlation(short *image, const DIM &dim, float a, float b, float c, float d)
 {
-   //static int dumcount=0;
-   int   i,j,k;
-   float x,y,z;
-   float dp;        
-   float dum1,dum2,dum3;
+   int i, j, k;
+   float x, y, z;
+   float dp;
+   float dum1, dum2, dum3;
    int q;
-   int np;
-   //int nv;
    int N;
 
-   float ic,jc,kc;
+   float f, g;
 
-   float a1,b1,c1;
+   double Sfg = 0.0;
+   double Sg = 0.0;
+   double Sgg = 0.0;
+   double Sff = 0.0;
+   double Sf = 0.0;
 
-   float f,g;
-   float Sfg,Sgg;
-   float Sg;
+   const float ic = (dim.nx - 1.0f) * 0.5f;
+   const float jc = (dim.ny - 1.0f) * 0.5f;
+   const float kc = (dim.nz - 1.0f) * 0.5f;
 
-   ic = (dim.nx-1.0)/2.0;
-   jc = (dim.ny-1.0)/2.0;
-   kc = (dim.nz-1.0)/2.0;
+   const int np = dim.nx * dim.ny;
 
-   np=dim.nx*dim.ny;
-   //nv=dim.nz*np;
+   const float a1 = a * dim.dx;
+   const float b1 = b * dim.dy;
+   const float c1 = c * dim.dz;
 
-   a1 = a * dim.dx;
-   b1 = b * dim.dy;
-   c1 = c * dim.dz;
+   N = q = 0;
 
-   Sf=Sg=0.0;
-   Sff=Sfg=Sgg=0.0;
-   N=q=0; 
-   for(k=0;k<dim.nz;k++)
+   const float invDx = 1.0f / dim.dx;
+   const float invDy = 1.0f / dim.dy;
+   const float invDz = 1.0f / dim.dz;
+
+   for(k = 0; k < dim.nz; k++)
    {
-      dum1=(k-kc)*c1;
-      for(j=0;j<dim.ny;j++)
+      dum1 = (k - kc) * c1;
+
+      for(j = 0; j < dim.ny; j++)
       {
-         dum2=dum1+(j-jc)*b1;
-         for(i=0;i<dim.nx;i++)
+         dum2 = dum1 + (j - jc) * b1;
+
+         for(i = 0; i < dim.nx; i++)
          {
-            f=image[q];
+            f = image[q];
 
-            dum3=dum2 + (i-ic)*a1;
+            dum3 = dum2 + (i - ic) * a1;
 
-            /* if(f>thresh && (d-dum3)<0 ) */
-            if(f!=0.0 && (d-dum3)<0 )
+            /* if(f > thresh && (d - dum3) < 0) */
+            if(f != 0.0f && (d - dum3) < 0.0f)
             {
+               dp = 2.0f * (d - dum3);
 
-               dp=2.0*(d-dum3);
+               x = i + a * dp * invDx;
+               y = j + b * dp * invDy;
+               z = k + c * dp * invDz;
 
-               x=i+a*dp/dim.dx;
-               y=j+b*dp/dim.dy;
-               z=k+c*dp/dim.dz;
+               g = linearInterpolator(
+                  x,
+                  y,
+                  z,
+                  image,
+                  dim.nx,
+                  dim.ny,
+                  dim.nz,
+                  np
+               );
 
-	       		g=linearInterpolator(x,y,z,image,dim.nx,dim.ny,dim.nz,np);
-
-               /* if(g>thresh) */
-               if(g!=0.0)
+               /* if(g > thresh) */
+               if(g != 0.0f)
                {
-                  Sfg += f*g;
-                  Sgg += g*g;
+                  Sfg += f * g;
+                  Sgg += g * g;
                   Sg += g;
-                  Sff += f*f;
+                  Sff += f * f;
                   Sf += f;
 
                   N++;
@@ -2076,15 +2091,26 @@ float reflection_cross_correlation(short *image, DIM dim, float a, float b, floa
             }
 
             q++;
- 
          }
       }
    }
-   
-   if( N==0 || ((Sff - Sf*Sf/N)*(Sgg - Sg*Sg/N))==0.0 )
-      return(0.0);
-   else
-      return( (Sfg-Sg*Sf/N)/sqrtf((Sff-Sf*Sf/N)*(Sgg-Sg*Sg/N)) );
+
+   if(N == 0)
+   {
+      return 0.0f;
+   }
+
+   const double varF = Sff - Sf * Sf / N;
+   const double varG = Sgg - Sg * Sg / N;
+
+   if(varF <= DBL_EPSILON || varG <= DBL_EPSILON)
+   {
+      return 0.0f;
+   }
+
+   const double cov = Sfg - Sf * Sg / N;
+
+   return static_cast<float>(cov / std::sqrt(varF * varG));
 }
 
 // have to limit the search considering the fact that the input image will be almost PIL
@@ -2166,20 +2192,6 @@ void findInitialNormalVector(short *image, DIM dim, float *A, float *B,float *C)
 //printf("j = %f\n", (y_cm + dim.dy*(dim.ny-1.0)/2.0)/0.859375 );
 //printf("k = %f\n", (z_cm + dim.dz*(dim.nz-1.0)/2.0)/0.859375 );
 	
-	// Sff must be computed before calling reflection_cross_correlation()
-	// or reflection_cross_correlation2()
-	Sff=0.0;
-	Sf=0.0;
-	for(int i=0;i<dim.nx*dim.ny*dim.nz;i++)
-	{
-		dum=image[i];
-		if(dum!=0) 
-		{
-			Sff += (dum*dum);
-			Sf += dum;
-		}
-   }
-
    ccmax=0.0;
 
    for(int i=0;i<N;i++) 

@@ -322,7 +322,7 @@ extern int4 detect_AC_PC_MSP( const char *imagefilename, char *orientation, char
 float4 *AC, float4 *PC, float4 *RP, float4 *Tmsp, int4 opt_T2);
 extern float4 optimizeNormalVector(int2 *image,DIM dim,float4 *A, float4 *B, float4 *C);
 extern float4 reflection_cross_correlation2(int2 *image, DIM dim, float4 A, float4 B, float4 C);
-extern float4 reflection_cross_correlation(int2 *image, DIM dim, float4 a, float4 b, float4 c, float4 d);
+extern float4 reflection_cross_correlation(int2 *image, const DIM &dim, float4 a, float4 b, float4 c, float4 d);
 extern void findInitialNormalVector(int2 *image, DIM dim, float4 *A, float4 *B,float4 *C);
 extern float4 msp(int2 *im_in, int4 nx, int4 ny, int4 nz, float4 dx, float4 dy, float4 dz, float4 *A, float4 *B, float4 *C);
 extern void computeTmsp(char *orientation, int2 *volOrig, DIM dim, float4 *Tmsp);
