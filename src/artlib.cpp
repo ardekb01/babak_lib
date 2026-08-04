@@ -23,6 +23,7 @@
 #include "matrixCom.h"
 #include "rotate.h"
 #include "bbk_linear_algebra.h"
+#include "symm_objective_func.h"
 
 #define _artlib
 
@@ -66,7 +67,6 @@ void defineTemplate(int r, int h, short *x, short *y, short *z);
 short *thresholdImageOtsu(short *im, int nv, int *nbv);
 float reflectVertex(int pmax, float fac);
 int dsm(void);
-float reflection_cross_correlation2(short *image, DIM dim, float A, float B, float C);
 float msp(short *im_in, int nx, int ny, int nz, float dx, float dy, float dz, float *A, float *B, float *C);
 void combine_warps_and_trans(int nx, int ny, int nz, float dx, float dy, float dz, float *Xwarp, float *Ywarp, float *Zwarp, float *T);
 
@@ -1798,7 +1798,7 @@ float reflectVertex(int pmax, float fac)
 	VertexNew[1]=vertexSum[1]*fac1-vertex[pmax][1]*fac2;
 	VertexNew[2]=vertexSum[2]*fac1-vertex[pmax][2]*fac2;
 
-	newV=-reflection_cross_correlation2(gimage,gdim,VertexNew[0],VertexNew[1],
+	newV=-symm_objective_func(gimage,gdim,VertexNew[0],VertexNew[1],
 	VertexNew[2]);
 
 	if (newV < value[pmax]) 
@@ -1892,7 +1892,7 @@ int dsm(void)
 						vertex[i][1]=vertexSum[1]=0.5*(vertex[i][1]+vertex[pmin][1]);
 						vertex[i][2]=vertexSum[2]=0.5*(vertex[i][2]+vertex[pmin][2]);
 
-						value[i]=-reflection_cross_correlation2(gimage,gdim,
+						value[i]=-symm_objective_func(gimage,gdim,
 						vertexSum[0],vertexSum[1],vertexSum[2]);
 					}
 				}
@@ -1908,32 +1908,6 @@ int dsm(void)
 	}
 
 	return(pmin);
-}
-
-/* Denote the input image by Q. If every point in Q is reflected with respect 
-to the plane a*x+b*y+c*z=d,  a new image, R, will be obtained. This function
-returns the cross-correlation between Q and R 
-given by: C(Q,R) = Q.R/sqrt(Q.Q*R.R).  (a,b,c) is a unit vector perpendicular 
-to the plane. d is the perpendicular distance between the origin and the
-plane  */
-
-float reflection_cross_correlation2(short *image, DIM dim, float A, float B, float C)
-{
-   float a,b,c,d;
-   float dum;
-
-   dum = A*A+B*B+C*C;
-
-   if(dum<0.0)
-   {
-      return(0.0);
-   }
-
-   dum=sqrtf(dum);
-   a=A/dum; b=B/dum; c=C/dum;
-   d=1/dum;
-
-   return( reflection_cross_correlation(image,dim,a,b,c,d) ) ;
 }
 
 float optimizeNormalVector(short *image,DIM dim, float *A, float *B, float *C)
@@ -1970,22 +1944,22 @@ float optimizeNormalVector(short *image,DIM dim, float *A, float *B, float *C)
    x[0]=vertex[0][0]=(*A);
    x[1]=vertex[0][1]=(*B);
    x[2]=vertex[0][2]=(*C);
-   value[0]=-reflection_cross_correlation2(gimage,gdim,x[0],x[1],x[2]);
+   value[0]=-symm_objective_func(gimage,gdim,x[0],x[1],x[2]);
 
    x[0]=vertex[1][0]=2.0/(dim.nx*dim.dx);
    x[1]=vertex[1][1]=0.0;
    x[2]=vertex[1][2]=0.0;
-   value[1]=-reflection_cross_correlation2(gimage,gdim,x[0],x[1],x[2]);
+   value[1]=-symm_objective_func(gimage,gdim,x[0],x[1],x[2]);
 
    x[0]=vertex[2][0]=0.0;
    x[1]=vertex[2][1]=2.0/(dim.ny*dim.dy);
    x[2]=vertex[2][2]=0.0;
-   value[2]=-reflection_cross_correlation2(gimage,gdim,x[0],x[1],x[2]);
+   value[2]=-symm_objective_func(gimage,gdim,x[0],x[1],x[2]);
 
    x[0]=vertex[3][0]=0.0;
    x[1]=vertex[3][1]=0.0;
    x[2]=vertex[3][2]=2.0/(dim.nz*dim.dz);
-   value[3]=-reflection_cross_correlation2(gimage,gdim,x[0],x[1],x[2]);
+   value[3]=-symm_objective_func(gimage,gdim,x[0],x[1],x[2]);
 
    pmin=dsm();
 
@@ -1993,7 +1967,7 @@ float optimizeNormalVector(short *image,DIM dim, float *A, float *B, float *C)
    x[1]=vertex[pmin][1];
    x[2]=vertex[pmin][2];
 
-   cc=reflection_cross_correlation2(gimage,gdim,x[0],x[1],x[2]);
+   cc=symm_objective_func(gimage,gdim,x[0],x[1],x[2]);
 
    *A= x[0]/(1+x[2]*z0);
    *B= x[1]/(1+x[2]*z0);
@@ -2002,115 +1976,6 @@ float optimizeNormalVector(short *image,DIM dim, float *A, float *B, float *C)
    free(gimage);
 
    return(cc);
-}
-
-// Compute the normalized cross-correlation between the image
-// and its reflection across the plane
-//
-//      ax + by + cz = d
-//
-// using trilinear interpolation.
-float reflection_cross_correlation(short *image, const DIM &dim, float a, float b, float c, float d)
-{
-   int i, j, k;
-   float x, y, z;
-   float dp;
-   float dum1, dum2, dum3;
-   int q;
-   int N;
-
-   float f, g;
-
-   double Sfg = 0.0;
-   double Sg = 0.0;
-   double Sgg = 0.0;
-   double Sff = 0.0;
-   double Sf = 0.0;
-
-   const float ic = (dim.nx - 1.0f) * 0.5f;
-   const float jc = (dim.ny - 1.0f) * 0.5f;
-   const float kc = (dim.nz - 1.0f) * 0.5f;
-
-   const int np = dim.nx * dim.ny;
-
-   const float a1 = a * dim.dx;
-   const float b1 = b * dim.dy;
-   const float c1 = c * dim.dz;
-
-   N = q = 0;
-
-   const float invDx = 1.0f / dim.dx;
-   const float invDy = 1.0f / dim.dy;
-   const float invDz = 1.0f / dim.dz;
-
-   for(k = 0; k < dim.nz; k++)
-   {
-      dum1 = (k - kc) * c1;
-
-      for(j = 0; j < dim.ny; j++)
-      {
-         dum2 = dum1 + (j - jc) * b1;
-
-         for(i = 0; i < dim.nx; i++)
-         {
-            f = image[q];
-
-            dum3 = dum2 + (i - ic) * a1;
-
-            /* if(f > thresh && (d - dum3) < 0) */
-            if(f != 0.0f && (d - dum3) < 0.0f)
-            {
-               dp = 2.0f * (d - dum3);
-
-               x = i + a * dp * invDx;
-               y = j + b * dp * invDy;
-               z = k + c * dp * invDz;
-
-               g = linearInterpolator(
-                  x,
-                  y,
-                  z,
-                  image,
-                  dim.nx,
-                  dim.ny,
-                  dim.nz,
-                  np
-               );
-
-               /* if(g > thresh) */
-               if(g != 0.0f)
-               {
-                  Sfg += f * g;
-                  Sgg += g * g;
-                  Sg += g;
-                  Sff += f * f;
-                  Sf += f;
-
-                  N++;
-               }
-            }
-
-            q++;
-         }
-      }
-   }
-
-   if(N == 0)
-   {
-      return 0.0f;
-   }
-
-   const double varF = Sff - Sf * Sf / N;
-   const double varG = Sgg - Sg * Sg / N;
-
-   if(varF <= DBL_EPSILON || varG <= DBL_EPSILON)
-   {
-      return 0.0f;
-   }
-
-   const double cov = Sfg - Sf * Sg / N;
-
-   return static_cast<float>(cov / std::sqrt(varF * varG));
 }
 
 // have to limit the search considering the fact that the input image will be almost PIL
@@ -2215,7 +2080,7 @@ void findInitialNormalVector(short *image, DIM dim, float *A, float *B,float *C)
 
       /* find the cross-correlation between image and its reflection 
       about the plane ax+by+cz=d */
-      cc=reflection_cross_correlation(image,dim,a,b,c,d);
+      cc=symm_objective_func(image,dim,a,b,c,d);
 
       if(cc>ccmax)
       {
