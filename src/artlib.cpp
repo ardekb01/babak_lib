@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////
+ ///////////////////////////////////////////////////////////////////////
 // Copyright (C) 2024 Babak A. Ardekani, PhD - All Rights Reserved.
 ///////////////////////////////////////////////////////////////////////
 
@@ -2080,19 +2080,24 @@ void findInitialNormalVector(short *image, DIM dim, float *A, float *B,float *C)
 
       /* find the cross-correlation between image and its reflection 
       about the plane ax+by+cz=d */
-      cc=symm_objective_func(image,dim,a,b,c,d);
 
-      if(cc>ccmax)
+      if( d > FLT_EPSILON )
       {
-         ccmax=cc;
-         A1=a/d;
-         B1=b/d;
-         C1=c/d;
+         cc=symm_objective_func(image,dim,a/d,b/d,c/d);
+
+         if(cc>ccmax)
+         {
+            ccmax=cc;
+            A1=a/d;
+            B1=b/d;
+            C1=c/d;
+         }
       }
    }
 
    dum=(float)sqrt((double)A1*A1 + B1*B1 + C1*C1 ); 
    a=A1/dum; b=B1/dum; c=C1/dum; d=1./dum;
+
 //printf("\nInitial guess:");
 //printf("\nplane of symmetry: (%7.3f,%7.3f,%7.3f).(x,y,z) = %7.3f", a,b,c,d);
 //printf("\ncross correlation = %6.4f\n",ccmax);
