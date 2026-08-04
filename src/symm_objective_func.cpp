@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <cfloat>
 #include <cmath>
 #include "babak_lib.h"
@@ -11,28 +12,46 @@
 // using trilinear interpolation.
 float symm_objective_func(const short *image, const DIM &dim, float A, float B, float C)
 {
-   float a,b,c,d;
-   float dum = 0.0f;
+   if( image == nullptr )
+      return 0.0f;
 
-   dum = A * A + B * B + C * C;
-
-   if( dum < FLT_EPSILON)
+   if(dim.nx <= 0 ||
+      dim.ny <= 0 ||
+      dim.nz <= 0 ||
+      dim.dx <= 0.0f ||
+      dim.dy <= 0.0f ||
+      dim.dz <= 0.0f)
    {
-      return(0.0f);
+      return 0.0f;
    }
 
-   dum = sqrtf(dum);
-   a = A/dum; b = B/dum; c = C/dum;
-   d = 1/dum;
+   const double planeNorm2 =
+      static_cast<double>(A) * A +
+      static_cast<double>(B) * B +
+      static_cast<double>(C) * C;
+
+   if(planeNorm2 < DBL_EPSILON)
+   {
+      return 0.0f;
+   }
+
+   const double invNorm = 1.0 / std::sqrt(planeNorm2);
+
+   const float a = static_cast<float>(A * invNorm);
+   const float b = static_cast<float>(B * invNorm);
+   const float c = static_cast<float>(C * invNorm);
+   const float d = static_cast<float>(invNorm);
 
    int i, j, k;
    float x, y, z;
    float dp;
-   float dum1, dum2, dum3;
-   int q;
-   int N;
+   float planeK; 
+   float planeJK; 
+   float planeValue;
+   size_t q = 0;
+   size_t N = 0;
 
-   float f, g;
+   float g;
 
    double Sfg = 0.0;
    double Sg = 0.0;
@@ -50,34 +69,50 @@ float symm_objective_func(const short *image, const DIM &dim, float A, float B, 
    const float b1 = b * dim.dy;
    const float c1 = c * dim.dz;
 
-   N = q = 0;
-
    const float invDx = 1.0f / dim.dx;
    const float invDy = 1.0f / dim.dy;
    const float invDz = 1.0f / dim.dz;
 
+   const float reflX = a * invDx;
+   const float reflY = b * invDy;
+   const float reflZ = c * invDz;
+
+   // inexpensive sanity check
+   const size_t nv =
+      static_cast<size_t>(dim.nx) *
+      static_cast<size_t>(dim.ny) *
+      static_cast<size_t>(dim.nz);
+
+   if(nv == 0)
+   {
+      return 0.0f;
+   }
+
    for(k = 0; k < dim.nz; k++)
    {
-      dum1 = (k - kc) * c1;
+      planeK = (k - kc) * c1;
 
       for(j = 0; j < dim.ny; j++)
       {
-         dum2 = dum1 + (j - jc) * b1;
+         planeJK = planeK + (j - jc) * b1;
 
          for(i = 0; i < dim.nx; i++)
          {
-            f = image[q];
+            const float f = static_cast<float>(image[q]);
 
-            dum3 = dum2 + (i - ic) * a1;
+            planeValue = planeJK + (i - ic) * a1;
 
-            /* if(f > thresh && (d - dum3) < 0) */
-            if(f != 0.0f && (d - dum3) < 0.0f)
+            const float distance = d - planeValue;
+
+            // Evaluate only one side of the plane to avoid
+            // counting reflected voxel pairs twice.
+            if(f != 0.0f && distance < 0.0f)
             {
-               dp = 2.0f * (d - dum3);
+               dp = 2.0f * distance;
 
-               x = i + a * dp * invDx;
-               y = j + b * dp * invDy;
-               z = k + c * dp * invDz;
+               x = i + reflX * dp;
+               y = j + reflY * dp;
+               z = k + reflZ * dp;
 
                g = linearInterpolator(
                   x,
@@ -90,7 +125,6 @@ float symm_objective_func(const short *image, const DIM &dim, float A, float B, 
                   np
                );
 
-               /* if(g > thresh) */
                if(g != 0.0f)
                {
                   Sfg += f * g;
@@ -123,5 +157,16 @@ float symm_objective_func(const short *image, const DIM &dim, float A, float B, 
 
    const double cov = Sfg - Sf * Sg / N;
 
-   return static_cast<float>(cov / std::sqrt(varF * varG));
+   float ncc = static_cast<float>(cov / std::sqrt(varF * varG));
+
+   if(ncc > 1.0f)
+   {
+      ncc = 1.0f;
+   }
+   else if(ncc < -1.0f)
+   {
+      ncc = -1.0f;
+   }
+
+   return ncc;
 }
