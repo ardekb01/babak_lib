@@ -2050,7 +2050,7 @@ void findInitialNormalVector(short *image, DIM dim, float *A, float *B,float *C)
 
    // compute x_cm,y_cm,z_cm the coordinates of the image "center of gravity" 
    // in (mm) with respect to the image volume center as origin
-   compute_cm(image, dim.nx, dim.ny, dim.nz, dim.dx, dim.dy, dim.dz, &x_cm, &y_cm, &z_cm);
+   compute_cm(image, dim.nx, dim.ny, dim.nz, dim.dx, dim.dy, dim.dz, x_cm, y_cm, z_cm);
 
 //printf("\n******x_cm=%7.3f y_cm=%7.3f z_cm=%7.3f (mm)\n",x_cm,y_cm,z_cm); 
 //printf("i = %f\n", (x_cm + dim.dx*(dim.nx-1.0)/2.0)/1.5 );

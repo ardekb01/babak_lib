@@ -1,38 +1,92 @@
-#include <babak_lib.h>
+#include <cmath>
+#include <cfloat>
+#include <cstddef>
+#include "babak_lib.h"
 
-void compute_cm(short *image, int nx, int ny, int nz, float dx, float dy, float dz, float *x, float *y, float *z)
+// Compute the intensity-weighted centroid of the image.
+bool compute_cm(
+   const short *image,
+   int nx,
+   int ny,
+   int nz,
+   float dx,
+   float dy,
+   float dz,
+   float &x,
+   float &y,
+   float &z)
 {
-   double dum;
-   int q;
+   // Guarantee outputs are initialized.
+   x = y = z = 0.0f;
 
-   *x=0.0; *y=0.0; *z=0.0;
+   if(image == nullptr)
+      return false;
 
-   dum=0.0;
-   q=0;
-   for(int k=0;k<nz;k++)
-   for(int j=0;j<ny;j++)
-   for(int i=0;i<nx;i++)
+   // Validation of the image dimensions
+   if(nx <= 0 ||
+      ny <= 0 ||
+      nz <= 0)
    {
-      dum += image[q];
-      *x += i*image[q];
-      *y += j*image[q];
-      *z += k*image[q];
-      q++;
+      return false;
    }
 
-   *x = *x/dum;
-   *y = *y/dum;
-   *z = *z/dum;
+   // Validation of the voxel spacings
+   if(dx <= 0.0f ||
+      dy <= 0.0f ||
+      dz <= 0.0f)
+   {
+      return false;
+   }
 
-   // transfer origin to the volume center 
-   *x -= (nx-1.0)/2.0;
-   *y -= (ny-1.0)/2.0;
-   *z -= (nz-1.0)/2.0;
+   double totalMass = 0.0;
+   size_t q = 0;
 
-   // convert to mm 
-   *x *= dx;
-   *y *= dy;
-   *z *= dz;
+   double sx = 0.0;
+   double sy = 0.0;
+   double sz = 0.0;
+
+   for(int k = 0; k < nz; k++)
+   {
+      for(int j = 0; j < ny; j++)
+      {
+         for(int i = 0; i < nx; i++)
+         {
+            const double value = static_cast<double>(image[q]);
+
+            totalMass += value;
+            sx += i * value;
+            sy += j * value;
+            sz += k * value;
+
+            q++;
+         }
+      }
+   }
+
+   if(std::abs(totalMass) <= DBL_EPSILON)
+   {
+      return false;
+   }
+
+   x = static_cast<float>(sx / totalMass);
+   y = static_cast<float>(sy / totalMass);
+   z = static_cast<float>(sz / totalMass);
+
+   // Transfer the origin to the volume center.
+   const float xc = (nx - 1.0f) * 0.5f;
+   const float yc = (ny - 1.0f) * 0.5f;
+   const float zc = (nz - 1.0f) * 0.5f;
+
+   x -= xc;
+   y -= yc;
+   z -= zc;
+
+   // Convert to millimeters.
+   x *= dx;
+   y *= dy;
+   z *= dz;
+
+   return true;
 }
 
 void compute_cm(short *image, DIM dim, float *cm)
