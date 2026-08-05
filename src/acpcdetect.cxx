@@ -17,8 +17,6 @@
 #include "minmax.h"
 #include "read_nifti_image.h"
 #include "set_dim.h"
-#include "PILtransform.h"
-#include "ijk2xyz.h"
 #include "matrixCom.h"
 #include "bbk_linear_algebra.h"
 #include "bbk.h"

@@ -3,8 +3,6 @@
 #include "babak_lib.h"
 #include "read_nifti_image.h"
 #include "set_dim.h"
-#include "PILtransform.h"
-#include "ijk2xyz.h"
 #include "reorientVolume.h"
 #include "matrixCom.h"
 #include "rotate.h"

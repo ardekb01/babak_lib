@@ -11,7 +11,6 @@
 #include <stats.h>
 #include "read_nifti_image.h"
 #include "set_dim.h"
-#include "ijk2xyz.h"
 #include "bbk_linear_algebra.h"
 #include "MSPtransformation.h"
 #include "bbk.h"
