@@ -19,6 +19,7 @@
 #include "set_dim.h"
 #include "rotate.h"
 #include "bbk_linear_algebra.h"
+#include "bbk.h"
 
 #define NBIN 256
 

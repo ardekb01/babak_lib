@@ -1,6 +1,17 @@
 #ifndef BBK_H 
 #define BBK_H
 
+bool get_directory_name(const char *pathname, char *dirname, size_t dirnameSize);
+
+bool check_nifti_file_extension(const char *filename);
+
+bool check_nifti1_magic(const char *imagefilename);
+
+bool get_nifti_basename(char *filename,
+                        size_t filenameSize,
+                        const char *path);
+
+
 bool valid_orientation_code(const char *orientCode);
 
 float symm_objective_func(const short *image, const DIM &dim, float A, float B, float C);

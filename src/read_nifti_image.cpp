@@ -6,6 +6,7 @@
 #include "nifti1.h"
 #include "swap.h"
 #include "minmax.h"
+#include "bbk.h"
 
 bool scaleFloatToUnsignedShort(
    const float *input,

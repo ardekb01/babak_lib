@@ -18,6 +18,7 @@
 #include "minmax.h"
 #include "stats.h"
 #include "set_dim.h"
+#include "bbk.h"
 
 #define YES 1
 #define NO 0
