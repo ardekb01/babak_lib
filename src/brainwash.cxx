@@ -21,8 +21,6 @@
 #include <interpolator.h>
 #include <stats.h>
 #include <string.h>
-#include "read_nifti_image.h"
-#include "set_dim.h"
 #include "bbk_linear_algebra.h"
 #include "bbk.h"
 

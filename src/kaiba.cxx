@@ -15,9 +15,6 @@
 #include <landmarks.h>
 #include <interpolator.h>
 #include <minmax.h>
-#include "read_nifti_image.h"
-#include "set_dim.h"
-#include "rotate.h"
 #include "bbk_linear_algebra.h"
 #include "bbk.h"
 

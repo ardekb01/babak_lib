@@ -10,7 +10,6 @@
 #include "minmax.h"
 #include "nifti1_io.h"
 #include "matrixCom.h"
-#include "read_nifti_image.h"
 #include "bbk.h"
 
 int same_nifti_image_size(int N, char **imagefile, int *nx, int *ny, int *nz, float *dx, float *dy, float *dz)

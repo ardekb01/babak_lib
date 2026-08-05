@@ -18,7 +18,6 @@
 #include <niftiimage.h>
 #include <babak_lib.h>
 #include <smooth.h>
-#include "read_nifti_image.h"
 #include "bbk_linear_algebra.h"
 
 void art_to_fsl(float *Mart, float *Mfsl, DIM sub_dim, DIM trg_dim);

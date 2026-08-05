@@ -12,7 +12,6 @@
 #include "babak_lib.h"
 #include "swap.h"
 #include "interpolator.h"
-#include "read_nifti_image.h"
 #include "bbk_linear_algebra.h"
 
 #define YES 1

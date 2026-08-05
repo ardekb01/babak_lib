@@ -1,5 +1,4 @@
 #include "babak_lib.h"
-#include "set_dim.h"
 #include "bbk.h"
 
 // Convert P from (x, y, z) to (i, j, k) coordinates.

@@ -11,7 +11,6 @@
 #include <unistd.h>
 #include "spm_analyze.h"
 #include "babak_lib.h"
-#include "read_nifti_image.h"
 #include <f2c.h>
 
 #define YES 1

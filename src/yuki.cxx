@@ -22,7 +22,6 @@
 #include "stats.h"
 #include "interpolator.h"
 #include "swap.h"
-#include "read_nifti_image.h"
 #include "bbk_linear_algebra.h"
 #include "bbk.h"
 

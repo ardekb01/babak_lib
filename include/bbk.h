@@ -30,6 +30,27 @@ typedef struct dim {
    float dt; // t between frames (sec)
 } DIM;
 
+bool rotate(float *R, float alpha, float x, float y, float z);
+
+void set_dim(SHORTIM &im, const SHORTIM &sourceim);
+void set_dim(DIM &dim, const SHORTIM &im);
+void set_dim(SHORTIM &im, const DIM &dim);
+void set_dim(SHORTIM &im, const nifti_1_header &hdr);
+void set_dim(nifti_1_header &hdr, const DIM &dim);
+void set_dim(DIM &dim,
+             int nx,
+             int ny,
+             int nz,
+             float dx,
+             float dy,
+             float dz);
+void set_dim(DIM &dim, const nifti_1_header *hdr);
+void set_dim(DIM &dim, const nifti_1_header hdr);
+
+char *read_nifti_image(const char *filename, nifti_1_header *hdr);
+
+bool read_nifti_hdr(const char *filename, nifti_1_header *hdr);
+
 void setLowHigh(const short *image, int nv, int &low, int &high, float percent);
 
 float *gaussian_kernel(const float sd, int *n);

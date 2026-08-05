@@ -16,7 +16,6 @@
 #include <ctype.h>
 #include <nifti1_io.h>
 #include "bbk_linear_algebra.h"
-#include "read_nifti_image.h"
 
 #define YES 1
 #define NO 0

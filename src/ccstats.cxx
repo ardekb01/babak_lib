@@ -11,7 +11,6 @@
 #include <sys/resource.h>
 #include <unistd.h>
 #include "babak_lib.h"
-#include "read_nifti_image.h"
 
 #define YES 1
 #define NO 0

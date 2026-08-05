@@ -1,11 +1,8 @@
 #include <cfloat>
 #include <math.h>
 #include "babak_lib.h"
-#include "read_nifti_image.h"
-#include "set_dim.h"
 #include "reorientVolume.h"
 #include "matrixCom.h"
-#include "rotate.h"
 #include "bbk_linear_algebra.h"
 #include "bbk.h"
 
