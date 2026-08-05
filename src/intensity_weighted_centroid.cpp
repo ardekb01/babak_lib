@@ -3,8 +3,8 @@
 #include <cstddef>
 #include "babak_lib.h"
 
-// Compute the intensity-weighted centroid of the image.
-bool compute_cm(
+// Computes the intensity-weighted centroid of the image.
+bool intensity_weighted_centroid(
    const short *image,
    int nx,
    int ny,

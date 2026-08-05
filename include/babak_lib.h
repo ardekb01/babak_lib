@@ -255,7 +255,7 @@ void new_PIL_transform(const char *subfile, const char *lmfile, char *orient, fl
 void standard_PIL_transformation(const char *imfile, const char *lmfile, char *orient, float4 *TPIL);
 void Procrustes(float *Q, float *Qavg, int n, float *P, float *Pavg, float *TLM);
 void Procrustes(float *Q, int n, float *P, float *TLM);
-bool compute_cm(const short *image, int nx, int ny, int nz, float dx, float dy, float dz, float &x, float &y, float &z);
+bool intensity_weighted_centroid(const short *image, int nx, int ny, int nz, float dx, float dy, float dz, float &x, float &y, float &z);
 void compute_cm(short *image, DIM dim, float *cm);
 void compute_cov(short *image, DIM dim, float *cm, double *I);
 void standardize(float4 *x, int4 n);
