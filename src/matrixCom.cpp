@@ -7,7 +7,6 @@
 #include <math.h>
 #include <babak_lib.h>
 #include <assert.h>
-#include "matrixCom.h"
 #include "bbk_linear_algebra.h"
 
 #define _matrixCom
