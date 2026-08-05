@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "babak_lib.h"
-#include "swap.h"
 
 // x[0] -> byte-reversed
 // x[1] -> byte-reversed

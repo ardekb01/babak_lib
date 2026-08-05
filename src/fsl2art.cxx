@@ -10,7 +10,6 @@
 #include <ctype.h>
 #include <spm_analyze.h>
 #include "babak_lib.h"
-#include "directionCode.h"
 #include "sph.h"
 #include "landmarks.h"
 #include "minmax.h"

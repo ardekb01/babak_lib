@@ -6,8 +6,6 @@
 #include "nifti1.h"
 #include "nifti1_io.h"
 #include "babak_lib.h"
-#include "swap.h"
-#include "directionCode.h"
 
 bool getNiftiImageOrientation(const char *filename, char *orientation)
 {

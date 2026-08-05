@@ -11,7 +11,6 @@
 #include <ge.h>
 #include <volume.h>
 #include "babak_lib.h"
-#include "swap.h"
 #include <analyze.h>
 
 static void get_directory(char *, char *);

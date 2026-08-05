@@ -21,7 +21,6 @@
 #include "minmax.h"
 #include "stats.h"
 #include "interpolator.h"
-#include "swap.h"
 #include "bbk_linear_algebra.h"
 #include "bbk.h"
 

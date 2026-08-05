@@ -10,7 +10,6 @@
 #include <ctype.h>
 #include <string.h>
 #include "babak_lib.h"
-#include "swap.h"
 #include "minmax.h"
 #include "stats.h"
 #include "interpolator.h"

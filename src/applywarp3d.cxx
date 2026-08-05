@@ -10,7 +10,6 @@
 #include <volume.h>
 #include <spm_analyze.h>
 #include "babak_lib.h"
-#include "swap.h"
 #include "interpolator.h"
 #include "bbk_linear_algebra.h"
 

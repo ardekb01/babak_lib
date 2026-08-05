@@ -3,6 +3,37 @@
 
 #include "nifti1.h"
 
+struct model_file_hdr
+{
+   int nxHR;
+   int nzHR;
+   float dxHR;
+   int nxLR;
+   int nvol; // number of image volumes in the training set 
+   int RPtemplateradius;
+   int RPtemplateheight;
+   int RPtemplatesize;
+   int ACtemplateradius;
+   int ACtemplateheight;
+   int ACtemplatesize;
+   int PCtemplateradius;
+   int PCtemplateheight;
+   int PCtemplatesize;
+   int nangles; // number of angles, each template is rotated by this many angles and saved
+};
+
+typedef struct model_file_hdr model_file_hdr;
+
+struct model_file_tail
+{
+   float RPPCmean[2]; // RPPC is a vector on the MSP that points from the RP point to the PC.   RP------->PC
+   float parcomMean;
+   float percomMean; 
+   float RPmean[2];
+};
+
+typedef struct model_file_tail model_file_tail;
+
 typedef struct shortim
 {
    int nx;
@@ -29,6 +60,18 @@ typedef struct dim {
    float dz; // z voxel dimension (mm)
    float dt; // t between frames (sec)
 } DIM;
+
+char directionCode(float x, float y, float z);
+
+bool bigEndian();
+bool swapByteOrder(char *in, size_t N);
+bool swapN(char *in, size_t N);
+bool swap_float_array(float *x, size_t n);
+bool swap_double_array(double *x, size_t n);
+bool swap_int_array(int *x, size_t n); 
+void swap_model_file_hdr(model_file_hdr *hdr);
+void swap_model_file_tail(model_file_tail *tail);
+void swapniftiheader(nifti_1_header *hdr);
 
 bool rotate(float *R, float alpha, float x, float y, float z);
 

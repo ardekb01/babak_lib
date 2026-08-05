@@ -8,8 +8,6 @@
 #include <math.h> // sqrt()
 #include "nifti1_io.h"
 #include "babak_lib.h"
-#include "directionCode.h"
-#include "swap.h"
 
 #define IMPLICIT_LITTLE_ENDIAN 0
 #define EXPLICIT_LITTLE_ENDIAN 1

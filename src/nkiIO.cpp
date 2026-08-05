@@ -13,7 +13,6 @@
 #include <unistd.h>
 #include <nki.h>
 #include "babak_lib.h"
-#include "swap.h"
 
 // Returns 1 if file can be read and is NKI format, 0 otherwise
 int isNKI(char *file)

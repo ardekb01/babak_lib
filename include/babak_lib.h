@@ -93,38 +93,6 @@ typedef struct DICOM_hdr DICOM_hdr;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
-struct model_file_hdr
-{
-   int4 nxHR;
-   int4 nzHR;
-   float4 dxHR;
-   int4 nxLR;
-   int4 nvol; // number of image volumes in the training set 
-   int4 RPtemplateradius;
-   int4 RPtemplateheight;
-   int4 RPtemplatesize;
-   int4 ACtemplateradius;
-   int4 ACtemplateheight;
-   int4 ACtemplatesize;
-   int4 PCtemplateradius;
-   int4 PCtemplateheight;
-   int4 PCtemplatesize;
-   int4 nangles; // number of angles, each template is rotated by this many angles and saved
-};
-
-typedef struct model_file_hdr model_file_hdr;
-
-struct model_file_tail
-{
-   float4 RPPCmean[2]; // RPPC is a vector on the MSP that points from the RP point to the PC.   RP------->PC
-   float4 parcomMean;
-   float4 percomMean; 
-   float4 RPmean[2];
-};
-
-typedef struct model_file_tail model_file_tail;
-//////////////////////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 struct im_params {

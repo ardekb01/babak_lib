@@ -11,7 +11,6 @@
 
 #include "nifti1_io.h"
 #include "babak_lib.h"
-#include "swap.h"
 #include "bbk.h"
 
 #define YES 1
