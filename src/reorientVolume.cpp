@@ -3,7 +3,6 @@
 #include "babak_lib.h"
 #include "nifti1.h"
 #include "PILtransform.h"
-#include "getNiftiImageOrientation.h"
 
 // The upper-left 3x3 submatrix of T is a signed permutation matrix.
 // Callers must release the returned image with free()

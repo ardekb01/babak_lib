@@ -14,7 +14,6 @@
 #include <nifti1_io.h>
 #include <niftiimage.h>
 #include "babak_lib.h"
-#include "getNiftiImageOrientation.h"
 #include "minmax.h"
 #include "read_nifti_image.h"
 #include "set_dim.h"

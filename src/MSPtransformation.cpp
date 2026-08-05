@@ -1,7 +1,6 @@
 #include <cfloat>
 #include <math.h>
 #include "babak_lib.h"
-#include "getNiftiImageOrientation.h"
 #include "read_nifti_image.h"
 #include "set_dim.h"
 #include "PILtransform.h"
