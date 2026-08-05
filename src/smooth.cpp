@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <babak_lib.h>
+#include "babak_lib.h"
+#include "bbk.h"
 
 // NOTE: The standard deviation (SD) in all these functions is in units of pixels
 // use smoothY(float4 *image, int4 nx, int4 ny, int4 nz, float4 sd) with nz=1 for 2D case

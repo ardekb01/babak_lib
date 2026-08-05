@@ -1,6 +1,37 @@
 #ifndef BBK_H 
 #define BBK_H
 
+#include "nifti1.h"
+
+typedef struct shortim
+{
+   int nx;
+   int ny;
+   int nz;
+   int nt;
+   int np;
+   int nv;
+   float dx;
+   float dy;
+   float dz;
+   short *v; // image values
+} SHORTIM;
+
+typedef struct dim {
+   int nx; // number of columns 
+   int ny; // number of rows
+   int nz; // number of slices
+   int nt; // number of frames (epochs)
+   int np; // nx*ny
+   int nv; // nx*ny*nz
+   float dx; // x voxel dimension (mm)
+   float dy; // y voxel dimension (mm)
+   float dz; // z voxel dimension (mm)
+   float dt; // t between frames (sec)
+} DIM;
+
+float *gaussian_kernel(const float sd, int *n);
+
 // Convert P from (i, j, k) to (x, y, z) coordinates.
 // P is a 3 x n matrix. Each column is a point in the
 // (i, j, k) coordinate system. Each point is converted

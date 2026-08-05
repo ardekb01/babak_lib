@@ -1,5 +1,6 @@
 #ifndef _resize_h
 #include <cstddef>
+#include "bbk.h"
 
 template<class TYPE> float4 *resizeX(TYPE *image1, int4 nx1, int4 ny1, int4 nz1, float4 dx1, int4 nx2, float4 dx2)
 {

@@ -14,11 +14,10 @@
       (BAA from 1997: "Assistance from who????")
 ***************************************************/
 
-#include "gaussian_kernel.h"
-
 #include <limits.h>
 #include <math.h>
 #include <stdlib.h>
+#include "bbk.h"
 
 // factor 2.57 was chosen to make the area under the Gaussian approx. 0.99
 // factor 1.65 would give an area of approx 0.90

@@ -1,5 +1,6 @@
 #ifndef _smooth_h
 #include <cstddef>
+#include "bbk.h"
 
 template<class TYPE> float *smoothX(TYPE *image, int nx, int ny, int nz, float sd)
 {

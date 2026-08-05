@@ -10,9 +10,9 @@
 
 #include "loadTransformation.h"
 #include "getoption.h"
-#include "gaussian_kernel.h"
 #include "setLowHigh.h"
 #include "nifti1.h"
+#include "bbk.h"
 
 #ifndef _PILTRANSFORM
 extern int opt_CENTER_AC;
@@ -58,42 +58,6 @@ extern char opt_v;
 extern double searchradius[3]; // in units of mm
 #endif
 
-#ifndef _SHORTIM
-#define _SHORTIM
-typedef struct shortim
-{
-   int4 nx;
-   int4 ny;
-   int4 nz;
-   int4 nt;
-   int4 np;
-   int4 nv;
-   float4 dx;
-   float4 dy;
-   float4 dz;
-   int2 *v; // image values
-} SHORTIM;
-#endif
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-#ifndef _DIM
-#define _DIM
-typedef struct dim {
-   int4 nx; // number of columns 
-   int4 ny; // number of rows
-   int4 nz; // number of slices
-   int4 nt; // number of frames (epochs)
-   int4 np; // nx*ny
-   int4 nv; // nx*ny*nz
-   float4 dx; // x voxel dimension (mm)
-   float4 dy; // y voxel dimension (mm)
-   float4 dz; // z voxel dimension (mm)
-   float4 dt; // t between frames (sec)
-} DIM;
-#endif
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
 struct DICOM_file_meta_info
 {
    // maximum bytes for VR=UI is 64,  1 byte is added for the string terminator '\0'
