@@ -23,8 +23,7 @@
 #include "matrixCom.h"
 #include "rotate.h"
 #include "bbk_linear_algebra.h"
-#include "symm_objective_func.h"
-#include "intensity_weighted_centroid.h"
+#include "bbk.h"
 
 #define _artlib
 

@@ -1,5 +1,7 @@
-#ifndef INTENSITY_WEIGHTED_CENTROID_H 
-#define INTENSITY_WEIGHTED_CENTROID_H
+#ifndef BBK_H 
+#define BBK_H
+
+float symm_objective_func(const short *image, const DIM &dim, float A, float B, float C);
 
 bool intensity_weighted_centroid(
    const short *image,
