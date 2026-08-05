@@ -8,8 +8,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "loadTransformation.h"
-#include "getoption.h"
 #include "nifti1.h"
 #include "bbk.h"
 

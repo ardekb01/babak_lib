@@ -4,9 +4,9 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#include "loadTransformation.h"
 #include <ctype.h>
 #include <stdio.h>
+#include "bbk.h"
 
 // Loads a 4x4 transformation matrix from a text file.
 // The file is expected to contain four lines of four floating-point numbers.

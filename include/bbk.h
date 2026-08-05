@@ -3,6 +3,16 @@
 
 #include "nifti1.h"
 
+// Definitions associated with loadTransformation()
+#define LOADTRANSFORM_OK 0
+#define LOADTRANSFORM_NULL_POINTER 1
+#define LOADTRANSFORM_FILE_ERROR 2
+#define LOADTRANSFORM_PARSE_ERROR 3
+
+// Global variables associated with getoption()
+extern int optInd;
+extern const char *optArg;
+
 struct model_file_hdr
 {
    int nxHR;
@@ -60,6 +70,18 @@ typedef struct dim {
    float dz; // z voxel dimension (mm)
    float dt; // t between frames (sec)
 } DIM;
+
+// Structure associated with getoption()
+struct CmdOption
+{
+    const char *name;
+    int has_arg;
+    int val;
+};
+
+int getoption(int argc, char *const argv[], const struct CmdOption *options);
+
+int loadTransformation(const char *filename, float *T);
 
 // The upper-left 3x3 submatrix of T is a signed permutation matrix.
 // Callers must release the returned image with free()
