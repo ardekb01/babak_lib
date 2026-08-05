@@ -24,6 +24,7 @@
 #include "rotate.h"
 #include "bbk_linear_algebra.h"
 #include "symm_objective_func.h"
+#include "intensity_weighted_centroid.h"
 
 #define _artlib
 
