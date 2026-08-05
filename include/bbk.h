@@ -30,6 +30,8 @@ typedef struct dim {
    float dt; // t between frames (sec)
 } DIM;
 
+void setLowHigh(const short *image, int nv, int &low, int &high, float percent);
+
 float *gaussian_kernel(const float sd, int *n);
 
 // Convert P from (i, j, k) to (x, y, z) coordinates.
