@@ -17,7 +17,6 @@
 #include "check_nifti1_magic.h"
 #include "get_nifti_basename.h"
 #include "nifti1.h"
-#include "valid_orientation_code.h"
 
 #ifndef _PILTRANSFORM
 extern int opt_CENTER_AC;

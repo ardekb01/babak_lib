@@ -22,6 +22,7 @@
 #include "ijk2xyz.h"
 #include "matrixCom.h"
 #include "bbk_linear_algebra.h"
+#include "bbk.h"
 
 #define YES 1
 #define NO 0

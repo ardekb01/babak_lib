@@ -10,6 +10,7 @@
 #include "matrixCom.h"
 #include "rotate.h"
 #include "bbk_linear_algebra.h"
+#include "bbk.h"
 
 bool MSPtransformation(
    const char *filename,
