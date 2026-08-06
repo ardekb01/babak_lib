@@ -12,7 +12,7 @@ class SPH
    SPH(int radius);
    void reset();
    void set(SHORTIM im, int ic, int jc, int kc);
-   void set(float4 *im, int4 nx, int4 ny, int4 nz, int4 ic, int4 jc, int4 kc);
+   void set(float *im, int nx, int ny, int nz, int ic, int jc, int kc);
 
    void get(float *array);
 

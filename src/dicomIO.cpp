@@ -94,10 +94,10 @@ int readFileMetaInfo(const char *filename, DICOM_file_meta_info *file_meta_info,
    FILE *fp;
    char dicomPrefix[4];
    char VR[2];
-   uint2 GN=0, EN=0;
-   uint2 VL2=0;
-   uint4 VL4=0;
-   uint4 group_length=0;
+   unsigned short GN=0, EN=0;
+   unsigned short VL2=0;
+   unsigned int VL4=0;
+   unsigned int group_length=0;
    size_t VL=0;
 
    file_meta_info->media_storage_SOP_class[0]='\0';
@@ -321,14 +321,14 @@ int readDataSet(const char *filename, DICOM_hdr *hdr, char v)
    FILE *fp;
    DICOM_file_meta_info file_meta_info;
    char VR[2];
-   uint2 GN=0, EN=0;
-   uint2 VL2=0;
-   uint4 VL4=0;
+   unsigned short GN=0, EN=0;
+   unsigned short VL2=0;
+   unsigned int VL4=0;
    size_t VL=0;
 
    char DS[17]; // any data with VR of DS
    char IS[13]; // any data with VR of IS
-   uint2 US; // any data with VR of US
+   unsigned short US; // any data with VR of US
 
    if( readFileMetaInfo(filename, &file_meta_info, 0) == 0)
    {

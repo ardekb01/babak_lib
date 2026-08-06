@@ -205,7 +205,7 @@ void setMX(short *image, short *msk, int nv, int &high, float alpha)
 
 // this is worked out in my technical note notebook
 // compute 1/sqrt(2*var) * (integral from -inf to x) of exp[ (x-mu)^2/(2*var) ]
-float8 normalCDF(float8 x, float8 mu, float8 var)
+double normalCDF(double x, double mu, double var)
 {
    if( var == 0.0 ) 
    {
@@ -217,7 +217,7 @@ float8 normalCDF(float8 x, float8 mu, float8 var)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-float8 ssd_cost_function(float4 *T, DIM dimb, DIM dimf, float4 *sclbim, float4 *sclfim, int2 *bmsk, int2 *fmsk)
+double ssd_cost_function(float *T, DIM dimb, DIM dimf, float *sclbim, float *sclfim, short *bmsk, short *fmsk)
 {
    int kmin_f=0; 
    int kmax_f=dimf.nz-1;
@@ -232,18 +232,18 @@ float8 ssd_cost_function(float4 *T, DIM dimb, DIM dimf, float4 *sclbim, float4 *
    int imin_b=0;
    int imax_b=dimb.nx-1;
 
-   float4 *invT;
-   float4 dif;
-   float8 cost=0.0;
+   float *invT;
+   float dif;
+   double cost=0.0;
    int v, slice_offset, offset;
-   float4 Tmod[16]; //modified T
-   float4 invTmod[16]; //modified invT
+   float Tmod[16]; //modified T
+   float invTmod[16]; //modified invT
 
-   float4 psub0, psub1, psub2;
-   float4 nxsub2, nysub2, nzsub2; 
+   float psub0, psub1, psub2;
+   float nxsub2, nysub2, nzsub2; 
 
-   float4 ptrg0, ptrg1, ptrg2;
-   float4 nxtrg2, nytrg2, nztrg2;
+   float ptrg0, ptrg1, ptrg2;
+   float nxtrg2, nytrg2, nztrg2;
 
    invT = inv4x4(T);
 
@@ -287,8 +287,8 @@ float8 ssd_cost_function(float4 *T, DIM dimb, DIM dimf, float4 *sclbim, float4 *
    invTmod[11] = invT[11]/dimf.dz + nzsub2;
    ////////////////////////////////////////
    
-   float4 t2, t6, t10;
-   float4 t1, t5, t9;
+   float t2, t6, t10;
+   float t1, t5, t9;
 
    for(int k=kmin_f; k<=kmax_f; k++)
    {
@@ -362,7 +362,7 @@ float8 ssd_cost_function(float4 *T, DIM dimb, DIM dimf, float4 *sclbim, float4 *
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-float8 ncc_cost_function(float4 *T, DIM dimb, DIM dimf, float4 *sclbim, float4 *sclfim, int2 *bmsk, int2 *fmsk)
+double ncc_cost_function(float *T, DIM dimb, DIM dimf, float *sclbim, float *sclfim, short *bmsk, short *fmsk)
 {
    int kmin_f=0; 
    int kmax_f=dimf.nz-1;
@@ -378,20 +378,20 @@ float8 ncc_cost_function(float4 *T, DIM dimb, DIM dimf, float4 *sclbim, float4 *
    int imax_b=dimb.nx-1;
 
    int n=0; // number of voxels that take part in the NCC calculation
-   float8 sum1, sum2, sum11, sum22, sum12;
-   float4 subject_image_value, target_image_value;
+   double sum1, sum2, sum11, sum22, sum12;
+   float subject_image_value, target_image_value;
 
-   float4 *invT;
-   float8 cost=0.0;
+   float *invT;
+   double cost=0.0;
    int v, slice_offset, offset;
-   float4 Tmod[16]; //modified T
-   float4 invTmod[16]; //modified invT
+   float Tmod[16]; //modified T
+   float invTmod[16]; //modified invT
 
-   float4 psub0, psub1, psub2;
-   float4 nxsub2, nysub2, nzsub2; 
+   float psub0, psub1, psub2;
+   float nxsub2, nysub2, nzsub2; 
 
-   float4 ptrg0, ptrg1, ptrg2;
-   float4 nxtrg2, nytrg2, nztrg2;
+   float ptrg0, ptrg1, ptrg2;
+   float nxtrg2, nytrg2, nztrg2;
 
    invT = inv4x4(T);
 
@@ -435,8 +435,8 @@ float8 ncc_cost_function(float4 *T, DIM dimb, DIM dimf, float4 *sclbim, float4 *
    invTmod[11] = invT[11]/dimf.dz + nzsub2;
    ////////////////////////////////////////
    
-   float4 t2, t6, t10;
-   float4 t1, t5, t9;
+   float t2, t6, t10;
+   float t1, t5, t9;
 
    // initialize sums to zero
    sum1=sum2=sum11=sum22=sum12=0.0;
@@ -545,12 +545,12 @@ float8 ncc_cost_function(float4 *T, DIM dimb, DIM dimf, float4 *sclbim, float4 *
 // volume.  The x-axis in the ICS is pointing to the right of the image
 // (which is not necessarily the right of the subject!).  The y-axis in the
 // ICS is pointing down.  The z-axis is determined by the right-hand-rule.
-void transformation_to_magnet_coordinates(nifti_1_header hdr, float4 *T)
+void transformation_to_magnet_coordinates(nifti_1_header hdr, float *T)
 {
-   float4 rowvec[3]={0.,0.,0.};
-   float4 columnvec[3]={0.,0.,0.};
-   float4 normalvec[3]={0.,0.,0.};
-   float4 centervec[3]={0.,0.,0.};
+   float rowvec[3]={0.,0.,0.};
+   float columnvec[3]={0.,0.,0.};
+   float normalvec[3]={0.,0.,0.};
+   float centervec[3]={0.,0.,0.};
 
    //printf("sizeof_hdr = %d\n", hdr.sizeof_hdr);
    //printf("number of dimensions = %d\n", hdr.dim[0]);
@@ -572,7 +572,7 @@ void transformation_to_magnet_coordinates(nifti_1_header hdr, float4 *T)
    //printf("qoffset_z = %f\n",hdr.qoffset_z);
 
    int nx,ny,nz;
-   float4 dx,dy,dz;
+   float dx,dy,dz;
 
    nx = hdr.dim[1];
    ny = hdr.dim[2];
@@ -584,7 +584,7 @@ void transformation_to_magnet_coordinates(nifti_1_header hdr, float4 *T)
 
    if(hdr.qform_code>0 )
    {
-      float4 dum;
+      float dum;
       mat44 R;
    
       R=nifti_quatern_to_mat44( hdr.quatern_b, hdr.quatern_c, hdr.quatern_d,
@@ -656,7 +656,7 @@ void transformation_to_magnet_coordinates(nifti_1_header hdr, float4 *T)
    }
    else if(hdr.sform_code>0)
    {
-      float4 dum;
+      float dum;
 
       dum = hdr.srow_x[0]*hdr.srow_x[0] + hdr.srow_y[0]*hdr.srow_y[0] + hdr.srow_z[0]*hdr.srow_z[0];
       dum = sqrtf(dum);
@@ -757,10 +757,10 @@ void transformation_to_magnet_coordinates(nifti_1_header hdr, float4 *T)
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void atra_to_fsl(float4 *Matra, float4 *Mfsl, DIM dimf, DIM trg_dim)
+void atra_to_fsl(float *Matra, float *Mfsl, DIM dimf, DIM trg_dim)
 {
-   float4 Tsub[16], Ttrg[16];
-   float4 *inv_Tsub;
+   float Tsub[16], Ttrg[16];
+   float *inv_Tsub;
 
    Tsub[0]=1.0;  Tsub[1]=0.0;  Tsub[2]=0.0;  Tsub[3]=(dimf.nx-1.0)*dimf.dx/2.0;
    Tsub[4]=0.0;  Tsub[5]=1.0;  Tsub[6]=0.0;  Tsub[7]=(dimf.ny-1.0)*dimf.dy/2.0;
@@ -783,10 +783,10 @@ void atra_to_fsl(float4 *Matra, float4 *Mfsl, DIM dimf, DIM trg_dim)
 /////////////////////////////////////////////////
 // find sqrt(T) and inverse_sqrt(T)
 /////////////////////////////////////////////////
-void sqrt_matrix(float4 *T, float4 *sqrtT, float4 *invsqrtT)
+void sqrt_matrix(float *T, float *sqrtT, float *invsqrtT)
 {
-   float4 w[3], v[3];
-   float4 theta;
+   float w[3], v[3];
+   float theta;
 
    SE3_to_se3(T, w, v, theta);
 
@@ -804,9 +804,9 @@ void sqrt_matrix(float4 *T, float4 *sqrtT, float4 *invsqrtT)
 void symmetric_registration(SHORTIM &aimpil, const char *bfile, const char *ffile, const char *blmfile,const char *flmfile, int verbose)
 {
    char orient[4]="";
-   int2 *fmsk, *bmsk;
-   float4 *sclfim, *sclbim;
-   int2 *PILbraincloud;
+   short *fmsk, *bmsk;
+   float *sclfim, *sclbim;
+   short *PILbraincloud;
    DIM PILbraincloud_dim;
    nifti_1_header PILbraincloud_hdr; 
 
@@ -816,20 +816,20 @@ void symmetric_registration(SHORTIM &aimpil, const char *bfile, const char *ffil
    DIM dimb; // baseline image dimensions structure
    char bprefix[DEFAULT_STRING_LENGTH]=""; //baseline image prefix
    char fprefix[DEFAULT_STRING_LENGTH]=""; //follow-up image prefix
-   float4 T[16]; // The unknown transformation matrix that takes points from the follow-up to baseline space 
-   float4 Tf[16]; // The unknown transformation matrix that takes points from the follow-up to mid PIL space 
-   float4 Tb[16]; // The unknown transformation matrix that takes points from the baseline to mid PIL space 
-   float4 Tinter[16]; // Transforms points from the follow-up PIL to baseline PIL spaces
-   float4 *invT;  // inverse of T
-   float4 sqrtTinter[16];
-   float4 invsqrtTinter[16];
+   float T[16]; // The unknown transformation matrix that takes points from the follow-up to baseline space 
+   float Tf[16]; // The unknown transformation matrix that takes points from the follow-up to mid PIL space 
+   float Tb[16]; // The unknown transformation matrix that takes points from the baseline to mid PIL space 
+   float Tinter[16]; // Transforms points from the follow-up PIL to baseline PIL spaces
+   float *invT;  // inverse of T
+   float sqrtTinter[16];
+   float invsqrtTinter[16];
 
    /////////////////////////////////////////////////////////////////////////////////////////////
    // read PILbraincloud.nii from the $ARTHOME directory
    /////////////////////////////////////////////////////////////////////////////////////////////
    snprintf(filename,sizeof(filename),"%s/PILbrain.nii",ARTHOME);
 
-   PILbraincloud = (int2 *)read_nifti_image(filename, &PILbraincloud_hdr);
+   PILbraincloud = (short *)read_nifti_image(filename, &PILbraincloud_hdr);
 
    if(PILbraincloud==NULL)
    {
@@ -883,9 +883,9 @@ void symmetric_registration(SHORTIM &aimpil, const char *bfile, const char *ffil
    }
    //////////////////////////////////////////////////////////////////////////////////
 
-   float4 bTPIL[16]; // takes the baseline image to standard PIL orientation 
-   float4 fTPIL[16]; // takes the follow-up image to standard PIL orientation 
-   float4 *ibTPIL; // inverse of bTPIL
+   float bTPIL[16]; // takes the baseline image to standard PIL orientation 
+   float fTPIL[16]; // takes the follow-up image to standard PIL orientation 
+   float *ibTPIL; // inverse of bTPIL
 
    if(verbose) printf("Computing baseline image PIL transformation ...\n");
    orient[0]='\0';
@@ -900,12 +900,12 @@ void symmetric_registration(SHORTIM &aimpil, const char *bfile, const char *ffil
    ///////////////////////////////////////////////////////////////////////////////////////////////
    // Read baseline and follow-up images
    ///////////////////////////////////////////////////////////////////////////////////////////////
-   int2 *bim; // baseline image
-   int2 *fim; // follow-up image
+   short *bim; // baseline image
+   short *fim; // follow-up image
    nifti_1_header bhdr;  // baseline image NIFTI header
    nifti_1_header fhdr;  // follow-up image NIFTI header
 
-   bim = (int2 *)read_nifti_image(bfile, &bhdr);
+   bim = (short *)read_nifti_image(bfile, &bhdr);
 
    if(bim==NULL)
    {
@@ -915,7 +915,7 @@ void symmetric_registration(SHORTIM &aimpil, const char *bfile, const char *ffil
 
    set_dim(dimb, bhdr);
 
-   fim = (int2 *)read_nifti_image(ffile, &fhdr);
+   fim = (short *)read_nifti_image(ffile, &fhdr);
 
    if(fim==NULL)
    {
@@ -930,7 +930,7 @@ void symmetric_registration(SHORTIM &aimpil, const char *bfile, const char *ffil
    // determine subject and target masks
    ///////////////////////////////////////////////////////////////////////////////////////////////
    {
-      float4 Tdum[16];
+      float Tdum[16];
 
       for(int i=0; i<16; i++) Tdum[i]=bTPIL[i];
       bmsk = resliceImage(PILbraincloud, PILbraincloud_dim, dimb, Tdum, LIN);
@@ -948,8 +948,8 @@ void symmetric_registration(SHORTIM &aimpil, const char *bfile, const char *ffil
    
    ///////////////////////////////////////////////////////////////////////////////////////////////
    {
-      float4 bscale;
-      float4 fscale;
+      float bscale;
+      float fscale;
 
       trimExtremes(bim, bmsk, dimb.nv, 0.05);
       trimExtremes(fim, fmsk, dimf.nv, 0.05);
@@ -957,23 +957,23 @@ void symmetric_registration(SHORTIM &aimpil, const char *bfile, const char *ffil
       bscale=imageMean(bim, bmsk, dimb.nv);
       fscale=imageMean(fim, fmsk, dimf.nv);
 
-      sclfim = (float4 *)calloc(dimf.nv, sizeof(float4));
-      sclbim = (float4 *)calloc(dimb.nv, sizeof(float4));
+      sclfim = (float *)calloc(dimf.nv, sizeof(float));
+      sclbim = (float *)calloc(dimb.nv, sizeof(float));
 
       for(int v=0; v<dimf.nv; v++) sclfim[v] = fim[v]/fscale;
       for(int v=0; v<dimb.nv; v++) sclbim[v] = bim[v]/bscale;
    }
 
    {
-      float8 relative_change;
-      float8 mincost, oldmincost, cost;
-      float8 (*cost_function)(float4 *T, DIM dimb, DIM dimf, float4 *sclbim, float4 *sclfim,int2 *bmsk, int2 *fmsk);
-      float4 P[6];
-      float4 Pmin[6];
-      float4 stepsize[6]={0.25, 0.25, 0.25, 0.1, 0.1, 0.1};  // stepsize used in optimization
-      //float4 iP[6]={3.0, 3.0, 3.0, 1.5, 1.5, 1.5}; // interval used in optimization
+      double relative_change;
+      double mincost, oldmincost, cost;
+      double (*cost_function)(float *T, DIM dimb, DIM dimf, float *sclbim, float *sclfim,short *bmsk, short *fmsk);
+      float P[6];
+      float Pmin[6];
+      float stepsize[6]={0.25, 0.25, 0.25, 0.1, 0.1, 0.1};  // stepsize used in optimization
+      //float iP[6]={3.0, 3.0, 3.0, 1.5, 1.5, 1.5}; // interval used in optimization
       // New interval makes it twice as fast with same resutls
-      float4 iP[6]={1.0, 1.0, 1.0, 1.0, 1.0, 1.0}; // interval used in optimization 
+      float iP[6]={1.0, 1.0, 1.0, 1.0, 1.0, 1.0}; // interval used in optimization 
 
       cost_function=ssd_cost_function; // used for T1 to T1 registration
 //      cost_function=ncc_cost_function; 
@@ -1132,9 +1132,9 @@ void symmetric_registration(SHORTIM &aimpil, const char *bfile, const char *ffil
       free(invT);
 
       set_dim(aimpil, PILbraincloud_dim);
-      aimpil.v = (int2 *)calloc(aimpil.nv, sizeof(int2));
+      aimpil.v = (short *)calloc(aimpil.nv, sizeof(short));
       for(int i=0; i<aimpil.nv; i++) 
-         aimpil.v[i] = (int2)( (bimpil.v[i] + fimpil.v[i])/2.0 + 0.5 );
+         aimpil.v[i] = (short)( (bimpil.v[i] + fimpil.v[i])/2.0 + 0.5 );
 
       delete bimpil.v;
       delete fimpil.v;
@@ -1149,14 +1149,14 @@ void symmetric_registration(SHORTIM &aimpil, const char *bfile, const char *ffil
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
-void compute_lm_transformation(char *lmfile, SHORTIM im, float4 *A)
+void compute_lm_transformation(char *lmfile, SHORTIM im, float *A)
 {
    FILE *fp;
    int NLM;
    int r;
    int R;
-   float4 *LM; // 4xNLM matrix
-   float4 *CM; // 4xNLM matrix
+   float *LM; // 4xNLM matrix
+   float *CM; // 4xNLM matrix
    int cm[3]; // landmarks center of mass
    int lm[3];
 
@@ -1186,8 +1186,8 @@ void compute_lm_transformation(char *lmfile, SHORTIM im, float4 *A)
    SPH searchsph(R);
    SPH testsph(r);
    SPH refsph(r);
-   LM = (float4 *)calloc(4*NLM, sizeof(float4));
-   CM = (float4 *)calloc(4*NLM, sizeof(float4));
+   LM = (float *)calloc(4*NLM, sizeof(float));
+   CM = (float *)calloc(4*NLM, sizeof(float));
 
    for(int n=0; n<NLM; n++)
    {
@@ -1206,7 +1206,7 @@ void compute_lm_transformation(char *lmfile, SHORTIM im, float4 *A)
          fprintf(stderr, "Error: Failed to read cm from file.\n");
       }
 
-      if( (int)fread(refsph.v, sizeof(float4), refsph.n, fp) != refsph.n )
+      if( (int)fread(refsph.v, sizeof(float), refsph.n, fp) != refsph.n )
       {
          fprintf(stderr, "Error: Failed to read refsph.v from file.\n");
       }
@@ -1234,7 +1234,7 @@ void compute_lm_transformation(char *lmfile, SHORTIM im, float4 *A)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
-void find_roi(nifti_1_header *subimhdr, SHORTIM pilim, float4 pilT[],const char *side, const char *prefix, float *Tlm)
+void find_roi(nifti_1_header *subimhdr, SHORTIM pilim, float pilT[],const char *side, const char *prefix, float *Tlm)
 {
    DIM subdim;
 
@@ -1245,7 +1245,7 @@ void find_roi(nifti_1_header *subimhdr, SHORTIM pilim, float4 pilT[],const char 
    int jmin;
    int kmin;
 
-   int2 *stndrd_roi;
+   short *stndrd_roi;
 
    char filename[DEFAULT_STRING_LENGTH];
 
@@ -1254,12 +1254,12 @@ void find_roi(nifti_1_header *subimhdr, SHORTIM pilim, float4 pilT[],const char 
    SHORTIM hcim; 
   
    // hcT is an affine transformation from subim to hcim
-   float4 hcT[16];
+   float hcT[16];
 
    // hcim matrix and voxel dimensions are set to a starndard size
    set_dim(hcim, pilim);
 
-   stndrd_roi = (int2 *)calloc(hcim.nv, sizeof(int2));
+   stndrd_roi = (short *)calloc(hcim.nv, sizeof(short));
 
    multi(Tlm,4,4, pilT, 4,4, hcT);
 
@@ -1274,7 +1274,7 @@ void find_roi(nifti_1_header *subimhdr, SHORTIM pilim, float4 pilT[],const char 
    nifti_1_header mskhdr;
    
    snprintf(filename,sizeof(filename),"%s/%s.nii",ARTHOME,side);
-   msk.v = (int2 *)read_nifti_image(filename, &mskhdr);
+   msk.v = (short *)read_nifti_image(filename, &mskhdr);
 
    if(msk.v==NULL) exit(0);
 
@@ -1293,8 +1293,8 @@ void find_roi(nifti_1_header *subimhdr, SHORTIM pilim, float4 pilT[],const char 
 
    ////////////////////////////////////////////////////////////////////////////////////////////
    {
-      int2 *ntv_spc_roi;
-      float4 T[16];
+      short *ntv_spc_roi;
+      float T[16];
 
       // if image was flipped (PIR), then 'lhc3' finds the RHROI
       // and 'rhc3' finds the LHROI
@@ -1340,12 +1340,12 @@ void find_roi(nifti_1_header *subimhdr, SHORTIM pilim, float4 pilT[],const char 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
-void compute_hi(char *imfile, char *roifile, float4 &parenchymasize, int &voisize)
+void compute_hi(char *imfile, char *roifile, float &parenchymasize, int &voisize)
 {
    int binw; // histogram bin width
    int gm_pk_srch_strt;
-   int2 *roi;
-   int2 *im;
+   short *roi;
+   short *im;
    nifti_1_header hdr;
    int nx, ny, nz, nv;
    int I_alpha;
@@ -1368,13 +1368,13 @@ void compute_hi(char *imfile, char *roifile, float4 &parenchymasize, int &voisiz
       printf("ROI file: %s\n", roifile);
    }
 
-   roi = (int2 *)read_nifti_image(roifile, &hdr);
+   roi = (short *)read_nifti_image(roifile, &hdr);
    nx = hdr.dim[1];
    ny = hdr.dim[2];
    nz = hdr.dim[3];
    nv = nx*ny*nz;
 
-   im = (int2 *)read_nifti_image(imfile, &hdr);
+   im = (short *)read_nifti_image(imfile, &hdr);
    setMX(im, roi, nv, I_alpha, alpha_param);
 
    if(opt_v) printf("I_alpha = %d\n",I_alpha);
@@ -1392,12 +1392,12 @@ void compute_hi(char *imfile, char *roifile, float4 &parenchymasize, int &voisiz
 
    /////////////////////////////////////////////////////////////
    int im_min=0, im_max=0;
-   float8 *hist;
-   float8 *fit;
-   float8 mean[MAXNCLASS+1];
-   float8 var[MAXNCLASS+1];
-   float8 p[MAXNCLASS+1];
-   int2 *label;
+   double *hist;
+   double *fit;
+   double mean[MAXNCLASS+1];
+   double var[MAXNCLASS+1];
+   double p[MAXNCLASS+1];
+   short *label;
    int I_gm=0;
    int I_csf;
    
@@ -1426,9 +1426,9 @@ void compute_hi(char *imfile, char *roifile, float4 &parenchymasize, int &voisiz
    if(im_max<NBIN) {nbin=im_max+1; binw=1; }
    else { nbin = NBIN; binw = im_max/nbin + 1; }
 
-   hist = (float8 *)calloc(nbin, sizeof(float8));
-   fit = (float8 *)calloc(nbin, sizeof(float8));
-   label = (int2 *)calloc(nbin, sizeof(int2));
+   hist = (double *)calloc(nbin, sizeof(double));
+   fit = (double *)calloc(nbin, sizeof(double));
+   label = (short *)calloc(nbin, sizeof(short));
 
    // initialize hist to 0 (to be sure)
    for(int i=0; i<nbin; i++) hist[i]=0.0;
@@ -1457,7 +1457,7 @@ void compute_hi(char *imfile, char *roifile, float4 &parenchymasize, int &voisiz
    EMFIT1d(hist, fit, label, nbin, mean, var, p, nclass, 1000);
 
    // find I_gm
-   float8 hmax=0.0;
+   double hmax=0.0;
    for(int i=gm_pk_srch_strt; i<nbin; i++)
    {
       if( fit[i] > hmax ) 
@@ -1474,7 +1474,7 @@ void compute_hi(char *imfile, char *roifile, float4 &parenchymasize, int &voisiz
    // find GM class
    int gmclass;
    {
-      float8 del;
+      double del;
       del = fabs(I_gm - mean[0]);
       gmclass=0;
 
@@ -1489,8 +1489,8 @@ void compute_hi(char *imfile, char *roifile, float4 &parenchymasize, int &voisiz
    }
 
    {
-      float8 total_error;
-      float8 min_total_error=1.0;
+      double total_error;
+      double min_total_error=1.0;
       int x_at_min_total_error;
 
       for(int x=0; x<I_gm; x++)
@@ -1558,7 +1558,7 @@ void compute_hi(char *imfile, char *roifile, float4 &parenchymasize, int &voisiz
 
    /////////////////////////////////////////////////////////////
    
-   float8 csfvol=0.0;
+   double csfvol=0.0;
 
    for(int i=0; i<I_csf; i++)
    {
@@ -1584,14 +1584,14 @@ int main(int argc, char **argv)
 {
    char orient[4]="";
    float Tleft0[16], Tleft1[16], Tright0[16], Tright1[16];
-   float4 *invT;
+   float *invT;
    SHORTIM aimpil; // average of input images after transformation to standard PIL space
    SHORTIM im[MAXIM];
    DIM im_dim[MAXIM];
    nifti_1_header im_hdr[MAXIM];
    DIM PILbraincloud_dim;
    float TPIL[MAXIM][16];
-   //float4 RHI0, RHI1, LHI0, LHI1;
+   //float RHI0, RHI1, LHI0, LHI1;
    float RHI, LHI, BHI, HIasymm;
    int Rvoisize0[MAXIM], Rvoisize1[MAXIM], Lvoisize0[MAXIM], Lvoisize1[MAXIM];
    float Rparenchymasize0[MAXIM], Rparenchymasize1[MAXIM], Lparenchymasize0[MAXIM], Lparenchymasize1[MAXIM];
@@ -1784,7 +1784,7 @@ int main(int argc, char **argv)
    /////////////////////////////////////////////////////////////////////////////////////
    for(int i=0; i<nim; i++)
    {
-      im[i].v = (int2 *)read_nifti_image(imagefile[i], &im_hdr[i]);
+      im[i].v = (short *)read_nifti_image(imagefile[i], &im_hdr[i]);
       if(im[i].v==NULL)
       {
          printf("Error reading %s, aborting ...\n", imagefile[i]);
@@ -1798,12 +1798,12 @@ int main(int argc, char **argv)
    // read PILbraincloud.nii from the $ARTHOME directory
    // The only reason this is done is to read dimensions of PILbrain.nii
    /////////////////////////////////////////////////////////////////////////////////////////////
-   int2 *PILbraincloud;
+   short *PILbraincloud;
    nifti_1_header PILbraincloud_hdr; 
 
    strcpy(filename,""); strcat(filename,ARTHOME); strcat(filename,"/PILbrain.nii");
 
-   PILbraincloud = (int2 *)read_nifti_image(filename, &PILbraincloud_hdr);
+   PILbraincloud = (short *)read_nifti_image(filename, &PILbraincloud_hdr);
 
    if(PILbraincloud==NULL)
    {
@@ -1993,11 +1993,11 @@ int main(int argc, char **argv)
 
     // read roi1 
     snprintf(roifile,sizeof(roifile),"%s/%s_LHROI1.nii",imagedir[i],imagefileprefix[i]);
-    roi1 = (int2 *)read_nifti_image(roifile, &hdr);
+    roi1 = (short *)read_nifti_image(roifile, &hdr);
 
     // read roi2 
     snprintf(roifile,sizeof(roifile),"%s/%s_LHROI2.nii",imagedir[i],imagefileprefix[i]);
-    roi2 = (int2 *)read_nifti_image(roifile, &hdr);
+    roi2 = (short *)read_nifti_image(roifile, &hdr);
    
     set_dim(roidim, hdr);
 
@@ -2043,7 +2043,7 @@ int main(int argc, char **argv)
     snprintf(roifile,sizeof(roifile),"%s/%s_LHC_ROI.nii",imagedir[i],imagefileprefix[i]);
     save_nifti_image(roifile, roiPIL, &PILbraincloud_hdr);
 
-    im = (int2 *)read_nifti_image(imagefile[i], &hdr);
+    im = (short *)read_nifti_image(imagefile[i], &hdr);
     invT = inv4x4(T);
     imHC = resliceImage(im, roidim, opdim, invT, LIN);
     free(invT);
@@ -2058,11 +2058,11 @@ int main(int argc, char **argv)
     
     // read roi1 
     snprintf(roifile,sizeof(roifile),"%s/%s_RHROI1.nii",imagedir[i],imagefileprefix[i]);
-    roi1 = (int2 *)read_nifti_image(roifile, &hdr);
+    roi1 = (short *)read_nifti_image(roifile, &hdr);
 
     // read roi2 
     snprintf(roifile,sizeof(roifile),"%s/%s_RHROI2.nii",imagedir[i],imagefileprefix[i]);
-    roi2 = (int2 *)read_nifti_image(roifile, &hdr);
+    roi2 = (short *)read_nifti_image(roifile, &hdr);
    
     set_dim(roidim, hdr);
 
@@ -2114,7 +2114,7 @@ int main(int argc, char **argv)
     snprintf(roifile,sizeof(roifile),"%s/%s_RHC_ROI.nii",imagedir[i],imagefileprefix[i]);
     save_nifti_image(roifile, roiPIL, &PILbraincloud_hdr);
 
-    im = (int2 *)read_nifti_image(imagefile[i], &hdr);
+    im = (short *)read_nifti_image(imagefile[i], &hdr);
     invT = inv4x4(T);
     imHC = resliceImage(im, roidim, opdim, invT, LIN);
     free(invT);

@@ -147,7 +147,7 @@ template <class TYPE1, class TYPE2> float pearsonCorrelation(TYPE1 *x, TYPE2 *y,
 
 // Computes the Pearson correlation coefficient between x and y.
 // Implements Eq. (2.3.2) of J. Cohen & P. Cohen (2nd ed.)
-template <class TYPE1, class TYPE2> float pearsonCorrelation(TYPE1 *x, TYPE2 *y, int2 *msk, int n)
+template <class TYPE1, class TYPE2> float pearsonCorrelation(TYPE1 *x, TYPE2 *y, short *msk, int n)
 {
    int count;
    double sx,sy,sxx,syy,sxy; 

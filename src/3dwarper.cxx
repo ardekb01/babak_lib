@@ -714,7 +714,7 @@ int main(int argc, char **argv)
 
    ////////////////////////////////////////////////////////////////////////////////////////////
    // read subject and target images
-   sub = (int2 *)read_nifti_image(subjectImageFile, &sub_hdr);
+   sub = (short *)read_nifti_image(subjectImageFile, &sub_hdr);
    if(sub==NULL) 
    {
       printf("\nError: Reading subject image %s failed.\n\n",subjectImageFile);
@@ -722,7 +722,7 @@ int main(int argc, char **argv)
    }
    set_dim(dim_sub,sub_hdr); // transfer info from sub_hdr to dim_sub
 
-   trg = (int2 *)read_nifti_image(targetImageFile, &trg_hdr);
+   trg = (short *)read_nifti_image(targetImageFile, &trg_hdr);
    if(trg==NULL) 
    {
       printf("\nError: Reading target image %s failed.\n\n",targetImageFile);
@@ -778,13 +778,13 @@ int main(int argc, char **argv)
    }
    else
    {
-      int2 *PILbraincloud;
+      short *PILbraincloud;
       DIM PILbraincloud_dim;
       nifti_1_header PILbraincloud_hdr;
 
       snprintf(filename,sizeof(filename),"%s/PILbrain.nii",ARTHOME);
 
-      PILbraincloud = (int2 *)read_nifti_image(filename, &PILbraincloud_hdr);
+      PILbraincloud = (short *)read_nifti_image(filename, &PILbraincloud_hdr);
 
       if(PILbraincloud==NULL)
       {

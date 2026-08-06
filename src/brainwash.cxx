@@ -822,7 +822,7 @@ void ivf(float *Xwarp1, float *Ywarp1, float *Zwarp1, DIM dim1, float *Xwarp2, f
 
 void read_default_atlas_names(const char *brainwashatlasdir, int &natlas)
 {
-   int2 L; // number of charaters in the filename (i.e., its length)
+   short L; // number of charaters in the filename (i.e., its length)
 
    char fileprefix[DEFAULT_STRING_LENGTH];
    char filename[DEFAULT_STRING_LENGTH];
@@ -919,9 +919,9 @@ int main(int argc, char **argv)
    char atlasmskpath[2048];
    int natlas_used=11;
 
-   int4 *atlas_indx;
+   int *atlas_indx;
 
-   int2 *PILbraincloud;
+   short *PILbraincloud;
    DIM PILbraincloudDim;
    nifti_1_header PILbraincloudHdr;
 
@@ -1153,7 +1153,7 @@ int main(int argc, char **argv)
    {
       snprintf(filename,sizeof(filename),"%s/PILbrain.nii",ARTHOME);
 
-      PILbraincloud = (int2 *)read_nifti_image(filename, &PILbraincloudHdr);
+      PILbraincloud = (short *)read_nifti_image(filename, &PILbraincloudHdr);
 
       if(PILbraincloud==NULL)
       {
@@ -1178,7 +1178,7 @@ int main(int argc, char **argv)
    if( get_nifti_basename(subprefix, DEFAULT_STRING_LENGTH, subImageFile) == false ) { exit(0); }
 
    // read the subject image
-   sub = (int2 *)read_nifti_image(subImageFile, &subHdr);
+   sub = (short *)read_nifti_image(subImageFile, &subHdr);
    if(sub==NULL) 
    {
       printf("\nError: Reading image %s failed.\n\n",subImageFile);
@@ -1206,12 +1206,12 @@ int main(int argc, char **argv)
    {
       if(opt_v) printf("Selecting top %d atlases ...\n",natlas_used);
 
-      float4 *corr;
+      float *corr;
 
-      int2 *tmp1, *tmp2;
+      short *tmp1, *tmp2;
 
       corr=(float *)calloc(natlas,sizeof(float));
-      tmpmsk =(int2 *)calloc(PILbraincloudDim.nv,sizeof(int2));
+      tmpmsk =(short *)calloc(PILbraincloudDim.nv,sizeof(short));
 
       for(int v=0; v<PILbraincloudDim.nv; v++) 
       {
@@ -1232,7 +1232,7 @@ int main(int argc, char **argv)
       {
          snprintf(atlaspath,sizeof(atlaspath),"%s/%s_PIL.nii",brainwashatlasdir,atlasfilename[a]);
 
-         tmp2 = (int2 *)read_nifti_image(atlaspath, &PILbraincloudHdr);
+         tmp2 = (short *)read_nifti_image(atlaspath, &PILbraincloudHdr);
 
          atlas_indx[a]=a;
          corr[a] = pearsonCorrelation(tmp1, tmp2, tmpmsk, PILbraincloudDim.nv);
@@ -1288,7 +1288,7 @@ int main(int argc, char **argv)
       if( get_nifti_basename(atlprefix, DEFAULT_STRING_LENGTH, atlaspath) == false ) { exit(0); }
 
       // read the atlas image
-      atl = (int2 *)read_nifti_image(atlaspath, &atlHdr);
+      atl = (short *)read_nifti_image(atlaspath, &atlHdr);
       if(atl==NULL) 
       {
          printf("\nError: Reading atlas %s failed.\n\n",atlaspath);
@@ -1296,7 +1296,7 @@ int main(int argc, char **argv)
       }
       set_dim(atlDim,atlHdr); // transfer info from atlHdr to atlDim
 
-      atlmsk = (int2 *)read_nifti_image(atlasmskpath, &atlHdr);
+      atlmsk = (short *)read_nifti_image(atlasmskpath, &atlHdr);
       if(atlmsk==NULL) 
       {
          printf("\nError: Reading atlas %s failed.\n\n",atlasmskpath);
@@ -1382,7 +1382,7 @@ int main(int argc, char **argv)
       if( get_nifti_basename(atlprefix, DEFAULT_STRING_LENGTH, atlaspath) == false) { exit(0); }
 
       // read the atlas image
-      atl = (int2 *)read_nifti_image(atlaspath, &atlHdr);
+      atl = (short *)read_nifti_image(atlaspath, &atlHdr);
       if(atl==NULL) 
       {
          printf("\nError: Reading atlas %s failed.\n\n",atlaspath);
@@ -1390,7 +1390,7 @@ int main(int argc, char **argv)
       }
       set_dim(atlDim,atlHdr); // transfer info from atlHdr to atlDim
 
-      atlmsk = (int2 *)read_nifti_image(atlasmskpath, &atlHdr);
+      atlmsk = (short *)read_nifti_image(atlasmskpath, &atlHdr);
       if(atlmsk==NULL) 
       {
          printf("\nError: Reading atlas %s failed.\n\n",atlasmskpath);
@@ -1464,7 +1464,7 @@ int main(int argc, char **argv)
    {
       short *tmp;
 
-      PILmsk1 = (int2 *)calloc(dim1.nv, sizeof(int2));
+      PILmsk1 = (short *)calloc(dim1.nv, sizeof(short));
 
       for(int v=0; v<dim1.nv; v++) if(label[v]>0.5) PILmsk1[v] = 100; else PILmsk1[v]=0;
 
@@ -1500,7 +1500,7 @@ exit(0);
       if( get_nifti_basename(atlprefix, DEFAULT_STRING_LENGTH, atlaspath) == false) { exit(0); }
 
       // read the atlas image
-      atl = (int2 *)read_nifti_image(atlaspath, &atlHdr);
+      atl = (short *)read_nifti_image(atlaspath, &atlHdr);
       if(atl==NULL) 
       {
          printf("\nError: Reading atlas %s failed.\n\n",atlaspath);
@@ -1508,7 +1508,7 @@ exit(0);
       }
       set_dim(atlDim,atlHdr); // transfer info from atlHdr to atlDim
 
-      atlmsk = (int2 *)read_nifti_image(atlasmskpath, &atlHdr);
+      atlmsk = (short *)read_nifti_image(atlasmskpath, &atlHdr);
       if(atlmsk==NULL) 
       {
          printf("\nError: Reading atlas %s failed.\n\n",atlasmskpath);
@@ -1585,9 +1585,9 @@ exit(0);
    {
       short *tmp; // brain cloud in PIL space
 
-      tmp = (int2 *)calloc(subDim.nv, sizeof(int2));
+      tmp = (short *)calloc(subDim.nv, sizeof(short));
 
-      for(int i=0; i<subDim.nv; i++) tmp[i] = (int2)(label[i]*100.0 + 0.5);
+      for(int i=0; i<subDim.nv; i++) tmp[i] = (short)(label[i]*100.0 + 0.5);
 
       for(int v=0; v<subDim.nv; v++) if( tmp[v]>threshold) tmp[v]=1; else tmp[v]=0;
 

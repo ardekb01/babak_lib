@@ -52,7 +52,7 @@ void SE3_to_se3(float *M, float *w, float *v, float &theta)
    wwT[7]=w[2]*w[1];
    wwT[8]=w[2]*w[2];
 
-   for(int4 i=0; i<9; i++) A[i] = A[i] + theta*wwT[i];
+   for(int i=0; i<9; i++) A[i] = A[i] + theta*wwT[i];
 
    invA = inv3x3(A);
 

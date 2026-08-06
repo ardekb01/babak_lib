@@ -1,15 +1,15 @@
 #include "babak_lib.h"
 #include "bbk_linear_algebra.h"
 
-void leastSquaresAffineTrans(float4 *P, float4 *Q, int4 n, float4 *A)
+void leastSquaresAffineTrans(float *P, float *Q, int n, float *A)
 {
-   float4 pavg[3]; // average of columns of P
-   float4 qavg[3]; // average of columns of Q
-   float4 PPT[9];
-   float4 QPT[9];
-   float4 *iPPT;
-   float4 a[9]; // upper left 3x3 submatrix of A
-   float4 d[3];
+   float pavg[3]; // average of columns of P
+   float qavg[3]; // average of columns of Q
+   float PPT[9];
+   float QPT[9];
+   float *iPPT;
+   float a[9]; // upper left 3x3 submatrix of A
+   float d[3];
 
    // compute pavg and qavg
    avgCol(P, 3, n, pavg);
@@ -29,7 +29,7 @@ void leastSquaresAffineTrans(float4 *P, float4 *Q, int4 n, float4 *A)
 
    // computes: d = qavg - a*pavg;
    multi(a,3,3,pavg,3,1,d);
-   for(int4 i=0; i<3; i++) d[i] = qavg[i]-d[i];
+   for(int i=0; i<3; i++) d[i] = qavg[i]-d[i];
    
    A[0]=a[0]; A[1]=a[1]; A[2]=a[2]; A[3]=d[0];
    A[4]=a[3]; A[5]=a[4]; A[6]=a[5]; A[7]=d[1];

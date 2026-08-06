@@ -143,31 +143,31 @@ bool bigEndian()
 
 void swap_model_file_hdr(model_file_hdr *hdr)
 {
-   swapByteOrder( (char *)(&hdr->nxHR), sizeof(int4));
-   swapByteOrder( (char *)(&hdr->nzHR), sizeof(int4));
-   swapByteOrder( (char *)(&hdr->dxHR), sizeof(float4));
-   swapByteOrder( (char *)(&hdr->nxLR), sizeof(int4));
-   swapByteOrder( (char *)(&hdr->nvol), sizeof(int4));
-   swapByteOrder( (char *)(&hdr->RPtemplateradius), sizeof(int4));
-   swapByteOrder( (char *)(&hdr->RPtemplateheight), sizeof(int4));
-   swapByteOrder( (char *)(&hdr->RPtemplatesize), sizeof(int4));
-   swapByteOrder( (char *)(&hdr->ACtemplateradius), sizeof(int4));
-   swapByteOrder( (char *)(&hdr->ACtemplateheight), sizeof(int4));
-   swapByteOrder( (char *)(&hdr->ACtemplatesize), sizeof(int4));
-   swapByteOrder( (char *)(&hdr->PCtemplateradius), sizeof(int4));
-   swapByteOrder( (char *)(&hdr->PCtemplateheight), sizeof(int4));
-   swapByteOrder( (char *)(&hdr->PCtemplatesize), sizeof(int4));
-   swapByteOrder( (char *)(&hdr->nangles), sizeof(int4));
+   swapByteOrder( (char *)(&hdr->nxHR), sizeof(int));
+   swapByteOrder( (char *)(&hdr->nzHR), sizeof(int));
+   swapByteOrder( (char *)(&hdr->dxHR), sizeof(float));
+   swapByteOrder( (char *)(&hdr->nxLR), sizeof(int));
+   swapByteOrder( (char *)(&hdr->nvol), sizeof(int));
+   swapByteOrder( (char *)(&hdr->RPtemplateradius), sizeof(int));
+   swapByteOrder( (char *)(&hdr->RPtemplateheight), sizeof(int));
+   swapByteOrder( (char *)(&hdr->RPtemplatesize), sizeof(int));
+   swapByteOrder( (char *)(&hdr->ACtemplateradius), sizeof(int));
+   swapByteOrder( (char *)(&hdr->ACtemplateheight), sizeof(int));
+   swapByteOrder( (char *)(&hdr->ACtemplatesize), sizeof(int));
+   swapByteOrder( (char *)(&hdr->PCtemplateradius), sizeof(int));
+   swapByteOrder( (char *)(&hdr->PCtemplateheight), sizeof(int));
+   swapByteOrder( (char *)(&hdr->PCtemplatesize), sizeof(int));
+   swapByteOrder( (char *)(&hdr->nangles), sizeof(int));
 }
 
 void swap_model_file_tail(model_file_tail *tail)
 {
-   swapByteOrder( (char *)(&tail->RPPCmean[0]), sizeof(float4));
-   swapByteOrder( (char *)(&tail->RPPCmean[1]), sizeof(float4));
-   swapByteOrder( (char *)(&tail->parcomMean), sizeof(float4));
-   swapByteOrder( (char *)(&tail->percomMean), sizeof(float4));
-   swapByteOrder( (char *)(&tail->RPmean[0]), sizeof(float4));
-   swapByteOrder( (char *)(&tail->RPmean[1]), sizeof(float4));
+   swapByteOrder( (char *)(&tail->RPPCmean[0]), sizeof(float));
+   swapByteOrder( (char *)(&tail->RPPCmean[1]), sizeof(float));
+   swapByteOrder( (char *)(&tail->parcomMean), sizeof(float));
+   swapByteOrder( (char *)(&tail->percomMean), sizeof(float));
+   swapByteOrder( (char *)(&tail->RPmean[0]), sizeof(float));
+   swapByteOrder( (char *)(&tail->RPmean[1]), sizeof(float));
 }
 
 void swapniftiheader(nifti_1_header *hdr)

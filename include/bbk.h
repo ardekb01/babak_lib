@@ -79,6 +79,8 @@ struct CmdOption
     int val;
 };
 
+bool findInitialNormalVector(short *image, const DIM &dim, float &A, float &B, float &C);
+
 int getoption(int argc, char *const argv[], const struct CmdOption *options);
 
 int loadTransformation(const char *filename, float *T);
