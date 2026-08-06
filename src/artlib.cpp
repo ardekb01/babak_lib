@@ -1902,7 +1902,7 @@ int dsm(void)
 	return(pmin);
 }
 
-float optimizeNormalVector(short *image,DIM dim, float *A, float *B, float *C)
+float optimizeNormalVector(short *image,DIM dim, float &A, float &B, float &C)
 {
    //int i;  /* loop indices */
    int pmin;
@@ -1916,16 +1916,16 @@ float optimizeNormalVector(short *image,DIM dim, float *A, float *B, float *C)
 
    float z0;
 
-   z0 = (1- (*C))/ (*C);
+   z0 = (1-C)/C;
 
    T[0]=1.0; T[1]=0.0; T[2]=0.0; T[3]=0.0;
    T[4]=0.0; T[5]=1.0; T[6]=0.0; T[7]=0.0;
    T[8]=0.0; T[9]=0.0; T[10]=1.0; T[11]=-z0;
    T[12]=0.0; T[13]=0.0; T[14]=0.0; T[15]=1.0;
 
-   *A /= (*C); 
-   *B /= (*C); 
-   *C = 1.0;
+   A /= C; 
+   B /= C; 
+   C = 1.0f;
 
    invT = inv4x4(T);
    gimage=resliceImage(image, dim, dim, invT, LIN);
@@ -1933,9 +1933,9 @@ float optimizeNormalVector(short *image,DIM dim, float *A, float *B, float *C)
 
    gdim=dim;
 
-   x[0]=vertex[0][0]=(*A);
-   x[1]=vertex[0][1]=(*B);
-   x[2]=vertex[0][2]=(*C);
+   x[0]=vertex[0][0]=A;
+   x[1]=vertex[0][1]=B;
+   x[2]=vertex[0][2]=C;
    value[0]=-symm_objective_func(gimage,gdim,x[0],x[1],x[2]);
 
    x[0]=vertex[1][0]=2.0/(dim.nx*dim.dx);
@@ -1961,9 +1961,9 @@ float optimizeNormalVector(short *image,DIM dim, float *A, float *B, float *C)
 
    cc=symm_objective_func(gimage,gdim,x[0],x[1],x[2]);
 
-   *A= x[0]/(1+x[2]*z0);
-   *B= x[1]/(1+x[2]*z0);
-   *C= x[2]/(1+x[2]*z0);
+   A= x[0]/(1+x[2]*z0);
+   B= x[1]/(1+x[2]*z0);
+   C= x[2]/(1+x[2]*z0);
 
    free(gimage);
 
@@ -1971,7 +1971,7 @@ float optimizeNormalVector(short *image,DIM dim, float *A, float *B, float *C)
 }
 
 // have to limit the search considering the fact that the input image will be almost PIL
-void findInitialNormalVector(short *image, DIM dim, float *A, float *B,float *C)
+void findInitialNormalVector(short *image, DIM dim, float &A, float &B,float &C)
 {
    float dum;        /* dummy variable */
    float a,b,c;      /* direction cosines  ax+by+cz=d */
@@ -2094,7 +2094,7 @@ void findInitialNormalVector(short *image, DIM dim, float *A, float *B,float *C)
 //printf("\nplane of symmetry: (%7.3f,%7.3f,%7.3f).(x,y,z) = %7.3f", a,b,c,d);
 //printf("\ncross correlation = %6.4f\n",ccmax);
 
-   cc=optimizeNormalVector(image,dim,&A1,&B1,&C1);
+   cc=optimizeNormalVector(image,dim,A1,B1,C1);
   
 //dum=(float)sqrt((double)A1*A1 + B1*B1 + C1*C1 ); 
 //a=A1/dum; b=B1/dum; c=C1/dum; d=1./dum;
@@ -2102,7 +2102,7 @@ void findInitialNormalVector(short *image, DIM dim, float *A, float *B,float *C)
 //printf("\nplane of symmetry: (%7.3f,%7.3f,%7.3f).(x,y,z) = %7.3f", a,b,c,d);
 //printf("\ncross correlation = %6.4f\n",cc);
 
-   *A=A1; *B=B1; *C=C1;
+   A=A1; B=B1; C=C1;
 
    free(cumulativelength);
    free(phi);
@@ -2110,7 +2110,7 @@ void findInitialNormalVector(short *image, DIM dim, float *A, float *B,float *C)
 }
 
 // (A,B,C)=(a,b,c)/d  (Ax+By+Cz=1)  (ax+by+cz=d)
-float msp(short *im_in, int nx, int ny, int nz, float dx, float dy, float dz, float *A, float *B, float *C) 
+float msp(short *im_in, int nx, int ny, int nz, float dx, float dy, float dz, float &A, float &B, float &C) 
 {
    int low=0,high=0;
    int nv;
@@ -2252,8 +2252,8 @@ void computeTmsp(char *orientation, short *volOrig, DIM dim, float *Tmsp)
    volumePIL=reorientVolume(volOrig,dim.nx,dim.ny,dim.nz,dim.dx,dim.dy,dim.dz,TPIL,nxPIL,nyPIL,nzPIL,dxPIL,dyPIL,dzPIL);
 
    // determine the MSP from the PIL orineted volume
-   //cc=msp(volumePIL, nxPIL, nyPIL, nzPIL, dxPIL, dyPIL, dzPIL, &A, &B, &C);
-   (void)msp(volumePIL, nxPIL, nyPIL, nzPIL, dxPIL, dyPIL, dzPIL, &A, &B, &C);
+   //cc=msp(volumePIL, nxPIL, nyPIL, nzPIL, dxPIL, dyPIL, dzPIL, A, B, C);
+   (void)msp(volumePIL, nxPIL, nyPIL, nzPIL, dxPIL, dyPIL, dzPIL, A, B, C);
    free(volumePIL);
 
    // determine (a,b,c) from (A,B,C)

@@ -326,9 +326,9 @@ bool MSPtransformation(const char *filename, const char *orient, float *Tmsp, DI
       dxPIL,
       dyPIL,
       dzPIL,
-      &A,
-      &B,
-      &C
+      A,
+      B,
+      C
    );
 
    free(imPIL);
