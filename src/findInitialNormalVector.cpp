@@ -4,7 +4,8 @@
 
 // have to limit the search considering the fact that the input image will be almost PIL
 // The input image must be in PIL orientation.
-bool findInitialNormalVector(short *image, const DIM &dim, float &A, float &B, float &C)
+// Plane parameters are represented as Ax + By + Cz = 1.
+bool findInitialNormalVector(const short *image, const DIM &dim, float &A, float &B, float &C)
 {
    if(image == nullptr)
       return false;
@@ -15,8 +16,8 @@ bool findInitialNormalVector(short *image, const DIM &dim, float &A, float &B, f
    if(dim.dx <= 0.0f || dim.dy <= 0.0f || dim.dz <= 0.0f)
       return false;
 
-   // compute x_cm,y_cm,z_cm the coordinates of the image "center of gravity"
-   // in (mm) with respect to the FOV center as origin.
+   // Compute x_cm,y_cm,z_cm the coordinates of the intensity-weighted image 
+   // centroid in (mm) with respect to the FOV center as origin.
    float x_cm, y_cm, z_cm;
    if( !intensity_weighted_centroid(image, dim.nx, dim.ny, dim.nz,
       dim.dx, dim.dy, dim.dz,
@@ -25,67 +26,64 @@ bool findInitialNormalVector(short *image, const DIM &dim, float &A, float &B, f
       return false;
    }
 
+   constexpr double kMaxPhiDeg = 20.0;
+   constexpr double kPhiStepDeg = 2.0;
+   constexpr float kMinimumOffset = 0.1f;
+   constexpr double kPi = 3.14159265358979323846;
+   constexpr double kDegToRad = kPi / 180.0;
+   constexpr int kHalfSearchRange = 5;
+
+
    // Ensure that the plane does not pass through the origin.
    if( std::abs(z_cm) <=  FLT_EPSILON)
    {
-      z_cm = 0.1f;
+      z_cm = kMinimumOffset;
    }
 
-   float dum;
    float a, b, c;    // direction cosines  ax + by + cz = d 
    float d;
 
-   // Ax + By + Cz = 1
-   float A1, B1, C1;
+   float ccmax = -1.0f;
 
-   float cc;
-   float ccmax = 0.0f;
-
-   /* Coordinates of the input image "center of gravity" in mm.
-      Origin is taken to be the center of the image volume. */
-
-   double pi;
-   double phi0 = 20.0;
-   double delphi = 2.0;
+   double phi0 = kMaxPhiDeg;
+   double delphi = kPhiStepDeg;
    int nrings;                 // number of rings
-   double ringlength;          // length of a ring
-   double *cumulativelength;
+   double ringLength;          // length of a ring
+   double *cumulativeLength;
    double *theta;
    double *phi;
-   double totallength;         // sum of all ring lengths
+   double totalLength;         // sum of all ring lengths
    double arclength;
    int N;                      // number of samples
 
-   pi = 4.0 * std::atan(1.0);
-
-   // convert from degrees to radians
-   phi0 = pi * phi0 / 180.0;
-   delphi = pi * delphi / 180.0;
+   // Convert from degrees to radians.
+   phi0 *= kDegToRad;
+   delphi *= kDegToRad;
 
    nrings = static_cast<int>(std::ceil(phi0 / delphi)) + 1;
 
-   cumulativelength = (double *)calloc(nrings, sizeof(double));
+   cumulativeLength = (double *)calloc(nrings, sizeof(double));
   
-   if(cumulativelength == nullptr)
+   if(cumulativeLength == nullptr)
       return false;
 
-   totallength = 0.0;
+   totalLength = 0.0;
    for(int i = 0; i < nrings; i++)
    {
-      ringlength = 2 * pi * sin(i * delphi);
+      ringLength = 2 * kPi * std::sin(i * delphi);
 
-      totallength += ringlength;
+      totalLength += ringLength;
 
-      cumulativelength[i] = totallength;
+      cumulativeLength[i] = totalLength;
    }
 
-   N = static_cast<int>(std::floor(totallength / delphi)) + 1;
+   N = static_cast<int>(std::floor(totalLength / delphi)) + 1;
 
    theta = (double *)calloc(N, sizeof(double));
    
    if(theta == nullptr)
    {
-      free(cumulativelength);
+      free(cumulativeLength);
       return false;
    }
 
@@ -93,7 +91,7 @@ bool findInitialNormalVector(short *image, const DIM &dim, float &A, float &B, f
 
    if(phi == nullptr)
    {
-      free(cumulativelength);
+      free(cumulativeLength);
       free(theta);
       return false;
    }
@@ -107,39 +105,36 @@ bool findInitialNormalVector(short *image, const DIM &dim, float &A, float &B, f
 
       for(int j = 1; j < nrings; j++)
       {
-         if(arclength <= cumulativelength[j] &&
-            arclength > cumulativelength[j - 1])
+         if(arclength <= cumulativeLength[j] &&
+            arclength > cumulativeLength[j - 1])
          {
-            arclength -= cumulativelength[j - 1];
+            arclength -= cumulativeLength[j - 1];
             phi[i] = j * delphi;
-            theta[i] = arclength / sin(phi[i]);
+            theta[i] = arclength / std::sin(phi[i]);
             break;
          }
       }
    }
 
-   //printf("\n******x_cm=%7.3f y_cm=%7.3f z_cm=%7.3f (mm)\n",x_cm,y_cm,z_cm);
-   //printf("i = %f\n", (x_cm + dim.dx*(dim.nx-1.0)/2.0)/1.5 );
-   //printf("j = %f\n", (y_cm + dim.dy*(dim.ny-1.0)/2.0)/0.859375 );
-   //printf("k = %f\n", (z_cm + dim.dz*(dim.nz-1.0)/2.0)/0.859375 );
+   A = 0.0f;
+   B = 0.0f;
+   C = 1.0f / z_cm;
 
-   A1 = 0.0f;
-   B1 = 0.0f;
-   C1 = 1.0f / z_cm;
-
-   for(float z = z_cm - 5.0f; z <= z_cm + 5.0f; z += 1.0f)
+   for(int offset = -kHalfSearchRange; offset <= kHalfSearchRange; offset++)
    {
+      const float z = z_cm + static_cast<float>(offset);
+
       for(int i = 0; i < N; i++)
       {
-         /* The samples theta and phi define a direction in space. Find the
-         unit vector (a,b,c) in that direction. */
-         a = (float)(std::sin(phi[i]) * std::cos(theta[i]));
-         b = (float)(std::sin(phi[i]) * std::sin(theta[i]));
-         c = (float)std::cos(phi[i]);
+         // The samples theta and phi define a direction in space. Find the
+         // unit vector (a,b,c) in that direction.
+         a = static_cast<float>(std::sin(phi[i]) * std::cos(theta[i]));
+         b = static_cast<float>(std::sin(phi[i]) * std::sin(theta[i]));
+         c = static_cast<float>(std::cos(phi[i]));
 
          d = a * x_cm + b * y_cm + c * z;
 
-         /* make sure d is non-negative */
+         // make sure d is non-negative 
          if(d < 0.0f)
          {
             a *= -1.0f;
@@ -148,47 +143,31 @@ bool findInitialNormalVector(short *image, const DIM &dim, float &A, float &B, f
             d *= -1.0f;
          }
 
-         /* find the cross-correlation between image and its reflection
-         about the plane ax+by+cz=d */
+         // find the cross-correlation between image and its reflection
+         // about the plane ax+by+cz=d 
 
          if(d > FLT_EPSILON)
          {
-            cc = symm_objective_func(image, dim, a / d, b / d, c / d);
+            const float invD = 1.0f / d;
+
+            const float cc =
+               symm_objective_func(image, dim,
+                                   a * invD,
+                                   b * invD,
+                                   c * invD);
 
             if(cc > ccmax)
             {
                ccmax = cc;
-               A1 = a / d;
-               B1 = b / d;
-               C1 = c / d;
+               A = a * invD;
+               B = b * invD;
+               C = c * invD;
             }
          }
       }
    }
 
-   dum = (float)std::sqrt((double)A1 * A1 + B1 * B1 + C1 * C1);
-   a = A1 / dum;
-   b = B1 / dum;
-   c = C1 / dum;
-   d = 1.0f / dum;
-
-   //printf("\nInitial guess:");
-   //printf("\nplane of symmetry: (%7.3f,%7.3f,%7.3f).(x,y,z) = %7.3f", a,b,c,d);
-   //printf("\ncross correlation = %6.4f\n",ccmax);
-
-   cc = optimizeNormalVector(image, dim, A1, B1, C1);
-
-   //dum=(float)std::sqrt((double)A1*A1 + B1*B1 + C1*C1 );
-   //a=A1/dum; b=B1/dum; c=C1/dum; d=1./dum;
-   //printf("\nRefined initial guess:");
-   //printf("\nplane of symmetry: (%7.3f,%7.3f,%7.3f).(x,y,z) = %7.3f", a,b,c,d);
-   //printf("\ncross correlation = %6.4f\n",cc);
-
-   A = A1;
-   B = B1;
-   C = C1;
-
-   free(cumulativelength);
+   free(cumulativeLength);
    free(theta);
    free(phi);
 
