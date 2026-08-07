@@ -8,14 +8,12 @@
 // Plane parameters are represented as Ax + By + Cz = 1.
 bool findInitialNormalVector(const short *image, const DIM &dim, float &A, float &B, float &C)
 {
-   if(image == nullptr)
+   if(image == nullptr || 
+     dim.nx <= 0 || dim.ny <= 0 || dim.nz <= 0 ||
+     dim.dx <= 0.0f || dim.dy <= 0.0f || dim.dz <= 0.0f)
+   {
       return false;
-
-   if(dim.nx <= 0 || dim.ny <= 0 || dim.nz <= 0)
-      return false;
-  
-   if(dim.dx <= 0.0f || dim.dy <= 0.0f || dim.dz <= 0.0f)
-      return false;
+   }
 
    // Compute x_cm,y_cm,z_cm the coordinates of the intensity-weighted image 
    // centroid in (mm) with respect to the FOV center as origin.
@@ -27,7 +25,10 @@ bool findInitialNormalVector(const short *image, const DIM &dim, float &A, float
       return false;
    }
 
+   // Maximum angular deviation from the superior-inferior axis.
+   // Assumes the input image is approximately PIL-oriented.
    constexpr double kMaxPhiDeg = 20.0;
+
    constexpr double kPhiStepDeg = 2.0;
    constexpr float kMinimumOffset = 0.1f;
    constexpr double kPi = 3.14159265358979323846;
@@ -42,9 +43,7 @@ bool findInitialNormalVector(const short *image, const DIM &dim, float &A, float
 
    float a, b, c;    // direction cosines  ax + by + cz = d 
    float d;
-
    float ccmax = -1.0f;
-
    double phi0 = kMaxPhiDeg;
    double delphi = kPhiStepDeg;
    int nrings;                 // number of rings
@@ -96,30 +95,21 @@ bool findInitialNormalVector(const short *image, const DIM &dim, float &A, float
       }
    }
 
-   std::vector<float> sinPhi(N);
-   std::vector<float> cosPhi(N);
-   std::vector<float> sinTheta(N);
-   std::vector<float> cosTheta(N);
-
-   for(int i = 0; i < N; i++)
-   {
-      sinPhi[i] = static_cast<float>(std::sin(phi[i]));
-      cosPhi[i] = static_cast<float>(std::cos(phi[i]));
-      sinTheta[i] = static_cast<float>(std::sin(theta[i]));
-      cosTheta[i] = static_cast<float>(std::cos(theta[i]));
-   }
-
    std::vector<float> dirX(N);
    std::vector<float> dirY(N);
    std::vector<float> dirZ(N);
 
    for(int i = 0; i < N; i++)
    {
-      dirX[i] = sinPhi[i] * cosTheta[i];
-      dirY[i] = sinPhi[i] * sinTheta[i];
-      dirZ[i] = cosPhi[i];
-   }
+      const float sinPhi   = static_cast<float>(std::sin(phi[i]));
+      const float cosPhi   = static_cast<float>(std::cos(phi[i]));
+      const float sinTheta = static_cast<float>(std::sin(theta[i]));
+      const float cosTheta = static_cast<float>(std::cos(theta[i]));
 
+      dirX[i] = sinPhi * cosTheta;
+      dirY[i] = sinPhi * sinTheta;
+      dirZ[i] = cosPhi;
+   }
 
    A = 0.0f;
    B = 0.0f;
@@ -136,7 +126,6 @@ bool findInitialNormalVector(const short *image, const DIM &dim, float &A, float
          a = dirX[i];
          b = dirY[i];
          c = dirZ[i];
-
 
          d = a * x_cm + b * y_cm + c * z;
 
@@ -172,6 +161,9 @@ bool findInitialNormalVector(const short *image, const DIM &dim, float &A, float
          }
       }
    }
+
+   if(ccmax < 0.0f)
+      return false;
 
    return true;
 }
