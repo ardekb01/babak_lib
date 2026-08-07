@@ -1,4 +1,5 @@
 #include <cmath>
+#include <vector>
 #include <cfloat>
 #include "babak_lib.h"
 
@@ -33,7 +34,6 @@ bool findInitialNormalVector(const short *image, const DIM &dim, float &A, float
    constexpr double kDegToRad = kPi / 180.0;
    constexpr int kHalfSearchRange = 5;
 
-
    // Ensure that the plane does not pass through the origin.
    if( std::abs(z_cm) <=  FLT_EPSILON)
    {
@@ -49,9 +49,6 @@ bool findInitialNormalVector(const short *image, const DIM &dim, float &A, float
    double delphi = kPhiStepDeg;
    int nrings;                 // number of rings
    double ringLength;          // length of a ring
-   double *cumulativeLength;
-   double *theta;
-   double *phi;
    double totalLength;         // sum of all ring lengths
    double arclength;
    int N;                      // number of samples
@@ -62,10 +59,7 @@ bool findInitialNormalVector(const short *image, const DIM &dim, float &A, float
 
    nrings = static_cast<int>(std::ceil(phi0 / delphi)) + 1;
 
-   cumulativeLength = (double *)calloc(nrings, sizeof(double));
-  
-   if(cumulativeLength == nullptr)
-      return false;
+   std::vector<double> cumulativeLength(nrings);
 
    totalLength = 0.0;
    for(int i = 0; i < nrings; i++)
@@ -79,22 +73,8 @@ bool findInitialNormalVector(const short *image, const DIM &dim, float &A, float
 
    N = static_cast<int>(std::floor(totalLength / delphi)) + 1;
 
-   theta = (double *)calloc(N, sizeof(double));
-   
-   if(theta == nullptr)
-   {
-      free(cumulativeLength);
-      return false;
-   }
-
-   phi = (double *)calloc(N, sizeof(double));
-
-   if(phi == nullptr)
-   {
-      free(cumulativeLength);
-      free(theta);
-      return false;
-   }
+   std::vector<double> theta(N);
+   std::vector<double> phi(N);
 
    theta[0] = 0.0;
    phi[0] = 0.0;
@@ -116,6 +96,31 @@ bool findInitialNormalVector(const short *image, const DIM &dim, float &A, float
       }
    }
 
+   std::vector<float> sinPhi(N);
+   std::vector<float> cosPhi(N);
+   std::vector<float> sinTheta(N);
+   std::vector<float> cosTheta(N);
+
+   for(int i = 0; i < N; i++)
+   {
+      sinPhi[i] = static_cast<float>(std::sin(phi[i]));
+      cosPhi[i] = static_cast<float>(std::cos(phi[i]));
+      sinTheta[i] = static_cast<float>(std::sin(theta[i]));
+      cosTheta[i] = static_cast<float>(std::cos(theta[i]));
+   }
+
+   std::vector<float> dirX(N);
+   std::vector<float> dirY(N);
+   std::vector<float> dirZ(N);
+
+   for(int i = 0; i < N; i++)
+   {
+      dirX[i] = sinPhi[i] * cosTheta[i];
+      dirY[i] = sinPhi[i] * sinTheta[i];
+      dirZ[i] = cosPhi[i];
+   }
+
+
    A = 0.0f;
    B = 0.0f;
    C = 1.0f / z_cm;
@@ -128,9 +133,10 @@ bool findInitialNormalVector(const short *image, const DIM &dim, float &A, float
       {
          // The samples theta and phi define a direction in space. Find the
          // unit vector (a,b,c) in that direction.
-         a = static_cast<float>(std::sin(phi[i]) * std::cos(theta[i]));
-         b = static_cast<float>(std::sin(phi[i]) * std::sin(theta[i]));
-         c = static_cast<float>(std::cos(phi[i]));
+         a = dirX[i];
+         b = dirY[i];
+         c = dirZ[i];
+
 
          d = a * x_cm + b * y_cm + c * z;
 
@@ -166,10 +172,6 @@ bool findInitialNormalVector(const short *image, const DIM &dim, float &A, float
          }
       }
    }
-
-   free(cumulativeLength);
-   free(theta);
-   free(phi);
 
    return true;
 }
