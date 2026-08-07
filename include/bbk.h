@@ -79,7 +79,7 @@ struct CmdOption
     int val;
 };
 
-bool findInitialNormalVector(const short *image, const DIM &dim, float &A, float &B, float &C);
+bool initialMSPestimation(const short *image, const DIM &dim, float &A, float &B, float &C);
 
 int getoption(int argc, char *const argv[], const struct CmdOption *options);
 

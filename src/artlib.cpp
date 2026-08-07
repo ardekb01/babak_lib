@@ -2025,7 +2025,7 @@ float msp(short *im_in, int nx, int ny, int nz, float dx, float dy, float dz, fl
    image[1]=resizeXYZ(image[0], dim[0].nx,dim[0].ny,dim[0].nz, dim[0].dx,dim[0].dy,dim[0].dz,
    dim[1].nx,dim[1].ny,dim[1].nz, dim[1].dx,dim[1].dy,dim[1].dz);
 
-   findInitialNormalVector(image[2],dim[2], A, B, C);
+   initialMSPestimation(image[2],dim[2], A, B, C);
    cc=optimizeNormalVector(image[1],dim[1], A, B, C); 
 //cc=optimizeNormalVector(image[0],dim[0], A, B, C); 
 

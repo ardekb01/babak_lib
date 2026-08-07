@@ -6,7 +6,7 @@
 // have to limit the search considering the fact that the input image will be almost PIL
 // The input image must be in PIL orientation.
 // Plane parameters are represented as Ax + By + Cz = 1.
-bool findInitialNormalVector(const short *image, const DIM &dim, float &A, float &B, float &C)
+bool initialMSPestimation(const short *image, const DIM &dim, float &A, float &B, float &C)
 {
    if(image == nullptr || 
      dim.nx <= 0 || dim.ny <= 0 || dim.nz <= 0 ||
