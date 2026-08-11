@@ -234,7 +234,6 @@ extern short *thresholdImageOtsu(short *im, int nv, int *nbv);
 extern void defineTemplate(int r, int h, short *x, short *y, short *z);
 extern char *defineACregion(DIM dim, float *RP, float *PC, float parcomMean, float percomMean, double ACsr);
 extern char *definePCregion(DIM HR, float *RP, float *RPPCmean, double PCsr);
-extern char *expandMask(short *mask_HR, DIM HR, float *RPmean, double RPsr);
 extern void ACPCtransform(float *Tacpc, float *Tmsp, float *AC, float *PC, char flg);
 extern void compute_MSP_parameters_from_Tmsp(float *Tmsp, float *n, float *d);
 extern int detect_AC_PC_MSP( const char *imagefilename, char *orientation, char *modelfile,

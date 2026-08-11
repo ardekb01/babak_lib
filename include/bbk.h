@@ -79,7 +79,16 @@ struct CmdOption
     int val;
 };
 
-bool initialMSPestimation(const short *image, const DIM &dim, float &A, float &B, float &C);
+char *circularMask(short *mask, 
+                   const DIM &dim, 
+                   const float *center, 
+                   const double radius);
+
+bool initialMSPestimation(const short *image, 
+                          const DIM &dim, 
+                          float &A, 
+                          float &B, 
+                          float &C);
 
 int getoption(int argc, char *const argv[], const struct CmdOption *options);
 

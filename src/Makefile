@@ -13,6 +13,9 @@ all: libbabak.a brainwash 3dwarper acpcdetect applywarp3d scaleImage avgImage on
 
 # because of functions in matrixops, linking the libbabak will possibly require lapack libs.
 
+circularMask.o: circularMask.cpp
+	$(CC) $(CFLAGS) -c $(INC) circularMask.cpp
+
 initialMSPestimation.o: initialMSPestimation.cpp
 	$(CC) $(CFLAGS) -c $(INC) initialMSPestimation.cpp
 
@@ -202,8 +205,73 @@ getARTHOME.o: getARTHOME.cpp
 update_qsform.o: update_qsform.cpp
 	$(CC) $(CFLAGS)  -c $(INC) update_qsform.cpp
 
-libbabak.a: initialMSPestimation.o symm_objective_func.o bbk_linear_algebra.o ijk2xyz.o read_nifti_image.o get_nifti_basename.o check_nifti1_magic.o get_directory_name.o loadTransformation.o leastSquaresAffineTrans.o hist1D_plot.o set_dim.o MSPtransformation.o singular_value_decomposition.o DKI.o artlib.o volume.o binomial.o smooth.o niftiimage.o utils.o nifti.o errorMessage.o maskOps.o EMFIT.o max_cc.o statistics.o ginverse.o permutation.o hpsort.o random.o dicomIO.o nkiIO.o subsets.o analyzeio.o getoption.o swap.o fileinfo.o histogram.o resize.o gaussian_kernel.o convolution.o resliceImage.o matrixCom.o registration.o legendre.o cubicspline.o medianfilter.o directionCode.o check_nifti_file_extension.o getNiftiImageOrientation.o valid_orientation_code.o PILtransform.o reorientVolume.o rotate.o setLowHigh.o intensity_weighted_centroid.o standardize.o sph.o matrixops.o landmarks.o getARTHOME.o update_qsform.o
-	ar -ru ../lib/libbabak.a initialMSPestimation.o symm_objective_func.o bbk_linear_algebra.o ijk2xyz.o read_nifti_image.o get_nifti_basename.o check_nifti1_magic.o get_directory_name.o loadTransformation.o leastSquaresAffineTrans.o hist1D_plot.o set_dim.o MSPtransformation.o singular_value_decomposition.o DKI.o artlib.o volume.o binomial.o smooth.o niftiimage.o utils.o nifti.o errorMessage.o maskOps.o EMFIT.o max_cc.o statistics.o ginverse.o permutation.o hpsort.o random.o dicomIO.o nkiIO.o subsets.o analyzeio.o getoption.o swap.o fileinfo.o histogram.o resize.o gaussian_kernel.o convolution.o resliceImage.o matrixCom.o registration.o legendre.o cubicspline.o medianfilter.o directionCode.o check_nifti_file_extension.o getNiftiImageOrientation.o valid_orientation_code.o PILtransform.o reorientVolume.o rotate.o setLowHigh.o intensity_weighted_centroid.o standardize.o sph.o matrixops.o landmarks.o getARTHOME.o update_qsform.o
+libbabak.a: \
+initialMSPestimation.o \
+circularMask.o \
+symm_objective_func.o \
+bbk_linear_algebra.o \
+ijk2xyz.o \
+read_nifti_image.o \
+get_nifti_basename.o \
+check_nifti1_magic.o \
+get_directory_name.o \
+loadTransformation.o \
+leastSquaresAffineTrans.o \
+hist1D_plot.o \
+set_dim.o \
+MSPtransformation.o \
+singular_value_decomposition.o \
+DKI.o \
+artlib.o \
+volume.o \
+binomial.o \
+smooth.o \
+niftiimage.o \
+utils.o \
+nifti.o \
+errorMessage.o \
+maskOps.o \
+EMFIT.o \
+max_cc.o \
+statistics.o \
+ginverse.o \
+permutation.o \
+hpsort.o \
+random.o \
+dicomIO.o \
+nkiIO.o \
+subsets.o \
+analyzeio.o \
+getoption.o \
+swap.o \
+fileinfo.o \
+histogram.o \
+resize.o \
+gaussian_kernel.o \
+convolution.o \
+resliceImage.o \
+matrixCom.o \
+registration.o \
+legendre.o \
+cubicspline.o \
+medianfilter.o \
+directionCode.o \
+check_nifti_file_extension.o \
+getNiftiImageOrientation.o \
+valid_orientation_code.o \
+PILtransform.o \
+reorientVolume.o \
+rotate.o \
+setLowHigh.o \
+intensity_weighted_centroid.o \
+standardize.o \
+sph.o \
+matrixops.o \
+landmarks.o \
+getARTHOME.o \
+update_qsform.o
+	ar -ru ../lib/libbabak.a \
+	circularMask.o initialMSPestimation.o symm_objective_func.o bbk_linear_algebra.o ijk2xyz.o read_nifti_image.o get_nifti_basename.o check_nifti1_magic.o get_directory_name.o loadTransformation.o leastSquaresAffineTrans.o hist1D_plot.o set_dim.o MSPtransformation.o singular_value_decomposition.o DKI.o artlib.o volume.o binomial.o smooth.o niftiimage.o utils.o nifti.o errorMessage.o maskOps.o EMFIT.o max_cc.o statistics.o ginverse.o permutation.o hpsort.o random.o dicomIO.o nkiIO.o subsets.o analyzeio.o getoption.o swap.o fileinfo.o histogram.o resize.o gaussian_kernel.o convolution.o resliceImage.o matrixCom.o registration.o legendre.o cubicspline.o medianfilter.o directionCode.o check_nifti_file_extension.o getNiftiImageOrientation.o valid_orientation_code.o PILtransform.o reorientVolume.o rotate.o setLowHigh.o intensity_weighted_centroid.o standardize.o sph.o matrixops.o landmarks.o getARTHOME.o update_qsform.o
 
 clean: 
 	rm -f *.o

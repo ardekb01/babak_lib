@@ -45,8 +45,6 @@ static float VertexNew[3];
 void orig_ijk_to_pil_xyz(float *Tmsp, DIM orig_dim, float *AC, float *PC);
 void ACPCtransform(float *Tacpc, float *Tmsp, float *AC, float *PC, char flg);
 void brandImage(unsigned char *R, unsigned char *G, unsigned char *B, int nx, int ny, int sx, int sy, int L1, int L2, unsigned char Rvalue, unsigned char Gvalue, unsigned char Bvalue);
-void saveACPCimages(const char *imagefilename, char *ACregion, char *PCregion, char *RPregion,  
-float *AC, float *PC, float *RP, DIM HR, DIM Orig, short *volOrig, float *Tmsp);
 void compute_MSP_parameters_from_Tmsp(float *Tmsp, float *n, float *d);
 void compute_Tmsp_from_MSP_parameters(const char *orientation, float *Tmsp, float *n, float d);
 void updateTmsp(const char *imagefilename, float *Tmsp, float *RP, float *AC, float *PC);
@@ -1257,45 +1255,6 @@ void defineTemplate(int r, int h, short *x, short *y, short *z)
    }
 }
 
-// RPsr: reference point search radius
-char *expandMask(short *mask_HR, DIM HR, float *RPmean, double RPsr)
-{
-   char *RPregion;
-   double r1, r2, r;
-   int npHR;
-
-   npHR = HR.nx * HR.ny;
-
-   RPregion = (char *)calloc(HR.nx*HR.ny, sizeof(char));
-
-   if( RPregion == nullptr )
-      return nullptr;
-
-   for(int i=0; i<HR.nx; i++)
-   for(int j=0; j<HR.ny; j++)
-   for(int k=0; k<HR.nz; k++)
-   {
-      r1 = (i - (HR.nx-1.0)/2.0)*HR.dx - RPmean[0];
-      r1 *= r1;
-      r2 = (j - (HR.ny-1.0)/2.0)*HR.dy - RPmean[1];
-      r2 *= r2;
-      r = sqrt(r1 + r2);
-
-      if(r >= RPsr) 
-      {	
-         mask_HR[k*npHR + j*HR.nx + i]=0;
-         RPregion[j*HR.nx + i]=0;
-      }
-      else
-      {	
-         RPregion[j*HR.nx + i]=1;
-      }
-   }
-
-   return(RPregion);
-}
-
-
 // Thresholds the input image `im' using Otsu's method of automatic threshold selection.
 // The number of suprathreshold voxels is returned in `nbv'.
 // The function returns and image `msk' where suprathreshold voxels have a value of 1, and
@@ -1525,7 +1484,7 @@ float *AC, float *PC, float *RP, float *Tmsp, int opt_T2)
       free(maskOrig);
    }
 
-   RPregion = expandMask(mask_HR, HR, mtail.RPmean, searchradius[0]);
+   RPregion = circularMask(mask_HR, HR, mtail.RPmean, searchradius[0]);
 
    /////////////////////////////////////////////////////////////////////////////////////////////////
 
