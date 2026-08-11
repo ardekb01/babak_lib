@@ -236,8 +236,15 @@ extern char *defineACregion(DIM dim, float *RP, float *PC, float parcomMean, flo
 extern char *definePCregion(DIM HR, float *RP, float *RPPCmean, double PCsr);
 extern void ACPCtransform(float *Tacpc, float *Tmsp, float *AC, float *PC, char flg);
 extern void compute_MSP_parameters_from_Tmsp(float *Tmsp, float *n, float *d);
-extern int detect_AC_PC_MSP( const char *imagefilename, char *orientation, char *modelfile,
-float *AC, float *PC, float *RP, float *Tmsp, int opt_T2);
+
+bool detect_AC_PC_MSP(const char *imagefilename,
+                     char *orientation,
+                     float *AC, 
+                     float *PC, 
+                     float *RP, 
+                     float *Tmsp,
+                     int opt_T2);
+
 extern float optimizeNormalVector(short *image,DIM dim,float &A, float &B, float &C);
 extern float msp(short *im_in, int nx, int ny, int nz, float dx, float dy, float dz, float &A, float &B, float &C);
 extern void computeTmsp(char *orientation, short *volOrig, DIM dim, float *Tmsp);

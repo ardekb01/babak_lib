@@ -549,7 +549,6 @@ short *find_subject_msp_using_transformation(char *imagefilename, char *prefix, 
    DIM input_dim, output_dim;
    short *msp;
    char orientation[4]="";
-   char modelfile[1024]="";
    int opt_T2=NO;
 
    float Tmsp[16]; // transforms volOrig to MSP aligned PIL orientation
@@ -560,7 +559,7 @@ short *find_subject_msp_using_transformation(char *imagefilename, char *prefix, 
 
    char outputfilename[512];
 
-   detect_AC_PC_MSP(imagefilename, orientation, modelfile, AC, PC, VSPS, Tmsp, opt_T2);
+   detect_AC_PC_MSP(imagefilename, orientation, AC, PC, VSPS, Tmsp, opt_T2);
 
    input_dim.nx = Snx;
    input_dim.ny = Sny;

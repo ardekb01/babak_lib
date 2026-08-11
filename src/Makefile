@@ -9,7 +9,11 @@ INC= -I../include
 LIBS =  -L../lib -lbabak -lniftiio -lznz -lm -lz -lc -llapack -lblas
 LESSLIBS =  -L../lib -lbabak -lniftiio -lznz -lm -lz -lc
 
-all: libbabak.a brainwash 3dwarper acpcdetect applywarp3d scaleImage avgImage one_sample_t ivf unwarp2d cphdr reslice kaiba oi PILtransform atra art2fsl fsl2art ants2art yuki analyze2nii multiplyTransformation niftiinfo break4D gambling_vancova_setup medianImage threshold ccstats applymask inverseMatrix4 LMdetect ijk2xyz TPS pixeldisplacement
+all: libbabak.a brainwash 3dwarper acpcdetect applywarp3d scaleImage avgImage \
+one_sample_t ivf unwarp2d cphdr reslice kaiba oi PILtransform atra art2fsl \
+fsl2art ants2art yuki analyze2nii multiplyTransformation niftiinfo break4D \
+gambling_vancova_setup medianImage threshold ccstats applymask inverseMatrix4 \
+LMdetect ijk2xyz TPS pixeldisplacement
 
 # because of functions in matrixops, linking the libbabak will possibly require lapack libs.
 
@@ -271,7 +275,18 @@ landmarks.o \
 getARTHOME.o \
 update_qsform.o
 	ar -ru ../lib/libbabak.a \
-	circularMask.o initialMSPestimation.o symm_objective_func.o bbk_linear_algebra.o ijk2xyz.o read_nifti_image.o get_nifti_basename.o check_nifti1_magic.o get_directory_name.o loadTransformation.o leastSquaresAffineTrans.o hist1D_plot.o set_dim.o MSPtransformation.o singular_value_decomposition.o DKI.o artlib.o volume.o binomial.o smooth.o niftiimage.o utils.o nifti.o errorMessage.o maskOps.o EMFIT.o max_cc.o statistics.o ginverse.o permutation.o hpsort.o random.o dicomIO.o nkiIO.o subsets.o analyzeio.o getoption.o swap.o fileinfo.o histogram.o resize.o gaussian_kernel.o convolution.o resliceImage.o matrixCom.o registration.o legendre.o cubicspline.o medianfilter.o directionCode.o check_nifti_file_extension.o getNiftiImageOrientation.o valid_orientation_code.o PILtransform.o reorientVolume.o rotate.o setLowHigh.o intensity_weighted_centroid.o standardize.o sph.o matrixops.o landmarks.o getARTHOME.o update_qsform.o
+	circularMask.o initialMSPestimation.o symm_objective_func.o bbk_linear_algebra.o \
+        ijk2xyz.o read_nifti_image.o get_nifti_basename.o check_nifti1_magic.o \
+        get_directory_name.o loadTransformation.o leastSquaresAffineTrans.o hist1D_plot.o \
+        set_dim.o MSPtransformation.o singular_value_decomposition.o DKI.o artlib.o \
+        volume.o binomial.o smooth.o niftiimage.o utils.o nifti.o errorMessage.o maskOps.o \
+        EMFIT.o max_cc.o statistics.o ginverse.o permutation.o hpsort.o random.o dicomIO.o \
+        nkiIO.o subsets.o analyzeio.o getoption.o swap.o fileinfo.o histogram.o resize.o \
+        gaussian_kernel.o convolution.o resliceImage.o matrixCom.o registration.o legendre.o \
+        cubicspline.o medianfilter.o directionCode.o check_nifti_file_extension.o \
+        getNiftiImageOrientation.o valid_orientation_code.o PILtransform.o reorientVolume.o \
+        rotate.o setLowHigh.o intensity_weighted_centroid.o standardize.o sph.o matrixops.o \
+        landmarks.o getARTHOME.o update_qsform.o
 
 clean: 
 	rm -f *.o
