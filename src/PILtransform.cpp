@@ -570,7 +570,7 @@ void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float
    free(Q);
 }
 
-// If is empty, i.e. orient="", that the orientation is read from imfile header
+// If 'orient' is empty or null, the orientation is read from imfile header
 // otherwise, the orien overrides the header information
 void standard_PIL_transformation(const char *imfile, const char *lmfile, char *orient, float *TPIL)
 {
@@ -586,11 +586,11 @@ void standard_PIL_transformation(const char *imfile, const char *lmfile, char *o
 
    if( lmfile[0]!='\0' )
    {
-      MSPtransformation(imfile,orient,lmfile,Tmsp,dim);
+      MSPtransformation(imfile, orient, lmfile, Tmsp, dim);
    }
    else
    {
-      MSPtransformation(imfile,orient,Tmsp,dim);
+      MSPtransformation(imfile, orient, Tmsp, dim);
    }
 
    ///////////////////////////////////////////////////////////////////////////////////////////////

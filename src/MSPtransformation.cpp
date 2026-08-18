@@ -78,7 +78,6 @@ bool MSPtransformation(
    float v[3]; // pc - rp
 
    // Read landmarks.
-   // Add code to detect errors here.
    fp = fopen(lmfile, "r");
 
    if(fp == nullptr)
@@ -86,19 +85,19 @@ bool MSPtransformation(
       return false;
    }
 
-   if(fscanf(fp, "%f %f %f\n", &ac[0], &ac[1], &ac[2]) != 3)
+   if( fscanf(fp, "%f %f %f\n", &ac[0], &ac[1], &ac[2]) != 3 )
    {
       fclose(fp);
       return false;
    }
 
-   if(fscanf(fp, "%f %f %f\n", &pc[0], &pc[1], &pc[2]) != 3)
+   if( fscanf(fp, "%f %f %f\n", &pc[0], &pc[1], &pc[2]) != 3 )
    {
       fclose(fp);
       return false;
    }
 
-   if(fscanf(fp, "%f %f %f\n", &rp[0], &rp[1], &rp[2]) != 3)
+   if( fscanf(fp, "%f %f %f\n", &rp[0], &rp[1], &rp[2]) != 3 )
    {
       fclose(fp);
       return false;

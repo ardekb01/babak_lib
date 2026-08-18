@@ -79,6 +79,11 @@ struct CmdOption
     int val;
 };
 
+bool save_ppm(const char *filename, const int nx, const int ny,
+              const unsigned char *R, 
+              const unsigned char *G, 
+              const unsigned char *B);
+
 char *circularMask(short *mask, 
                    const DIM &dim, 
                    const float *center, 

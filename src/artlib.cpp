@@ -390,7 +390,7 @@ float *AC, float *PC, float *RP, DIM HR, DIM Orig, short *volOrig, float *Tmsp)
 
    if(opt_ppm || opt_png)
    {
-      save_as_ppm((const char *)fullpath, HR.nx, HR.ny, Rchannel, Gchannel, Bchannel);
+      save_ppm((const char *)fullpath, HR.nx, HR.ny, Rchannel, Gchannel, Bchannel);
    }
 
    free(im);
@@ -451,7 +451,7 @@ float *AC, float *PC, float *RP, DIM HR, DIM Orig, short *volOrig, float *Tmsp)
 
    if(opt_ppm || opt_png)
    {
-      save_as_ppm((const char *)fullpath, HR.nx, HR.ny, Rchannel, Gchannel, Bchannel);
+      save_ppm((const char *)fullpath, HR.nx, HR.ny, Rchannel, Gchannel, Bchannel);
    }
 
    free(im);
@@ -1988,65 +1988,6 @@ float msp(short *im_in, int nx, int ny, int nz, float dx, float dy, float dz, fl
    free(image[2]);
 
    return(cc);
-}
-
-int save_as_ppm(const char *filename, int nx, int ny, unsigned char *R, unsigned char *G, unsigned char *B)
-{
-  FILE *fp;
-  int np;
-
-  np = nx*ny;
-
-  fp = fopen(filename,"w");
-  if(fp == NULL) return(1);
-
-  fprintf(fp,"P6\n");
-  fprintf(fp,"# Created by Automatic Registration Toolbox \n");
-  fprintf(fp,"%d %d\n",nx, ny);
-  fprintf(fp,"255\n");
-
-  for(int i=0; i<np; i++)
-  {
-    fwrite(R+i, 1, 1, fp);
-    fwrite(G+i, 1, 1, fp);
-    fwrite(B+i, 1, 1, fp);
-  }
-
-  fclose(fp);
-
-  if(opt_png)
-  {
-    char *pngfilename;
-    char cmnd[DEFAULT_STRING_LENGTH];
-    int L;
-    int system_return_value;
-
-    L = strlen(filename);
-    // there was bug here: I had length L instead of L+1 for pngfilename
-    // this was simple to fix but very hard to find
-    // as a result free(pngfilename) was failing
-    pngfilename = (char *)calloc(L+1,sizeof(char)); 
-
-    stpcpy(pngfilename, filename);
-    pngfilename[L-1]='g';
-    pngfilename[L-2]='n';
-    pngfilename[L-3]='p';
-
-    snprintf(cmnd,sizeof(cmnd),"pnmtopng %s > %s",filename,pngfilename); 
-    if(opt_png) {
-       system_return_value=system(cmnd);
-       if( system_return_value == -1 || system_return_value == 127 )
-       {
-          printf("Execution of %s command failed\n",cmnd);
-       }
-    }
-
-    free(pngfilename);
-  }
-
-  if(opt_ppm == NO ) remove(filename);
-
-  return(0);
 }
 
 void computeTmsp(char *orientation, short *volOrig, DIM dim, float *Tmsp)

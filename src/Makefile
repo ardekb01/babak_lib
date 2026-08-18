@@ -17,6 +17,9 @@ LMdetect ijk2xyz TPS pixeldisplacement
 
 # because of functions in matrixops, linking the libbabak will possibly require lapack libs.
 
+save_ppm.o: save_ppm.cpp
+	$(CC) $(CFLAGS) -c $(INC) save_ppm.cpp
+
 circularMask.o: circularMask.cpp
 	$(CC) $(CFLAGS) -c $(INC) circularMask.cpp
 
@@ -210,8 +213,9 @@ update_qsform.o: update_qsform.cpp
 	$(CC) $(CFLAGS)  -c $(INC) update_qsform.cpp
 
 libbabak.a: \
-initialMSPestimation.o \
+save_ppm.o \
 circularMask.o \
+initialMSPestimation.o \
 symm_objective_func.o \
 bbk_linear_algebra.o \
 ijk2xyz.o \
@@ -275,7 +279,10 @@ landmarks.o \
 getARTHOME.o \
 update_qsform.o
 	ar -ru ../lib/libbabak.a \
-	circularMask.o initialMSPestimation.o symm_objective_func.o bbk_linear_algebra.o \
+	save_ppm.o \
+        circularMask.o \
+        initialMSPestimation.o \
+        symm_objective_func.o bbk_linear_algebra.o \
         ijk2xyz.o read_nifti_image.o get_nifti_basename.o check_nifti1_magic.o \
         get_directory_name.o loadTransformation.o leastSquaresAffineTrans.o hist1D_plot.o \
         set_dim.o MSPtransformation.o singular_value_decomposition.o DKI.o artlib.o \

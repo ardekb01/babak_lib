@@ -248,7 +248,6 @@ bool detect_AC_PC_MSP(const char *imagefilename,
 extern float optimizeNormalVector(short *image,DIM dim,float &A, float &B, float &C);
 extern float msp(short *im_in, int nx, int ny, int nz, float dx, float dy, float dz, float &A, float &B, float &C);
 extern void computeTmsp(char *orientation, short *volOrig, DIM dim, float *Tmsp);
-extern int save_as_ppm(const char *filename, int nx, int ny, uchar *R, uchar *G, uchar *B);
 extern void combine_warps_and_trans(int nx, int ny, int nz, float dx, float dy, float dz, float *Xwarp, float *Ywarp, float *Zwarp, float *T);
 #endif
 

@@ -749,7 +749,7 @@ void output_ppm(short *trg, short *cc_est, const char *prefix)
       }
 
       snprintf(outputfile,sizeof(outputfile),"%s_cc_witelson.ppm",prefix);
-      save_as_ppm((const char *)outputfile, NX, NY, R, G, B);
+      save_ppm((const char *)outputfile, NX, NY, R, G, B);
    }
    //////////////////////////////////////////////////////////////////////////////////
    
@@ -845,7 +845,7 @@ void output_ppm(short *trg, short *cc_est, const char *prefix)
       }
 
       snprintf(outputfile,sizeof(outputfile),"%s_cc_hampel.ppm",prefix);
-      save_as_ppm((const char *)outputfile, NX, NY, R, G, B);
+      save_ppm((const char *)outputfile, NX, NY, R, G, B);
    }
    //////////////////////////////////////////////////////////////////////////////////
 
@@ -914,7 +914,7 @@ void output_ppm(short *trg, short *cc_est, const char *prefix)
       /////////////////////////////////////////////////////////////////////
       
       snprintf(outputfile,sizeof(outputfile),"%s_cc_border.ppm",prefix);
-      //save_as_ppm((const char *)outputfile, NX, NY, R, G, B);
+      //save_ppm((const char *)outputfile, NX, NY, R, G, B);
    }
 
    free(R);
@@ -1209,7 +1209,7 @@ void output_bounding_box_ppm(short *trg, const char *prefix)
    //////////////////////////////////////////////////////////////////////
 
    snprintf(outputfile,sizeof(outputfile),"%s_cc.ppm",prefix);
-   save_as_ppm((const char *)outputfile, NX, NY, R, G, B);
+   save_ppm((const char *)outputfile, NX, NY, R, G, B);
 
    free(R);
    free(G);
