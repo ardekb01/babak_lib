@@ -442,7 +442,7 @@ void atra(const char *imagelistfile, DIM output_dim, const char *outputOrientati
    {
       if(opt_v) printf("Processing %s ...\n",imagefile[i]);
       orient[0]='\0';
-      new_PIL_transform(imagefile[i],landmarksfile[i],orient, TPIL[i], 1);
+      new_PIL_transform(imagefile[i],landmarksfile[i],orient, TPIL[i]);
    }
    /////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -171,7 +171,7 @@ void errorMessage(const char *message);
 
 // Input: (x,y,z) a vector defined in RAS system
 // Output: One of six charaters {R,L,A,P,S,I}
-void new_PIL_transform(const char *subfile, const char *lmfile, char *orient, float *T, int SAVE_PIL_FLAG);
+void new_PIL_transform(const char *subfile, const char *lmfile, char *orient, float *T);
 void standard_PIL_transformation(const char *imfile, const char *lmfile, char *orient, float *TPIL);
 void Procrustes(float *Q, float *Qavg, int n, float *P, float *Pavg, float *TLM);
 void Procrustes(float *Q, int n, float *P, float *TLM);

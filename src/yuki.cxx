@@ -1,8 +1,4 @@
-//////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////
-// Copyright (C) 2024 Babak A. Ardekani, PhD - All Rights Reserved.  //
-///////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////
+// Copyright (C) 2024 Babak A. Ardekani, PhD - All Rights Reserved.
 
 #include <stdlib.h>
 #include <math.h>
@@ -475,7 +471,7 @@ short *find_subject_msp(char *imagefilename, char *prefix, char *lmfile)
 
    char iporient[4]="";
 
-   new_PIL_transform(imagefilename, lmfile , iporient, Tacpc, 0);
+   new_PIL_transform(imagefilename, lmfile , iporient, Tacpc);
 
    input_dim.nx = Snx;
    input_dim.ny = Sny;

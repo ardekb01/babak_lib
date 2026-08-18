@@ -889,13 +889,13 @@ void symmetric_registration(SHORTIM &aimpil, const char *bfile, const char *ffil
 
    if(verbose) printf("Computing baseline image PIL transformation ...\n");
    orient[0]='\0';
-   new_PIL_transform(bfile, blmfile, orient, bTPIL, 0);
+   new_PIL_transform(bfile, blmfile, orient, bTPIL);
 
    ibTPIL= inv4x4(bTPIL);
 
    if(verbose) printf("Computing follow-up image PIL transformation ...\n");
    orient[0]='\0';
-   new_PIL_transform(ffile, flmfile, orient, fTPIL, 0);
+   new_PIL_transform(ffile, flmfile, orient, fTPIL);
 
    ///////////////////////////////////////////////////////////////////////////////////////////////
    // Read baseline and follow-up images
@@ -1852,7 +1852,7 @@ int main(int argc, char **argv)
    {
       if(opt_v) printf("Computing PIL transformation ...\n");
       orient[0]='\0';
-      new_PIL_transform(imagefile[0],lmfile, orient, TPIL[0], 0);
+      new_PIL_transform(imagefile[0],lmfile, orient, TPIL[0]);
 
       invT = inv4x4(TPIL[0]);
       aimpil.v = resliceImage(im[0].v, im_dim[0], PILbraincloud_dim, invT, LIN);

@@ -1339,7 +1339,8 @@ bool detect_AC_PC_MSP(const char *imagefilename,
    {
       return false;
    }
-      snprintf(modelFile,DEFAULT_STRING_LENGTH,"%s/T1acpc.mdl",ARTHOME);
+
+   snprintf(modelFile,DEFAULT_STRING_LENGTH,"%s/T1acpc.mdl",ARTHOME);
 
    // (x, y, z) image orientation vectors (row, column, and slice orientation)
    float xvec[3], yvec[3], zvec[3];
@@ -1365,7 +1366,6 @@ bool detect_AC_PC_MSP(const char *imagefilename,
    char *RPregion;
    float *invT; 
    int nbv;
-
 
    {
       // read information from the model file and initialize some variables
@@ -1422,7 +1422,6 @@ bool detect_AC_PC_MSP(const char *imagefilename,
    nifti_1_header im_hdr;
    volOrig = (short *)read_nifti_image( (const char *)imagefilename , &im_hdr);
    set_dim(Orig, im_hdr);
-
 
    if(volOrig == NULL)
    {

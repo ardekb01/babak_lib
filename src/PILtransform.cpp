@@ -337,7 +337,7 @@ void Procrustes(float *Q, int n, float *P, float *TLM)
 // subfile (subject file) - 3D T1W volume of type short in NIFTI format
 // TPIL - output 4x4 rigid-body transformation matrix that would transform
 // subfile into a standardized PIL orientation
-void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float *TPIL, int SAVE_MRX_FLAG)
+void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float *TPIL)
 {
    float Qavg[3]; // average of rows of Q
    float Pavg[3]; // average of rows of P
@@ -556,7 +556,6 @@ void new_PIL_transform(const char *subfile,const char *lmfile,char *orient,float
    }
 
   // save the PIL transformation in <subfile_prefix>_PIL.mrx
-  if(SAVE_MRX_FLAG == 1)
   {
     FILE *fp;
     snprintf(filename,3*DEFAULT_STRING_LENGTH,"%s/%s_PIL.mrx",imagedir, subfile_prefix);

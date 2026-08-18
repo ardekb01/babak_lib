@@ -61,5 +61,5 @@ int main(int argc, char **argv)
    if(lmfile[0] != '\0' && opt_v) printf("Landmarks are read from %s\n",lmfile);
 
    orient[0] = '\0';
-   new_PIL_transform(subfile,lmfile,orient,TPIL,1);
+   new_PIL_transform(subfile,lmfile,orient,TPIL);
 }
