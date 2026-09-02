@@ -44,7 +44,6 @@ static float VertexNew[3];
 
 void orig_ijk_to_pil_xyz(float *Tmsp, DIM orig_dim, float *AC, float *PC);
 void ACPCtransform(float *Tacpc, float *Tmsp, float *AC, float *PC, char flg);
-void brandImage(unsigned char *R, unsigned char *G, unsigned char *B, int nx, int ny, int sx, int sy, int L1, int L2, unsigned char Rvalue, unsigned char Gvalue, unsigned char Bvalue);
 void compute_MSP_parameters_from_Tmsp(float *Tmsp, float *n, float *d);
 void compute_Tmsp_from_MSP_parameters(const char *orientation, float *Tmsp, float *n, float d);
 void updateTmsp(const char *imagefilename, float *Tmsp, float *RP, float *AC, float *PC);
@@ -444,7 +443,6 @@ float *AC, float *PC, float *RP, DIM HR, DIM Orig, short *volOrig, float *Tmsp)
    brandImage(Rchannel, Gchannel, Bchannel, HR.nx, HR.ny, (HR.nx-1)/2, (HR.ny-1)/2, 0, (HR.nx-1)/2, 255, 255, 255);
    brandImage(Rchannel, Gchannel, Bchannel, HR.nx, HR.ny, (int)(pc[0]+0.5), (int)(pc[1]+0.5), 4, 4, 255, 0, 0);
    brandImage(Rchannel, Gchannel, Bchannel, HR.nx, HR.ny, (int)(ac[0]+0.5), (int)(ac[1]+0.5), 4, 4, 0, 255, 255);
-
 
    get_nifti_basename(filename, DEFAULT_STRING_LENGTH, imagefilename);
    snprintf(fullpath,sizeof(fullpath),"%s/%s_ACPC_axial.ppm",dirname,filename);
